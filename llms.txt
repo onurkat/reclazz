@@ -7,44 +7,34 @@ Edit, compile and see supported changes in the running JVM.
 
 ## Documentation scope
 
-Source version 1.6.0; evidence baseline 75535bd739d7eefd43523dcc63799436c472fe12; reviewed 2026-10-19.
+Source version 1.7.0; evidence baseline 75535bd739d7eefd43523dcc63799436c472fe12; reviewed 2026-10-19.
 Source presence does not establish release availability or acceptance on every runtime.
 Read each support condition and verify the running application.
 
 ## Guides and references
 
-- [Overview](https://reclazz.com/docs/): Make a change. Compile it. Keep the JVM running. Learn what Reclazz reloads, where the limits are, and how to verify the result.
-- [Quickstart](https://reclazz.com/docs/quickstart/): Start with the route that launches your application JVM, then prove a changed response without restarting.
-- [Reload support matrix](https://reclazz.com/docs/support-matrix/): Find the outcome, exact conditions and next action for the edit you want to make.
-- [Java & JVM limits](https://reclazz.com/docs/java/): Understand method bodies, structural reload, field initialization, enum edits and reflective visibility.
-- [Spring & MVC](https://reclazz.com/docs/spring/): Follow bean recreation, newly added components, MVC callbacks, advice, Jackson and constructor dependency boundaries.
-- [Kafka, JMS & RabbitMQ](https://reclazz.com/docs/messaging/): Understand listener additions, consumer retirement, routing changes and the difference between direct saves and dependency cascades.
-- [Configuration & resources](https://reclazz.com/docs/configuration/): Know which physical files are watched, how validation works, and when a configuration edit needs a restart.
-- [SAP Commerce](https://reclazz.com/docs/sap-commerce/): Separate Java reload, platform generation, type-system updates and runtime configuration in the SAP development loop.
-- [Persistence & caches](https://reclazz.com/docs/persistence/): Keep class replacement, ORM mapping, database schema and cached results separate when verifying a reload.
-- [Reload timing](https://reclazz.com/docs/boundaries/): Choose immediate or request-boundary application, and understand pause, build holds and partial failures.
-- [Agent options](https://reclazz.com/docs/configuration-reference/): Find every source-supported startup option, its default and the consequence of enabling it.
-- [Troubleshooting](https://reclazz.com/docs/troubleshooting/): Diagnose the right process, watched output, pending restart and framework follow-up without guessing.
+- [Overview](https://reclazz.com/docs/): Choose a setup, make your first change and understand when a restart is needed.
+- [Quickstart](https://reclazz.com/docs/quickstart/): Choose your launch route, compile one small edit and check its result in the same JVM.
+- [What reloads](https://reclazz.com/docs/support-matrix/): Find your edit, its conditions and your next step.
+- [SAP Commerce](https://reclazz.com/docs/sap-commerce/): Set up once, find your edit and verify the running server.
+- [Spring & MVC](https://reclazz.com/docs/spring/): Check beans, endpoints and listener delivery after a save.
+- [Configuration & resources](https://reclazz.com/docs/configuration/): Find the runtime resource and verify its current value.
+- [Persistence & caches](https://reclazz.com/docs/persistence/): Check mappings, schema and cached results separately.
+- [Java & JVM limits](https://reclazz.com/docs/java/): Find your edit and understand the runtime it needs.
+- [Troubleshooting](https://reclazz.com/docs/troubleshooting/): Start with the symptom, check the IDE diagnostic and recover safely.
+- [Agent options](https://reclazz.com/docs/configuration-reference/): Set common options in IntelliJ or the application JVM argument.
 - [Versions & evidence](https://reclazz.com/docs/evidence/): Read support claims with their exact boundaries, inspect source and help keep the documentation honest.
-- [Reference library](https://reclazz.com/docs/reference/): Complete configuration, behavior and scope reference: Documentation library.
-- [Reproducible agentic workflow evaluation](https://reclazz.com/docs/reference/agentic-evaluation/): Complete configuration, behavior and scope reference: Reproducible agentic workflow evaluation.
-- [Agentic client acceptance matrix](https://reclazz.com/docs/reference/client-matrix/): Complete configuration, behavior and scope reference: Agentic client acceptance matrix.
-- [Documentation workflow](https://reclazz.com/docs/reference/documentation-workflow/): Complete configuration, behavior and scope reference: Documentation workflow.
-- [Core JVM feature evidence](https://reclazz.com/docs/reference/feature-evidence/): Complete configuration, behavior and scope reference: Core JVM feature evidence.
-- [For AI agents](https://reclazz.com/docs/reference/for-ai-agents/): Complete configuration, behavior and scope reference: For AI agents.
-- [Reclazz Gradle plugin](https://reclazz.com/docs/reference/gradle-plugin/): Complete configuration, behavior and scope reference: Reclazz Gradle plugin.
 - [Installation](https://reclazz.com/docs/reference/installation/): Complete configuration, behavior and scope reference: Installation.
-- [Reclazz with Maven](https://reclazz.com/docs/reference/maven/): Complete configuration, behavior and scope reference: Reclazz with Maven.
-- [MCP for coding agents: close the loop](https://reclazz.com/docs/reference/mcp-for-coding-agents/): Complete configuration, behavior and scope reference: MCP for coding agents: close the loop.
-- [Reclazz MCP server](https://reclazz.com/docs/reference/mcp-server/): Complete configuration, behavior and scope reference: Reclazz MCP server.
-- [Product technical reference](https://reclazz.com/docs/reference/product-reference/): Complete configuration, behavior and scope reference: Product technical reference.
-- [The Status Socket](https://reclazz.com/docs/reference/protocol/): Complete configuration, behavior and scope reference: The Status Socket.
-- [Publishing Reclazz to the JetBrains Marketplace](https://reclazz.com/docs/reference/publishing/): Complete configuration, behavior and scope reference: Publishing Reclazz to the JetBrains Marketplace.
-- [Reload support reference](https://reclazz.com/docs/reference/reload-support/): Complete configuration, behavior and scope reference: Reload support reference.
-- [Reclazz on SAP Commerce, for a coding agent](https://reclazz.com/docs/reference/sap-commerce/): Complete configuration, behavior and scope reference: Reclazz on SAP Commerce, for a coding agent.
-- [SAP Commerce: what we test live](https://reclazz.com/docs/reference/sap-commerce-live-tests/): Complete configuration, behavior and scope reference: SAP Commerce: what we test live.
-- [Reclazz Spring Boot starter](https://reclazz.com/docs/reference/spring-boot-starter/): Complete configuration, behavior and scope reference: Reclazz Spring Boot starter.
-- [Constructor dependency ownership during ordinary class refresh](https://reclazz.com/docs/reference/spring-constructor-dependencies/): Complete configuration, behavior and scope reference: Constructor dependency ownership during ordinary class refresh.
-- [Superclass changes without a custom classloader](https://reclazz.com/docs/reference/superclass-feasibility/): Complete configuration, behavior and scope reference: Superclass changes without a custom classloader.
-- [Reclazz: Test Guide for SAP Commerce (Hybris)](https://reclazz.com/docs/reference/test-guide/): Complete configuration, behavior and scope reference: Reclazz: Test Guide for SAP Commerce (Hybris).
-- [Usage Guide](https://reclazz.com/docs/reference/usage/): Complete configuration, behavior and scope reference: Usage Guide.
+- [Usage manual](https://reclazz.com/docs/reference/usage/): Complete configuration, behavior and scope reference: Usage Guide.
+- [Gradle plugin](https://reclazz.com/docs/reference/gradle-plugin/): Complete configuration, behavior and scope reference: Reclazz Gradle plugin.
+- [Maven plugin](https://reclazz.com/docs/reference/maven/): Complete configuration, behavior and scope reference: Reclazz with Maven.
+- [Spring Boot starter](https://reclazz.com/docs/reference/spring-boot-starter/): Complete configuration, behavior and scope reference: Reclazz Spring Boot starter.
+- [IntelliJ + coding agents](https://reclazz.com/docs/reference/for-ai-agents/): Complete configuration, behavior and scope reference: For AI agents.
+- [MCP for coding agents](https://reclazz.com/docs/reference/mcp-for-coding-agents/): Complete configuration, behavior and scope reference: MCP for coding agents: close the loop.
+- [MCP server reference](https://reclazz.com/docs/reference/mcp-server/): Complete configuration, behavior and scope reference: Reclazz MCP server.
+- [SAP Commerce reference](https://reclazz.com/docs/reference/sap-commerce/): Complete configuration, behavior and scope reference: Reclazz on SAP Commerce, for a coding agent.
+- [SAP test guide](https://reclazz.com/docs/reference/test-guide/): Complete configuration, behavior and scope reference: Reclazz: Test Guide for SAP Commerce (Hybris).
+- [What reloads source table](https://reclazz.com/docs/reference/reload-support/): Complete configuration, behavior and scope reference: Reload support reference.
+- [Product reference](https://reclazz.com/docs/reference/product-reference/): Complete configuration, behavior and scope reference: Product technical reference.
+- [Status socket protocol](https://reclazz.com/docs/reference/protocol/): Complete configuration, behavior and scope reference: The Status Socket.
+- [Reference library](https://reclazz.com/docs/reference/): Complete configuration, behavior and scope reference: Documentation library.

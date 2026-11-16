@@ -14,28 +14,62 @@
 
     <!-- Fonts -->
 
-    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;550;600;650;700;750;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="/docs/assets/theme.js?v=44ab3cc4ede7"></script>
-<link rel="stylesheet" href="/docs/assets/docs.css?v=1a3655f79ef4"><link rel="stylesheet" href="/assets/site.css?v=ff823a0eccc6"><link rel="stylesheet" href="/assets/marketing.css?v=d63cc6794bc6">
-<script src="/docs/assets/docs.js?v=bd702e25fabd" defer></script><script src="/assets/site.js?v=cab0abf769a2" defer></script>
+    <link rel="preload" href="/assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/tokens.css?v=010d8bdc5b6b">
+<script>if(location.pathname.endsWith('/index.html'))location.replace(location.pathname.slice(0,-10)+location.search+location.hash);</script>
+<script src="/docs/assets/theme.js?v=e97a1b2c286d"></script>
+<link rel="stylesheet" href="/docs/assets/docs.css?v=5ec993d66794"><link rel="stylesheet" href="/assets/site.css?v=2d6a773f30d0"><link rel="stylesheet" href="/assets/marketing.css?v=3bb3ebf1e95b">
+<link rel="stylesheet" href="/assets/components.css?v=17a192278dbb">
+<script src="/docs/assets/docs.js?v=c467f8a42c10" defer></script><script src="/assets/site.js?v=cab0abf769a2" defer></script>
 </head>
 <body class="marketing privacy-page">
 
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="docs-header site-header">
 <a class="brand" href="/" aria-label="Reclazz home"><img src="/favicon.svg" alt="" width="32" height="32"><span>Reclazz</span></a>
-<span class="header-divider" aria-hidden="true"></span><nav class="header-links" aria-label="Main navigation"><a href="/docs/">Docs</a><a href="/compare/">Compare</a><a href="https://github.com/onurkat/reclazz">GitHub ↗</a></nav>
-<button class="search-trigger" id="search-open" type="button" aria-controls="search-dialog" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search documentation</span><kbd>⌘ K</kbd></button>
-<button class="theme-button" id="theme-toggle" type="button" aria-label="Switch color theme" hidden><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M20.6 13.1A8.5 8.5 0 0 1 10.9 3.4 8.5 8.5 0 1 0 20.6 13.1Z"/></svg></button>
-<a class="header-install" href="/docs/quickstart/">Get started <span aria-hidden="true">↗</span></a>
-<details class="site-menu"><summary aria-label="Site navigation"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></summary><nav aria-label="Mobile main navigation"><a href="/docs/">Docs</a><a href="/compare/">Compare</a><a href="https://github.com/onurkat/reclazz">GitHub ↗</a><a href="/docs/quickstart/">Get started ↗</a></nav></details>
+<span class="header-divider" aria-hidden="true"></span><nav class="header-links" aria-label="Main navigation"><a href="/docs/">Docs</a><a href="/compare/">Compare</a><a href="https://github.com/onurkat/reclazz">GitHub <!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M15 3h6v6" />
+  <path d="M10 14 21 3" />
+  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+</svg>
+</a></nav>
+<button class="search-trigger" id="search-open" type="button" aria-controls="search-dialog" hidden><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m21 21-4.34-4.34" />
+  <circle cx="11" cy="11" r="8" />
+</svg>
+<span>Search documentation</span><kbd>⌘ K</kbd></button>
+<button class="theme-button" id="theme-toggle" type="button" aria-label="Switch color theme" hidden><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" />
+</svg>
+</button>
+<a class="header-install" href="/docs/quickstart/">Get started </a>
+<details class="site-menu"><summary aria-label="Site navigation"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M4 5h16" />
+  <path d="M4 12h16" />
+  <path d="M4 19h16" />
+</svg>
+</summary><nav aria-label="Mobile main navigation"><a href="/docs/">Docs</a><a href="/compare/">Compare</a><a href="https://github.com/onurkat/reclazz">GitHub <!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M15 3h6v6" />
+  <path d="M10 14 21 3" />
+  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+</svg>
+</a><a href="/docs/quickstart/">Get started </a></nav></details>
 </header>
 
 <main class="license-page" id="main" tabindex="-1">
     <div class="container">
         <a href="/" class="back-link">
-            &larr; Back to Reclazz
+            <!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m12 19-7-7 7-7" />
+  <path d="M19 12H5" />
+</svg>
+ Back to Reclazz
         </a>
 
         <h1><span class="text-gradient">Privacy</span></h1>
@@ -44,11 +78,31 @@
         <div class="tldr-card">
             <h2>In Plain English <span class="badge">TL;DR</span></h2>
             <ul class="tldr-list">
-                <li><span class="icon" style="color:var(--success)">&#10003;</span> No telemetry, no analytics, no crash reporting, no usage statistics</li>
-                <li><span class="icon" style="color:var(--success)">&#10003;</span> No account, no sign-in, no licence check</li>
-                <li><span class="icon" style="color:var(--success)">&#10003;</span> No outbound network requests of any kind, so nothing about your code leaves your machine</li>
-                <li><span class="icon" style="color:var(--success)">&#10003;</span> The one socket it opens is bound to 127.0.0.1 and reachable only from your own machine</li>
-                <li><span class="icon" style="color:var(--success)">&#10003;</span> The source is public, so none of this has to be taken on trust</li>
+                <li><span class="icon" style="color:var(--success)"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M20 6 9 17l-5-5" />
+</svg>
+</span> No telemetry, no analytics, no crash reporting, no usage statistics</li>
+                <li><span class="icon" style="color:var(--success)"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M20 6 9 17l-5-5" />
+</svg>
+</span> No account, no sign-in, no licence check</li>
+                <li><span class="icon" style="color:var(--success)"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M20 6 9 17l-5-5" />
+</svg>
+</span> No outbound network requests of any kind, so nothing about your code leaves your machine</li>
+                <li><span class="icon" style="color:var(--success)"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M20 6 9 17l-5-5" />
+</svg>
+</span> The one socket it opens is bound to 127.0.0.1 and reachable only from your own machine</li>
+                <li><span class="icon" style="color:var(--success)"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M20 6 9 17l-5-5" />
+</svg>
+</span> The source is public, so none of this has to be taken on trust</li>
             </ul>
         </div>
 
@@ -87,9 +141,51 @@
 <footer class="site-footer"><div class="site-footer-inner">
 <div class="footer-brand"><a class="brand" href="/" aria-label="Reclazz home"><img src="/favicon.svg" width="28" height="28" alt=""><span>Reclazz</span></a><p>Make the next edit count.</p><span class="footer-license">Apache 2.0 · Built in the open.</span></div>
 <nav aria-label="Product links"><p>Product</p><a href="/docs/">Documentation</a><a href="/docs/quickstart/">Quickstart</a><a href="/docs/support-matrix/">Reload support</a><a href="/compare/">Compare</a></nav>
-<nav aria-label="Project links"><p>Project</p><a href="https://github.com/onurkat/reclazz">GitHub ↗</a><a href="https://github.com/onurkat/reclazz/releases">Releases ↗</a><a href="https://github.com/onurkat/reclazz/issues">Report an issue ↗</a></nav>
+<nav aria-label="Project links"><p>Project</p><a href="https://github.com/onurkat/reclazz">GitHub <!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M15 3h6v6" />
+  <path d="M10 14 21 3" />
+  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+</svg>
+</a><a href="https://github.com/onurkat/reclazz/blob/main/CHANGELOG.md">Changelog <!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M15 3h6v6" />
+  <path d="M10 14 21 3" />
+  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+</svg>
+</a><a href="https://github.com/onurkat/reclazz/blob/main/CONTRIBUTING.md">Contributing <!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M15 3h6v6" />
+  <path d="M10 14 21 3" />
+  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+</svg>
+</a><a href="https://github.com/onurkat/reclazz/blob/main/SECURITY.md">Security <!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M15 3h6v6" />
+  <path d="M10 14 21 3" />
+  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+</svg>
+</a><a href="https://github.com/onurkat/reclazz/releases">Releases <!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M15 3h6v6" />
+  <path d="M10 14 21 3" />
+  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+</svg>
+</a><a href="https://github.com/onurkat/reclazz/issues">Report an issue <!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M15 3h6v6" />
+  <path d="M10 14 21 3" />
+  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+</svg>
+</a></nav>
 <nav aria-label="Legal links"><p>Legal</p><a href="/license/">License</a><a href="/privacy/">Privacy</a></nav>
-<div class="footer-bottom"><span>© 2026 Onur Kat</span><a href="https://github.com/sponsors/onurkat">Support development ↗</a></div></div></footer>
+<p class="footer-version"><span>Docs for</span> 1.7.0 · <a href="/docs/evidence/">Test coverage &amp; versions</a></p><div class="footer-bottom"><span>© 2026 Onur Kat</span><a href="https://github.com/sponsors/onurkat">Support development <!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M15 3h6v6" />
+  <path d="M10 14 21 3" />
+  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+</svg>
+</a></div></div></footer>
 <dialog class="search-dialog" id="search-dialog" aria-labelledby="search-title"><div class="search-top"><label id="search-title" for="docs-search">Search documentation</label><button id="search-close" class="dialog-close" type="button" aria-label="Close search">Esc</button></div><input id="docs-search" type="search" placeholder="What would you like to reload?" autocomplete="off"><p id="search-status" role="status" aria-live="polite">Search guides, changes and limits. Your query stays in this browser.</p><div id="search-results"></div><div class="search-hint">↑ ↓ to select · Enter to open · Esc to close</div></dialog><div class="sr-only" id="copy-status" role="status" aria-live="polite"></div>
 
 

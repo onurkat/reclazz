@@ -2,39 +2,364 @@
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Persistence &amp; cache boundaries | Reclazz docs</title>
-<meta name="description" content="Keep class replacement, ORM mapping, database schema and cached results separate when verifying a reload.">
+<title>Entities, repositories and caches | Reclazz docs</title>
+<meta name="description" content="Check mappings, schema and cached results separately.">
 <meta name="theme-color" content="#0b0d12"><meta name="color-scheme" content="dark light">
 <link rel="canonical" href="https://reclazz.com/docs/persistence/">
-<meta property="og:type" content="article"><meta property="og:title" content="Persistence &amp; cache boundaries | Reclazz docs">
-<meta property="og:description" content="Keep class replacement, ORM mapping, database schema and cached results separate when verifying a reload."><meta property="og:url" content="https://reclazz.com/docs/persistence/">
+<meta property="og:type" content="article"><meta property="og:title" content="Entities, repositories and caches | Reclazz docs">
+<meta property="og:description" content="Check mappings, schema and cached results separately."><meta property="og:url" content="https://reclazz.com/docs/persistence/">
 <meta property="og:image" content="https://reclazz.com/og-image.png">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;550;600;650;700;750;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="/docs/assets/theme.js?v=44ab3cc4ede7"></script>
-<link rel="stylesheet" href="/docs/assets/docs.css?v=1a3655f79ef4"><link rel="stylesheet" href="/assets/site.css?v=ff823a0eccc6">
-<script src="/docs/assets/docs.js?v=bd702e25fabd" defer></script><script src="/assets/site.js?v=cab0abf769a2" defer></script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Persistence & cache boundaries", "description": "Keep class replacement, ORM mapping, database schema and cached results separate when verifying a reload.", "url": "https://reclazz.com/docs/persistence/", "dateModified": "2026-10-19", "version": "1.6.0"}</script>
+<link rel="preload" href="/assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/tokens.css?v=010d8bdc5b6b">
+<script>if(location.pathname.endsWith('/index.html'))location.replace(location.pathname.slice(0,-10)+location.search+location.hash);</script>
+<script src="/docs/assets/theme.js?v=e97a1b2c286d"></script>
+<link rel="stylesheet" href="/docs/assets/docs.css?v=5ec993d66794"><link rel="stylesheet" href="/assets/site.css?v=2d6a773f30d0">
+<link rel="stylesheet" href="/assets/components.css?v=17a192278dbb">
+<script src="/docs/assets/docs.js?v=c467f8a42c10" defer></script><script src="/assets/site.js?v=cab0abf769a2" defer></script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Entities, repositories and caches", "description": "Check mappings, schema and cached results separately.", "url": "https://reclazz.com/docs/persistence/", "dateModified": "2026-10-19", "version": "1.7.0"}</script>
 </head>
 <body class="docs-page">
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="docs-header site-header">
 <a class="brand" href="/" aria-label="Reclazz home"><img src="/favicon.svg" alt="" width="32" height="32"><span>Reclazz</span></a>
-<span class="header-divider" aria-hidden="true"></span><nav class="header-links" aria-label="Main navigation"><a href="/docs/" aria-current="true">Docs</a><a href="/compare/">Compare</a><a href="https://github.com/onurkat/reclazz">GitHub ↗</a></nav>
-<button class="search-trigger" id="search-open" type="button" aria-controls="search-dialog" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search documentation</span><kbd>⌘ K</kbd></button>
-<button class="theme-button" id="theme-toggle" type="button" aria-label="Switch color theme" hidden><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M20.6 13.1A8.5 8.5 0 0 1 10.9 3.4 8.5 8.5 0 1 0 20.6 13.1Z"/></svg></button>
-<a class="header-install" href="/docs/quickstart/">Get started <span aria-hidden="true">↗</span></a>
-<details class="site-menu"><summary aria-label="Site navigation"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></summary><nav aria-label="Mobile main navigation"><a href="/docs/" aria-current="true">Docs</a><a href="/compare/">Compare</a><a href="https://github.com/onurkat/reclazz">GitHub ↗</a><a href="/docs/quickstart/">Get started ↗</a></nav></details>
+<span class="header-divider" aria-hidden="true"></span><nav class="header-links" aria-label="Main navigation"><a href="/docs/" aria-current="true">Docs</a><a href="/compare/">Compare</a><a href="https://github.com/onurkat/reclazz">GitHub <!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M15 3h6v6" />
+  <path d="M10 14 21 3" />
+  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+</svg>
+</a></nav>
+<button class="search-trigger" id="search-open" type="button" aria-controls="search-dialog" hidden><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m21 21-4.34-4.34" />
+  <circle cx="11" cy="11" r="8" />
+</svg>
+<span>Search documentation</span><kbd>⌘ K</kbd></button>
+<button class="theme-button" id="theme-toggle" type="button" aria-label="Switch color theme" hidden><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" />
+</svg>
+</button>
+<a class="header-install" href="/docs/quickstart/">Get started </a>
+<details class="site-menu"><summary aria-label="Site navigation"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M4 5h16" />
+  <path d="M4 12h16" />
+  <path d="M4 19h16" />
+</svg>
+</summary><nav aria-label="Mobile main navigation"><a href="/docs/" aria-current="true">Docs</a><a href="/compare/">Compare</a><a href="https://github.com/onurkat/reclazz">GitHub <!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M15 3h6v6" />
+  <path d="M10 14 21 3" />
+  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+</svg>
+</a><a href="/docs/quickstart/">Get started </a></nav></details>
 </header>
-<details class="mobile-nav"><summary>Documentation menu <span aria-hidden="true">⌄</span></summary><nav aria-label="Mobile documentation"><div class="nav-group"><p>Start here</p><a href="/docs/"><span class="nav-icon" aria-hidden="true">↳</span>Overview</a><a href="/docs/quickstart/"><span class="nav-icon" aria-hidden="true">↳</span>Quickstart</a></div><div class="nav-group"><p>Reload reference</p><a href="/docs/support-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support matrix</a><a href="/docs/java/"><span class="nav-icon" aria-hidden="true">↳</span>Java &amp; JVM limits</a><a href="/docs/spring/"><span class="nav-icon" aria-hidden="true">↳</span>Spring &amp; MVC</a><a href="/docs/messaging/"><span class="nav-icon" aria-hidden="true">↳</span>Kafka, JMS &amp; RabbitMQ</a><a href="/docs/configuration/"><span class="nav-icon" aria-hidden="true">↳</span>Configuration &amp; resources</a></div><div class="nav-group"><p>Guides</p><a href="/docs/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>SAP Commerce</a><a aria-current="page" href="/docs/persistence/"><span class="nav-icon" aria-hidden="true">◈</span>Persistence &amp; caches</a></div><div class="nav-group"><p>Operations</p><a href="/docs/boundaries/"><span class="nav-icon" aria-hidden="true">↳</span>Reload timing</a><a href="/docs/configuration-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Agent options</a><a href="/docs/troubleshooting/"><span class="nav-icon" aria-hidden="true">↳</span>Troubleshooting</a></div><div class="nav-group"><p>Project</p><a href="/docs/evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Versions &amp; evidence</a></div><details class="nav-group reference-nav"><summary>Technical reference</summary><a href="/docs/reference/"><span class="nav-icon" aria-hidden="true">↳</span>Reference library</a><a href="/docs/reference/agentic-evaluation/"><span class="nav-icon" aria-hidden="true">↳</span>Reproducible agentic workflow evaluation</a><a href="/docs/reference/client-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Agentic client acceptance matrix</a><a href="/docs/reference/feature-evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Core JVM feature evidence</a><a href="/docs/reference/for-ai-agents/"><span class="nav-icon" aria-hidden="true">↳</span>For AI agents</a><a href="/docs/reference/gradle-plugin/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Gradle plugin</a><a href="/docs/reference/installation/"><span class="nav-icon" aria-hidden="true">↳</span>Installation</a><a href="/docs/reference/maven/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz with Maven</a><a href="/docs/reference/mcp-for-coding-agents/"><span class="nav-icon" aria-hidden="true">↳</span>MCP for coding agents: close the loop</a><a href="/docs/reference/mcp-server/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz MCP server</a><a href="/docs/reference/product-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Product technical reference</a><a href="/docs/reference/protocol/"><span class="nav-icon" aria-hidden="true">↳</span>The Status Socket</a><a href="/docs/reference/reload-support/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support reference</a><a href="/docs/reference/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz on SAP Commerce, for a coding agent</a><a href="/docs/reference/sap-commerce-live-tests/"><span class="nav-icon" aria-hidden="true">↳</span>SAP Commerce: what we test live</a><a href="/docs/reference/spring-boot-starter/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Spring Boot starter</a><a href="/docs/reference/spring-constructor-dependencies/"><span class="nav-icon" aria-hidden="true">↳</span>Constructor dependency ownership during ordinary class refresh</a><a href="/docs/reference/superclass-feasibility/"><span class="nav-icon" aria-hidden="true">↳</span>Superclass changes without a custom classloader</a><a href="/docs/reference/test-guide/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz: Test Guide for SAP Commerce (Hybris)</a><a href="/docs/reference/usage/"><span class="nav-icon" aria-hidden="true">↳</span>Usage Guide</a></details><div class="nav-group"><p>Maintaining</p><a href="/docs/reference/documentation-workflow/"><span class="nav-icon" aria-hidden="true">↳</span>Documentation workflow</a><a href="/docs/reference/publishing/"><span class="nav-icon" aria-hidden="true">↳</span>Publishing Reclazz to the JetBrains Marketplace</a></div></nav></details>
-<div class="docs-shell"><aside class="sidebar"><div class="snapshot-label"><span class="live-dot"></span> Source snapshot <code>1.6.0</code></div><nav aria-label="Documentation"><div class="nav-group"><p>Start here</p><a href="/docs/"><span class="nav-icon" aria-hidden="true">↳</span>Overview</a><a href="/docs/quickstart/"><span class="nav-icon" aria-hidden="true">↳</span>Quickstart</a></div><div class="nav-group"><p>Reload reference</p><a href="/docs/support-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support matrix</a><a href="/docs/java/"><span class="nav-icon" aria-hidden="true">↳</span>Java &amp; JVM limits</a><a href="/docs/spring/"><span class="nav-icon" aria-hidden="true">↳</span>Spring &amp; MVC</a><a href="/docs/messaging/"><span class="nav-icon" aria-hidden="true">↳</span>Kafka, JMS &amp; RabbitMQ</a><a href="/docs/configuration/"><span class="nav-icon" aria-hidden="true">↳</span>Configuration &amp; resources</a></div><div class="nav-group"><p>Guides</p><a href="/docs/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>SAP Commerce</a><a aria-current="page" href="/docs/persistence/"><span class="nav-icon" aria-hidden="true">◈</span>Persistence &amp; caches</a></div><div class="nav-group"><p>Operations</p><a href="/docs/boundaries/"><span class="nav-icon" aria-hidden="true">↳</span>Reload timing</a><a href="/docs/configuration-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Agent options</a><a href="/docs/troubleshooting/"><span class="nav-icon" aria-hidden="true">↳</span>Troubleshooting</a></div><div class="nav-group"><p>Project</p><a href="/docs/evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Versions &amp; evidence</a></div><details class="nav-group reference-nav"><summary>Technical reference</summary><a href="/docs/reference/"><span class="nav-icon" aria-hidden="true">↳</span>Reference library</a><a href="/docs/reference/agentic-evaluation/"><span class="nav-icon" aria-hidden="true">↳</span>Reproducible agentic workflow evaluation</a><a href="/docs/reference/client-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Agentic client acceptance matrix</a><a href="/docs/reference/feature-evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Core JVM feature evidence</a><a href="/docs/reference/for-ai-agents/"><span class="nav-icon" aria-hidden="true">↳</span>For AI agents</a><a href="/docs/reference/gradle-plugin/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Gradle plugin</a><a href="/docs/reference/installation/"><span class="nav-icon" aria-hidden="true">↳</span>Installation</a><a href="/docs/reference/maven/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz with Maven</a><a href="/docs/reference/mcp-for-coding-agents/"><span class="nav-icon" aria-hidden="true">↳</span>MCP for coding agents: close the loop</a><a href="/docs/reference/mcp-server/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz MCP server</a><a href="/docs/reference/product-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Product technical reference</a><a href="/docs/reference/protocol/"><span class="nav-icon" aria-hidden="true">↳</span>The Status Socket</a><a href="/docs/reference/reload-support/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support reference</a><a href="/docs/reference/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz on SAP Commerce, for a coding agent</a><a href="/docs/reference/sap-commerce-live-tests/"><span class="nav-icon" aria-hidden="true">↳</span>SAP Commerce: what we test live</a><a href="/docs/reference/spring-boot-starter/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Spring Boot starter</a><a href="/docs/reference/spring-constructor-dependencies/"><span class="nav-icon" aria-hidden="true">↳</span>Constructor dependency ownership during ordinary class refresh</a><a href="/docs/reference/superclass-feasibility/"><span class="nav-icon" aria-hidden="true">↳</span>Superclass changes without a custom classloader</a><a href="/docs/reference/test-guide/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz: Test Guide for SAP Commerce (Hybris)</a><a href="/docs/reference/usage/"><span class="nav-icon" aria-hidden="true">↳</span>Usage Guide</a></details><div class="nav-group"><p>Maintaining</p><a href="/docs/reference/documentation-workflow/"><span class="nav-icon" aria-hidden="true">↳</span>Documentation workflow</a><a href="/docs/reference/publishing/"><span class="nav-icon" aria-hidden="true">↳</span>Publishing Reclazz to the JetBrains Marketplace</a></div></nav><a class="sidebar-source" href="https://github.com/onurkat/reclazz"><span>Built in the open.</span><strong>Explore the source ↗</strong></a></aside>
-<main id="main" tabindex="-1"><div class="breadcrumb"><a href="/docs/">Documentation</a><span aria-hidden="true">/</span><span>Data &amp; application state</span></div><article><div class="article-eyebrow">Data &amp; application state</div><h1>Persistence &amp; cache boundaries</h1><p class="lead">Keep class replacement, ORM mapping, database schema and cached results separate when verifying a reload.</p><section aria-labelledby="four-layers"><h2 id="four-layers">Four things to check separately</h2><ol><li><strong>Bytecode:</strong> did the class change in the JVM?</li><li><strong>Mapping:</strong> does the persistence unit recognize the new shape?</li><li><strong>Schema:</strong> does the database have the required table/column?</li><li><strong>Consumers:</strong> are the repositories, EntityManagers and caches using the intended state?</li></ol><p>Success at one layer is not proof of all four. The JVM staying alive says nothing by itself about open database work surviving a persistence-unit rebuild.</p><p class="source-link"><a href="/docs/reference/usage/#new-jpa-entities-with-a-prepared-schema">Read the technical reference <span aria-hidden="true">↗</span></a></p></section><section aria-labelledby="entity-fields"><h2 id="entity-fields">Existing JPA entities</h2><p>Class method changes can reload without rebuilding every ORM mapping. A new field on an existing entity needs enhanced-redefinition visibility for the documented <code>jpaRefresh=true</code> mapping-refresh path. That option is false by default.</p><p>With supported DDL-enabled settings such as update/create/create-drop, rebuilding the persistence unit can perform the configured schema action. In other cases the agent identifies the field and required action; it does not silently turn validation into schema creation.</p><p>Old open persistence contexts are not retained across a successful rebuild. Finish active database work before triggering it. On a stock JVM, existing-entity field additions still need enhanced redefinition or restart for ORM mapping.</p><p class="source-link"><a href="/docs/reference/product-reference/#comparison">Read the technical reference <span aria-hidden="true">↗</span></a></p></section><section aria-labelledby="new-entities"><h2 id="new-entities">New entities with a prepared schema</h2><p>A separate opt-in path supports a new entity on a stock JVM when the table is already prepared and the explicitly selected Hibernate mode is <code>validate</code>. Native validation checks the candidate before installing it; the path does not switch the mode to update/create.</p><p>The measured path uses one persistence unit, the standard LocalContainerEntityManagerFactoryBean and Hibernate provider. Missing tables/columns or incompatible column types leave the previous factory open before candidate installation.</p><p>After fixing the schema, compile a body-only edit to the pending entity to retry. Identical class bytes are normally ignored. Changing the pending declarations/mapping is refused: restore the mapping and make the body edit, or restart for the changed mapping.</p><p>Named evidence uses Spring ORM 6.1.14 / Hibernate 6.5.3.Final / H2 on stock JDK 21; a separate held-repository observer adds stock SapMachine 17/21 coverage. Multiple persistence units, custom providers/schema tools and automatic migrations are outside that acceptance.</p><p class="source-link"><a href="/docs/reference/usage/#new-jpa-entities-with-a-prepared-schema">Read the technical reference <span aria-hidden="true">↗</span></a></p></section><section aria-labelledby="repositories"><h2 id="repositories">Spring Data repositories and held references</h2><p>The repository refresh path identifies actual Spring Data Repository types. A plain <code>@Repository</code> DAO follows ordinary bean refresh. Warm singleton repository products can be recreated and supported ordinary singleton fields repaired; cold factories are not eagerly initialized just to discover their type.</p><p>Query edits have scoped native SQL/JPQL observers. The scalar H2 native-query lane uses Data JPA 3.3.4 / Framework 6.1.14 / Hibernate 6.5.3.Final. It does not certify all database dialects, pagination, projections or newly added repository interface methods.</p><p>A separate prepared-schema observer retains an existing domain-root repository, shared EntityManager and client factory proxy through a new-entity mapping swap. It does not establish a repository whose own generic domain root becomes a newly added type.</p><p class="source-link"><a href="/docs/reference/usage/#spring-data-repository-refresh">Read the technical reference <span aria-hidden="true">↗</span></a></p><p class="source-link"><a href="/docs/reference/usage/#held-repositories-after-a-prepared-mapping-refresh">Held-repository mapping scope <span aria-hidden="true">↗</span></a></p></section><section aria-labelledby="cache-dependencies"><h2 id="cache-dependencies">Spring caches: follow observed dependencies</h2><p>The stock companion path records watched classes executed through Spring’s synchronous cache interceptor and the actual cache instances. A helper edit can invalidate observed dependent regions, including outer caches that read a cached inner result. Regions with the same name in different managers/contexts stay distinct.</p><p>This is region-level, conservative dependency tracking. Unknown/incomplete history uses the documented fallback for annotated classes. Unwatched code, constructor/static initialization, excluded methods, pre-attach entries and async/reactive cache computations are not fully covered.</p><p>A computation overlapping reload can return its old result to its caller; exit invalidation prevents retaining it after a successful clear. Other threads may still observe the storage-to-exit interval. This is not a concurrent cache snapshot.</p><p class="source-link"><a href="/docs/reference/usage/#cache-dependencies-after-reload">Read the technical reference <span aria-hidden="true">↗</span></a></p></section><section aria-labelledby="custom-caches"><h2 id="custom-caches">A custom cache needs an explicit owner</h2><p><code>refreshOwnersOnHelper</code> can name supported Spring singleton cache-owner classes to recreate after a helper reload. This rebuilds the owner through its ordinary lifecycle; it is not arbitrary cache discovery.</p><p>Non-singletons, FactoryBeans and event-listener owners are declined. Review recreation state loss and the owner allowlist before opting in.</p><p class="source-link"><a href="/docs/reference/usage/#refreshing-a-custom-cache-after-a-helper-reload">Read the technical reference <span aria-hidden="true">↗</span></a></p></section>
-<details class="page-sources"><summary>Sources &amp; version scope</summary><p>Documentation source 1.6.0 · evidence baseline <a href="https://github.com/onurkat/reclazz/tree/75535bd739d7eefd43523dcc63799436c472fe12"><code>75535bd</code></a> · reviewed 19 October 2026. Check your installed artifact; source features may postdate a release.</p><ul><li><a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/docs/usage.md#new-jpa-entities-with-a-prepared-schema">docs/usage.md#new-jpa-entities-with-a-prepared-schema ↗</a></li><li><a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/docs/usage.md#spring-data-repository-refresh">docs/usage.md#spring-data-repository-refresh ↗</a></li><li><a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/docs/usage.md#cache-dependencies-after-reload">docs/usage.md#cache-dependencies-after-reload ↗</a></li></ul></details><nav class="page-pager" aria-label="Documentation pages"><a href="/docs/sap-commerce/"><span>← Previous</span><strong>SAP Commerce: keep the server warm</strong></a><a href="/docs/boundaries/"><span>Next →</span><strong>Reload timing &amp; build safety</strong></a></nav></article></main><aside class="page-toc"><nav aria-label="On this page"><p class="toc-label">On this page</p><a href="#four-layers">Four things to check separately</a><a href="#entity-fields">Existing JPA entities</a><a href="#new-entities">New entities with a prepared schema</a><a href="#repositories">Spring Data repositories and held references</a><a href="#cache-dependencies">Spring caches: follow observed dependencies</a><a href="#custom-caches">A custom cache needs an explicit owner</a></nav><div class="toc-help"><span>Choosing an edit?</span><a href="/docs/support-matrix/">Check the reload matrix ↗</a></div></aside></div>
+<div class="docs-menu-bar"><button type="button" class="drawer-open" aria-controls="docs-drawer" aria-expanded="false">Documentation menu</button><details class="mobile-nav"><summary>Documentation menu</summary><nav aria-label="Mobile documentation" tabindex="0" role="region"><div class="nav-group"><p>Get started</p><a href="/docs/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Overview</a><a href="/docs/quickstart/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Quickstart</a><a href="/docs/support-matrix/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>What reloads</a></div><div class="nav-group"><p>Guides</p><a href="/docs/sap-commerce/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>SAP Commerce</a><a href="/docs/spring/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Spring &amp; MVC</a><a href="/docs/configuration/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Configuration &amp; resources</a><a aria-current="page" href="/docs/persistence/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M12 5v16" />
+  <path d="M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z" />
+</svg>
+</span>Persistence &amp; caches</a><a href="/docs/java/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Java &amp; JVM limits</a></div><div class="nav-group"><p>When it doesn&#x27;t work</p><a href="/docs/troubleshooting/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Troubleshooting</a></div><div class="nav-group"><p>Reference</p><a href="/docs/configuration-reference/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Agent options</a><a href="/docs/reference/installation/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Installation</a><a href="/docs/reference/usage/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Usage manual</a><a href="/docs/reference/gradle-plugin/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Gradle plugin</a><a href="/docs/reference/maven/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Maven plugin</a><a href="/docs/reference/spring-boot-starter/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Spring Boot starter</a><a href="/docs/reference/for-ai-agents/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>IntelliJ + coding agents</a><a href="/docs/reference/mcp-for-coding-agents/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>MCP for coding agents</a><a href="/docs/reference/mcp-server/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>MCP server reference</a><a href="/docs/reference/sap-commerce/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>SAP Commerce reference</a><a href="/docs/reference/test-guide/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>SAP test guide</a><a href="/docs/reference/reload-support/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>What reloads source table</a><a href="/docs/reference/product-reference/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Product reference</a><a href="/docs/reference/protocol/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Status socket protocol</a><a href="/docs/reference/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Reference library</a></div></nav></details></div><dialog class="drawer-dialog" id="docs-drawer" aria-label="Documentation menu"><button type="button" class="drawer-close">Close menu</button></dialog>
+<div class="docs-shell"><aside class="sidebar" tabindex="0" role="region" aria-label="Documentation navigation"><nav aria-label="Documentation"><div class="nav-group"><p>Get started</p><a href="/docs/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Overview</a><a href="/docs/quickstart/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Quickstart</a><a href="/docs/support-matrix/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>What reloads</a></div><div class="nav-group"><p>Guides</p><a href="/docs/sap-commerce/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>SAP Commerce</a><a href="/docs/spring/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Spring &amp; MVC</a><a href="/docs/configuration/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Configuration &amp; resources</a><a aria-current="page" href="/docs/persistence/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M12 5v16" />
+  <path d="M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z" />
+</svg>
+</span>Persistence &amp; caches</a><a href="/docs/java/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Java &amp; JVM limits</a></div><div class="nav-group"><p>When it doesn&#x27;t work</p><a href="/docs/troubleshooting/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Troubleshooting</a></div><div class="nav-group"><p>Reference</p><a href="/docs/configuration-reference/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Agent options</a><a href="/docs/reference/installation/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Installation</a><a href="/docs/reference/usage/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Usage manual</a><a href="/docs/reference/gradle-plugin/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Gradle plugin</a><a href="/docs/reference/maven/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Maven plugin</a><a href="/docs/reference/spring-boot-starter/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Spring Boot starter</a><a href="/docs/reference/for-ai-agents/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>IntelliJ + coding agents</a><a href="/docs/reference/mcp-for-coding-agents/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>MCP for coding agents</a><a href="/docs/reference/mcp-server/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>MCP server reference</a><a href="/docs/reference/sap-commerce/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>SAP Commerce reference</a><a href="/docs/reference/test-guide/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>SAP test guide</a><a href="/docs/reference/reload-support/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>What reloads source table</a><a href="/docs/reference/product-reference/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Product reference</a><a href="/docs/reference/protocol/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Status socket protocol</a><a href="/docs/reference/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Reference library</a></div></nav><a class="sidebar-source" href="https://github.com/onurkat/reclazz"><span>Built in the open.</span><strong>Explore the source <!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M15 3h6v6" />
+  <path d="M10 14 21 3" />
+  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+</svg>
+</strong></a></aside>
+<main id="main" tabindex="-1"><div class="breadcrumb"><a href="/docs/">Documentation</a><span aria-hidden="true">/</span><span>Guides</span><span aria-hidden="true">/</span><span>Entities, repositories and caches</span></div><details class="mobile-toc"><summary>On this page</summary><nav aria-label="On this page"><p class="toc-label">On this page</p><a href="#four-layers">Verify data separately from Java</a><a href="#data-changes">Entities, repositories and caches</a><a href="#restart-needed">Restart needed when</a></nav></details><article><div class="article-eyebrow">Data &amp; application state</div><h1>Entities, repositories and caches</h1><p class="lead">Check mappings, schema and cached results separately.</p><section aria-labelledby="four-layers"><h2 id="four-layers">Verify data separately from Java</h2><p>A changed class, ORM mapping, database schema and cached result are separate things to check. Start with the exact edit below.</p></section>
+<section aria-labelledby="data-changes"><h2 id="data-changes">Entities, repositories and caches</h2><div class="table-scroll matrix-table" tabindex="0" role="region" aria-label="Your changes and their conditions"><table><caption>Your changes and their conditions</caption><thead><tr><th scope="col">Your change</th><th scope="col">Result</th><th scope="col">Before you try it</th></tr></thead><tbody><tr data-guide-id="jpa-existing" data-status="conditional" data-presentation="row"><th scope="row"><a href="/docs/support-matrix/#jpa-existing">Add a mapped field to an existing entity</a></th><td><span class="badge conditional"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" />
+  <path d="M12 9v4" />
+  <path d="M12 17h.01" />
+</svg>
+Reloads, with a condition</span></td><td><p>Requires enhanced visibility plus supported jpaRefresh=true/DDL-enabled mapping path; stock companion fields are not native ORM members.</p><p><strong>Next:</strong> Prepare schema/mapping prerequisites or restart.</p></td></tr><tr data-guide-id="jpa-new" data-status="conditional" data-presentation="row"><th scope="row"><a href="/docs/support-matrix/#jpa-new">Add a new JPA entity with a prepared schema</a></th><td><span class="badge conditional"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" />
+  <path d="M12 9v4" />
+  <path d="M12 17h.01" />
+</svg>
+Reloads, with a condition</span></td><td><p>jpaRefresh=true, explicit Hibernate validate, one unit and standard provider/factory in the recorded graph. No automatic migration or update-mode switch.</p><p><strong>Next:</strong> Prepare table/columns, compile and verify native mapping installation.</p></td></tr><tr data-guide-id="jpa-retry" data-status="conditional" data-presentation="row"><th scope="row"><a href="/docs/support-matrix/#jpa-retry">Retry a new-entity mapping after a schema failure</a></th><td><span class="badge conditional"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" />
+  <path d="M12 9v4" />
+  <path d="M12 17h.01" />
+</svg>
+Reloads, with a condition</span></td><td><p>Failed candidate leaves the previous factory open before install. Identical bytes are ignored; changing pending mapping declarations is refused.</p><p><strong>Next:</strong> Fix schema, then compile a body-only edit to the same pending entity.</p></td></tr><tr data-guide-id="jpa-active" data-status="restart" data-presentation="row"><th scope="row"><a href="/docs/support-matrix/#jpa-active">Keep old persistence contexts/transactions through a rebuild</a></th><td><span class="badge restart"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
+  <path d="M21 3v5h-5" />
+</svg>
+Needs a restart</span></td><td><p>A successful persistence-unit swap retires the old native factory. Holding active old contexts across it is unsupported.</p><p><strong>Next:</strong> Finish database work first; restart/recover unsupported retained contexts.</p></td></tr><tr data-guide-id="repository" data-status="conditional" data-presentation="row"><th scope="row"><a href="/docs/support-matrix/#repository">Edit supported Spring Data query methods</a></th><td><span class="badge conditional"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" />
+  <path d="M12 9v4" />
+  <path d="M12 17h.01" />
+</svg>
+Reloads, with a condition</span></td><td><p>Warm singleton Repository products and bounded direct holder repair. Scalar H2 native-query evidence does not cover new interface methods/all query shapes.</p><p><strong>Next:</strong> Check the query result and the retained managed consumer.</p></td></tr><tr data-guide-id="cache" data-status="conditional" data-presentation="row"><th scope="row"><a href="/docs/support-matrix/#cache">Invalidate caches dependent on changed helper code</a></th><td><span class="badge conditional"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" />
+  <path d="M12 9v4" />
+  <path d="M12 17h.01" />
+</svg>
+Reloads, with a condition</span></td><td><p>Observed synchronous Spring cache dependencies in stock companion mode; region-level conservative eviction. Async/unwatched/pre-attach work is not complete.</p><p><strong>Next:</strong> Exercise the cache first, reload and check next-call freshness.</p></td></tr><tr data-guide-id="custom-cache" data-status="conditional" data-presentation="row"><th scope="row"><a href="/docs/support-matrix/#custom-cache">Rebuild a custom cache owner after helper changes</a></th><td><span class="badge conditional"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" />
+  <path d="M12 9v4" />
+  <path d="M12 17h.01" />
+</svg>
+Reloads, with a condition</span></td><td><p>refreshOwnersOnHelper opt-in for supported singleton owners. Non-singletons, FactoryBeans and event-listener owners are declined.</p><p><strong>Next:</strong> Name the eligible owner and check lifecycle/state reset.</p></td></tr></tbody></table></div></section>
+<section aria-labelledby="restart-needed"><h2 id="restart-needed">Restart needed when</h2><p>If your mapping or cache-owner shape is outside the listed conditions, follow its next action. A Java reload does not migrate a database.</p><p><a href="/docs/reference/usage/#new-jpa-entities-with-a-prepared-schema">Read the full scope</a></p></section>
+<details><summary>How it works / Tested with</summary><p>Documentation for 1.7.0. Each result applies to its stated conditions and linked scope.</p><span id="entity-fields"></span><span id="new-entities"></span><span id="repositories"></span><span id="cache-dependencies"></span><span id="custom-caches"></span><p><a href="/docs/reference/usage/">Read the full scope</a></p></details>
+<nav class="page-pager" aria-label="Documentation pages"><a href="/docs/configuration/"><span><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m12 19-7-7 7-7" />
+  <path d="M19 12H5" />
+</svg>
+ Previous</span><strong>Properties, XML and templates</strong></a><a href="/docs/java/"><span>Next <!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M5 12h14" />
+  <path d="m12 5 7 7-7 7" />
+</svg>
+</span><strong>Java changes and JVM limits</strong></a></nav></article></main><aside class="page-toc" tabindex="0" role="region" aria-label="On this page"><nav aria-label="On this page"><p class="toc-label">On this page</p><a href="#four-layers">Verify data separately from Java</a><a href="#data-changes">Entities, repositories and caches</a><a href="#restart-needed">Restart needed when</a></nav><div class="toc-help"><span>Choosing an edit?</span><a href="/docs/support-matrix/">Check the reload matrix </a></div></aside></div>
 <footer class="site-footer"><div class="site-footer-inner">
 <div class="footer-brand"><a class="brand" href="/" aria-label="Reclazz home"><img src="/favicon.svg" width="28" height="28" alt=""><span>Reclazz</span></a><p>Make the next edit count.</p><span class="footer-license">Apache 2.0 · Built in the open.</span></div>
 <nav aria-label="Product links"><p>Product</p><a href="/docs/">Documentation</a><a href="/docs/quickstart/">Quickstart</a><a href="/docs/support-matrix/">Reload support</a><a href="/compare/">Compare</a></nav>
-<nav aria-label="Project links"><p>Project</p><a href="https://github.com/onurkat/reclazz">GitHub ↗</a><a href="https://github.com/onurkat/reclazz/releases">Releases ↗</a><a href="https://github.com/onurkat/reclazz/issues">Report an issue ↗</a></nav>
+<nav aria-label="Project links"><p>Project</p><a href="https://github.com/onurkat/reclazz">GitHub <!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M15 3h6v6" />
+  <path d="M10 14 21 3" />
+  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+</svg>
+</a><a href="https://github.com/onurkat/reclazz/blob/main/CHANGELOG.md">Changelog <!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M15 3h6v6" />
+  <path d="M10 14 21 3" />
+  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+</svg>
+</a><a href="https://github.com/onurkat/reclazz/blob/main/CONTRIBUTING.md">Contributing <!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M15 3h6v6" />
+  <path d="M10 14 21 3" />
+  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+</svg>
+</a><a href="https://github.com/onurkat/reclazz/blob/main/SECURITY.md">Security <!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M15 3h6v6" />
+  <path d="M10 14 21 3" />
+  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+</svg>
+</a><a href="https://github.com/onurkat/reclazz/releases">Releases <!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M15 3h6v6" />
+  <path d="M10 14 21 3" />
+  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+</svg>
+</a><a href="https://github.com/onurkat/reclazz/issues">Report an issue <!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M15 3h6v6" />
+  <path d="M10 14 21 3" />
+  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+</svg>
+</a></nav>
 <nav aria-label="Legal links"><p>Legal</p><a href="/license/">License</a><a href="/privacy/">Privacy</a></nav>
-<div class="footer-bottom"><span>© 2026 Onur Kat</span><a href="https://github.com/sponsors/onurkat">Support development ↗</a></div></div></footer><dialog class="search-dialog" id="search-dialog" aria-labelledby="search-title"><div class="search-top"><label id="search-title" for="docs-search">Search documentation</label><button id="search-close" class="dialog-close" type="button" aria-label="Close search">Esc</button></div><input id="docs-search" type="search" placeholder="What would you like to reload?" autocomplete="off"><p id="search-status" role="status" aria-live="polite">Search guides, changes and limits. Your query stays in this browser.</p><div id="search-results"></div><div class="search-hint">↑ ↓ to select · Enter to open · Esc to close</div></dialog><div class="sr-only" id="copy-status" role="status" aria-live="polite"></div>
+<p class="footer-version"><span>Docs for</span> 1.7.0 · <a href="/docs/evidence/">Test coverage &amp; versions</a></p><div class="footer-bottom"><span>© 2026 Onur Kat</span><a href="https://github.com/sponsors/onurkat">Support development <!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M15 3h6v6" />
+  <path d="M10 14 21 3" />
+  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+</svg>
+</a></div></div></footer><dialog class="search-dialog" id="search-dialog" aria-labelledby="search-title"><div class="search-top"><label id="search-title" for="docs-search">Search documentation</label><button id="search-close" class="dialog-close" type="button" aria-label="Close search">Esc</button></div><input id="docs-search" type="search" placeholder="What would you like to reload?" autocomplete="off"><p id="search-status" role="status" aria-live="polite">Search guides, changes and limits. Your query stays in this browser.</p><div id="search-results"></div><div class="search-hint">↑ ↓ to select · Enter to open · Esc to close</div></dialog><div class="sr-only" id="copy-status" role="status" aria-live="polite"></div>
 </body></html>

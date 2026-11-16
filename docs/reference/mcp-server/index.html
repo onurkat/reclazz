@@ -2,34 +2,263 @@
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Reclazz MCP server | Reclazz docs</title>
+<title>MCP server reference | Reclazz docs</title>
 <meta name="description" content="Complete configuration, behavior and scope reference: Reclazz MCP server.">
 <meta name="theme-color" content="#0b0d12"><meta name="color-scheme" content="dark light">
 <link rel="canonical" href="https://reclazz.com/docs/reference/mcp-server/">
-<meta property="og:type" content="article"><meta property="og:title" content="Reclazz MCP server | Reclazz docs">
+<meta property="og:type" content="article"><meta property="og:title" content="MCP server reference | Reclazz docs">
 <meta property="og:description" content="Complete configuration, behavior and scope reference: Reclazz MCP server."><meta property="og:url" content="https://reclazz.com/docs/reference/mcp-server/">
 <meta property="og:image" content="https://reclazz.com/og-image.png">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;550;600;650;700;750;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="/docs/assets/theme.js?v=44ab3cc4ede7"></script>
-<link rel="stylesheet" href="/docs/assets/docs.css?v=1a3655f79ef4"><link rel="stylesheet" href="/assets/site.css?v=ff823a0eccc6">
-<script src="/docs/assets/docs.js?v=bd702e25fabd" defer></script><script src="/assets/site.js?v=cab0abf769a2" defer></script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Reclazz MCP server", "description": "Complete configuration, behavior and scope reference: Reclazz MCP server.", "url": "https://reclazz.com/docs/reference/mcp-server/", "dateModified": "2026-10-19", "version": "1.6.0"}</script>
+<link rel="preload" href="/assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/tokens.css?v=010d8bdc5b6b">
+<script>if(location.pathname.endsWith('/index.html'))location.replace(location.pathname.slice(0,-10)+location.search+location.hash);</script>
+<script src="/docs/assets/theme.js?v=e97a1b2c286d"></script>
+<link rel="stylesheet" href="/docs/assets/docs.css?v=5ec993d66794"><link rel="stylesheet" href="/assets/site.css?v=2d6a773f30d0">
+<link rel="stylesheet" href="/assets/components.css?v=17a192278dbb">
+<script src="/docs/assets/docs.js?v=c467f8a42c10" defer></script><script src="/assets/site.js?v=cab0abf769a2" defer></script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "MCP server reference", "description": "Complete configuration, behavior and scope reference: Reclazz MCP server.", "url": "https://reclazz.com/docs/reference/mcp-server/", "dateModified": "2026-10-19", "version": "1.7.0"}</script>
 </head>
 <body class="docs-page">
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="docs-header site-header">
 <a class="brand" href="/" aria-label="Reclazz home"><img src="/favicon.svg" alt="" width="32" height="32"><span>Reclazz</span></a>
-<span class="header-divider" aria-hidden="true"></span><nav class="header-links" aria-label="Main navigation"><a href="/docs/" aria-current="true">Docs</a><a href="/compare/">Compare</a><a href="https://github.com/onurkat/reclazz">GitHub ↗</a></nav>
-<button class="search-trigger" id="search-open" type="button" aria-controls="search-dialog" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search documentation</span><kbd>⌘ K</kbd></button>
-<button class="theme-button" id="theme-toggle" type="button" aria-label="Switch color theme" hidden><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M20.6 13.1A8.5 8.5 0 0 1 10.9 3.4 8.5 8.5 0 1 0 20.6 13.1Z"/></svg></button>
-<a class="header-install" href="/docs/quickstart/">Get started <span aria-hidden="true">↗</span></a>
-<details class="site-menu"><summary aria-label="Site navigation"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></summary><nav aria-label="Mobile main navigation"><a href="/docs/" aria-current="true">Docs</a><a href="/compare/">Compare</a><a href="https://github.com/onurkat/reclazz">GitHub ↗</a><a href="/docs/quickstart/">Get started ↗</a></nav></details>
+<span class="header-divider" aria-hidden="true"></span><nav class="header-links" aria-label="Main navigation"><a href="/docs/" aria-current="true">Docs</a><a href="/compare/">Compare</a><a href="https://github.com/onurkat/reclazz">GitHub <!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M15 3h6v6" />
+  <path d="M10 14 21 3" />
+  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+</svg>
+</a></nav>
+<button class="search-trigger" id="search-open" type="button" aria-controls="search-dialog" hidden><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m21 21-4.34-4.34" />
+  <circle cx="11" cy="11" r="8" />
+</svg>
+<span>Search documentation</span><kbd>⌘ K</kbd></button>
+<button class="theme-button" id="theme-toggle" type="button" aria-label="Switch color theme" hidden><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" />
+</svg>
+</button>
+<a class="header-install" href="/docs/quickstart/">Get started </a>
+<details class="site-menu"><summary aria-label="Site navigation"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M4 5h16" />
+  <path d="M4 12h16" />
+  <path d="M4 19h16" />
+</svg>
+</summary><nav aria-label="Mobile main navigation"><a href="/docs/" aria-current="true">Docs</a><a href="/compare/">Compare</a><a href="https://github.com/onurkat/reclazz">GitHub <!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M15 3h6v6" />
+  <path d="M10 14 21 3" />
+  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+</svg>
+</a><a href="/docs/quickstart/">Get started </a></nav></details>
 </header>
-<details class="mobile-nav"><summary>Documentation menu <span aria-hidden="true">⌄</span></summary><nav aria-label="Mobile documentation"><div class="nav-group"><p>Start here</p><a href="/docs/"><span class="nav-icon" aria-hidden="true">↳</span>Overview</a><a href="/docs/quickstart/"><span class="nav-icon" aria-hidden="true">↳</span>Quickstart</a></div><div class="nav-group"><p>Reload reference</p><a href="/docs/support-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support matrix</a><a href="/docs/java/"><span class="nav-icon" aria-hidden="true">↳</span>Java &amp; JVM limits</a><a href="/docs/spring/"><span class="nav-icon" aria-hidden="true">↳</span>Spring &amp; MVC</a><a href="/docs/messaging/"><span class="nav-icon" aria-hidden="true">↳</span>Kafka, JMS &amp; RabbitMQ</a><a href="/docs/configuration/"><span class="nav-icon" aria-hidden="true">↳</span>Configuration &amp; resources</a></div><div class="nav-group"><p>Guides</p><a href="/docs/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>SAP Commerce</a><a href="/docs/persistence/"><span class="nav-icon" aria-hidden="true">↳</span>Persistence &amp; caches</a></div><div class="nav-group"><p>Operations</p><a href="/docs/boundaries/"><span class="nav-icon" aria-hidden="true">↳</span>Reload timing</a><a href="/docs/configuration-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Agent options</a><a href="/docs/troubleshooting/"><span class="nav-icon" aria-hidden="true">↳</span>Troubleshooting</a></div><div class="nav-group"><p>Project</p><a href="/docs/evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Versions &amp; evidence</a></div><details class="nav-group reference-nav" open><summary>Technical reference</summary><a href="/docs/reference/"><span class="nav-icon" aria-hidden="true">↳</span>Reference library</a><a href="/docs/reference/agentic-evaluation/"><span class="nav-icon" aria-hidden="true">↳</span>Reproducible agentic workflow evaluation</a><a href="/docs/reference/client-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Agentic client acceptance matrix</a><a href="/docs/reference/feature-evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Core JVM feature evidence</a><a href="/docs/reference/for-ai-agents/"><span class="nav-icon" aria-hidden="true">↳</span>For AI agents</a><a href="/docs/reference/gradle-plugin/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Gradle plugin</a><a href="/docs/reference/installation/"><span class="nav-icon" aria-hidden="true">↳</span>Installation</a><a href="/docs/reference/maven/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz with Maven</a><a href="/docs/reference/mcp-for-coding-agents/"><span class="nav-icon" aria-hidden="true">↳</span>MCP for coding agents: close the loop</a><a aria-current="page" href="/docs/reference/mcp-server/"><span class="nav-icon" aria-hidden="true">◈</span>Reclazz MCP server</a><a href="/docs/reference/product-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Product technical reference</a><a href="/docs/reference/protocol/"><span class="nav-icon" aria-hidden="true">↳</span>The Status Socket</a><a href="/docs/reference/reload-support/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support reference</a><a href="/docs/reference/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz on SAP Commerce, for a coding agent</a><a href="/docs/reference/sap-commerce-live-tests/"><span class="nav-icon" aria-hidden="true">↳</span>SAP Commerce: what we test live</a><a href="/docs/reference/spring-boot-starter/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Spring Boot starter</a><a href="/docs/reference/spring-constructor-dependencies/"><span class="nav-icon" aria-hidden="true">↳</span>Constructor dependency ownership during ordinary class refresh</a><a href="/docs/reference/superclass-feasibility/"><span class="nav-icon" aria-hidden="true">↳</span>Superclass changes without a custom classloader</a><a href="/docs/reference/test-guide/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz: Test Guide for SAP Commerce (Hybris)</a><a href="/docs/reference/usage/"><span class="nav-icon" aria-hidden="true">↳</span>Usage Guide</a></details><div class="nav-group"><p>Maintaining</p><a href="/docs/reference/documentation-workflow/"><span class="nav-icon" aria-hidden="true">↳</span>Documentation workflow</a><a href="/docs/reference/publishing/"><span class="nav-icon" aria-hidden="true">↳</span>Publishing Reclazz to the JetBrains Marketplace</a></div></nav></details>
-<div class="docs-shell"><aside class="sidebar"><div class="snapshot-label"><span class="live-dot"></span> Source snapshot <code>1.6.0</code></div><nav aria-label="Documentation"><div class="nav-group"><p>Start here</p><a href="/docs/"><span class="nav-icon" aria-hidden="true">↳</span>Overview</a><a href="/docs/quickstart/"><span class="nav-icon" aria-hidden="true">↳</span>Quickstart</a></div><div class="nav-group"><p>Reload reference</p><a href="/docs/support-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support matrix</a><a href="/docs/java/"><span class="nav-icon" aria-hidden="true">↳</span>Java &amp; JVM limits</a><a href="/docs/spring/"><span class="nav-icon" aria-hidden="true">↳</span>Spring &amp; MVC</a><a href="/docs/messaging/"><span class="nav-icon" aria-hidden="true">↳</span>Kafka, JMS &amp; RabbitMQ</a><a href="/docs/configuration/"><span class="nav-icon" aria-hidden="true">↳</span>Configuration &amp; resources</a></div><div class="nav-group"><p>Guides</p><a href="/docs/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>SAP Commerce</a><a href="/docs/persistence/"><span class="nav-icon" aria-hidden="true">↳</span>Persistence &amp; caches</a></div><div class="nav-group"><p>Operations</p><a href="/docs/boundaries/"><span class="nav-icon" aria-hidden="true">↳</span>Reload timing</a><a href="/docs/configuration-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Agent options</a><a href="/docs/troubleshooting/"><span class="nav-icon" aria-hidden="true">↳</span>Troubleshooting</a></div><div class="nav-group"><p>Project</p><a href="/docs/evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Versions &amp; evidence</a></div><details class="nav-group reference-nav" open><summary>Technical reference</summary><a href="/docs/reference/"><span class="nav-icon" aria-hidden="true">↳</span>Reference library</a><a href="/docs/reference/agentic-evaluation/"><span class="nav-icon" aria-hidden="true">↳</span>Reproducible agentic workflow evaluation</a><a href="/docs/reference/client-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Agentic client acceptance matrix</a><a href="/docs/reference/feature-evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Core JVM feature evidence</a><a href="/docs/reference/for-ai-agents/"><span class="nav-icon" aria-hidden="true">↳</span>For AI agents</a><a href="/docs/reference/gradle-plugin/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Gradle plugin</a><a href="/docs/reference/installation/"><span class="nav-icon" aria-hidden="true">↳</span>Installation</a><a href="/docs/reference/maven/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz with Maven</a><a href="/docs/reference/mcp-for-coding-agents/"><span class="nav-icon" aria-hidden="true">↳</span>MCP for coding agents: close the loop</a><a aria-current="page" href="/docs/reference/mcp-server/"><span class="nav-icon" aria-hidden="true">◈</span>Reclazz MCP server</a><a href="/docs/reference/product-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Product technical reference</a><a href="/docs/reference/protocol/"><span class="nav-icon" aria-hidden="true">↳</span>The Status Socket</a><a href="/docs/reference/reload-support/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support reference</a><a href="/docs/reference/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz on SAP Commerce, for a coding agent</a><a href="/docs/reference/sap-commerce-live-tests/"><span class="nav-icon" aria-hidden="true">↳</span>SAP Commerce: what we test live</a><a href="/docs/reference/spring-boot-starter/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Spring Boot starter</a><a href="/docs/reference/spring-constructor-dependencies/"><span class="nav-icon" aria-hidden="true">↳</span>Constructor dependency ownership during ordinary class refresh</a><a href="/docs/reference/superclass-feasibility/"><span class="nav-icon" aria-hidden="true">↳</span>Superclass changes without a custom classloader</a><a href="/docs/reference/test-guide/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz: Test Guide for SAP Commerce (Hybris)</a><a href="/docs/reference/usage/"><span class="nav-icon" aria-hidden="true">↳</span>Usage Guide</a></details><div class="nav-group"><p>Maintaining</p><a href="/docs/reference/documentation-workflow/"><span class="nav-icon" aria-hidden="true">↳</span>Documentation workflow</a><a href="/docs/reference/publishing/"><span class="nav-icon" aria-hidden="true">↳</span>Publishing Reclazz to the JetBrains Marketplace</a></div></nav><a class="sidebar-source" href="https://github.com/onurkat/reclazz"><span>Built in the open.</span><strong>Explore the source ↗</strong></a></aside>
-<main id="main" tabindex="-1"><div class="breadcrumb"><a href="/docs/">Documentation</a><span aria-hidden="true">/</span><span>Complete technical reference</span></div><article><div class="article-eyebrow">Complete technical reference</div><h1 id="reclazz-mcp-server">Reclazz MCP server</h1><div class="reference-content"><p>An <a href="https://modelcontextprotocol.io">MCP</a> server that turns the running Reclazz
+<div class="docs-menu-bar"><button type="button" class="drawer-open" aria-controls="docs-drawer" aria-expanded="false">Documentation menu</button><details class="mobile-nav"><summary>Documentation menu</summary><nav aria-label="Mobile documentation" tabindex="0" role="region"><div class="nav-group"><p>Get started</p><a href="/docs/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Overview</a><a href="/docs/quickstart/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Quickstart</a><a href="/docs/support-matrix/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>What reloads</a></div><div class="nav-group"><p>Guides</p><a href="/docs/sap-commerce/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>SAP Commerce</a><a href="/docs/spring/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Spring &amp; MVC</a><a href="/docs/configuration/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Configuration &amp; resources</a><a href="/docs/persistence/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Persistence &amp; caches</a><a href="/docs/java/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Java &amp; JVM limits</a></div><div class="nav-group"><p>When it doesn&#x27;t work</p><a href="/docs/troubleshooting/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Troubleshooting</a></div><div class="nav-group"><p>Reference</p><a href="/docs/configuration-reference/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Agent options</a><a href="/docs/reference/installation/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Installation</a><a href="/docs/reference/usage/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Usage manual</a><a href="/docs/reference/gradle-plugin/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Gradle plugin</a><a href="/docs/reference/maven/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Maven plugin</a><a href="/docs/reference/spring-boot-starter/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Spring Boot starter</a><a href="/docs/reference/for-ai-agents/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>IntelliJ + coding agents</a><a href="/docs/reference/mcp-for-coding-agents/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>MCP for coding agents</a><a aria-current="page" href="/docs/reference/mcp-server/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M12 5v16" />
+  <path d="M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z" />
+</svg>
+</span>MCP server reference</a><a href="/docs/reference/sap-commerce/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>SAP Commerce reference</a><a href="/docs/reference/test-guide/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>SAP test guide</a><a href="/docs/reference/reload-support/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>What reloads source table</a><a href="/docs/reference/product-reference/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Product reference</a><a href="/docs/reference/protocol/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Status socket protocol</a><a href="/docs/reference/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Reference library</a></div></nav></details></div><dialog class="drawer-dialog" id="docs-drawer" aria-label="Documentation menu"><button type="button" class="drawer-close">Close menu</button></dialog>
+<div class="docs-shell"><aside class="sidebar" tabindex="0" role="region" aria-label="Documentation navigation"><nav aria-label="Documentation"><div class="nav-group"><p>Get started</p><a href="/docs/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Overview</a><a href="/docs/quickstart/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Quickstart</a><a href="/docs/support-matrix/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>What reloads</a></div><div class="nav-group"><p>Guides</p><a href="/docs/sap-commerce/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>SAP Commerce</a><a href="/docs/spring/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Spring &amp; MVC</a><a href="/docs/configuration/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Configuration &amp; resources</a><a href="/docs/persistence/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Persistence &amp; caches</a><a href="/docs/java/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Java &amp; JVM limits</a></div><div class="nav-group"><p>When it doesn&#x27;t work</p><a href="/docs/troubleshooting/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Troubleshooting</a></div><div class="nav-group"><p>Reference</p><a href="/docs/configuration-reference/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Agent options</a><a href="/docs/reference/installation/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Installation</a><a href="/docs/reference/usage/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Usage manual</a><a href="/docs/reference/gradle-plugin/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Gradle plugin</a><a href="/docs/reference/maven/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Maven plugin</a><a href="/docs/reference/spring-boot-starter/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Spring Boot starter</a><a href="/docs/reference/for-ai-agents/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>IntelliJ + coding agents</a><a href="/docs/reference/mcp-for-coding-agents/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>MCP for coding agents</a><a aria-current="page" href="/docs/reference/mcp-server/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M12 5v16" />
+  <path d="M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z" />
+</svg>
+</span>MCP server reference</a><a href="/docs/reference/sap-commerce/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>SAP Commerce reference</a><a href="/docs/reference/test-guide/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>SAP test guide</a><a href="/docs/reference/reload-support/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>What reloads source table</a><a href="/docs/reference/product-reference/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Product reference</a><a href="/docs/reference/protocol/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Status socket protocol</a><a href="/docs/reference/"><span class="nav-icon" aria-hidden="true"><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m9 18 6-6-6-6" />
+</svg>
+</span>Reference library</a></div></nav><a class="sidebar-source" href="https://github.com/onurkat/reclazz"><span>Built in the open.</span><strong>Explore the source <!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M15 3h6v6" />
+  <path d="M10 14 21 3" />
+  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+</svg>
+</strong></a></aside>
+<main id="main" tabindex="-1"><div class="breadcrumb"><a href="/docs/">Documentation</a><span aria-hidden="true">/</span><span>Reference</span><span aria-hidden="true">/</span><span>MCP server reference</span></div><details class="mobile-toc"><summary>On this page</summary><nav aria-label="On this page"><p class="toc-label">On this page</p><a href="#running-it">Running it</a><a href="#tools">Tools</a><a href="#tool-execution-errors">Tool execution errors</a><a href="#protocol-version-negotiation">Protocol version negotiation</a><a href="#structured-tool-contracts">Structured tool contracts</a><a href="#read-only-resources">Read-only resources</a><a href="#verification-prompt">Verification prompt</a><a href="#input-validation">Input validation</a><a href="#what-it-does-not-do">What it does not do</a><a href="#protecting-terminal-builds">Protecting terminal builds</a><a href="#protecting-a-build-through-mcp">Protecting a build through MCP</a><a href="#verifying-the-compiled-change">Verifying the compiled change</a><a href="#check-the-target-before-an-agentic-build">Check the target before an agentic build</a><a href="#bounded-batch-verification-and-cancellation">Bounded batch verification and cancellation</a><a href="#pause-and-resume-automatic-reload">Pause and resume automatic reload</a><a href="#waiting-for-a-reload">Waiting for a reload</a><a href="#inspecting-a-batch-of-events">Inspecting a batch of events</a><a href="#typed-sap-operation-observations">Typed SAP operation observations</a></nav></details><article><div class="article-eyebrow">Complete technical reference</div><h1 id="reclazz-mcp-server">MCP server reference</h1><div class="reference-content"><p>An <a href="https://modelcontextprotocol.io">MCP</a> server that turns the running Reclazz
 agent into tools a coding agent can call: check whether Reclazz is attached,
 nudge a scan after a build, ask what still needs a restart, or diagnose why a
 class did not reload. Read-only resources expose the same status, pending and
@@ -38,7 +267,7 @@ is a thin, loopback-only client of the agent's status socket and asks the agent
 nothing beyond its own state.</p>
 <p>It lives in <code>:mcp-server</code>, not the agent jar, because the agent's own tests
 forbid the shipped agent from opening a client socket.</p>
-<p>The <a href="/docs/reference/client-matrix/">client acceptance matrix</a> records independent SDK,
+<p>The <a href="https://github.com/onurkat/reclazz/blob/b456bd259c3aff6deeaee75a559fba22cd8aec20/docs/client-matrix.md">client acceptance matrix</a> records independent SDK,
 real build-tool and OS coverage, with runnable tests and explicit untested lanes.</p>
 <p>For the developer workflow, read
 <a href="/docs/reference/mcp-for-coding-agents/">MCP for coding agents: close the loop</a>: each benefit
@@ -49,7 +278,7 @@ standalone jar containing its runtime dependencies; it does not need IntelliJ,
 Gradle or a separately installed Gson at runtime.</p>
 <h3 id="build-and-install-locally">Build and install locally</h3>
 <p>From a source checkout, build matching agent/MCP jars and test the MCP package:</p>
-<div class="code-block"><div class="code-label">sh</div><pre><code>./gradlew :agent:shadowJar :mcp-server:test :mcp-server:mcpRelease
+<div class="code-block"><div class="code-label">sh</div><pre tabindex="0" role="region" aria-label="sh example"><code>./gradlew :agent:shadowJar :mcp-server:test :mcp-server:mcpRelease
 version=$(sed -n &#x27;s/^pluginVersion=//p&#x27; gradle.properties)
 install_dir=&quot;$HOME/.local/share/reclazz/$version&quot;
 mkdir -p &quot;$install_dir&quot;
@@ -74,7 +303,7 @@ file corruption; it is not a signature or proof of publisher identity.</p>
 <p>For clients using an <code>mcpServers</code> JSON configuration, merge this entry into their
 existing configuration. Replace the example paths and <code>X.Y.Z</code>; use the absolute
 path to your Java 17+ executable if the client cannot find <code>java</code> on its PATH:</p>
-<div class="code-block"><div class="code-label">json</div><pre><code>{
+<div class="code-block"><div class="code-label">json</div><pre tabindex="0" role="region" aria-label="json example"><code>{
   &quot;mcpServers&quot;: {
     &quot;reclazz&quot;: {
       &quot;command&quot;: &quot;/absolute/path/to/java&quot;,
@@ -101,7 +330,7 @@ fallback to a different file or project.</p>
 <h3 id="claude-code">Claude Code</h3>
 <p>From the project whose application will run with Reclazz, register the packaged
 server with <a href="https://code.claude.com/docs/en/mcp">Claude Code's project scope</a>:</p>
-<div class="code-block"><div class="code-label">sh</div><pre><code>claude mcp add --scope project --transport stdio reclazz -- \
+<div class="code-block"><div class="code-label">sh</div><pre tabindex="0" role="region" aria-label="sh example"><code>claude mcp add --scope project --transport stdio reclazz -- \
   &quot;/absolute/path/to/java&quot; -jar &quot;/absolute/path/to/reclazz-mcp-X.Y.Z.jar&quot; \
   --project-dir &quot;/absolute/path/to/project&quot;
 </code></pre></div>
@@ -120,7 +349,7 @@ server or a model's description of it is not proof that the call ran.</p>
 <p>Merge this table into <code>~/.codex/config.toml</code>, preserving existing tables. Codex
 uses <a href="https://developers.openai.com/codex/mcp">TOML MCP configuration</a>, so the
 JSON <code>mcpServers</code> wrapper above is not a Codex configuration entry:</p>
-<div class="code-block"><div class="code-label">toml</div><pre><code>[mcp_servers.reclazz]
+<div class="code-block"><div class="code-label">toml</div><pre tabindex="0" role="region" aria-label="toml example"><code>[mcp_servers.reclazz]
 command = &quot;/absolute/path/to/java&quot;
 args = [&quot;-jar&quot;, &quot;/absolute/path/to/reclazz-mcp-X.Y.Z.jar&quot;, &quot;--project-dir&quot;, &quot;/absolute/path/to/project&quot;]
 </code></pre></div>
@@ -136,7 +365,7 @@ them, without editing the user's persistent config. The matrix identifies
 which route was actually exercised.</p>
 <h3 id="cursor">Cursor</h3>
 <p>Create or merge the <code>reclazz</code> entry in the project's <code>.cursor/mcp.json</code>:</p>
-<div class="code-block"><div class="code-label">json</div><pre><code>{
+<div class="code-block"><div class="code-label">json</div><pre tabindex="0" role="region" aria-label="json example"><code>{
   &quot;mcpServers&quot;: {
     &quot;reclazz&quot;: {
       &quot;type&quot;: &quot;stdio&quot;,
@@ -173,7 +402,7 @@ port file, and whether its launch directory satisfies the project check below.
 Client permission denial, missing provider authentication and an unreachable
 provider are separate from a server or target failure. Preserve the error and
 do not report an unexecuted tool call as verified. The
-<a href="/docs/reference/client-matrix/">client matrix</a> records observed versions and unverified lanes.</p>
+<a href="https://github.com/onurkat/reclazz/blob/b456bd259c3aff6deeaee75a559fba22cd8aec20/docs/client-matrix.md">client matrix</a> records observed versions and unverified lanes.</p>
 <h3 id="target-selection-and-overrides">Target selection and overrides</h3>
 <p>Startup accepts only <code>--project-dir PATH</code>, <code>--port-file PATH</code>, or <code>--help</code>.
 Unknown/duplicate options and missing/blank/invalid values fail before stdio
@@ -213,7 +442,7 @@ directory and has no project check. Old agents without DOCTOR cannot satisfy an
 explicit project check; use matching agent/MCP builds.</p>
 <h3 id="smoke-check-without-an-attached-application">Smoke check without an attached application</h3>
 <p>Set <code>MCP_JAR</code> to the absolute installed jar path and run in a macOS/Linux shell:</p>
-<div class="code-block"><div class="code-label">sh</div><pre><code>printf &#x27;%s\n&#x27; \
+<div class="code-block"><div class="code-label">sh</div><pre tabindex="0" role="region" aria-label="sh example"><code>printf &#x27;%s\n&#x27; \
   &#x27;{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1,&quot;method&quot;:&quot;initialize&quot;,&quot;params&quot;:{&quot;protocolVersion&quot;:&quot;2024-11-05&quot;}}&#x27; \
   &#x27;{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;method&quot;:&quot;notifications/initialized&quot;}&#x27; \
   &#x27;{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:2,&quot;method&quot;:&quot;tools/list&quot;}&#x27; \
@@ -226,7 +455,7 @@ absolute path; if it cannot load its classes, use the packaged jar from
 <code>build/distributions/mcp</code>, not the plain development jar. A missing attached
 application is a separate condition: <code>reclazz_status</code> reports <code>attached:false</code>.</p>
 <h2 id="tools">Tools</h2>
-<div class="table-scroll"><table>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Data table"><table>
 <thead>
 <tr>
 <th>Tool</th>
@@ -325,7 +554,7 @@ object in <code>structuredContent</code> and the identical serialized JSON in it
 content block. Invalid requests/arguments remain JSON-RPC errors without a tool
 result. Explicit <code>2024-11-05</code> sessions retain the existing text results and omit
 these newer fields.</p>
-<div class="table-scroll"><table>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Data table"><table>
 <thead>
 <tr>
 <th>Tool</th>
@@ -392,7 +621,7 @@ effects. These conservative hints are metadata, not permission or safety proof.<
 <p>The schemas use JSON Schema 2020-12. The contract tests export real responses to
 <code>mcp-server/build/tool-contract-fixtures</code>. An independent check can be run with
 an existing Python <code>jsonschema</code> 4.x installation after the tests:</p>
-<div class="code-block"><div class="code-label">sh</div><pre><code>./gradlew :mcp-server:test --rerun
+<div class="code-block"><div class="code-label">sh</div><pre tabindex="0" role="region" aria-label="sh example"><code>./gradlew :mcp-server:test --rerun
 python3 mcp-server/src/test/python/check_tool_contracts.py
 </code></pre></div>
 <p>The Python checker validates the schemas, successful and failed results, and
@@ -401,7 +630,7 @@ completion flags. It is an optional development check, not a runtime dependency.
 <h2 id="read-only-resources">Read-only resources</h2>
 <p>Clients can use <code>resources/list</code> to discover two fixed resources and
 <code>resources/templates/list</code> to discover one parameterized event resource:</p>
-<div class="table-scroll"><table>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Data table"><table>
 <thead>
 <tr>
 <th>Name</th>
@@ -434,14 +663,14 @@ obtain the data object. A resource result has neither a tool <code>isError</code
 <code>attached:false</code> or <code>status:&quot;unavailable&quot;</code>; inspect the data before proceeding.</p>
 <p>For example, these <code>resources/read</code> parameters were used in recorded packaged
 SDK acceptance:</p>
-<div class="code-block"><div class="code-label">json</div><pre><code>{
+<div class="code-block"><div class="code-label">json</div><pre tabindex="0" role="region" aria-label="json example"><code>{
   &quot;uri&quot;: &quot;reclazz://status&quot;
 }
 </code></pre></div>
 <p>Decoded <code>contents[0].text</code>, showing only the recorded attachment fields:</p>
-<div class="code-block"><div class="code-label">json</div><pre><code>{
+<div class="code-block"><div class="code-label">json</div><pre tabindex="0" role="region" aria-label="json example"><code>{
   &quot;attached&quot;: true,
-  &quot;agent&quot;: &quot;1.6.0&quot;,
+  &quot;agent&quot;: &quot;1.7.0&quot;,
   &quot;protocol&quot;: 1
 }
 </code></pre></div>
@@ -452,7 +681,7 @@ This excerpt is not an application-behavior or reload receipt.</p>
 MCP server's startup target. Substitute its exact session, subscription and
 cursor into the template. For example, this is a parameter template, not a
 literal live identity:</p>
-<div class="code-block"><div class="code-label">json</div><pre><code>{
+<div class="code-block"><div class="code-label">json</div><pre tabindex="0" role="region" aria-label="json example"><code>{
   &quot;uri&quot;: &quot;reclazz://events/SESSION/SUBSCRIPTION?since=0&amp;limit=50&quot;
 }
 </code></pre></div>
@@ -484,7 +713,7 @@ their existing bounded synchronous socket behavior.</p>
 <h2 id="verification-prompt">Verification prompt</h2>
 <p><code>prompts/list</code> advertises one prompt, <code>verify_my_last_change</code>. Retrieve it using
 <code>prompts/get</code> with these parameters:</p>
-<div class="code-block"><div class="code-label">json</div><pre><code>{
+<div class="code-block"><div class="code-label">json</div><pre tabindex="0" role="region" aria-label="json example"><code>{
   &quot;name&quot;: &quot;verify_my_last_change&quot;
 }
 </code></pre></div>
@@ -501,7 +730,7 @@ after the complete build succeeds, never just to clear a hold. Automatic agent
 compilation remains a separate path. Failed, held, refused, restart-required or
 unavailable results must be reported instead of an automatic resume or restart.</p>
 <h3 id="resource-and-prompt-errors">Resource and prompt errors</h3>
-<div class="table-scroll"><table>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Data table"><table>
 <thead>
 <tr>
 <th>Case</th>
@@ -537,7 +766,7 @@ unavailable runtime evidence returns its diagnostic JSON, not an invented
 success or a resource-not-found error.</p>
 <h3 id="recorded-client-coverage">Recorded client coverage</h3>
 <p>Recorded locally on <strong>2026-11-10</strong>, with matching locally built agent/MCP 1.5.0:</p>
-<div class="table-scroll"><table>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Data table"><table>
 <thead>
 <tr>
 <th>Client/check</th>
@@ -565,13 +794,13 @@ success or a resource-not-found error.</p>
 </table></div>
 <p>The client decides how resources/prompts appear. The earlier Codex/Claude
 eleven-tool acceptance and documented Cursor setup do not establish these new
-client lanes; see the <a href="/docs/reference/client-matrix/#installed-coding-clients">dated client matrix</a>.</p>
-<p>Executable contracts: <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/mcp-server/src/test/java/com/onurkat/reclazz/mcp/McpResourcesTest.java">resource tests</a>,
-<a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/mcp-server/src/test/java/com/onurkat/reclazz/mcp/McpPromptsTest.java">prompt tests</a>
-and the <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/mcp-server/src/test/client/acceptance.test.mjs">packaged SDK acceptance</a>.
+client lanes; see the <a href="https://github.com/onurkat/reclazz/blob/b456bd259c3aff6deeaee75a559fba22cd8aec20/docs/client-matrix.md#installed-coding-clients">dated client matrix</a>.</p>
+<p>Executable contracts: <a href="https://github.com/onurkat/reclazz/blob/b456bd259c3aff6deeaee75a559fba22cd8aec20/mcp-server/src/test/java/com/onurkat/reclazz/mcp/McpResourcesTest.java">resource tests</a>,
+<a href="https://github.com/onurkat/reclazz/blob/b456bd259c3aff6deeaee75a559fba22cd8aec20/mcp-server/src/test/java/com/onurkat/reclazz/mcp/McpPromptsTest.java">prompt tests</a>
+and the <a href="https://github.com/onurkat/reclazz/blob/b456bd259c3aff6deeaee75a559fba22cd8aec20/mcp-server/src/test/client/acceptance.test.mjs">packaged SDK acceptance</a>.
 After <code>:mcp-server:test</code>, the optional independent JSON Schema check uses the
 same existing tool output schemas against actual resource data:</p>
-<div class="code-block"><div class="code-label">sh</div><pre><code>python3 mcp-server/src/test/python/check_resource_contracts.py
+<div class="code-block"><div class="code-label">sh</div><pre tabindex="0" role="region" aria-label="sh example"><code>python3 mcp-server/src/test/python/check_resource_contracts.py
 </code></pre></div>
 <h2 id="input-validation">Input validation</h2>
 <p>Each stdio line carries one JSON-RPC 2.0 object. Requests have a string method,
@@ -603,7 +832,7 @@ promise the agent itself keeps.</p>
 it is not a promise that an older published agent supports it. Attach the built
 agent to your development app and use the resulting MCP jar as <code>MCP_JAR</code> below.
 From the consuming project's directory, wrap the whole compile command:</p>
-<div class="code-block"><div class="code-label">sh</div><pre><code>java -cp &quot;$MCP_JAR&quot; com.onurkat.reclazz.mcp.BuildMain \
+<div class="code-block"><div class="code-label">sh</div><pre tabindex="0" role="region" aria-label="sh example"><code>java -cp &quot;$MCP_JAR&quot; com.onurkat.reclazz.mcp.BuildMain \
   --port-file .reclazz/agent.port -- ./gradlew classes
 
 java -cp &quot;$MCP_JAR&quot; com.onurkat.reclazz.mcp.BuildMain \
@@ -656,7 +885,7 @@ Missing or malformed owner is an invalid argument. Ownership rejection or an
 old/wrong-owner receipt is a tool error. Use the retained owner for started,
 failed and successful recovery; a disconnected MCP call does not release it.</p>
 <h2 id="verifying-the-compiled-change">Verifying the compiled change</h2>
-<p>For a concrete first installation, use the <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/examples/maven-spring-boot/README.md#verify-the-installation">Maven verification recipe</a>:
+<p>For a concrete first installation, use the <a href="https://github.com/onurkat/reclazz/blob/b456bd259c3aff6deeaee75a559fba22cd8aec20/examples/maven-spring-boot/README.md#verify-the-installation">Maven verification recipe</a>:
 it combines DOCTOR identity, class-file hashing, this receipt and an observable
 response, with next steps for wrong targets, stale sessions and unwatched output.</p>
 <p>Build and attach matching current agent/MCP jars; older published agents may not
@@ -725,7 +954,7 @@ error -32000 and can be retried after completion/cancellation. Duplicate active 
 are invalid. Initialization therefore cannot change a batch's negotiated output
 version while it runs. Existing non-batch tools retain synchronous behavior.</p>
 <p>For a pending batch, send a notification with the original request ID and no <code>id</code>:</p>
-<div class="code-block"><div class="code-label">json</div><pre><code>{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;method&quot;:&quot;notifications/cancelled&quot;,&quot;params&quot;:{&quot;requestId&quot;:42,&quot;reason&quot;:&quot;No longer needed&quot;}}
+<div class="code-block"><div class="code-label">json</div><pre tabindex="0" role="region" aria-label="json example"><code>{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;method&quot;:&quot;notifications/cancelled&quot;,&quot;params&quot;:{&quot;requestId&quot;:42,&quot;reason&quot;:&quot;No longer needed&quot;}}
 </code></pre></div>
 <p>Cancellation closes the batch socket, including during handshake or reply waits,
 and suppresses its response if cancellation wins the completion race. Numeric and
@@ -748,7 +977,7 @@ plugin release. Retain the owner for recovery and collect exact-byte VERIFY
 receipts separately after a successful build.</p>
 <p>A reproducible acceptance harness lives at <code>scripts/test-build-plugin-safety.py</code>.
 Build local agent/MCP/Gradle-plugin jars and package the Maven plugin, then run:</p>
-<div class="code-block"><div class="code-label">text</div><pre><code>python3 scripts/test-build-plugin-safety.py --work-dir /tmp/reclazz-safety-proof --gradle /absolute/path/to/gradle
+<div class="code-block"><div class="code-label">text</div><pre tabindex="0" role="region" aria-label="text example"><code>python3 scripts/test-build-plugin-safety.py --work-dir /tmp/reclazz-safety-proof --gradle /absolute/path/to/gradle
 </code></pre></div>
 <p>It requires a fresh work directory, Java/Javac 17+, Gradle 8.10.2, Maven 3.9.x and
 an already populated offline Maven cache. <code>--help</code> lists explicit artifact and
@@ -762,7 +991,7 @@ do not prove Windows compatibility.</p>
 <h2 id="pause-and-resume-automatic-reload">Pause and resume automatic reload</h2>
 <p><code>reclazz_reload_control</code> accepts <code>action: &quot;pause&quot;</code>, <code>&quot;resume&quot;</code> or <code>&quot;status&quot;</code>
 and the same <code>port</code>/<code>portFile</code> endpoint options as other tools. For example:</p>
-<div class="code-block"><div class="code-label">json</div><pre><code>{&quot;name&quot;:&quot;reclazz_reload_control&quot;,&quot;arguments&quot;:{&quot;action&quot;:&quot;pause&quot;,&quot;portFile&quot;:&quot;/project/.reclazz/agent.port&quot;}}
+<div class="code-block"><div class="code-label">json</div><pre tabindex="0" role="region" aria-label="json example"><code>{&quot;name&quot;:&quot;reclazz_reload_control&quot;,&quot;arguments&quot;:{&quot;action&quot;:&quot;pause&quot;,&quot;portFile&quot;:&quot;/project/.reclazz/agent.port&quot;}}
 </code></pre></div>
 <p>Wait for <code>status: &quot;acknowledged&quot;</code>. The result reports <code>paused</code>,
 <code>pendingClasses</code>, <code>pendingActions</code>, and <code>buildHold</code> (<code>none</code>, <code>named</code>, <code>legacy</code>)
@@ -780,11 +1009,11 @@ for admission and count boundaries. No IDE control or automatic rollback is adde
 <p><code>reclazz_await_reload</code> keeps a bounded event subscription in this MCP process.
 Take a checkpoint <strong>before</strong> editing or compiling, retain the returned
 <code>sessionId</code>, <code>subscriptionId</code> and <code>cursor</code>, then wait on that same target:</p>
-<div class="code-block"><div class="code-label">json</div><pre><code>{&quot;name&quot;:&quot;reclazz_await_reload&quot;,&quot;arguments&quot;:{&quot;action&quot;:&quot;checkpoint&quot;,&quot;timeoutMs&quot;:&quot;5000&quot;}}
+<div class="code-block"><div class="code-label">json</div><pre tabindex="0" role="region" aria-label="json example"><code>{&quot;name&quot;:&quot;reclazz_await_reload&quot;,&quot;arguments&quot;:{&quot;action&quot;:&quot;checkpoint&quot;,&quot;timeoutMs&quot;:&quot;5000&quot;}}
 </code></pre></div>
 <p>After saving, copy the returned identities into the wait call. The following
 identities are placeholders, not a receipt from a running application:</p>
-<div class="code-block"><div class="code-label">json</div><pre><code>{&quot;name&quot;:&quot;reclazz_await_reload&quot;,&quot;arguments&quot;:{&quot;action&quot;:&quot;wait&quot;,&quot;sessionId&quot;:&quot;returned-session&quot;,&quot;subscriptionId&quot;:&quot;returned-subscription&quot;,&quot;afterCursor&quot;:&quot;0&quot;,&quot;filePath&quot;:&quot;/project/src/main/java/com/example/Service.java&quot;,&quot;ownerClassName&quot;:&quot;com.example.Service&quot;,&quot;timeoutMs&quot;:&quot;10000&quot;}}
+<div class="code-block"><div class="code-label">json</div><pre tabindex="0" role="region" aria-label="json example"><code>{&quot;name&quot;:&quot;reclazz_await_reload&quot;,&quot;arguments&quot;:{&quot;action&quot;:&quot;wait&quot;,&quot;sessionId&quot;:&quot;returned-session&quot;,&quot;subscriptionId&quot;:&quot;returned-subscription&quot;,&quot;afterCursor&quot;:&quot;0&quot;,&quot;filePath&quot;:&quot;/project/src/main/java/com/example/Service.java&quot;,&quot;ownerClassName&quot;:&quot;com.example.Service&quot;,&quot;timeoutMs&quot;:&quot;10000&quot;}}
 </code></pre></div>
 <p>Source mode accepts an absolute normalized <code>.java</code> path and requires an explicit
 <code>ownerClassName</code> to produce a useful result. Without the owner it returns
@@ -799,7 +1028,7 @@ optional lower-case compiled-owner <code>sha256</code>. Pass the expected compil
 when available. Without it, the tool discovers the latest observed hash with
 one VERIFY query and checks that hash again; discovery alone never confirms a
 reload. <code>hashSource:caller</code> distinguishes supplied bytes from <code>hashSource:receipt</code>.</p>
-<div class="table-scroll"><table>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Data table"><table>
 <thead>
 <tr>
 <th>Field or result</th>
@@ -882,14 +1111,14 @@ subscriptions, and idle target eviction never discards an active wait.</p>
 response's <code>sessionId</code>, <code>subscriptionId</code> and <code>cursor</code>. The read-only
 <code>reclazz_events</code> tool lists received observations from this same persistent
 subscription; it has no separate checkpoint action.</p>
-<div class="code-block"><div class="code-label">json</div><pre><code>{&quot;name&quot;:&quot;reclazz_events&quot;,&quot;arguments&quot;:{&quot;sessionId&quot;:&quot;COPY_SESSION&quot;,&quot;subscriptionId&quot;:&quot;COPY_SUBSCRIPTION&quot;,&quot;sinceCursor&quot;:&quot;0&quot;,&quot;limit&quot;:&quot;50&quot;}}
+<div class="code-block"><div class="code-label">json</div><pre tabindex="0" role="region" aria-label="json example"><code>{&quot;name&quot;:&quot;reclazz_events&quot;,&quot;arguments&quot;:{&quot;sessionId&quot;:&quot;COPY_SESSION&quot;,&quot;subscriptionId&quot;:&quot;COPY_SUBSCRIPTION&quot;,&quot;sinceCursor&quot;:&quot;0&quot;,&quot;limit&quot;:&quot;50&quot;}}
 </code></pre></div>
 <p>Replace <code>sinceCursor</code> with the checkpoint's cursor on the first call, then use
 each page's <code>nextCursor</code>. Reuse the same target arguments. Pages contain at most
 <code>limit</code> matching events, an integer string from <code>1</code> to <code>100</code>, default <code>50</code>.
 An empty healthy page returns immediately. <code>timeoutMs</code> is the total call budget,
 including target and session checks, default <code>5000</code>, maximum <code>60000</code>.</p>
-<div class="table-scroll"><table>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Data table"><table>
 <thead>
 <tr>
 <th>Page field</th>
@@ -941,7 +1170,7 @@ without glob or regular-expression matching. Filters combine with AND on <strong
 usually has a filename but no owner; a RELOAD has an owner but no filename.
 Combining these filters does not link adjacent events. Query them separately
 from the same checkpoint when inspecting both kinds of evidence:</p>
-<div class="code-block"><div class="code-label">json</div><pre><code>{&quot;name&quot;:&quot;reclazz_events&quot;,&quot;arguments&quot;:{&quot;sessionId&quot;:&quot;COPY_SESSION&quot;,&quot;subscriptionId&quot;:&quot;COPY_SUBSCRIPTION&quot;,&quot;sinceCursor&quot;:&quot;0&quot;,&quot;fileBasename&quot;:&quot;Service.java&quot;}}
+<div class="code-block"><div class="code-label">json</div><pre tabindex="0" role="region" aria-label="json example"><code>{&quot;name&quot;:&quot;reclazz_events&quot;,&quot;arguments&quot;:{&quot;sessionId&quot;:&quot;COPY_SESSION&quot;,&quot;subscriptionId&quot;:&quot;COPY_SUBSCRIPTION&quot;,&quot;sinceCursor&quot;:&quot;0&quot;,&quot;fileBasename&quot;:&quot;Service.java&quot;}}
 {&quot;name&quot;:&quot;reclazz_events&quot;,&quot;arguments&quot;:{&quot;sessionId&quot;:&quot;COPY_SESSION&quot;,&quot;subscriptionId&quot;:&quot;COPY_SUBSCRIPTION&quot;,&quot;sinceCursor&quot;:&quot;0&quot;,&quot;ownerClassName&quot;:&quot;com.example.Service&quot;}}
 </code></pre></div>
 <p>Each row carries <code>sequence</code>, <code>level</code>, <code>timestamp</code>, <code>message</code>, <code>messageTruncated</code>
@@ -980,7 +1209,7 @@ single message. Every SAP observation has <code>evidenceScope:&quot;agent_messag
 <code>applicationBehaviorConfirmed:false</code>. Explicit resource basenames, counts or
 anonymous Solr target tags appear only where the message supplies them. Rows
 carry no operation request ID, edit revision or inferred link to adjacent events.</p>
-<div class="table-scroll"><table>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Data table"><table>
 <thead>
 <tr>
 <th>Operation</th>
@@ -1047,7 +1276,7 @@ Java await status: a SAP <code>applied</code> row alone cannot yield top-level <
 or <code>reloadConfirmed:true</code>. Use event pages to inspect retained observations
 and the application's own tests to establish behavior.</p>
 <p>See the <a href="/docs/reference/mcp-for-coding-agents/#read-sap-operation-outcomes-with-their-limits">SAP observation benefit</a>
-and the <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/mcp-server/src/test/java/com/onurkat/reclazz/mcp/SapOperationObservationTest.java">parser contract tests</a>.</p>
+and the <a href="https://github.com/onurkat/reclazz/blob/b456bd259c3aff6deeaee75a559fba22cd8aec20/mcp-server/src/test/java/com/onurkat/reclazz/mcp/SapOperationObservationTest.java">parser contract tests</a>.</p>
 <h3 id="scan-completion-support">Scan completion support</h3>
 <p><code>reclazz_scan</code> checks DOCTOR's additive <code>scanCompletionSupported</code> capability and
 waits on that same connection for its token/session-matched SCAN_RESULT. It
@@ -1058,11 +1287,69 @@ Unsupported older agents, missing/malformed receipts, session changes, stopped
 watchers, disconnects and timeouts return unavailable; no retry or reconnect
 silently turns an unknown result into success. Older IDE/wire clients retain
 bare SCAN behavior. Use matching agent/MCP versions for completion receipts.</p>
-</div><details class="page-sources"><summary>Canonical source</summary><p>This full page is generated from <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/docs/mcp-server.md">docs/mcp-server.md</a>. Edit the repository source and rebuild; do not edit generated HTML.</p></details><nav class="page-pager" aria-label="Documentation pages"><a href="/docs/reference/mcp-for-coding-agents/"><span>← Previous</span><strong>MCP for coding agents: close the loop</strong></a><a href="/docs/reference/product-reference/"><span>Next →</span><strong>Product technical reference</strong></a></nav></article></main><aside class="page-toc"><nav aria-label="On this page"><p class="toc-label">On this page</p><a href="#running-it">Running it</a><a href="#tools">Tools</a><a href="#tool-execution-errors">Tool execution errors</a><a href="#protocol-version-negotiation">Protocol version negotiation</a><a href="#structured-tool-contracts">Structured tool contracts</a><a href="#read-only-resources">Read-only resources</a><a href="#verification-prompt">Verification prompt</a><a href="#input-validation">Input validation</a><a href="#what-it-does-not-do">What it does not do</a><a href="#protecting-terminal-builds">Protecting terminal builds</a><a href="#protecting-a-build-through-mcp">Protecting a build through MCP</a><a href="#verifying-the-compiled-change">Verifying the compiled change</a><a href="#check-the-target-before-an-agentic-build">Check the target before an agentic build</a><a href="#bounded-batch-verification-and-cancellation">Bounded batch verification and cancellation</a><a href="#pause-and-resume-automatic-reload">Pause and resume automatic reload</a><a href="#waiting-for-a-reload">Waiting for a reload</a><a href="#inspecting-a-batch-of-events">Inspecting a batch of events</a><a href="#typed-sap-operation-observations">Typed SAP operation observations</a></nav><div class="toc-help"><span>Choosing an edit?</span><a href="/docs/support-matrix/">Check the reload matrix ↗</a></div></aside></div>
+</div><p class="source-link"><a href="https://github.com/onurkat/reclazz/blob/b456bd259c3aff6deeaee75a559fba22cd8aec20/docs/mcp-server.md">Edit on GitHub <!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M15 3h6v6" />
+  <path d="M10 14 21 3" />
+  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+</svg>
+</a></p><nav class="page-pager" aria-label="Documentation pages"><a href="/docs/reference/mcp-for-coding-agents/"><span><!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="m12 19-7-7 7-7" />
+  <path d="M19 12H5" />
+</svg>
+ Previous</span><strong>MCP for coding agents</strong></a><a href="/docs/reference/sap-commerce/"><span>Next <!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M5 12h14" />
+  <path d="m12 5 7 7-7 7" />
+</svg>
+</span><strong>SAP Commerce reference</strong></a></nav></article></main><aside class="page-toc" tabindex="0" role="region" aria-label="On this page"><nav aria-label="On this page"><p class="toc-label">On this page</p><a href="#running-it">Running it</a><a href="#tools">Tools</a><a href="#tool-execution-errors">Tool execution errors</a><a href="#protocol-version-negotiation">Protocol version negotiation</a><a href="#structured-tool-contracts">Structured tool contracts</a><a href="#read-only-resources">Read-only resources</a><a href="#verification-prompt">Verification prompt</a><a href="#input-validation">Input validation</a><a href="#what-it-does-not-do">What it does not do</a><a href="#protecting-terminal-builds">Protecting terminal builds</a><a href="#protecting-a-build-through-mcp">Protecting a build through MCP</a><a href="#verifying-the-compiled-change">Verifying the compiled change</a><a href="#check-the-target-before-an-agentic-build">Check the target before an agentic build</a><a href="#bounded-batch-verification-and-cancellation">Bounded batch verification and cancellation</a><a href="#pause-and-resume-automatic-reload">Pause and resume automatic reload</a><a href="#waiting-for-a-reload">Waiting for a reload</a><a href="#inspecting-a-batch-of-events">Inspecting a batch of events</a><a href="#typed-sap-operation-observations">Typed SAP operation observations</a></nav><div class="toc-help"><span>Choosing an edit?</span><a href="/docs/support-matrix/">Check the reload matrix </a></div></aside></div>
 <footer class="site-footer"><div class="site-footer-inner">
 <div class="footer-brand"><a class="brand" href="/" aria-label="Reclazz home"><img src="/favicon.svg" width="28" height="28" alt=""><span>Reclazz</span></a><p>Make the next edit count.</p><span class="footer-license">Apache 2.0 · Built in the open.</span></div>
 <nav aria-label="Product links"><p>Product</p><a href="/docs/">Documentation</a><a href="/docs/quickstart/">Quickstart</a><a href="/docs/support-matrix/">Reload support</a><a href="/compare/">Compare</a></nav>
-<nav aria-label="Project links"><p>Project</p><a href="https://github.com/onurkat/reclazz">GitHub ↗</a><a href="https://github.com/onurkat/reclazz/releases">Releases ↗</a><a href="https://github.com/onurkat/reclazz/issues">Report an issue ↗</a></nav>
+<nav aria-label="Project links"><p>Project</p><a href="https://github.com/onurkat/reclazz">GitHub <!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M15 3h6v6" />
+  <path d="M10 14 21 3" />
+  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+</svg>
+</a><a href="https://github.com/onurkat/reclazz/blob/main/CHANGELOG.md">Changelog <!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M15 3h6v6" />
+  <path d="M10 14 21 3" />
+  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+</svg>
+</a><a href="https://github.com/onurkat/reclazz/blob/main/CONTRIBUTING.md">Contributing <!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M15 3h6v6" />
+  <path d="M10 14 21 3" />
+  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+</svg>
+</a><a href="https://github.com/onurkat/reclazz/blob/main/SECURITY.md">Security <!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M15 3h6v6" />
+  <path d="M10 14 21 3" />
+  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+</svg>
+</a><a href="https://github.com/onurkat/reclazz/releases">Releases <!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M15 3h6v6" />
+  <path d="M10 14 21 3" />
+  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+</svg>
+</a><a href="https://github.com/onurkat/reclazz/issues">Report an issue <!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M15 3h6v6" />
+  <path d="M10 14 21 3" />
+  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+</svg>
+</a></nav>
 <nav aria-label="Legal links"><p>Legal</p><a href="/license/">License</a><a href="/privacy/">Privacy</a></nav>
-<div class="footer-bottom"><span>© 2026 Onur Kat</span><a href="https://github.com/sponsors/onurkat">Support development ↗</a></div></div></footer><dialog class="search-dialog" id="search-dialog" aria-labelledby="search-title"><div class="search-top"><label id="search-title" for="docs-search">Search documentation</label><button id="search-close" class="dialog-close" type="button" aria-label="Close search">Esc</button></div><input id="docs-search" type="search" placeholder="What would you like to reload?" autocomplete="off"><p id="search-status" role="status" aria-live="polite">Search guides, changes and limits. Your query stays in this browser.</p><div id="search-results"></div><div class="search-hint">↑ ↓ to select · Enter to open · Esc to close</div></dialog><div class="sr-only" id="copy-status" role="status" aria-live="polite"></div>
+<p class="footer-version"><span>Docs for</span> 1.7.0 · <a href="/docs/evidence/">Test coverage &amp; versions</a></p><div class="footer-bottom"><span>© 2026 Onur Kat</span><a href="https://github.com/sponsors/onurkat">Support development <!-- @license lucide-static v1.73.0 - ISC -->
+<svg class="icon " viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M15 3h6v6" />
+  <path d="M10 14 21 3" />
+  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+</svg>
+</a></div></div></footer><dialog class="search-dialog" id="search-dialog" aria-labelledby="search-title"><div class="search-top"><label id="search-title" for="docs-search">Search documentation</label><button id="search-close" class="dialog-close" type="button" aria-label="Close search">Esc</button></div><input id="docs-search" type="search" placeholder="What would you like to reload?" autocomplete="off"><p id="search-status" role="status" aria-live="polite">Search guides, changes and limits. Your query stays in this browser.</p><div id="search-results"></div><div class="search-hint">↑ ↓ to select · Enter to open · Esc to close</div></dialog><div class="sr-only" id="copy-status" role="status" aria-live="polite"></div>
 </body></html>
