@@ -218,6 +218,11 @@ public final class WatchedApp implements AutoCloseable {
 
             List<String> command = new ArrayList<>();
             command.add(javaBinary());
+            // The harness reads the child's output as UTF-8. Without these the child prints
+            // in the platform charset (Cp1252 on Windows, ASCII under LANG=C), and a
+            // non-Latin-1 character such as the Turkish \u0130 arrives as '?'.
+            command.addAll(List.of("-Dfile.encoding=UTF-8", "-Dsun.stdout.encoding=UTF-8",
+                    "-Dsun.stderr.encoding=UTF-8", "-Dstdout.encoding=UTF-8", "-Dstderr.encoding=UTF-8"));
             command.addAll(jvmArgs);
             if (!agentless) command.add("-javaagent:" + agentJar + "=watchDirs=" + classesDir + "," + agentArgs);
             command.add("-cp");
@@ -355,7 +360,7 @@ public final class WatchedApp implements AutoCloseable {
     private void readOutputInBackground() {
         Thread reader = new Thread(() -> {
             try (BufferedReader in = new BufferedReader(
-                    new InputStreamReader(process.getInputStream()))) {
+                    new InputStreamReader(process.getInputStream(), java.nio.charset.StandardCharsets.UTF_8))) {
                 String line;
                 while ((line = in.readLine()) != null) {
                     outputTimes.add(System.currentTimeMillis());

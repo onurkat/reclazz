@@ -122,9 +122,18 @@ class AwaitReloadTest {
             JsonObject a = r.getAsJsonObject("params").getAsJsonObject("arguments");
             if (source) { a.remove("className"); a.addProperty("filePath", Path.of("build", "synthetic", "Service.java").toAbsolutePath().normalize().toString()); a.addProperty("ownerClassName", OWNER); }
             if (!hash) a.remove("sha256");
-            a.addProperty("timeoutMs", "200"); return r;
+            // A total deadline, not a sleep: it also has to cover the read-only session and
+            // admission queries. At 200 ms a slow CI runner (reproduced at 0.15 CPU in Docker)
+            // ran out during those queries and reported unavailable instead of timeout.
+            a.addProperty("timeoutMs", "1000"); return r;
         }
-        void emit(String level, String message) { event(output.get(), level, message); }
+        void emit(String level, String message) {
+            // The fake agent publishes its writer from its own thread after the first connection;
+            // under load a test could emit before that happened and hit a null writer.
+            long until = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(10);
+            while (output.get() == null && System.nanoTime() < until) Thread.onSpinWait();
+            event(output.get(), level, message);
+        }
         @Override public void close() throws Exception { server.close(); agent.verify(); agent.close(); }
     }
 
