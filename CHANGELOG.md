@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Saving a Backoffice `labels_*.properties` file now shows the new text. The
+  label cache was cleared, but Backoffice reloaded it on a thread that still
+  read the file's old bytes, so the navigation tree kept the old label even
+  after signing in again. Reclazz now reloads the labels straight away through
+  Backoffice's own class loader, checks one key of the saved file, and says
+  so; if that key still reads the old text it tells you to restart instead.
+
 ## [1.7.0] - 2026-11-16
 
 ### Highlights

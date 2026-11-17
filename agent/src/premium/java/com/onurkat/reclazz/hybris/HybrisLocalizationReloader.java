@@ -269,25 +269,138 @@ public class HybrisLocalizationReloader {
      *         part of this server, or has not been opened yet and so has not
      *         loaded ZK
      */
-    public boolean reloadBackofficeLabels() {
-        java.util.List<Class<?>> labels = findZkLabels();
-        if (labels.isEmpty()) return false;
+    /** What a Backoffice label save achieved, as the running Backoffice now answers. */
+    public enum LabelReload {
+        /** Backoffice has not loaded ZK here, or no copy of its label cache could be cleared. */
+        NOT_LOADED,
+        /** A key from the saved file now resolves to the file's value. */
+        VERIFIED,
+        /** Cleared and reloaded, but the file offered no key that could be looked up to check. */
+        UNCHECKED,
+        /** Cleared, yet the key still resolves to something other than the saved value. */
+        STALE
+    }
 
-        // Every one of them. ZK ships inside the web applications that use it,
-        // so a server can hold several copies of this class, one per web
-        // application classloader, each with its own static cache. Resetting
-        // the first one found clears a cache that may belong to something
-        // else entirely, and backoffice goes on serving the old text.
+    /** The outcome of a label save, with the key and values the check compared. */
+    public record LabelOutcome(LabelReload result, String key, String expected, String actual) { }
+
+    /**
+     * Clears ZK's label cache and reloads it at once, through Backoffice's own
+     * class loader, for every locale it had loaded, then checks one key of the
+     * saved file.
+     *
+     * <p>Clearing alone was not enough. Measured live on SAP Commerce 2211: after
+     * the reset the next Backoffice request reloaded the labels on a thread whose
+     * context class loader still served the file's old bytes, so the navigation
+     * tree kept the old text across re-login and a configuration reset while the
+     * agent reported the labels re-read. Reloading straight after the reset with
+     * the web application's loader made the new text appear on every try.
+     */
+    public LabelOutcome reloadBackofficeLabels(java.nio.file.Path saved) {
+        java.util.List<Class<?>> labels = findZkLabels();
+        java.util.Map.Entry<String, String> probe = firstLabel(saved);
+        java.util.Locale fileLocale = localeOf(saved);
+        String key = probe == null ? "reclazz.labels.reload" : probe.getKey();
         int reset = 0;
+        String actual = null;
+        boolean checked = false, matched = false;
         for (Class<?> labelsClass : labels) {
+            java.util.Set<java.util.Locale> locales = loadedLocales(labelsClass);
             try {
                 labelsClass.getMethod("reset").invoke(null);
                 reset++;
             } catch (Throwable t) {
                 StatusReporter.warn("Could not refresh backoffice labels: " + describe(t));
+                continue;
+            }
+            locales.add(fileLocale);
+            for (java.util.Locale locale : locales) {
+                String value = lookup(labelsClass, locale, key);
+                if (probe != null && locale.equals(fileLocale) && value != null) {
+                    checked = true;
+                    actual = value;
+                    if (probe.getValue().equals(value)) matched = true;
+                }
             }
         }
-        return reset > 0;
+        if (reset == 0) return new LabelOutcome(LabelReload.NOT_LOADED, key, null, null);
+        if (matched) return new LabelOutcome(LabelReload.VERIFIED, key, probe.getValue(), probe.getValue());
+        if (checked) return new LabelOutcome(LabelReload.STALE, key, probe.getValue(), actual);
+        return new LabelOutcome(LabelReload.UNCHECKED, key, probe == null ? null : probe.getValue(), null);
+    }
+
+    /** The first key and value of a saved labels file, or null when there is none to check. */
+    private static java.util.Map.Entry<String, String> firstLabel(java.nio.file.Path saved) {
+        if (saved == null) return null;
+        try (var in = java.nio.file.Files.newBufferedReader(saved, java.nio.charset.StandardCharsets.UTF_8)) {
+            java.util.Properties props = new java.util.Properties();
+            props.load(in);
+            return props.stringPropertyNames().stream().sorted().findFirst()
+                    .map(k -> java.util.Map.entry(k, props.getProperty(k))).orElse(null);
+        } catch (java.io.IOException | IllegalArgumentException unreadable) {
+            return null;
+        }
+    }
+
+    /** labels_en.properties is English, labels_pt_BR.properties Brazilian Portuguese, labels.properties English. */
+    static java.util.Locale localeOf(java.nio.file.Path saved) {
+        if (saved == null) return java.util.Locale.ENGLISH;
+        String name = saved.getFileName().toString().replaceFirst("\\.properties$", "");
+        int underscore = name.indexOf('_');
+        if (underscore < 0) return java.util.Locale.ENGLISH;
+        String[] parts = name.substring(underscore + 1).split("_");
+        return parts.length > 1 ? new java.util.Locale(parts[0], parts[1]) : new java.util.Locale(parts[0]);
+    }
+
+    /** The locales ZK had loaded before the reset, so each is warm again afterwards. Best effort. */
+    private static java.util.Set<java.util.Locale> loadedLocales(Class<?> labelsClass) {
+        java.util.Set<java.util.Locale> locales = new java.util.LinkedHashSet<>();
+        try {
+            java.lang.reflect.Field loaderField = labelsClass.getDeclaredField("_loader");
+            loaderField.setAccessible(true);
+            Object loader = loaderField.get(null);
+            java.lang.reflect.Field labelsField = loader.getClass().getDeclaredField("_labels");
+            labelsField.setAccessible(true);
+            Object map = labelsField.get(loader);
+            if (map instanceof java.util.Map<?, ?> m) {
+                for (Object k : m.keySet()) if (k instanceof java.util.Locale l) locales.add(l);
+            }
+        } catch (Throwable unknownShape) {
+            // Not ZK's LabelLoaderImpl: the file's own locale is still reloaded.
+        }
+        return locales;
+    }
+
+    /**
+     * Resolves one key for one locale with Backoffice's class loader as the
+     * context loader, which also loads that locale's labels again. Null when this
+     * is not ZK (ZK's Locales is absent) or the lookup fails.
+     */
+    private static String lookup(Class<?> labelsClass, java.util.Locale locale, String key) {
+        Thread thread = Thread.currentThread();
+        ClassLoader previous = thread.getContextClassLoader();
+        ClassLoader zk = labelsClass.getClassLoader();
+        thread.setContextClassLoader(zk);
+        try {
+            Class<?> locales = Class.forName("org.zkoss.util.Locales", true, zk);
+            java.lang.reflect.Method set = locales.getMethod("setThreadLocal", java.util.Locale.class);
+            Object before = set.invoke(null, locale);
+            try {
+                Object value = labelsClass.getMethod("getLabel", String.class).invoke(null, key);
+                return value == null ? null : value.toString();
+            } finally {
+                set.invoke(null, before);
+            }
+        } catch (Throwable notZk) {
+            return null;
+        } finally {
+            thread.setContextClassLoader(previous);
+        }
+    }
+
+    /** Clears every copy of ZK's label cache; true when at least one was cleared. */
+    public boolean reloadBackofficeLabels() {
+        return reloadBackofficeLabels(null).result() != LabelReload.NOT_LOADED;
     }
 
     private Class<?> findTypeLocalization() {

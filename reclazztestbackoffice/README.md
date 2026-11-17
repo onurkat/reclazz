@@ -21,6 +21,7 @@ and nothing in `agent/` or `src/` refers to it.
 | `backoffice/resources/widgets/ReclazzProbeWidget/` | the widget definition, view and labels |
 | `resources/reclazztestbackoffice-backoffice-widgets.xml` | puts the widget in a "Reclazz probe" perspective and connects its output to its input |
 | `resources/reclazztestbackoffice-backoffice-spring.xml` | the Backoffice Spring context of the module |
+| `resources/reclazztestbackoffice-backoffice-labels/labels_en.properties` | a Backoffice label (`reclazz_label_probe`), registered by the `ResourcesLabelLocator` bean in the Spring file and shown as a navigation node from `resources/reclazztestbackoffice-backoffice-config.xml`; edit its value and reopen Backoffice to see the reloaded text |
 
 The status label tells what the running server did with the last click:
 `sent N, no handler` means no handler received the event.

@@ -6,4 +6,9 @@
 
 	<bean id="reclazzProbeService" class="com.onurkat.reclazztestbackoffice.services.ReclazzProbeService"/>
 
+	<bean id="reclazztestbackofficeLabelLocator" class="com.hybris.cockpitng.util.labels.ResourcesLabelLocator" scope="singleton" init-method="init" lazy-init="false">
+		<property name="location" value="/reclazztestbackoffice-backoffice-labels/"/>
+		<property name="name" value="labels"/>
+	</bean>
+
 </beans>

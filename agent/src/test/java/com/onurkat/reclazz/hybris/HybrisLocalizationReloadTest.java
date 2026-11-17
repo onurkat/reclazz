@@ -32,6 +32,7 @@ class HybrisLocalizationReloadTest {
 
     @BeforeEach
     void reset() {
+        ZkLabels.resets = 0; ZkLabels.lastLocale = null; ZkLabels.SERVED.clear();
         StubTypeLocalization.cleared = 0;
         StubTypeLocalization.localized = 0;
         StubTypeLocalization.instance = new StubTypeLocalization();
@@ -213,6 +214,72 @@ class HybrisLocalizationReloadTest {
 
     /** Same shape as ZK's Labels: a static reset. */
     @SuppressWarnings("unused")
+    /**
+     * Clearing was not enough on a live 2211 Backoffice: the navigation tree kept
+     * the old text while the agent said the labels were re-read. The reload now
+     * resolves a key of the saved file and only reports success when it matches.
+     */
+    @Test
+    void aSavedLabelIsVerifiedThroughTheReloadedCache(@org.junit.jupiter.api.io.TempDir Path dir) throws Exception {
+        Path file = java.nio.file.Files.writeString(
+                dir.resolve("labels_en.properties"), "probe.node=Probe v2\n");
+        ZkLabels.serve(java.util.Locale.ENGLISH, "probe.node", "Probe v2");
+        var outcome = new HybrisLocalizationReloader(StubTypeLocalization.class, ZkLabels.class)
+                .reloadBackofficeLabels(file);
+        assertEquals(HybrisLocalizationReloader.LabelReload.VERIFIED, outcome.result(), outcome.toString());
+        assertEquals(1, ZkLabels.resets);
+        assertEquals(java.util.Locale.ENGLISH, ZkLabels.lastLocale, "looked up in the file's own locale");
+    }
+
+    @Test
+    void aLabelThatStillReadsTheOldTextIsReportedStale(@org.junit.jupiter.api.io.TempDir Path dir) throws Exception {
+        Path file = java.nio.file.Files.writeString(
+                dir.resolve("labels_en.properties"), "probe.node=Probe v2\n");
+        ZkLabels.serve(java.util.Locale.ENGLISH, "probe.node", "Probe v1");
+        var outcome = new HybrisLocalizationReloader(StubTypeLocalization.class, ZkLabels.class)
+                .reloadBackofficeLabels(file);
+        assertEquals(HybrisLocalizationReloader.LabelReload.STALE, outcome.result());
+        assertEquals("Probe v1", outcome.actual());
+        assertEquals("Probe v2", outcome.expected());
+    }
+
+    @Test
+    void aFileWithoutKeysIsClearedButNotClaimedAsChecked(@org.junit.jupiter.api.io.TempDir Path dir) throws Exception {
+        Path file = java.nio.file.Files.writeString(dir.resolve("labels_en.properties"), "# only a comment\n");
+        var outcome = new HybrisLocalizationReloader(StubTypeLocalization.class, ZkLabels.class)
+                .reloadBackofficeLabels(file);
+        assertEquals(HybrisLocalizationReloader.LabelReload.UNCHECKED, outcome.result());
+        assertEquals(1, ZkLabels.resets);
+    }
+
+    @Test
+    void theLocaleComesFromTheFileName() {
+        assertEquals(java.util.Locale.ENGLISH, HybrisLocalizationReloader.localeOf(Path.of("x/labels.properties")));
+        assertEquals(new java.util.Locale("de"), HybrisLocalizationReloader.localeOf(Path.of("x/labels_de.properties")));
+        assertEquals(new java.util.Locale("pt", "BR"),
+                HybrisLocalizationReloader.localeOf(Path.of("x/labels_pt_BR.properties")));
+    }
+
+    /** Answers like ZK's Labels: by key, in the thread's ZK locale. */
+    public static final class ZkLabels {
+        static int resets;
+        static java.util.Locale lastLocale;
+        private static final java.util.Map<java.util.Locale, java.util.Map<String, String>> SERVED = new java.util.HashMap<>();
+
+        static void serve(java.util.Locale locale, String key, String value) {
+            SERVED.computeIfAbsent(locale, l -> new java.util.HashMap<>()).put(key, value);
+        }
+
+        public static void reset() {
+            resets++;
+        }
+
+        public static String getLabel(String key) {
+            lastLocale = org.zkoss.util.Locales.getThreadLocal();
+            return SERVED.getOrDefault(lastLocale, java.util.Map.of()).get(key);
+        }
+    }
+
     public static final class StubLabels {
         static int resets;
 
