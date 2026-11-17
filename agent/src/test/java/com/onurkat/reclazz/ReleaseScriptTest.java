@@ -42,7 +42,7 @@ class ReleaseScriptTest {
     void aRepositoryShapedLikeThisOne() throws Exception {
         Path root = AgentSources.root().getParent().getParent().getParent().getParent();   // java, main, src, agent
         Files.createDirectories(repo.resolve("scripts"));
-        for (String script : List.of("release.sh", "changelog-section.sh", "release-checks.sh", "release-evidence.py", "release-publish.init.gradle", "test-release-evidence.py")) {
+        for (String script : List.of("release.sh", "changelog-section.sh", "release-checks.sh", "orika-test-classpath.sh", "release-evidence.py", "release-publish.init.gradle", "test-release-evidence.py")) {
             Path copy = repo.resolve("scripts").resolve(script);
             Files.copy(root.resolve("scripts").resolve(script), copy, StandardCopyOption.REPLACE_EXISTING);
             Files.setPosixFilePermissions(copy, Set.of(PosixFilePermission.OWNER_READ,
@@ -103,6 +103,16 @@ class ReleaseScriptTest {
         assertFalse(run.out().contains("Release commands finished"));
         assertFalse(Files.exists(repo.resolve("build")), "dry run creates no gate/artifacts");
         assertEquals("", git("tag", "-l").out().trim(), "a dry run tags nothing");
+    }
+
+    @Test
+    void aReleaseWithoutTheOrikaClasspathStopsBeforeAnyStep() throws Exception {
+        Run run = releaseWith(Map.of("RECLAZZ_ORIKA_TEST_CLASSPATH", "",
+                "RECLAZZ_SAP_HOME", repo.resolve("no-sap-install").toString()), "1.2.3", "--dry-run");
+        assertNotEquals(0, run.exit(), run.out());
+        assertTrue((run.out() + run.err()).contains("the Orika e2e tests need a local SAP Commerce install"),
+                run.out() + run.err());
+        assertFalse(run.out().contains("would run:"), "nothing is listed when a precondition fails");
     }
 
     @Test
@@ -509,7 +519,11 @@ class ReleaseScriptTest {
 
     private Run run(List<String> command, Map<String, String> environment) throws Exception {
         ProcessBuilder builder = new ProcessBuilder(command).directory(repo.toFile());
+        // Releases require the Orika e2e classpath; the fixture repository has no SAP install.
+        builder.environment().remove("RECLAZZ_SAP_HOME");
+        builder.environment().put("RECLAZZ_ORIKA_TEST_CLASSPATH", "fixture-orika.jar");
         builder.environment().putAll(environment);
+        if ("".equals(environment.get("RECLAZZ_ORIKA_TEST_CLASSPATH"))) builder.environment().remove("RECLAZZ_ORIKA_TEST_CLASSPATH");
         builder.environment().put("PYTHONDONTWRITEBYTECODE", "1");
         builder.environment().put("PATH", repo.resolve("bin") + java.io.File.pathSeparator
                 + builder.environment().getOrDefault("PATH", ""));

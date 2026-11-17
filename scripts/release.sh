@@ -75,6 +75,9 @@ fi
 if [ -n "$(git status --porcelain)" ]; then
     problems+=("the working tree is not clean; commit or stash first")
 fi
+if [ -z "${RECLAZZ_ORIKA_TEST_CLASSPATH:-}" ] && ! scripts/orika-test-classpath.sh >/dev/null; then
+    problems+=("the Orika e2e tests need a local SAP Commerce install: set RECLAZZ_SAP_HOME or RECLAZZ_ORIKA_TEST_CLASSPATH")
+fi
 branch="$(git rev-parse --abbrev-ref HEAD)"
 if [ "$branch" != "main" ]; then
     problems+=("on branch '$branch', releases are cut from main")

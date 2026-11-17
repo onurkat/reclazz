@@ -471,6 +471,9 @@ val modernMessagingTest by tasks.registering(Test::class) {
 tasks.test {
     dependsOn(modernMessagingTest)
     dependsOn(springSixTest)
+    // The Spring 7 / Boot 4 / Jackson 3 graph: its tests skip themselves in springSixTest,
+    // so without this the gate passed with 35 of them never run (1.7.0 gate).
+    dependsOn(springSevenTest)
     dependsOn(hibernateTest)
     dependsOn(rabbitTest)
     dependsOn(jmsTest)
