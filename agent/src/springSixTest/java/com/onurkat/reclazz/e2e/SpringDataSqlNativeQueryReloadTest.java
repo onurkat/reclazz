@@ -45,8 +45,8 @@ class SpringDataSqlNativeQueryReloadTest {
     }
     private String nativeFresh(Path classes,String cp,int stage)throws Exception {
         Path log=tmp.resolve("native-"+stage+".log");
-        Process p=new ProcessBuilder(Path.of(System.getProperty("java.home"),"bin","java").toString(),"-cp",
-                classes+File.pathSeparator+cp,"app.App","native",""+stage)
+        Process p=new ProcessBuilder(WatchedApp.utf8Java(Path.of(System.getProperty("java.home"),"bin","java").toString(),"-cp",
+                classes+File.pathSeparator+cp,"app.App","native",""+stage))
                 .redirectErrorStream(true).redirectOutput(log.toFile()).start();
         try {
             assertTrue(p.waitFor(40,TimeUnit.SECONDS),"native SQL timeout");String data=Files.readString(log);

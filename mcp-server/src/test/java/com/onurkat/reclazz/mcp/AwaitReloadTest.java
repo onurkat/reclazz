@@ -165,17 +165,21 @@ class AwaitReloadTest {
                     case "wrong-order" -> { f.emit("RELOAD", "Reloaded " + OWNER + " (1ms)"); f.emit("COMPILE", "Compiled Service.java (1ms)"); }
                 }
                 JsonObject d = data(f.server, f.waitFor(cp, true, true));
-                // Nothing matching arrives, so the wait runs to its total deadline. When that
-                // deadline falls inside a read-only query the answer is unavailable/response_timeout
-                // instead of timeout; on a slow runner either can come first. Both refuse.
-                String status = d.get("status").getAsString();
-                assertTrue(status.equals("timeout")
-                        || (status.equals("unavailable") && d.get("reasonCode").getAsString().equals("response_timeout")),
-                        mode + d);
-                assertFalse(d.get("reloadConfirmed").getAsBoolean());
+                assertRanOutOfTime(d, mode);
                 assertEquals(0, f.commands.stream().filter(c -> c.startsWith("VERIFY ")).count(), mode);
             }
         }
+    }
+
+    // Nothing matching arrives, so the wait runs to its total deadline. When that deadline
+    // falls inside a read-only query the answer is unavailable/response_timeout instead of
+    // timeout; on a slow or busy machine either can come first. Both refuse the reload.
+    private static void assertRanOutOfTime(JsonObject d, String context) {
+        String status = d.get("status").getAsString();
+        assertTrue(status.equals("timeout")
+                || (status.equals("unavailable") && d.get("reasonCode").getAsString().equals("response_timeout")),
+                context + d);
+        assertFalse(d.get("reloadConfirmed").getAsBoolean(), context + d);
     }
 
     @Test void reloadWithoutAppliedVerifyAndCallerHashMismatchFailClosed() throws Exception {
@@ -225,7 +229,7 @@ class AwaitReloadTest {
         for (String diagnostic : List.of("  Other.java:1: missing", "  Service.javaOther:1: missing", "Compilation failed for module", "  Service.java: no line")) {
             try (var f = new Fixture()) {
                 JsonObject cp = f.checkpoint(); f.emit("ERROR", "Compilation failed:"); f.emit("ERROR", diagnostic);
-                assertEquals("timeout", data(f.server, f.waitFor(cp, true, true)).get("status").getAsString(), diagnostic);
+                assertRanOutOfTime(data(f.server, f.waitFor(cp, true, true)), diagnostic);
             }
         }
     }

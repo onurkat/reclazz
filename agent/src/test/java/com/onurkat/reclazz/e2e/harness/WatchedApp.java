@@ -35,6 +35,23 @@ import static org.junit.jupiter.api.Assertions.*;
  * here is what none of them are about.
  */
 public final class WatchedApp implements AutoCloseable {
+    /**
+     * JVM options that make a child print UTF-8. Without them the child prints in the
+     * platform charset (Cp1252 or Cp1254 on Windows, ASCII under LANG=C), and a test that
+     * reads its output as UTF-8 sees '?' or fails on a Turkish log line from Tomcat.
+     */
+    public static final List<String> UTF8_OUTPUT = List.of("-Dfile.encoding=UTF-8", "-Dsun.stdout.encoding=UTF-8",
+            "-Dsun.stderr.encoding=UTF-8", "-Dstdout.encoding=UTF-8", "-Dstderr.encoding=UTF-8");
+
+    /** {@code java} followed by {@link #UTF8_OUTPUT} and {@code args}, for a child whose output a test reads as UTF-8. */
+    public static List<String> utf8Java(String java, String... args) {
+        List<String> command = new ArrayList<>();
+        command.add(java);
+        command.addAll(UTF8_OUTPUT);
+        command.addAll(List.of(args));
+        return command;
+    }
+
 
     /** Long enough for a cold JVM under an agent on a loaded machine. */
     public static final long DEFAULT_TIMEOUT_SEC = 60;
@@ -218,11 +235,8 @@ public final class WatchedApp implements AutoCloseable {
 
             List<String> command = new ArrayList<>();
             command.add(javaBinary());
-            // The harness reads the child's output as UTF-8. Without these the child prints
-            // in the platform charset (Cp1252 on Windows, ASCII under LANG=C), and a
-            // non-Latin-1 character such as the Turkish \u0130 arrives as '?'.
-            command.addAll(List.of("-Dfile.encoding=UTF-8", "-Dsun.stdout.encoding=UTF-8",
-                    "-Dsun.stderr.encoding=UTF-8", "-Dstdout.encoding=UTF-8", "-Dstderr.encoding=UTF-8"));
+            // The harness reads the child's output as UTF-8.
+            command.addAll(UTF8_OUTPUT);
             command.addAll(jvmArgs);
             if (!agentless) command.add("-javaagent:" + agentJar + "=watchDirs=" + classesDir + "," + agentArgs);
             command.add("-cp");

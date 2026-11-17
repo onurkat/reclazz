@@ -61,7 +61,7 @@ class RepositoryAfterPreparedEntityFactorySwapReloadTest {
     }
     private String nativeFresh(Path classes,String cp,String mode,boolean mapped,int stage)throws Exception {
         Path log=tmp.resolve("native-"+stage+".log");
-        Process p=new ProcessBuilder(Path.of(System.getProperty("java.home"),"bin","java").toString(),"-cp",classes+File.pathSeparator+cp,"app.App","native",mode,""+mapped)
+        Process p=new ProcessBuilder(WatchedApp.utf8Java(Path.of(System.getProperty("java.home"),"bin","java").toString(),"-cp",classes+File.pathSeparator+cp,"app.App","native",mode,""+mapped))
                 .redirectErrorStream(true).redirectOutput(log.toFile()).start();
         try {
             assertTrue(p.waitFor(40,TimeUnit.SECONDS),"fresh native timeout");String text=Files.readString(log);assertEquals(0,p.exitValue(),text);

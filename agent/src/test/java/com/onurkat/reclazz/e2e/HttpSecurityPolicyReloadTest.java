@@ -58,7 +58,7 @@ class HttpSecurityPolicyReloadTest {
     }
     private void nativeFresh(Path classes,String cp,int stage)throws Exception {
         Path dir=Files.createDirectories(tmp.resolve("native-"+stage));Path log=dir.resolve("stdout.log");
-        Process p=new ProcessBuilder(Path.of(System.getProperty("java.home"),"bin","java").toString(),"-Dprobe.dir="+dir,"-cp",classes+File.pathSeparator+cp,"app.App").redirectErrorStream(true).redirectOutput(log.toFile()).start();
+        Process p=new ProcessBuilder(WatchedApp.utf8Java(Path.of(System.getProperty("java.home"),"bin","java").toString(),"-Dprobe.dir="+dir,"-cp",classes+File.pathSeparator+cp,"app.App")).redirectErrorStream(true).redirectOutput(log.toFile()).start();
         try {
             long until=System.nanoTime()+TimeUnit.SECONDS.toNanos(30);String port=null;
             while(port==null&&p.isAlive()&&System.nanoTime()<until){Thread.sleep(25);port=Files.readString(log).lines().filter(x->x.startsWith("PORT=")).findFirst().orElse(null);}
