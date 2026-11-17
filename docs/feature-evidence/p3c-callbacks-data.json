@@ -1196,7 +1196,7 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.SpringDataSqlNativeQueryReloadTest#currentTrackedDependentAndRetainedManualHolderMatchNative",
           "status": "PASSED",
-          "source_sha256": "253ba9cae44915a98c87a78c80cd487d5910c34ccc4e5fbbb2501772f9daf341",
+          "source_sha256": "96710a5123d74bd0dce018242823593e8ade97bc9f15dd33628ba65a13218a6a",
           "artifact_sha256": "88f7ce7fc6553713df7fd41da15455b8fecfda49a8e0102e834ce35c99ef4318",
           "base_commit": "0f78107",
           "raw_evidence": ".collab/research/2026-10-14-rf08-build/targeted-main-17/springSixTest/TEST-com.onurkat.reclazz.e2e.SpringDataSqlNativeQueryReloadTest.xml",
@@ -1223,7 +1223,7 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.RepositoryAfterPreparedEntityFactorySwapReloadTest#heldRepositoryReadsAndWritesAfterPreparedSwapAndValidationRetry",
           "status": "PASSED",
-          "source_sha256": "cd8b5c168303ae90cd2c90a77ddb3abd6d7edfdd6c889e13be40621ae9991136",
+          "source_sha256": "18e8469628c0030ad245e1a8850a08277a75984220b32d0a46b66f81a9d2cde2",
           "artifact_sha256": "c7300ef501e10c15e8054a519b76f1c149cfdc22d7e806e189a875802912ada4",
           "base_commit": "26f384d",
           "raw_evidence": ".collab/research/2026-10-14-rf09-build/targeted-main-17/springSixTest/TEST-com.onurkat.reclazz.e2e.RepositoryAfterPreparedEntityFactorySwapReloadTest.xml",
@@ -1250,7 +1250,7 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.RepositoryAfterPreparedEntityFactorySwapReloadTest#optOutAndTwoUnitsNeverSwapHeldRepositoryInfrastructure",
           "status": "PASSED",
-          "source_sha256": "cd8b5c168303ae90cd2c90a77ddb3abd6d7edfdd6c889e13be40621ae9991136",
+          "source_sha256": "18e8469628c0030ad245e1a8850a08277a75984220b32d0a46b66f81a9d2cde2",
           "artifact_sha256": "c7300ef501e10c15e8054a519b76f1c149cfdc22d7e806e189a875802912ada4",
           "base_commit": "26f384d",
           "raw_evidence": ".collab/research/2026-10-14-rf09-build/targeted-main-17/springSixTest/TEST-com.onurkat.reclazz.e2e.RepositoryAfterPreparedEntityFactorySwapReloadTest.xml",
@@ -2672,7 +2672,7 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.SpringDataSqlNativeQueryReloadTest#currentTrackedDependentAndRetainedManualHolderMatchNative",
           "status": "PASSED",
-          "source_sha256": "253ba9cae44915a98c87a78c80cd487d5910c34ccc4e5fbbb2501772f9daf341",
+          "source_sha256": "96710a5123d74bd0dce018242823593e8ade97bc9f15dd33628ba65a13218a6a",
           "artifact_sha256": "96d9d48c206fbb52b9b0d02c073b7bb71a4a498d7c95eb5dd8791c0ff82d10bd",
           "base_commit": "0f78107",
           "raw_evidence": ".collab/research/2026-10-14-rf08-build/targeted-main-21/springSixTest/TEST-com.onurkat.reclazz.e2e.SpringDataSqlNativeQueryReloadTest.xml",
@@ -2699,7 +2699,7 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.RepositoryAfterPreparedEntityFactorySwapReloadTest#heldRepositoryReadsAndWritesAfterPreparedSwapAndValidationRetry",
           "status": "PASSED",
-          "source_sha256": "cd8b5c168303ae90cd2c90a77ddb3abd6d7edfdd6c889e13be40621ae9991136",
+          "source_sha256": "18e8469628c0030ad245e1a8850a08277a75984220b32d0a46b66f81a9d2cde2",
           "artifact_sha256": "2bb44c953ba76423b256fa1be299aa4965a5aac9989e6f77b71ee0332d65cce3",
           "base_commit": "26f384d",
           "raw_evidence": ".collab/research/2026-10-14-rf09-build/targeted-main-21/springSixTest/TEST-com.onurkat.reclazz.e2e.RepositoryAfterPreparedEntityFactorySwapReloadTest.xml",
@@ -2726,7 +2726,7 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.RepositoryAfterPreparedEntityFactorySwapReloadTest#optOutAndTwoUnitsNeverSwapHeldRepositoryInfrastructure",
           "status": "PASSED",
-          "source_sha256": "cd8b5c168303ae90cd2c90a77ddb3abd6d7edfdd6c889e13be40621ae9991136",
+          "source_sha256": "18e8469628c0030ad245e1a8850a08277a75984220b32d0a46b66f81a9d2cde2",
           "artifact_sha256": "2bb44c953ba76423b256fa1be299aa4965a5aac9989e6f77b71ee0332d65cce3",
           "base_commit": "26f384d",
           "raw_evidence": ".collab/research/2026-10-14-rf09-build/targeted-main-21/springSixTest/TEST-com.onurkat.reclazz.e2e.RepositoryAfterPreparedEntityFactorySwapReloadTest.xml",
@@ -5398,14 +5398,14 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.RepositoryAfterPreparedEntityFactorySwapReloadTest#heldRepositoryReadsAndWritesAfterPreparedSwapAndValidationRetry",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/RepositoryAfterPreparedEntityFactorySwapReloadTest.java",
-          "source_sha256": "cd8b5c168303ae90cd2c90a77ddb3abd6d7edfdd6c889e13be40621ae9991136",
+          "source_sha256": "18e8469628c0030ad245e1a8850a08277a75984220b32d0a46b66f81a9d2cde2",
           "kind": "watcher",
           "assertions": "Four prepared/missing-table-retry normal/child cases. Warm original JpaRepository<Existing,Long> find/count/cached JPQL and original shared-EntityManager custom fragment; same held repo writes/reads Existing and fragment queries Added after actual watched validate-only new-entity swap. Exact expected results/fresh agentless oracle; original repo/holder/injected-client/shared identities, old native factory different/closed, unrelated anchor retained; body-only mapped save does not rebuild."
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.RepositoryAfterPreparedEntityFactorySwapReloadTest#optOutAndTwoUnitsNeverSwapHeldRepositoryInfrastructure",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/RepositoryAfterPreparedEntityFactorySwapReloadTest.java",
-          "source_sha256": "cd8b5c168303ae90cd2c90a77ddb3abd6d7edfdd6c889e13be40621ae9991136",
+          "source_sha256": "18e8469628c0030ad245e1a8850a08277a75984220b32d0a46b66f81a9d2cde2",
           "kind": "watcher",
           "assertions": "Four opt-out/two-unit ambiguity normal/child cases. Added remains UNMAPPED, existing rows/native identity/open state retained, held injected repository/holder/EMF-client/shared identities and unrelated context anchor retained; original second native factory stays open. Explicit opt-in/ambiguity log checks, no second-unit ownership inference."
         }
@@ -6157,7 +6157,7 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.SpringDataSqlNativeQueryReloadTest#currentTrackedDependentAndRetainedManualHolderMatchNative",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/SpringDataSqlNativeQueryReloadTest.java",
-          "source_sha256": "253ba9cae44915a98c87a78c80cd487d5910c34ccc4e5fbbb2501772f9daf341",
+          "source_sha256": "96710a5123d74bd0dce018242823593e8ade97bc9f15dd33628ba65a13218a6a",
           "kind": "watcher",
           "assertions": "Four normal/child loader x plain/Repository interfaces; six compiled SQL-native saves: predicate, UPPER scalar expression, missing-column SQL_ERROR:42122, valid recovery, CONCAT scalar expression, revert. Exact expected result and fresh agentless native JVM per version. Retained managed manual-holder identity, current tracked owner distinct from startup holder/current injected-product identity; unrelated and other-context repository identities, both EMF identities/open state,3 rows."
         }

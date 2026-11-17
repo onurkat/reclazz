@@ -837,7 +837,7 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.HttpSecurityPolicyReloadTest#realOrderedServletRulesAndIgnoredRouteFollowFourSaves",
           "status": "PASSED",
-          "source_sha256": "d4e7e4b57ef08b5e3996e0345b448db5ea9de7fd19e3cf8abcd178001422bf1c",
+          "source_sha256": "05974972e520866b85687204146e414a4d803afc5efc2d9dc1510ffad4cb7552",
           "receipt": ".collab/research/2026-10-14-rf03-build/targeted-main-17/test/TEST-com.onurkat.reclazz.e2e.HttpSecurityPolicyReloadTest.xml",
           "framework": "Spring5.3.39 / Security5.7.11 / Tomcat9.0.121 (HTTP)",
           "artifact_sha256": "c3eec3b79ad3455a1717334288d5437815af4b7039b6a084baa004d02829ae56",
@@ -1866,7 +1866,7 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.HttpSecurityPolicyReloadTest#realOrderedServletRulesAndIgnoredRouteFollowFourSaves",
           "status": "PASSED",
-          "source_sha256": "d4e7e4b57ef08b5e3996e0345b448db5ea9de7fd19e3cf8abcd178001422bf1c",
+          "source_sha256": "05974972e520866b85687204146e414a4d803afc5efc2d9dc1510ffad4cb7552",
           "receipt": ".collab/research/2026-10-14-rf03-build/targeted-main-21/test/TEST-com.onurkat.reclazz.e2e.HttpSecurityPolicyReloadTest.xml",
           "framework": "Spring5.3.39 / Security5.7.11 / Tomcat9.0.121 (HTTP)",
           "artifact_sha256": "a6fa85e6530de954572157f73c3b9746355def56b0c53c930b75a3ebffe40ad7",
@@ -4270,7 +4270,7 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.HttpSecurityPolicyReloadTest#realOrderedServletRulesAndIgnoredRouteFollowFourSaves",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/HttpSecurityPolicyReloadTest.java",
-          "source_sha256": "d4e7e4b57ef08b5e3996e0345b448db5ea9de7fd19e3cf8abcd178001422bf1c",
+          "source_sha256": "05974972e520866b85687204146e414a4d803afc5efc2d9dc1510ffad4cb7552",
           "kind": "watcher",
           "assertions": "Actual servlet status and body counters follow saved permit/deny rules; startup chain priority, ignored route, unrelated denial and application nonce retained. Fresh agentless servlet JVM for every saved version; rejected requests execute zero servlet bodies."
         },
@@ -4283,7 +4283,7 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.HttpSecurityPolicyReloadTest#realOrderedServletRulesAndIgnoredRouteFollowFourSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/HttpSecurityPolicyReloadTest.java",
-            "source_sha256": "d4e7e4b57ef08b5e3996e0345b448db5ea9de7fd19e3cf8abcd178001422bf1c"
+            "source_sha256": "05974972e520866b85687204146e414a4d803afc5efc2d9dc1510ffad4cb7552"
           }
         }
       ],
@@ -4594,7 +4594,7 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.HttpSecurityPolicyReloadTest#realOrderedServletRulesAndIgnoredRouteFollowFourSaves",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/HttpSecurityPolicyReloadTest.java",
-          "source_sha256": "d4e7e4b57ef08b5e3996e0345b448db5ea9de7fd19e3cf8abcd178001422bf1c",
+          "source_sha256": "05974972e520866b85687204146e414a4d803afc5efc2d9dc1510ffad4cb7552",
           "kind": "watcher",
           "assertions": "Actual servlet status and body counters follow saved permit/deny rules; startup chain priority, ignored route, unrelated denial and application nonce retained. Fresh agentless servlet JVM for every saved version; rejected requests execute zero servlet bodies."
         },
@@ -4607,7 +4607,7 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.HttpSecurityPolicyReloadTest#realOrderedServletRulesAndIgnoredRouteFollowFourSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/HttpSecurityPolicyReloadTest.java",
-            "source_sha256": "d4e7e4b57ef08b5e3996e0345b448db5ea9de7fd19e3cf8abcd178001422bf1c"
+            "source_sha256": "05974972e520866b85687204146e414a4d803afc5efc2d9dc1510ffad4cb7552"
           }
         }
       ],
