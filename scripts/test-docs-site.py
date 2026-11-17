@@ -460,6 +460,18 @@ class DesignGateTest(unittest.TestCase):
 
 
 class Stage3ContractTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        # Build the site here instead of reading build/site, which exists only after a
+        # local build: the Documentation workflow runs these tests first, on a clean checkout.
+        import tempfile
+        cls._tmp=tempfile.TemporaryDirectory()
+        cls.site=Path(cls._tmp.name)/'site'
+        for name,content in build.generate().items():
+            target=cls.site/name;target.parent.mkdir(parents=True,exist_ok=True)
+            target.write_bytes(content if isinstance(content,bytes) else content.encode('utf-8'))
+    @classmethod
+    def tearDownClass(cls):cls._tmp.cleanup()
     def setUp(self):
         from website.content import support_records
         self.records=support_records(build.REPO)
@@ -481,7 +493,7 @@ class Stage3ContractTest(unittest.TestCase):
         from website.check import stage3_contract_errors
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);assets=root/'docs/assets';assets.mkdir(parents=True)
-            download=self.records;search=json.loads((build.REPO/'build/site/docs/assets/search-index.json').read_text())
+            download=self.records;search=json.loads((self.site/'docs/assets/search-index.json').read_text())
             (assets/'support.json').write_text(json.dumps(download));(assets/'search-index.json').write_text(json.dumps(search))
             self.assertNotIn('Support download coverage/content drift',stage3_contract_errors(build.REPO,root))
             (assets/'support.json').write_text(json.dumps([r for r in download if r['id']!='jdk-new']))
@@ -501,7 +513,7 @@ class Stage3ContractTest(unittest.TestCase):
         records=copy.deepcopy(self.records);records[0]['status']='unverified'
         self.assertEqual([],rendered_records_errors(self.matrix(records),records))
         with patch('website.content.support_records',return_value=records):
-            self.assertIn('Support status lock drift',stage3_contract_errors(build.REPO,build.REPO/'build/site'))
+            self.assertIn('Support status lock drift',stage3_contract_errors(build.REPO,self.site))
     def test_T4_overview_is_derived_and_badge_mutation_fails(self):
         from website.check import rendered_records_errors
         import copy
@@ -516,7 +528,7 @@ class Stage3ContractTest(unittest.TestCase):
         from website.check import stage3_contract_errors
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);target=root/'docs/quickstart/index.html';target.parent.mkdir(parents=True)
-            original=(build.REPO/'build/site/docs/quickstart/index.html').read_text()
+            original=(self.site/'docs/quickstart/index.html').read_text()
             self.assertIn('id="optional-command-line-plugin-installation"',original)
             target.write_text(original.replace('id="optional-command-line-plugin-installation"','id="removed-legacy-anchor"'))
             self.assertIn('Missing frozen fragment: docs/quickstart/index.html#optional-command-line-plugin-installation',stage3_contract_errors(build.REPO,root))
