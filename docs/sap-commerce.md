@@ -221,15 +221,41 @@ keeps using hot reload. Replace the paths with the project's own.
 ## Hot reload with Reclazz (SAP Commerce)
 
 This project runs its SAP Commerce server with the Reclazz agent attached
-(wired into tomcat.javaoptions), so a running server picks up compiled changes
-without a restart. Prefer this loop over restarting: a restart costs minutes.
+(wired into tomcat.javaoptions with autoCompile=true), so a running server
+picks up changes without a restart. Prefer this loop over restarting: a
+restart costs minutes. The reclazz MCP server is configured with
+--project-dir ${HYBRIS_HOME} (its .reclazz/agent.port is found automatically).
 
-Apply a Java change while the server runs:
-1. Edit the code in the extension.
-2. Rebuild: `cd ${HYBRIS_HOME}/bin/platform && ant build`.
-3. The agent hot-swaps the changed classes. Do not restart.
-4. Verify with the reclazz_status MCP tool (hybrisHome set), or check
-   ${HYBRIS_HOME}/.reclazz/agent.port exists and the log shows the reload.
+Apply a Java change while the server runs (autoCompile=true, no ant):
+1. Call reclazz_await_reload with action checkpoint. Keep the returned
+   sessionId, subscriptionId and cursor. Do this before saving.
+2. Edit and save the source file in the extension.
+3. Call reclazz_await_reload with action wait, the three values from step 1
+   as sessionId, subscriptionId and afterCursor, the absolute .java path as
+   filePath and the class's binary name as ownerClassName.
+4. Act on the status:
+   - applied: the exact compiled bytes were loaded. Exercise the endpoint or
+     run the test; applied alone does not prove behavior.
+   - compile_error: read the diagnostics (file and line), fix the code and go
+     back to step 1. The server keeps running the last good code.
+   - held: automatic reload is paused or a BUILD is open; finish or release it,
+     then wait again with the same checkpoint.
+   - restart_required or refused: the change cannot be applied live; tell the
+     user and check reclazz_pending.
+   - timeout or unavailable: not a success. Check reclazz_status and
+     reclazz_diagnose with className before retrying.
+5. Do not restart the server for anything that reached applied.
+
+If you must compile with ant instead:
+1. Call reclazz_build with state started and a unique owner token; require
+   it to be acknowledged before compiling.
+2. Run `cd ${HYBRIS_HOME}/bin/platform && ant build`.
+3. Call reclazz_build with the same owner and state ok on exit zero, or state
+   failed otherwise. Classes from a failed or half-finished build are not
+   loaded.
+4. Confirm each changed class with reclazz_verify (className and the
+   lower-case SHA-256 of its compiled .class file); only status applied
+   counts. Then exercise the endpoint or test.
 
 For *-items.xml / *-beans.xml changes the agent regenerates and reloads the
 models; a genuinely new attribute needs HAC > Update Running System for its
