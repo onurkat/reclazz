@@ -165,7 +165,13 @@ class AwaitReloadTest {
                     case "wrong-order" -> { f.emit("RELOAD", "Reloaded " + OWNER + " (1ms)"); f.emit("COMPILE", "Compiled Service.java (1ms)"); }
                 }
                 JsonObject d = data(f.server, f.waitFor(cp, true, true));
-                assertEquals("timeout", d.get("status").getAsString(), mode + d);
+                // Nothing matching arrives, so the wait runs to its total deadline. When that
+                // deadline falls inside a read-only query the answer is unavailable/response_timeout
+                // instead of timeout; on a slow runner either can come first. Both refuse.
+                String status = d.get("status").getAsString();
+                assertTrue(status.equals("timeout")
+                        || (status.equals("unavailable") && d.get("reasonCode").getAsString().equals("response_timeout")),
+                        mode + d);
                 assertFalse(d.get("reloadConfirmed").getAsBoolean());
                 assertEquals(0, f.commands.stream().filter(c -> c.startsWith("VERIFY ")).count(), mode);
             }

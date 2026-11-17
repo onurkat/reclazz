@@ -225,7 +225,7 @@ class P3bRegistryCompletenessTest {
 
     private static void assertSourceNamesClass(JsonNode test, String type, String pathKey, String hashKey) throws Exception {
         Path source = localFile(text(test, pathKey));
-        assertTrue(source.toString().endsWith(type.replace('.', '/') + ".java"), "wrong test source: " + type);
+        assertTrue(source.endsWith(Path.of(type.replace('.', '/') + ".java")), "wrong test source: " + type);
         assertEquals(sha256(source), text(test, hashKey), "declaring test source drift: " + type);
     }
 
