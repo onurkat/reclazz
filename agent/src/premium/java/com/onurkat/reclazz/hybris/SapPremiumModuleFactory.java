@@ -358,9 +358,12 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
                             + outcome.key() + " now reads \"" + outcome.actual() + "\". Reopen the view to see them.");
                     case UNCHECKED -> StatusReporter.success("Backoffice labels re-read from " + fileName
                             + ". Reopen the view to see them.");
-                    case STALE -> StatusReporter.warn("Backoffice labels were cleared but " + outcome.key()
-                            + " still reads \"" + outcome.actual() + "\" instead of \"" + outcome.expected()
-                            + "\". Restart the server to apply " + fileName + ".");
+                    case STALE -> {
+                        StatusReporter.warn("Backoffice labels were cleared but " + outcome.key()
+                                + " still reads \"" + outcome.actual() + "\" instead of \"" + outcome.expected()
+                                + "\". Restart the server to apply " + fileName + ".");
+                        RestartLedger.note(fileName, "Backoffice label " + outcome.key() + " still reads the old text");
+                    }
                     // Backoffice loads ZK lazily; before anyone opens it there is
                     // no cache to clear and nothing to report.
                     case NOT_LOADED -> StatusReporter.warn("Backoffice is not running here, so its labels were left alone.");

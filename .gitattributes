@@ -1,5 +1,9 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# Auto detect text files and keep them LF in every checkout. The evidence
+# registries hash file bytes and look for "\n"-terminated headings, so a
+# Windows checkout with CRLF failed them all.
+* text=auto eol=lf
+*.bat text eol=crlf
+*.cmd text eol=crlf
 
 *.java text diff=java
 *.kt text diff=kotlin

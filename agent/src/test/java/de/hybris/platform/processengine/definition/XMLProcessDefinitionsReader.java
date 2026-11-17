@@ -17,7 +17,8 @@ public class XMLProcessDefinitionsReader {
     public Runnable afterParse;
     public ProcessDefinition from(Resource resource) throws Exception {
         parses++;
-        byte[] bytes = resource.getInputStream().readAllBytes();
+        byte[] bytes;
+        try (var in = resource.getInputStream()) { bytes = in.readAllBytes(); }
         var factory = DocumentBuilderFactory.newInstance();
         factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
         var builder = factory.newDocumentBuilder();
