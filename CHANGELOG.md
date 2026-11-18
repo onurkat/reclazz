@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [1.7.1] - 2026-11-18
+
 ### Fixed
 
 - Saving a Backoffice `labels_*.properties` file now shows the new text. The
@@ -14,6 +16,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   after signing in again. Reclazz now reloads the labels straight away through
   Backoffice's own class loader, checks one key of the saved file, and says
   so; if that key still reads the old text it tells you to restart instead.
+- Saving a `*-beans.xml` or `*-items.xml` file no longer makes SAP Commerce
+  code generation run again and again. Before running `ant build`, Reclazz
+  touches the saved file so the generator does not skip it, and it ignored the
+  file event that touch causes only when the event came within three seconds.
+  On a JDK without native file watching the watcher polls, and while `ant`
+  kept the CPU busy it reported the touch four to six seconds late. Every late
+  event started `ant build` again, until the server was restarted. Reclazz now
+  recognizes its own touch by the file's content, however late the event
+  arrives, and saving the same content again after a failed build still
+  retries.
 
 ## [1.7.0] - 2026-11-16
 

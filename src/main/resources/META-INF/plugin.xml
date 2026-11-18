@@ -110,6 +110,11 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h3>1.7.1</h3>
+        <ul>
+            <li>Saving a Backoffice <code>labels_*.properties</code> file now shows the new text straight away, instead of only clearing the label cache; if a key still reads the old text, Reclazz tells you to restart.</li>
+            <li>Saving a <code>*-beans.xml</code> or <code>*-items.xml</code> file no longer makes SAP Commerce code generation run <code>ant build</code> again and again on a JDK without native file watching.</li>
+        </ul>
         <h3>1.7.0</h3>
         <ul>
             <li><b>Spring Boot 4 and Spring 7.</b> A new controller endpoint appears without a restart when Boot's actuator is on the classpath. Getters added to a JSON DTO show up under Jackson 3. <code>@Value</code> fields that read a relaxed property name pick up the new value. Spring 7 property, MVC, security and constructor changes reload on the same paths as Spring 6.</li>

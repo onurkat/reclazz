@@ -387,7 +387,7 @@ Decoded `contents[0].text`, showing only the recorded attachment fields:
 ```json
 {
   "attached": true,
-  "agent": "1.7.0",
+  "agent": "1.7.1",
   "protocol": 1
 }
 ```
