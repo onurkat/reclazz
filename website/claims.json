@@ -7,7 +7,7 @@
   "intellij_builds": {
     "source": "build.gradle.kts",
     "extractor": "intellij_builds",
-    "value": "2023.3 to 2026.2"
+    "value": "2023.3 to 2026.3"
   },
   "agent_java_min": {
     "source": "docs/installation.md",
