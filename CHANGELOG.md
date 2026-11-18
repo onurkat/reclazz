@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [1.7.2] - 2026-11-18
+
+### Fixed
+
+- **Compatible with IntelliJ IDEA 2026.3.** The `until-build` was capped at
+  `262.*`, so the Marketplace did not offer the plugin on IDE build 263. The
+  range now extends through `263.*`, and the Plugin Verifier runs against
+  2026.3 as well. No agent, plugin or MCP code changed.
+
 ## [1.7.1] - 2026-11-18
 
 ### Fixed
