@@ -64,6 +64,28 @@ class MvcInterceptorDependencyReloadTest {
         }
     }
 
+    @ParameterizedTest @org.junit.jupiter.params.provider.ValueSource(booleans = {false, true})
+    void bodyEditKeepsInterceptorAndMapping(boolean child) throws Exception {
+        registration = "injected";
+        String servlet = Arrays.stream(System.getProperty("java.class.path").split(File.pathSeparator))
+                .filter(p -> { String n = Path.of(p).getFileName().toString();
+                    return n.startsWith("javax.servlet-api-") || n.startsWith("tomcat-embed-core-") || n.startsWith("micrometer-"); })
+                .collect(Collectors.joining(File.pathSeparator));
+        var builder = WatchedApp.in(tmp).classpath(WatchedApp.springClasspath() + File.pathSeparator + servlet)
+                .agentArgs("startupDelaySec=1,debounceMs=100,verbose=true").jvmArgs("-Dprobe.dir=" + tmp)
+                .with("App", APP).with("Api", API).with("Config", config(registration))
+                .with("Primary", bodyPrimary(1)).with("Stable", stable()).with("Helper", helper(1));
+        if (child) builder.childClassLoader();
+        try (var app = builder.start()) {
+            app.awaitOrFail("READY=true", "MVC fixture missing"); app.awaitOrFail("] Watching ", "watcher missing");
+            check(app, 1, 1, 1);
+            app.rewrite("Primary", bodyPrimary(2)); awaitReload(app, "Primary", 1);
+            // Probe 2 asserts the original mapping is retained while serving the changed body.
+            check(app, 2, 2, 1);
+            assertTrue(app.output().stream().anyMatch(line -> line.contains("bean primary kept, state preserved")), app.tail());
+        }
+    }
+
     private long reloads(WatchedApp app, String name) {
         return app.output().stream().filter(s -> s.contains("Reloaded app." + name + " ")
                 || s.contains("Structural reload: app." + name + " ")).count();
@@ -93,6 +115,26 @@ class MvcInterceptorDependencyReloadTest {
                 + generation + ":\" + seed; } }";
     }
     private String primary(int generation) {
+        // Only the injected registration scenario requires mapping replacement through recreation.
+        if (!registration.equals("injected")) return bodyPrimary(generation);
+        return ("""
+                package app;
+                import javax.servlet.http.*;
+                @org.springframework.stereotype.Component
+                public class Primary implements org.springframework.web.servlet.HandlerInterceptor {
+                    private final String marker = new String("A%d");
+                    @org.springframework.beans.factory.annotation.Autowired private Helper helper;
+                    public boolean preHandle(HttpServletRequest req, HttpServletResponse res, Object handler) {
+                        App.trace(req, marker + "/" + helper.value()); return true;
+                    }
+                    public void postHandle(HttpServletRequest req, HttpServletResponse res, Object handler,
+                                           org.springframework.web.servlet.ModelAndView view) { App.trace(req, "Apost"); }
+                    public void afterCompletion(HttpServletRequest req, HttpServletResponse res, Object handler,
+                                                Exception error) { App.trace(req, "Adone"); }
+                }
+                """).formatted(generation).replace("javax.servlet", servletNamespace() + ".servlet");
+    }
+    private String bodyPrimary(int generation) {
         return ("""
                 package app;
                 import javax.servlet.http.*;

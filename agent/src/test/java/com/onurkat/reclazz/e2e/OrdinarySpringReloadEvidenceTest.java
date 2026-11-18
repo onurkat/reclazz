@@ -46,7 +46,10 @@ class OrdinarySpringReloadEvidenceTest {
             app.awaitOrFail("BEFORE=1:41:null:0:null", "baseline state/injection differs");
             app.awaitOrFail("] Watching ", "watcher missing");
             if (child) app.awaitOrFail("APP_IN_CHILD_MODULE=true", "child loader missing");
-            app.rewrite("Service", service(injection).replace("return 1;", "return 2;"));
+            String edited = service(injection).replace("return 1;", "return 2;");
+            // Recreation evidence needs a real creation change; body-only state retention has its own regression.
+            if (!injection) edited = edited.replace("public Service() { }", "public Service() { state = 0; }");
+            app.rewrite("Service", edited);
             long until = System.nanoTime() + TimeUnit.SECONDS.toNanos(25);
             while (System.nanoTime() < until && app.output().stream().noneMatch(s -> s.contains("Reloaded app.Service")
                     || s.contains("Structural reload: app.Service"))) Thread.sleep(25);
@@ -64,6 +67,7 @@ class OrdinarySpringReloadEvidenceTest {
                 package app;
                 @org.springframework.stereotype.Service
                 public class Service {
+                    public Service() { }
                     public int state;
                     %s public String token;
                     %s public int amount;

@@ -16,12 +16,12 @@ applying these results to your installation.
 
 We use a clean, licensed SAP Commerce 2211 installation with HSQLDB, standard
 SAP modules and synthetic test extensions. It is separate from customer systems.
-The default suite now contains **64 scenarios, all required to PASS, with zero
+The default suite now contains **65 scenarios, all required to PASS, with zero
 SKIPs**. The archived acceptance for the preceding 58-case membership ran five
 times on one server boot and once after a fresh boot: **six runs of 58/58 PASS**, with zero bean-refresh
 failures and unchanged fixture files. Since 13 November 2026 each accepted change
 runs the default suite twice, once on the same boot and once after a fresh boot;
-the latest acceptance was 64/64 in both runs. Hibernate ORM is tested separately in the agent
+the latest acceptance was 65/65 in both runs. Hibernate ORM is tested separately in the agent
 regression suite; it is not a SAP live scenario.
 
 The live tests run locally before relevant commits and releases. CI execution
@@ -332,6 +332,14 @@ channel type changes, gateways and Java DSL flows still ask for a restart.
 Poller edits are restart-only except the file inbound adapter case in
 [focused checks](#focused-checks-outside-the-default-suite).
 
+`KeepSingletonStateLiveTest` adds default case65. An OCC controller holds a
+counter and calls a component-scanned service that holds a map. A body edit of
+the service, and then of the controller, serves the new code while both
+objects keep their identity and the counter and the map keep counting from
+where they were. Each file is restored and the original code is verified
+again. Constructor, injection and lifecycle changes still recreate the bean;
+those cases are covered in the agent regression suite.
+
 ## Localization and properties
 
 **You edit:** An English type-localization resource or an application property.
@@ -546,7 +554,7 @@ version, then renders JSP. Editing and reverting the selected component's Java
 marker changes its HTML while the other version and independent controls remain
 stable. Persisted identities stay unchanged, the previous session catalog scope
 is restored, and owned rows are removed through SAP's model service. This case
-is opt-in and does not increase the default 64-case suite. See the
+is opt-in and does not increase the default 65-case suite. See the
 [request-component case](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/CmsComponentLiveTest.kt)
 and [persisted UID case](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/CmsUidLookupLiveTest.kt).
 
@@ -617,7 +625,7 @@ and the [live profile driver](../scripts/test-sap-backoffice-live.py).
 ## Focused checks outside the default suite
 
 These changes were measured on a running SAP Commerce 2211 installation, but
-they are not part of the 64 default scenarios. In each case a native-only run
+they are not part of the 65 default scenarios. In each case a native-only run
 (agent off, same save) first showed that SAP keeps the old behavior until a
 restart. The agent run then showed the new behavior in the same JVM, and a
 deliberately disabled agent step made the focused tests fail. Repeatable local

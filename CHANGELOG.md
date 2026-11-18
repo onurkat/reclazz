@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed
+
+- Eligible Spring singletons keep their identity and mutable state across
+  business method edits, added methods and supported added-field initializers.
+  Changes to creation, injection or lifecycle code still recreate the bean;
+  reload output names the decision and reason.
+
+### Fixed
+
+- On Spring Framework 7, a controller could continue serving an old injected
+  service after reload recreated that service. Stale resolved MVC handlers are
+  now invalidated under the registry lock, including concurrent resolution.
+
 ## [1.7.2] - 2026-11-18
 
 ### Fixed

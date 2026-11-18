@@ -4,6 +4,8 @@
  */
 package com.onurkat.reclazz.spring;
 
+import com.onurkat.reclazz.transform.KeepBaseline;
+
 import com.onurkat.reclazz.platform.PlatformContext;
 import com.onurkat.reclazz.ui.ReloadEffects;
 import com.onurkat.reclazz.ui.StatusReporter;
@@ -261,6 +263,14 @@ public class SpringReloadOrchestrator {
                                 boolean addedMethods,
                                 java.util.Set<String> addedMethodSigs,
                                 byte[] newBytecode) {
+        onClassReloaded(className, reloadedClass, isStructural, annotationsChanged,
+                addedMethods, addedMethodSigs, newBytecode, null);
+    }
+
+    public void onClassReloaded(String className, Class<?> reloadedClass,
+                                boolean isStructural, boolean annotationsChanged,
+                                boolean addedMethods, java.util.Set<String> addedMethodSigs,
+                                byte[] newBytecode, KeepBaseline.Input keepInput) {
         if (reloadedClass == null) return;
         if (addedMethods) classesWithAddedMembers.add(className);
 
@@ -288,13 +298,16 @@ public class SpringReloadOrchestrator {
             // 1. Bean refresh, pass the actual Class object: its own
             // classloader is the only reliable way to match bean types
             // across contexts with different classloaders.
+            boolean listenerOwner = jmsReloader.hasListeners(reloadedClass, newBytecode)
+                    || kafkaReloader.hasListeners(reloadedClass, newBytecode)
+                    || rabbitReloader.hasListeners(reloadedClass, newBytecode);
             if (!rabbitReloader.beforeBeanRefresh(reloadedClass, newBytecode, addedMethodSigs, kafkaReloader, jmsReloader)) return;
             if (!jmsReloader.beforeBeanRefresh(reloadedClass, newBytecode, kafkaReloader)) return;
             if (!kafkaReloader.beforeBeanRefresh(reloadedClass, newBytecode)) return;
             if (!lifecycle.install()) return;
             // Repository products have one refresh owner, including when their
             // interface also carries the ordinary Spring @Repository stereotype.
-            if (!SpringDataReloader.isRepository(reloadedClass)) beanReloader.refreshBean(className, reloadedClass, raw);
+            if (!SpringDataReloader.isRepository(reloadedClass)) beanReloader.refreshBean(className, reloadedClass, raw, keepInput, listenerOwner);
 
             // 2. MVC re-scan. Structural changes need it because the set of
             // handler methods moved; annotation changes need it because the

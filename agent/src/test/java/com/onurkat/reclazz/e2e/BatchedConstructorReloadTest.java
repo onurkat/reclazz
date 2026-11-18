@@ -47,7 +47,7 @@ class BatchedConstructorReloadTest {
                 .agentArgs("startupDelaySec=1,debounceMs=300,verbose=true,portFile=" + port + ",autoCompile=" + auto)
                 .jvmArgs("-Dprobe.dir=" + dir, "-Dprobe.mode=" + mode)
                 .with("Service", service("hello"))
-                .with("Noise", noise("noise-one"))
+                .with("Noise", noise("noise-one", mode.equals("effects")))
                 .with("Controller", "package app; public class Controller { @org.springframework.beans.factory.annotation.Autowired public Service service; }")
                 .with("App", APP);
         if (auto) builder.mavenLayout();
@@ -57,7 +57,7 @@ class BatchedConstructorReloadTest {
             scan(port);
             int start = app.output().size();
             if (batch) control(port, "pause");
-            save(app, auto, batch ? Map.of("Service", service("constructed"), "Noise", noise("noise-two"))
+            save(app, auto, batch ? Map.of("Service", service("constructed"), "Noise", noise("noise-two", mode.equals("effects")))
                     : Map.of("Service", service("constructed")));
             if (batch) {
                 scan(port);
@@ -87,7 +87,7 @@ class BatchedConstructorReloadTest {
             if (mode.equals("frameworkFailure")) {
                 long serviceEvents = reloadLines(app, "Service").size();
                 long serviceRefreshes = app.output().stream().filter(s -> s.contains("Spring bean refreshed: service")).count();
-                save(app, false, Map.of("Noise", noise("noise-three")));
+                save(app, false, Map.of("Noise", noise("noise-three", mode.equals("effects"))));
                 awaitReceipt(port, app, "Noise", "applied");
                 assertTrue(observe(app, 2).contains("noise:noise-three"), app.tail());
                 assertEquals(serviceEvents, reloadLines(app, "Service").size(), "old service work replayed into next batch");
@@ -177,8 +177,12 @@ class BatchedConstructorReloadTest {
         return "package app;\n@org.springframework.stereotype.Service public class Service { private String greeting=\"" + value
                 + "\"; public String getGreeting() { return greeting; } }";
     }
-    private static String noise(String value) {
-        return "package app;\n@org.springframework.stereotype.Service public class Noise { public String value() { return \"" + value + "\"; } }";
+    private static String noise(String value, boolean recreationEffects) {
+        if (!recreationEffects) return "package app;\n@org.springframework.stereotype.Service public class Noise { public String value() { return \"" + value + "\"; } }";
+        // This receipt-isolation scenario needs two genuine recreation owners.
+        // A body-only sibling is now deliberately retained by the keep policy.
+        return "package app;\n@org.springframework.stereotype.Service public class Noise { private String value=\"" + value
+                + "\"; public String value() { return value; } }";
     }
     private static final String APP = """
         package app;

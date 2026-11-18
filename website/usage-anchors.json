@@ -184,6 +184,20 @@
       "heading": "### XML singleton recreation\n"
     },
     {
+      "level": 3,
+      "title": "Singleton state across class saves",
+      "id": "singleton-state-across-class-saves",
+      "body_sha256": "61c5ee870fb78c2b99d456a7322006c241a8bd236d9e166192f8b75808335fd7",
+      "heading": "### Singleton state across class saves\n",
+      "key": "singleton-state-across-class-saves",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Singleton state across class saves"
+      ],
+      "occurrence": 0,
+      "introduced_by": "keep-singleton-state"
+    },
+    {
       "key": "new-component-classes-after-startup",
       "identity": [
         "Option 1: Manual Setup",

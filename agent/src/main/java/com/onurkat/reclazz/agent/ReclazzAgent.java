@@ -405,6 +405,21 @@ public class ReclazzAgent {
                     config::isJpaRefresh,
                     () -> probeForJpa != null && probeForJpa.hasEnhancedRedefinition());
 
+            if (!enableStructural) {
+                transformContext = new TransformContext();
+                transformContext.populateFromPlatformContext(platformContext);
+                instrumentation.addTransformer(new java.lang.instrument.ClassFileTransformer() {
+                    @Override public byte[] transform(ClassLoader loader, String name, Class<?> redefining,
+                            java.security.ProtectionDomain domain, byte[] bytes) {
+                        if (name != null && loader != null && redefining == null && transformContext.isWatched(name)) {
+                            try { com.onurkat.reclazz.transform.KeepBaseline.capture(loader, name, bytes); }
+                            catch (RuntimeException unavailable) { /* Missing evidence selects recreation. */ }
+                        }
+                        return null;
+                    }
+                }, false);
+            }
+
             // Set up transform context and structural reloader if enabled
             if (enableStructural) {
                 transformContext = new TransformContext();
@@ -1005,6 +1020,8 @@ public class ReclazzAgent {
                         className, bytecode, platformContext.getAllApplicationContexts());
             }
 
+            var keepInput = new com.onurkat.reclazz.transform.KeepBaseline.Input(
+                    com.onurkat.reclazz.transform.KeepBaseline.get(findLoadedClass(className)), bytecode);
             reloadResult = reloadWithCacheBoundary(className, internalName, bytecode, reloader);
 
             long elapsed = System.currentTimeMillis() - startTime;
@@ -1014,7 +1031,7 @@ public class ReclazzAgent {
 
             if (reloadResult.isSuccess()) {
                 deferOrComplete(new FrameworkReload(className, reloadResult, bytecode, wasLoaded,
-                        source, startTime, true, springOrchestrator, modules));
+                        source, startTime, true, springOrchestrator, modules, keepInput));
             } else {
                 ReloadEffects.end();
                 SessionReport.failed();
@@ -1212,6 +1229,7 @@ public class ReclazzAgent {
         final String className;
         final ClassReloader.ReloadResult result;
         final byte[] bytes;
+        final com.onurkat.reclazz.transform.KeepBaseline.Input keepInput;
         final boolean wasLoaded;
         final String source;
         final long started;
@@ -1224,7 +1242,9 @@ public class ReclazzAgent {
 
         FrameworkReload(String className, ClassReloader.ReloadResult result, byte[] bytes,
                         boolean wasLoaded, String source, long started, boolean timed,
-                        SpringReloadOrchestrator spring, PremiumModules modules) {
+                        SpringReloadOrchestrator spring, PremiumModules modules,
+                        com.onurkat.reclazz.transform.KeepBaseline.Input keepInput) {
+            this.keepInput = keepInput;
             this.className = className; this.result = result; this.bytes = bytes;
             this.wasLoaded = wasLoaded; this.source = source; this.started = started;
             this.timed = timed; this.spring = spring; this.modules = modules;
@@ -1297,6 +1317,7 @@ public class ReclazzAgent {
                 ReloadEvents.failed(work.className, why, work.source);
                 return;
             }
+            com.onurkat.reclazz.transform.KeepBaseline.advance(type, work.bytes);
             if (work.wasLoaded) JpaMappingRefresh.retryPendingEntity(work.className, work.bytes);
             var interceptor = work.result.isInterceptor() && work.modules != null
                     && platformContext.getPlatformId() == PlatformContext.Platform.HYBRIS
@@ -1306,7 +1327,7 @@ public class ReclazzAgent {
             if (work.result.isSpringBean()) {
                 work.spring.onClassReloaded(work.className, type, work.result.isStructuralReload(),
                         work.result.isAnnotationsChanged(), work.result.isMethodsAdded(),
-                        work.result.getAddedMethodSigs(), work.result.getNewBytecode());
+                        work.result.getAddedMethodSigs(), work.result.getNewBytecode(), work.keepInput);
             } else {
                 work.spring.onHelperReloaded(work.className, type, work.result.isStructuralReload(),
                         work.result.isAnnotationsChanged(), work.result.isMethodsAdded(),
@@ -1406,6 +1427,8 @@ public class ReclazzAgent {
                         className, bytecode, platformContext.getAllApplicationContexts());
             }
 
+            var keepInput = new com.onurkat.reclazz.transform.KeepBaseline.Input(
+                    com.onurkat.reclazz.transform.KeepBaseline.get(findLoadedClass(className)), bytecode);
             ClassReloader.ReloadResult reloadResult;
             ReloadEffects.begin(className);
             try {
@@ -1422,7 +1445,7 @@ public class ReclazzAgent {
             if (reloadResult.isSuccess()) {
                 successCount++;
                 FrameworkReload work = new FrameworkReload(className, reloadResult, bytecode, wasLoaded,
-                        sources.get(className), startTime, compiledClasses.size() == 1, springOrchestrator, modules);
+                        sources.get(className), startTime, compiledClasses.size() == 1, springOrchestrator, modules, keepInput);
                 frameworkResults.add(work);
                 deferOrComplete(work);
             } else {

@@ -38,6 +38,18 @@ public final class SpringRabbitReloader {
     private record Infrastructure(Object context, Object processor, Object registry) { }
     private record Container(Object registry, String id, Object instance) { }
 
+    /** Capture ownership before beforeBeanRefresh retires the registered containers. */
+    synchronized boolean hasListeners(Class<?> type, byte[] bytes) {
+        if (owners.get(type).registered || declaresRabbit(type, bytes)) return true;
+        try {
+            for (var scope : infrastructures()) for (var container : containers(scope.registry())) {
+                Object bean = listenerBean(messageListener(container.instance()));
+                if (AddedRabbitListenerAdapter.ownerOf(bean) == type || (bean != null && type.isInstance(bean))) return true;
+            }
+            return false;
+        } catch (Throwable unavailable) { return true; }
+    }
+
     public synchronized boolean beforeBeanRefresh(Class<?> type) {
         return beforeBeanRefresh(type, null);
     }

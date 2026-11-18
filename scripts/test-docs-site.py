@@ -674,9 +674,9 @@ class MarketingContractTest(unittest.TestCase):
             root=Path(d)
             for n in ('website/claims.json','gradle.properties','build.gradle.kts','docs/installation.md','docs/sap-commerce-live-tests.md'):
                 target=root/n;target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(self.repo/n,target)
-            target=root/'docs/sap-commerce-live-tests.md';target.write_text(target.read_text().replace('**64 scenarios','**65 scenarios'))
+            target=root/'docs/sap-commerce-live-tests.md';target.write_text(target.read_text().replace('**65 scenarios','**66 scenarios'))
             with self.assertRaisesRegex(ValueError,'claim mismatch'):marketing_claims(root)
-        self.assertIn('Rendered scenario claim mismatch',marketing_render_errors(self.repo,self.home.replace('defines 64 required','defines 65 required'),self.compare,self.tr))
+        self.assertIn('Rendered scenario claim mismatch',marketing_render_errors(self.repo,self.home.replace('defines 65 required','defines 66 required'),self.compare,self.tr))
         # The source guard is exercised through the real checker in an isolated source fixture.
         from website.check import marketing_contract_errors
         with tempfile.TemporaryDirectory() as d:

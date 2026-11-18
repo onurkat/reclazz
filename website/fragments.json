@@ -358,6 +358,7 @@
     "sap-populator-and-list-merge-directives",
     "refreshing-a-custom-cache-after-a-helper-reload",
     "xml-singleton-recreation",
+    "singleton-state-across-class-saves",
     "new-component-classes-after-startup",
     "lifecycle-methods-added-after-startup",
     "bean-methods-added-after-startup",

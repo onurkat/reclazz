@@ -5,6 +5,7 @@
       "heading": "Spring beans and components",
       "intro": "Read the [component registration](#new-component-classes-after-startup) and web integration sections below.",
       "keys": [
+        "singleton-state-across-class-saves",
         "new-component-classes-after-startup",
         "lifecycle-methods-added-after-startup",
         "bean-methods-added-after-startup",

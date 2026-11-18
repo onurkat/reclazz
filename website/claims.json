@@ -2,7 +2,7 @@
   "sap_scenarios": {
     "source": "docs/sap-commerce-live-tests.md",
     "extractor": "sap_scenarios",
-    "value": "64"
+    "value": "65"
   },
   "intellij_builds": {
     "source": "build.gradle.kts",

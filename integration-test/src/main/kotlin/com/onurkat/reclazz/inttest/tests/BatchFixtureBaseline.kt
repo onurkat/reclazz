@@ -37,12 +37,12 @@ class BatchFixtureBaseline(private val config:TestConfig) {
         "resources/reclazztest-process-resources-spring.xml","resources/process/reclazz-process-existing.xml",
         "resources/impex/reclazz-batch-refusal.impex","resources/localization/reclazztest-locales_en.properties",
         "resources/occ/v2/reclazztestocc/web/spring/reclazztestocc-web-spring.xml",
-        "src/com/onurkat/reclazztest/occ/ReclazzProbeOccController.java",
+        "src/com/onurkat/reclazztest/occ/ReclazzProbeOccController.java","src/com/onurkat/reclazztest/occ/KeepStateOccController.java",
         "web/src/com/onurkat/reclazztest/controllers/NativeExecutionController.java",
         "web/src/com/onurkat/reclazztest/controllers/BatchVerificationController.java","resources/reclazztest-beans.xml",
         "web/src/com/onurkat/reclazztest/controllers/ItemsSchemaController.java",
         "web/src/com/onurkat/reclazztest/controllers/StaticProbeController.java","resources/reclazztest-items.xml")+
-        listOf("StaticProbe","ProbePopulator","NativeProbeJob","NativeProbeListener","ProbeValidator","ValidatedPayload","OrikaRollbackData","OrikaRollbackWsDTO")
+        listOf("StaticProbe","ProbePopulator","NativeProbeJob","NativeProbeListener","ProbeValidator","ValidatedPayload","OrikaRollbackData","OrikaRollbackWsDTO","KeepStateProbe")
             .map {"src/com/onurkat/reclazztest/batch/$it.java"}
     private val constraints=listOf("src/com/onurkat/reclazztest/batch/ProbeConstraintGroups.java",
         "src/com/onurkat/reclazztest/batch/ProbeValidationState.java",

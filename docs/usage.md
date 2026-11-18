@@ -452,6 +452,34 @@ The IntelliJ plugin scans for running JVMs, identifies SAP Commerce processes (b
 
 Read the [component registration](#new-component-classes-after-startup) and web integration sections below.
 
+### Singleton state across class saves
+
+A save keeps an eligible, already initialized Spring singleton when the change
+is limited to business method bodies, added methods, or added instance fields
+whose initializers Reclazz can lift. Counters, maps and other mutable fields
+stay on the same object, and dependents keep their references and state. The
+reload line says `bean <name> kept, state preserved`. MVC mapping and
+class-dependent cache refreshes still run.
+
+A change to constructors beyond supported added-field initializers, injection
+points, lifecycle callbacks, configured init/destroy methods, XML property
+setters or Aware creation callbacks recreates the bean. Editing the body of an
+existing creation callback also requires recreation. Removed methods or changed method signatures, removed or retyped fields,
+missing pre-reload baselines and unreadable creation metadata take that same
+conservative path. The line says `re-created (<reason>)`; mutable state is not
+copied to the replacement.
+Changes to annotations on existing fields, methods or constructor parameters
+also take the recreate path; annotations on newly added members are evaluated
+with those additions.
+
+This retention covers plain singletons and supported static proxy targets.
+A CGLIB proxy gaining a public method recreates. Configuration classes,
+FactoryBean/factory-method products, listener owners and specialized constructor
+owners keep their existing refresh paths. Prototype, request, session and custom
+scopes are outside this retention decision. On Spring Framework 7, completed
+recreation also invalidates stale resolved MVC singleton handlers under their
+registry lock, so later requests can resolve the current controller graph.
+
 ### New component classes after startup
 
 A new class with a direct or composed Spring component stereotype can register

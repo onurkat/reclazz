@@ -88,6 +88,8 @@ public final class InstanceInitialiserSlicer implements Opcodes {
         public final Map<String, InsnList> initialisers;
         /** Field key to the reason it was left alone. */
         public final Map<String, String> refused;
+        public record Run(int start, int end) { }
+        public final Map<String, Map<String, Run>> runs = new LinkedHashMap<>();
 
         Plan(Map<String, InsnList> initialisers, Map<String, String> refused) {
             this.initialisers = initialisers;
@@ -156,7 +158,22 @@ public final class InstanceInitialiserSlicer implements Opcodes {
                 }
             }
         }
-        return new Plan(initialisers, refused);
+        Plan result = new Plan(initialisers, refused);
+        constructors.forEach((desc, slice) -> {
+            Map<String, Plan.Run> runs = new LinkedHashMap<>();
+            slice.starts.forEach((key, start) -> {
+                if (refused.containsKey(key) || !initialisers.containsKey(key)) return;
+                AbstractInsnNode[] nodes = slice.ctor.instructions.toArray();
+                for (int i = start; i < nodes.length; i++) {
+                    if (nodes[i] instanceof FieldInsnNode f && f.getOpcode() == PUTFIELD
+                            && f.owner.equals(cls.name) && (f.name + ":" + f.desc).equals(key)) {
+                        runs.put(key, new Plan.Run(start, i + 1)); break;
+                    }
+                }
+            });
+            result.runs.put(desc, Map.copyOf(runs));
+        });
+        return result;
     }
 
     private record ConstructorSlice(MethodNode ctor, Plan plan, Map<String, Integer> starts) { }

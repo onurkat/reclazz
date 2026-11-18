@@ -16,7 +16,7 @@ Spring Boot DevTools restarts the application context after a code change. Recla
 |---|---|---|---|
 | Price | **Free & open source** | Free | Commercial |
 | Reload type | **In-place hot-swap** | Full context restart | In-place hot-swap |
-| Application state | Retained for in-place body edits; recreated beans lose mutable instance state | Lost on restart | Preserved |
+| Application state | Eligible Spring singletons retain identity and mutable fields across body edits, added methods and supported added-field initializers; creation/injection/lifecycle changes recreate them and reset their state | Lost on restart | Preserved |
 | Method body changes | **Yes** | Yes (restart) | Yes |
 | Add / remove methods | **Yes (supported JDK 17+ paths)** | Yes (restart) | Yes |
 | Add instance fields | **Yes**, and on a stock JDK an object that already existed reads the initialiser's value on the field's first read: `cache = new ArrayList<>()` added to a live Spring singleton is a list, not a null. The initialiser is lifted out of the constructor on its own, including isolated conditional expressions in single-constructor classes; one that needs a constructor argument is named instead. [Scope](usage.md#new-field-values-on-objects-that-already-existed). Direct reads/writes from another reloaded watched class use the same store on the measured stock-JDK lanes; see the [cross-class scope](usage.md#cross-class-access-to-added-instance-fields). On JBR/DCEVM the field is real and objects from before the reload keep the type default | Yes (restart) | No: "will not be initialized in existing instances" ([FAQ](https://www.jrebel.com/jrebel/learn/faq)) |

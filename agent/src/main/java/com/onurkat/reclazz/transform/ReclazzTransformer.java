@@ -186,8 +186,10 @@ public class ReclazzTransformer implements ClassFileTransformer {
             // carries the renamed bodies, and "it did once" is not an answer.
             context.markTransformed(className);
 
-            if (classBeingRedefined == null)
+            if (classBeingRedefined == null) {
                 StaticFieldPreparation.recordDefinition(loader, className, classfileBuffer, config.isResetStatics());
+                com.onurkat.reclazz.transform.KeepBaseline.capture(loader, className, classfileBuffer);
+            }
 
             return transformed;
         } catch (Exception e) {

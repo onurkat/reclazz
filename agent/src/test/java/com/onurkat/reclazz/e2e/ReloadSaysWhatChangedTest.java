@@ -114,7 +114,7 @@ class ReloadSaysWhatChangedTest {
                 .filter(line -> line.contains("Reloaded app.Greeter"))
                 .findFirst().orElse(null);
         assertNotNull(reloadLine, () -> "no reload line for the save:\n" + app.tail());
-        assertTrue(reloadLine.contains("bean greeter re-created"),
+        assertTrue(reloadLine.contains("bean greeter kept, state preserved"),
                 () -> "the reload line does not say what the save touched: " + reloadLine);
         assertTrue(agentLines.stream().noneMatch(line -> line.contains("Spring bean refreshed")),
                 "the step's own line is detail, and detail is for verbose");

@@ -4,6 +4,8 @@
  */
 package com.onurkat.reclazz.spring;
 
+import com.onurkat.reclazz.transform.KeepBaseline;
+
 import com.onurkat.reclazz.platform.PlatformContext;
 import com.onurkat.reclazz.ui.ReloadEffects;
 import com.onurkat.reclazz.ui.StatusReporter;
@@ -58,6 +60,16 @@ public class SpringBeanReloader {
     }
 
     void refreshBean(String className, Class<?> reloadedClass, SpringAddedBeanReloader.PreparedRawConfigs raw) {
+        refreshBean(className, reloadedClass, raw, null);
+    }
+
+    void refreshBean(String className, Class<?> reloadedClass, SpringAddedBeanReloader.PreparedRawConfigs raw,
+                     KeepBaseline.Input keepInput) {
+        refreshBean(className, reloadedClass, raw, keepInput, false);
+    }
+
+    void refreshBean(String className, Class<?> reloadedClass, SpringAddedBeanReloader.PreparedRawConfigs raw,
+                     KeepBaseline.Input keepInput, boolean listenerOwner) {
         try {
             // Iterate every live context (global + web contexts): the bean
             // may be defined in any of them, or in several.
@@ -75,7 +87,7 @@ public class SpringBeanReloader {
             // Remember old→new instance pairs for reference healing below.
             java.util.LinkedHashSet<String> refreshedNames = new java.util.LinkedHashSet<>();
             java.util.IdentityHashMap<Object, Object> replacements = new java.util.IdentityHashMap<>();
-            int totalRefreshed = 0, preservedRaw = 0;
+            int totalRefreshed = 0, preservedRaw = 0, kept = 0;
             SpringMvcSingletons mvcBefore = batchDepth > 0 ? batchMvcBefore : null;
             var seenFactories = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<Object, Boolean>());
             int ownerIndex = 0;
@@ -110,6 +122,14 @@ public class SpringBeanReloader {
                             totalRefreshed++;
                             continue; // This snapshot owns its exact leaf; name-only legacy cascade must not rediscover it.
                         }
+                        var decision = listenerOwner || jms != null || kafka != null || rabbit != null
+                                ? new SingletonKeepPolicy.Decision(false, "listener owner")
+                                : SingletonKeepPolicy.forBean(localFactory, beanName, reloadedClass, keepInput);
+                        if (decision.keep()) {
+                            kept++;
+                            ReloadEffects.note("bean " + beanName + " kept, state preserved");
+                            continue;
+                        }
                         var constructor = SpringConstructorDependencies.prepare(contexts, appContext, beanName);
                         if (constructor != null) constructor.apply();
                         Object[] pair = jms != null ? jms.recreate() : kafka != null ? kafka.recreate() : rabbit != null ? rabbit.recreate() : refreshPreserving(appContext, beanName);
@@ -118,7 +138,7 @@ public class SpringBeanReloader {
                         }
                         // This transaction already rebuilt all leaf owners. Do not destroy them again in phase 2.
                         if (jms == null && kafka == null && rabbit == null) refreshedNames.add(beanName);
-                        ReloadEffects.note("bean " + beanName + " re-created");
+                        ReloadEffects.note("bean " + beanName + " re-created (" + decision.reason() + ")");
                         StatusReporter.detail("Spring bean refreshed: " + beanName);
                         totalRefreshed++;
                     }
@@ -128,7 +148,7 @@ public class SpringBeanReloader {
                 }
             }
 
-            if (totalRefreshed == 0) {
+            if (totalRefreshed == 0 && kept == 0) {
                 if (preservedRaw == 0) StatusReporter.info("No Spring bean found for class: " + className);
                 return;
             }
@@ -141,6 +161,7 @@ public class SpringBeanReloader {
                 return;
             }
             applyDependentsAndHealing(contexts, refreshedNames, replacements);
+            MvcResolvedHandlerCache.refresh(contexts, new SpringMvcReloader(platformContext));
             if (mvcBefore != null) mvcBefore.publishCurrent();
 
         } catch (Exception e) {
@@ -214,6 +235,7 @@ public class SpringBeanReloader {
             applyDependentsAndHealing(platformContext.getAllApplicationContexts(),
                     new java.util.LinkedHashSet<>(batchRefreshedNames),
                     new java.util.IdentityHashMap<>(batchReplacements));
+            MvcResolvedHandlerCache.refresh(platformContext.getAllApplicationContexts(), new SpringMvcReloader(platformContext));
             if (batchMvcBefore != null) batchMvcBefore.publishCurrent();
         } catch (Exception e) {
             StatusReporter.error("Deferred Spring refresh failed: " + Failures.describe(e));
