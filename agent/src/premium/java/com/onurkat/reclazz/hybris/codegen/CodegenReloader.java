@@ -43,7 +43,8 @@ import com.onurkat.reclazz.util.BoundedProcess;
  *   <li>Before running ant, the reloader touches the XML file so
  *       Hybris's CodeGenerator doesn't short-circuit with
  *       "No changes found, skipping". The resulting watcher re-fire
- *       is suppressed via {@code lastTouchedFile} + content digest + echo window.</li>
+ *       is suppressed by content: an event for the touched file whose bytes
+ *       still match what was touched is our own echo, however late it arrives.</li>
  *   <li>Hybris generates {@code .java} into {@code platform/bootstrap/gensrc}
  *       and {@code ant build} compiles into {@code platform/bootstrap/modelclasses}.</li>
  *   <li>Agent's class watcher picks up the new bytecode and the
@@ -68,12 +69,6 @@ import com.onurkat.reclazz.util.BoundedProcess;
  * file triggered it.
  */
 public class CodegenReloader {
-
-    /**
-     * Window during which a file-watcher event for a just-touched XML file
-     * is treated as an echo of our own touch, not a new user save.
-     */
-    private static final long OWN_TOUCH_ECHO_WINDOW_MS = 3_000L;
 
     /** Distinguishes the two supported Hybris code-generation sources. */
     public enum Kind {
@@ -174,8 +169,11 @@ public class CodegenReloader {
         }
 
         synchronized (lock) {
+            // Matched by content, not by time: a polling watcher under ant's CPU load
+            // reported our touch 4-6 seconds late, past the old 3-second window, and
+            // every late echo re-ran ant, which touched again, without end. Unchanged
+            // bytes need no regeneration whenever they are reported.
             if (lastTouchedFile != null
-                    && System.currentTimeMillis() - lastTouchedAtMs < OWN_TOUCH_ECHO_WINDOW_MS
                     && file.toAbsolutePath().normalize().equals(lastTouchedFile)
                     && lastTouchedDigest != null
                     && java.util.Arrays.equals(lastTouchedDigest, digest(file))) return;
@@ -237,6 +235,9 @@ public class CodegenReloader {
                     }
                 } else {
                     if (currentOutput != null) currentOutput.failed();
+                    // A failed run must not make the same bytes look already generated,
+                    // or saving them again to retry would be taken for our own echo.
+                    synchronized (lock) { lastTouchedDigest = null; }
                     StatusReporter.error("Codegen regen FAILED for " + ext.getName()
                             + ", ant exited non-zero. Run `ant build` manually for full output.");
                 }

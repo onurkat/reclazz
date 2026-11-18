@@ -18,9 +18,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisabledOnOs(OS.WINDOWS)
 class CodegenSaveDuringRunTest {
     @TempDir Path tempDir;
-    @Test void secondSaveInsideTouchWindowRunsAgain() throws Exception { exercise(true); }
-    @Test void ownTouchDoesNotLoop() throws Exception { exercise(false); }
-    private void exercise(boolean edit) throws Exception {
+    @Test void secondSaveInsideTouchWindowRunsAgain() throws Exception { exercise(true, false); }
+    @Test void ownTouchDoesNotLoop() throws Exception { exercise(false, false); }
+    /** A polling watcher under ant's CPU load reported the touch 4-6s late; that echo looped ant forever. */
+    @Test void ownTouchReportedLateDoesNotLoop() throws Exception { exercise(false, true); }
+    @Test void realEditReportedLateStillRunsAgain() throws Exception { exercise(true, true); }
+    private void exercise(boolean edit, boolean lateEcho) throws Exception {
         Path root = tempDir;
         Path platform = root.resolve("bin/platform"), ext = root.resolve("bin/custom/demo");
         Files.createDirectories(platform.resolve("apache-ant/bin"));
@@ -46,8 +49,9 @@ class CodegenSaveDuringRunTest {
             await(() -> Files.exists(platform.resolve("read.ready")));
             long touched = (Long) field(reloader, "lastTouchedAtMs");
             if (edit) Files.writeString(xml, "<items>v2</items>\n");
-            long delay = System.currentTimeMillis() - touched;
-            if (delay >= 2800) throw new AssertionError("fixture missed echo window");
+            if (lateEcho) setLong(reloader, "lastTouchedAtMs", touched - 10_000L);
+            long delay = System.currentTimeMillis() - (Long) field(reloader, "lastTouchedAtMs");
+            if (!lateEcho && delay >= 2800) throw new AssertionError("fixture missed echo window");
             reloader.handle(new ChangeEvent(xml, ChangeEvent.Type.MODIFIED, "demo", "resources"));
             boolean queued = (Boolean) field(reloader, "rerunPending");
             Files.createFile(platform.resolve("release"));
@@ -64,8 +68,41 @@ class CodegenSaveDuringRunTest {
             ((java.util.concurrent.ExecutorService) field(reloader, "executor")).shutdownNow();
         }
     }
+    /** With the echo matched by content, a failed run must still let the same bytes be saved to retry. */
+    @Test void sameContentSavedAgainAfterFailedRunRetries() throws Exception {
+        Path platform = tempDir.resolve("bin/platform"), ext = tempDir.resolve("bin/custom/demo");
+        Files.createDirectories(platform.resolve("apache-ant/bin"));
+        Files.createDirectories(ext.resolve("resources"));
+        Path xml = ext.resolve("resources/demo-items.xml");
+        Files.writeString(xml, "<items>v1</items>\n");
+        Files.writeString(platform.resolve("setantenv.sh"), "export PATH=\"$PWD/apache-ant/bin:$PATH\"\n");
+        Path ant = platform.resolve("apache-ant/bin/ant");
+        Files.writeString(ant, """
+                #!/bin/sh
+                echo run >> runs
+                if [ ! -f fixed ]; then echo BUILD FAILED; exit 1; fi
+                echo BUILD SUCCESSFUL
+                """);
+        if (!ant.toFile().setExecutable(true)) throw new IllegalStateException("cannot make fixture executable");
+        HybrisContext context = new HybrisContext(tempDir);
+        context.getExtensions().put("demo", new ExtensionInfo("demo", ext, List.of(), true, false, true));
+        var reloader = new CodegenReloader(context);
+        try {
+            reloader.handle(new ChangeEvent(xml, ChangeEvent.Type.MODIFIED, "demo", "resources"));
+            await(() -> Files.exists(platform.resolve("runs")) && !(Boolean) field(reloader, "running"));
+            Files.createFile(platform.resolve("fixed"));
+            reloader.handle(new ChangeEvent(xml, ChangeEvent.Type.MODIFIED, "demo", "resources"));
+            await(() -> Files.readAllLines(platform.resolve("runs")).size() == 2 && !(Boolean) field(reloader, "running"));
+            assertEquals(2, Files.readAllLines(platform.resolve("runs")).size());
+        } finally {
+            ((java.util.concurrent.ExecutorService) field(reloader, "executor")).shutdownNow();
+        }
+    }
     private static Object field(Object target, String name) throws Exception {
         Field f = target.getClass().getDeclaredField(name); f.setAccessible(true); return f.get(target);
+    }
+    private static void setLong(Object target, String name, long value) throws Exception {
+        Field f = target.getClass().getDeclaredField(name); f.setAccessible(true); f.setLong(target, value);
     }
     interface Check { boolean done() throws Exception; }
     private static void await(Check check) throws Exception {
