@@ -110,7 +110,7 @@ public class ReclazzAgent {
      * drained on the single-threaded reload executor, every drain compiles
      * everything that accumulated while the previous batch was running.
      */
-    // Retries are driven by a new source event, not leftover tasks from one save.
+    // Retries require a new source event or accepted codegen, not leftover tasks from one save.
     private static long javaChangeGeneration;
     private static long lastJavaAttemptGeneration = -1;
     private static final java.util.LinkedHashMap<Path, ChangeEvent> pendingJavaChanges =
@@ -122,6 +122,7 @@ public class ReclazzAgent {
     /** The reload thread and what is queued for it; see {@link ReloadQueue}. */
     private static volatile ReloadQueue reloadQueue;
     private static volatile Runnable generatedClassScan;
+    private static volatile Runnable heldSourceRetry;
     private static volatile StatusServer statusServer;
 
     /**
@@ -618,6 +619,8 @@ public class ReclazzAgent {
 
             reloadQueue.setVerification(verification);
             generatedClassScan=watcher::scanNow;
+            heldSourceRetry=compiler == null ? null : () -> retryHeldSourcesAfterCodegen(reloadQueue,
+                    () -> handleJavaBatch(compiler, reloader, springOrchestrator, modules));
             final ReloadQueue repairQueue=reloadQueue;
             final StatusServer repairTimer=statusServer;
             springOrchestrator.setOperationScheduler(repairTimer==null?null:repairTimer::scheduleOperationRepair,
@@ -715,6 +718,7 @@ public class ReclazzAgent {
                 }
                 if (reloadQueue != null) {
                     generatedClassScan=null;
+                    heldSourceRetry=null;
                     reloadQueue.shutdown();
                 }
                 if (watcherExecutor != null) {
@@ -745,6 +749,7 @@ public class ReclazzAgent {
             }
             if (reloadQueue != null) {
                 generatedClassScan=null;
+                heldSourceRetry=null;
                 reloadQueue.shutdown();
                 reloadQueue = null;
             }
@@ -859,6 +864,10 @@ public class ReclazzAgent {
                         ReloadQueue queue=reloadQueue; Runnable scan=generatedClassScan;
                         if (queue == null || scan == null) throw new IllegalStateException("Generated class admission is not ready");
                         return queue.holdGeneratedClasses(roots,scan);
+                    }
+                    @Override public void generatedOutputAccepted() {
+                        Runnable retry=heldSourceRetry;
+                        if (retry != null) retry.run();
                     }
                     @Override public boolean requestRunningSystemUpdate() {
                         return modules.request(Capability.RUNNING_SYSTEM_UPDATE).granted();
@@ -1155,6 +1164,21 @@ public class ReclazzAgent {
         withIt.add(line);
         withIt.addAll(report);
         return withIt;
+    }
+
+    /** Decide after any in-flight compile has retained its failed sources on the same queue. */
+    static void retryHeldSourcesAfterCodegen(ReloadQueue queue, Runnable compile) {
+        if (queue == null) return;
+        queue.submitAutomatic("codegen-held-retry", "Compiling held sources after codegen", () -> {
+            synchronized (pendingJavaChanges) {
+                pendingJavaChanges.keySet().removeIf(path -> !Files.isRegularFile(path));
+                if (pendingJavaChanges.isEmpty()) return;
+                javaChangeGeneration++;
+                StatusReporter.info("Codegen finished; compiling " + pendingJavaChanges.size()
+                        + " held source files again");
+            }
+            compile.run();
+        });
     }
 
     private static void handleJavaBatch(IncrementalCompiler compiler,

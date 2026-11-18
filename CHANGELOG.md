@@ -21,6 +21,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   changes made since JVM startup; subsequent saves still reload normally.
 - New Spring component registration skips unavailable bean factories and
   declines annotated non-components before factory-dependent work.
+- Java sources held by missing generated accessors are compiled again after
+  successful SAP Commerce codegen admission, without another source save.
 
 - On Spring Framework 7, a controller could continue serving an old injected
   service after reload recreated that service. Stale resolved MVC handlers are

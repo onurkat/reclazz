@@ -194,6 +194,11 @@ The loop on Hybris:
 3. Exercise the endpoint or backoffice. Only restart for what `reclazz_pending`
    reports (a changed superclass, a reordered enum).
 
+Java sources held by a compilation failure are tried once more after successful
+beans.xml/items.xml codegen admits its generated classes. Saving the Java and XML
+files together needs no second Java save; a failed retry stays held until another
+save or successful codegen.
+
 Hybris-specific saves also reload without a restart: `*-items.xml` and
 `*-beans.xml` regenerate and reload their models and DTOs (`autoCompile=true`),
 changed properties and log levels reach the running server, `.impex` files import

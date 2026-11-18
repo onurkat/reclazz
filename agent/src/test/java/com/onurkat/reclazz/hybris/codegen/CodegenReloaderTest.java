@@ -29,10 +29,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * file suffix, owning-extension resolution from a beans/items.xml path,
  * and the deepest-match tie-breaker for nested extension layouts.
  *
- * The subprocess / ant invocation is deliberately left for live
- * integration tests (proven against real Hybris in 1.0.29 / 1.0.30)
- * because mocking {@code ProcessBuilder} adds no signal over the
- * already-validated live test matrix.
+ * Callback ordering and terminal failures use the worker's package-private ant
+ * seam. Actual ant invocation and held-source application are covered by the
+ * opt-in live codegen profile; these tests do not mock ProcessBuilder.
  */
 class CodegenReloaderTest {
 
@@ -202,6 +201,84 @@ class CodegenReloaderTest {
                             .anyMatch(s -> s.contains("Update Running System")),
                     "a failed auto-update must leave a restart-ledger note to run it in HAC");
         } finally {
+            com.onurkat.reclazz.ui.RestartLedger.clear();
+        }
+    }
+
+    @Test void acceptedCallbackRunsAfterSuccessAndPersistence() throws Exception {
+        assertEquals(List.of("expose","admitted","success","schema","accepted"),acceptedRun(true,true,false));
+    }
+    @Test void noAcceptedCallbackOnAntFailure() throws Exception {
+        assertTrue(acceptedRun(false,true,false).stream().noneMatch("accepted"::equals));
+    }
+    @Test void noAcceptedCallbackOnAdmissionFailure() throws Exception {
+        assertTrue(acceptedRun(true,false,false).stream().noneMatch("accepted"::equals));
+    }
+    @Test void noAcceptedCallbackForSupersededRun() throws Exception {
+        var order=acceptedRun(true,true,true);
+        assertEquals(1,order.stream().filter("accepted"::equals).count());
+        assertEquals(1,order.stream().filter("admitted"::equals).count());
+        assertTrue(order.indexOf("accepted")>order.indexOf("schema"),order.toString());
+    }
+    @Test void noAcceptedCallbackWhenSupersededDuringPersistence() throws Exception {
+        var order=acceptedRun(true,true,false,true);
+        assertEquals(1,order.stream().filter("accepted"::equals).count(),order.toString());
+        assertEquals(2,order.stream().filter("admitted"::equals).count());
+    }
+    private List<String> acceptedRun(boolean antOk,boolean admissionOk,boolean supersede) throws Exception {
+        return acceptedRun(antOk,admissionOk,supersede,false);
+    }
+    private List<String> acceptedRun(boolean antOk,boolean admissionOk,boolean supersede,boolean duringPersistence) throws Exception {
+        var order=new java.util.concurrent.CopyOnWriteArrayList<String>();
+        Path extDir=tempDir.resolve("bin/custom/accepted");Files.createDirectories(extDir.resolve("resources"));
+        Path xml=extDir.resolve("resources/accepted-items.xml");Files.writeString(xml,"<items>first</items>");
+        registerExtensions(new ExtensionInfo("accepted",extDir,List.of(),true,false,true));
+        var entered=new java.util.concurrent.CountDownLatch(1);var release=new java.util.concurrent.CountDownLatch(1);
+        var runs=new java.util.concurrent.atomic.AtomicInteger();
+        var candidate=new CodegenReloader(hybrisContext,true,()->{
+                order.add("schema");
+                if(duringPersistence && runs.get()==1) {
+                    entered.countDown();try {assertTrue(release.await(10,java.util.concurrent.TimeUnit.SECONDS));}
+                    catch(InterruptedException e){throw new RuntimeException(e);}
+                }
+                return true;
+            },
+            ()->order.add("expose"),()->new com.onurkat.reclazz.ext.PremiumContext.GeneratedOutput() {
+                public java.util.concurrent.CompletionStage<Void> compiled(Runnable expose) {
+                    if(!admissionOk)return java.util.concurrent.CompletableFuture.failedFuture(new IllegalStateException("admission refused"));
+                    expose.run();order.add("admitted");return java.util.concurrent.CompletableFuture.completedFuture(null);
+                }
+                public void failed(){order.add("failed");}
+            },()->order.add("accepted")) {
+                @Override boolean runAnt(ExtensionInfo extension) {
+                    if(runs.incrementAndGet()==1 && supersede) {
+                        entered.countDown();try {if(!release.await(10,java.util.concurrent.TimeUnit.SECONDS))return false;}
+                        catch(InterruptedException e){Thread.currentThread().interrupt();return false;}
+                    }
+                    return antOk;
+                }
+            };
+        com.onurkat.reclazz.ui.StatusReporter.StatusListener listener=(level,message)->{
+            if(level.equals("OK") && message.startsWith("Codegen regen+compile done for accepted"))order.add("success");
+        };
+        com.onurkat.reclazz.ui.StatusReporter.addListener(listener);
+        try {
+            candidate.handle(new com.onurkat.reclazz.watcher.ChangeEvent(xml,com.onurkat.reclazz.watcher.ChangeEvent.Type.MODIFIED,"accepted","resources"));
+            if(supersede || duringPersistence) {
+                assertTrue(entered.await(10,java.util.concurrent.TimeUnit.SECONDS));
+                Files.writeString(xml,"<items>second</items>");
+                candidate.handle(new com.onurkat.reclazz.watcher.ChangeEvent(xml,com.onurkat.reclazz.watcher.ChangeEvent.Type.MODIFIED,"accepted","resources"));
+                release.countDown();
+            }
+            Field running=CodegenReloader.class.getDeclaredField("running");running.setAccessible(true);
+            long end=System.nanoTime()+java.util.concurrent.TimeUnit.SECONDS.toNanos(10);
+            while(running.getBoolean(candidate) && System.nanoTime()<end)Thread.sleep(10);
+            assertTrue(!running.getBoolean(candidate),"codegen worker did not finish");
+            assertEquals(supersede || duringPersistence?2:1,runs.get());return List.copyOf(order);
+        } finally {
+            release.countDown();com.onurkat.reclazz.ui.StatusReporter.removeListener(listener);
+            Field executor=CodegenReloader.class.getDeclaredField("executor");executor.setAccessible(true);
+            ((java.util.concurrent.ExecutorService)executor.get(candidate)).shutdownNow();
             com.onurkat.reclazz.ui.RestartLedger.clear();
         }
     }

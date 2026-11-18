@@ -94,6 +94,7 @@ public class CodegenReloader {
     private final boolean autoUpdateRunningSystem;
     private final RunningSystemUpdater runningSystemUpdater;
     private final Runnable generatedClassesReady;
+    private final Runnable generatedOutputAccepted;
     private final java.util.function.Supplier<com.onurkat.reclazz.ext.PremiumContext.GeneratedOutput> outputAdmission;
     private com.onurkat.reclazz.ext.PremiumContext.GeneratedOutput currentOutput;
     private final ScheduledExecutorService executor;
@@ -143,6 +144,14 @@ public class CodegenReloader {
     public CodegenReloader(HybrisContext hybrisContext, boolean autoUpdateRunningSystem,
                            RunningSystemUpdater runningSystemUpdater, Runnable generatedClassesReady,
                            java.util.function.Supplier<com.onurkat.reclazz.ext.PremiumContext.GeneratedOutput> outputAdmission) {
+        this(hybrisContext, autoUpdateRunningSystem, runningSystemUpdater, generatedClassesReady, outputAdmission, () -> { });
+    }
+
+    public CodegenReloader(HybrisContext hybrisContext, boolean autoUpdateRunningSystem,
+                           RunningSystemUpdater runningSystemUpdater, Runnable generatedClassesReady,
+                           java.util.function.Supplier<com.onurkat.reclazz.ext.PremiumContext.GeneratedOutput> outputAdmission,
+                           Runnable generatedOutputAccepted) {
+        this.generatedOutputAccepted=java.util.Objects.requireNonNull(generatedOutputAccepted);
         this.outputAdmission=outputAdmission;
         this.generatedClassesReady = generatedClassesReady;
         this.hybrisContext = hybrisContext;
@@ -268,12 +277,20 @@ public class CodegenReloader {
         }
     }
 
+    /** A newer XML save during persistence supersedes this run's retry notification too. */
+    private void notifyGeneratedOutputAccepted() {
+        synchronized (lock) {
+            if (!rerunPending) generatedOutputAccepted.run();
+        }
+    }
+
     private void reportSuccess(ExtensionInfo ext, Set<Kind> batchKinds, long elapsedMs) {
         if (batchKinds.isEmpty()) {
             // Shouldn't normally happen, the first save always adds a
             // kind before the run starts, but be defensive.
             StatusReporter.success("Codegen regen+compile done for " + ext.getName()
                     + " (" + (elapsedMs / 1000) + "s)");
+            notifyGeneratedOutputAccepted();
             return;
         }
 
@@ -293,6 +310,7 @@ public class CodegenReloader {
         if (hasItems) {
             handleNewPersistence(autoUpdateRunningSystem, runningSystemUpdater);
         }
+        notifyGeneratedOutputAccepted();
     }
 
     /**
@@ -381,7 +399,7 @@ public class CodegenReloader {
         return System.getProperty("os.name", "").toLowerCase(java.util.Locale.ROOT).contains("win");
     }
 
-    private boolean runAnt(ExtensionInfo ext) {
+    boolean runAnt(ExtensionInfo ext) {
         Path platform = hybrisContext.getHybrisHome().resolve("bin").resolve("platform");
         AntLaunch launch = AntLaunch.forPlatform(platform, isWindows());
 

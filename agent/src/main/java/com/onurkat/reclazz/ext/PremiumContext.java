@@ -20,6 +20,8 @@ public interface PremiumContext {
     default GeneratedOutput holdGeneratedClasses(Collection<java.nio.file.Path> roots) {
         throw new IllegalStateException("Generated class admission is not ready");
     }
+    /** A final codegen run has admitted bytecode and completed its persistence step. */
+    default void generatedOutputAccepted() { }
     PlatformContext platform();
     AgentConfig config();
     PropertyFileSnapshots propertySnapshots();

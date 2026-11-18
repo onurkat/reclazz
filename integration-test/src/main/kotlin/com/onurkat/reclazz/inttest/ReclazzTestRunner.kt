@@ -130,7 +130,8 @@ fun main() {
             error("Unknown profile or RECLAZZ_TEST_ONLY combined with a profile: $profile")
         }
         // Profile preflight precedes ALL default baseline restoration writes.
-        try { report.add(if(profile == "codegen") BeansCodegenLiveTest(config,agentClient,httpVerifier).run()
+        try { if(profile == "codegen") report.add(BeansCodegenHeldSourceLiveTest(config,agentClient,httpVerifier).run())
+            report.add(if(profile == "codegen") BeansCodegenLiveTest(config,agentClient,httpVerifier).run()
             else if(profile == "items-new-relation-attempt") NewRelationLiveTest(config,agentClient,httpVerifier).run()
             else if(profile == "items-new-type-attempt") NewItemTypeLiveTest(config,agentClient,httpVerifier).run()
             else if(profile == "items-attempt") ItemsSchemaLiveTest(config,agentClient,httpVerifier).run()

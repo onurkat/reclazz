@@ -63,7 +63,7 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
                                 throw new IllegalStateException("Generated class roots are not available to the platform");
                         },
                         () -> context.holdGeneratedClasses(hybris.getGeneratedClassDirs().values().stream()
-                                .flatMap(List::stream).toList()));
+                                .flatMap(List::stream).toList()), context::generatedOutputAccepted);
             } else codegen = null;
             java.util.Map<Capability, PlatformChangeHandler> handlers = new java.util.EnumMap<>(Capability.class);
             // This dispatch also existed for non-SAP contexts; preserve it.
