@@ -4,6 +4,7 @@
  */
 package com.onurkat.reclazz.plugin.agent
 
+import com.intellij.execution.JavaTestConfigurationBase
 import com.intellij.execution.RunConfigurationExtension
 import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.JavaParameters
@@ -30,7 +31,8 @@ class AgentInjector internal constructor(private val locateAgentJar: () -> File?
     private val missingJarReported = java.util.concurrent.ConcurrentHashMap.newKeySet<String>()
 
     override fun isApplicableFor(configuration: RunConfigurationBase<*>): Boolean {
-        return ReclazzSettings.getInstance(configuration.project).state.enabled
+        val settings = ReclazzSettings.getInstance(configuration.project).state
+        return settings.enabled && (settings.injectIntoTests || configuration !is JavaTestConfigurationBase)
     }
 
     override fun <T : RunConfigurationBase<*>> updateJavaParameters(
@@ -38,6 +40,7 @@ class AgentInjector internal constructor(private val locateAgentJar: () -> File?
         params: JavaParameters,
         runnerSettings: RunnerSettings?
     ) {
+        if (!isApplicableFor(configuration)) return
         val project = configuration.project
         val settings = ReclazzSettings.getInstance(project).state
 

@@ -240,7 +240,15 @@ public class FileWatcher {
     private Consumer<ChangeEvent> changeHandler;
     private Consumer<List<ChangeEvent>> batchHandler;
 
+    private final boolean attachBaseline;
+
     public FileWatcher(PlatformContext platformContext, AgentConfig config) throws IOException {
+        this(platformContext, config, false);
+    }
+
+    /** Dynamic attach inventories current disk bytes without replaying pre-attach startup changes. */
+    public FileWatcher(PlatformContext platformContext, AgentConfig config, boolean attachBaseline) throws IOException {
+        this.attachBaseline = attachBaseline;
         this.platformContext = platformContext;
         this.config = config;
         this.watchService = FileSystems.getDefault().newWatchService();
@@ -429,6 +437,12 @@ public class FileWatcher {
 
         String mode = config.isAutoCompile() ? "autoCompile (watching sources)" : "default (watching classes)";
         if (config.isVerbose()) StatusReporter.info("Mode: " + mode);
+        if (attachBaseline) {
+            long count = fileStates.entrySet().stream().filter(entry ->
+                    entry.getKey().getFileName().toString().endsWith(".class") && entry.getValue().contentHash != -1L).count();
+            StatusReporter.info("Attached to a running JVM: " + count
+                    + " class files taken as the baseline. Save a file to reload it.");
+        }
         StatusReporter.info("Watching " + Plural.of(watchCount, "directory", "directories"));
 
         // The transformer keeps its last emitted bytecode per class for the
@@ -1277,7 +1291,7 @@ public class FileWatcher {
      */
     // Package-private for test access.
     void dispatchClassesChangedDuringStartup() {
-        if (startupChangedClasses.isEmpty()) return;
+        if (attachBaseline || startupChangedClasses.isEmpty()) return;
 
         StatusReporter.info(Plural.of(startupChangedClasses.size(), "class file")
                 + " changed while the JVM"
@@ -1316,9 +1330,9 @@ public class FileWatcher {
                             long mtime = attrs.lastModifiedTime().toMillis();
                             FileState state = stateOf(file);
                             state.contentHash = h;
-                            state.baselineMtime = mtime;
+                            state.baselineMtime = attachBaseline ? 0 : mtime;
                             state.seenMtime = mtime;
-                            if (owner != null && mtime > JVM_START_MILLIS) {
+                            if (!attachBaseline && owner != null && mtime > JVM_START_MILLIS) {
                                 startupChangedClasses.put(file, owner);
                             }
                             count[0]++;

@@ -108,27 +108,33 @@ public final class SpringNewBeanRegistrar {
                 return Outcome.DECLINED;
             }
 
+            // Merged stereotype resolution does not need a factory or initialize the class.
+            // Annotated DTOs must leave quietly even when a captured context is not usable.
+            if (!hasStereotype(clazz, clazz.getClassLoader())) return Outcome.NOT_A_COMPONENT;
+
             Object home = null;
-            for (Object context : contexts) {
-                if (contextClassLoader(context) == clazz.getClassLoader()) {
-                    home = context;
-                    break;
-                }
-            }
-            if (home == null) {
+            // Preserve defining-loader precedence, then consider other contexts seeing this exact Class.
+            for (boolean definingLoader : new boolean[]{true, false}) {
                 for (Object context : contexts) {
                     try {
                         ClassLoader loader = contextClassLoader(context);
-                        if (loader != null && Class.forName(className, false, loader) == clazz) {
-                            home = context;
-                            break;
-                        }
+                        if (loader == null || (definingLoader && loader != clazz.getClassLoader())) continue;
+                        if (Class.forName(className, false, loader) != clazz) continue;
+                        if (SpringBeans.getBeanFactory(context) == null) continue;
+                        home = context;
+                        break;
                     } catch (Throwable notHere) {
-                        // keep looking
+                        // Another context may have a usable factory for the same class.
                     }
                 }
+                if (home != null) break;
             }
-            if (home == null) return Outcome.DECLINED;
+            if (home == null) {
+                StatusReporter.warn("New component " + className
+                        + " has no available bean factory in a visible application context; it stays unregistered. "
+                        + "Wait for the context to refresh and save the class again.");
+                return Outcome.DECLINED;
+            }
 
             Object factory=SpringBeans.getBeanFactory(home);
             Stereotype candidate=resolveStereotype(clazz,factory,factory.getClass().getClassLoader());
@@ -151,6 +157,11 @@ public final class SpringNewBeanRegistrar {
     private Outcome registerInContext(Class<?> clazz,byte[] bytecode,Object home,boolean deferMappings,java.util.List<Created> created) throws Exception {
         String className=clazz.getName();
             Object beanFactory = SpringBeans.getBeanFactory(home);
+            if (beanFactory == null) {
+                StatusReporter.warn("New component " + className
+                        + " has no available bean factory; its context may have closed. It stays unregistered.");
+                return Outcome.DECLINED;
+            }
             ClassLoader springLoader = beanFactory.getClass().getClassLoader();
             // Resolve the stereotype and bean name through Spring's own merged
             // annotations, so a custom stereotype and an @AliasFor name are read
@@ -317,6 +328,18 @@ public final class SpringNewBeanRegistrar {
             return false;
         }
         return found[0];
+    }
+
+    /** Resolve merged component metadata without constructing a definition or touching a factory. */
+    private static boolean hasStereotype(Class<?> clazz, ClassLoader springLoader) {
+        try {
+            Class<?> merged = Class.forName("org.springframework.core.annotation.AnnotatedElementUtils", false, springLoader);
+            Class<?> component = Class.forName("org.springframework.stereotype.Component", false, springLoader);
+            return Boolean.TRUE.equals(merged.getMethod("hasAnnotation", java.lang.reflect.AnnotatedElement.class, Class.class)
+                    .invoke(null, clazz, component));
+        } catch (ReflectiveOperationException unavailable) {
+            return false;
+        }
     }
 
     /**

@@ -24,7 +24,7 @@ import kotlin.test.assertTrue as expectTrue
 import kotlin.test.assertFalse as expectFalse
 
 class NewAgentSettingsRoundTripTest : BasePlatformTestCase() {
-    private fun nonDefaults() = ReclazzSettings.State(enabled = true, autoDetectJdk = false,
+    private fun nonDefaults() = ReclazzSettings.State(enabled = true, injectIntoTests = true, autoDetectJdk = false,
         autoImpex = true, autoSolrReindex = true, autoUpdateRunningSystem = true, impexAllowRemove = true, backofficeConfigReset = false,
         reloadBoundary = "request", structuralReload = false, resetStatics = true, excludeClasses = "com.example.Legacy*;com.example.Old")
 
@@ -38,6 +38,7 @@ class NewAgentSettingsRoundTripTest : BasePlatformTestCase() {
             val expected = setOf("autoSolrReindex=true", "autoUpdateRunningSystem=true", "impexAllowRemove=true", "backofficeConfigReset=false",
                 "reloadBoundary=request", "structuralReload=false", "resetStatics=true", "excludeClasses=com.example.Legacy*;com.example.Old")
             val args = AgentJarLocator.buildAgentArgs(layout.project, settings.state)
+            expectFalse(args.contains("injectIntoTests"), "IDE test preference is not an agent option")
             expectTrue(args.split(',').containsAll(expected), args)
             val jar = File("/synthetic tools/reclazz-agent.jar")
             val params = JavaParameters()

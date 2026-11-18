@@ -139,4 +139,38 @@ class BaselineRaceTest {
         assertEquals(1, dispatched.size(), "changed bytes must always dispatch");
     }
 
+    // Reflection keeps these red controls executable on BASE before the new overload exists.
+    private FileWatcher attachedWatcher() throws Exception {
+        watcher.stopWatching();
+        try {
+            return new FileWatcherFactory().attached();
+        } catch (NoSuchMethodException baseWithoutAttachMode) {
+            return new FileWatcher(new NoopPlatformContext(), AgentConfig.parse(null));
+        }
+    }
+    private static class FileWatcherFactory {
+        FileWatcher attached() throws Exception {
+            return FileWatcher.class.getConstructor(com.onurkat.reclazz.platform.PlatformContext.class,
+                    AgentConfig.class, boolean.class).newInstance(new NoopPlatformContext(), AgentConfig.parse(null), true);
+        }
+    }
+    @Test void attachModeSkipsStartupCatchUp() throws Exception {
+        watcher = attachedWatcher(); watcher.onFileChange(dispatched::add);
+        Path file = tempDir.resolve("BeforeAttach.class"); Files.write(file, new byte[]{1,2,3});
+        watcher.prepopulateContentHashes(tempDir, new FileWatcher.WatchedDirectory(tempDir,"m","classes"));
+        watcher.dispatchClassesChangedDuringStartup();
+        assertTrue(dispatched.isEmpty(), "attach inventories files, it does not catch up since JVM start");
+    }
+    @Test void attachModeDoesNotTreatWalkRecordsAsRaced() throws Exception {
+        watcher = attachedWatcher(); watcher.onFileChange(dispatched::add);
+        Path file = tempDir.resolve("BeforeAttach.class"); Files.write(file, new byte[]{1,2,3});
+        watcher.prepopulateContentHashes(tempDir);
+        watcher.dispatchEvent(eventFor(file));
+        assertTrue(dispatched.isEmpty(), "equal-hash attach inventory must not be a premain race");
+        // dispatchEvent has an existing 100ms duplicate-delivery throttle; emulate a later save.
+        Thread.sleep(110);
+        Files.write(file, new byte[]{4,5,6}); watcher.dispatchEvent(eventFor(file));
+        assertEquals(1, dispatched.size(), "a real post-attach content edit still reloads");
+    }
+
 }

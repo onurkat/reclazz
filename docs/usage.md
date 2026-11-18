@@ -49,6 +49,7 @@ installation message describes.
 
 | Control | Default | Scope |
 |---|---|---|
+| Also attach the agent to IDE test runs (JUnit, TestNG) | Off | IDE-managed JUnit, TestNG and Spock only; delegated Gradle/Maven builds keep their separate settings |
 | Import ImpEx files on save | Off | SAP Commerce; imports a saved watched ImpEx file |
 | Allow REMOVE statements | Off | Available only when ImpEx import on save is on; permits live row deletion on save |
 | Reset Backoffice configuration on save | On | SAP Commerce; the native F4 reset, which also resets configuration made in the Backoffice UI. Off sends `backofficeConfigReset=false` |

@@ -15,6 +15,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- IDE-managed Java test runs skip agent injection by default, with an explicit
+  opt-in in Settings. Server run configurations retain their existing behaviour.
+- Dynamic attach takes current class files as its baseline without replaying
+  changes made since JVM startup; subsequent saves still reload normally.
+- New Spring component registration skips unavailable bean factories and
+  declines annotated non-components before factory-dependent work.
+
 - On Spring Framework 7, a controller could continue serving an old injected
   service after reload recreated that service. Stale resolved MVC handlers are
   now invalidated under the registry lock, including concurrent resolution.

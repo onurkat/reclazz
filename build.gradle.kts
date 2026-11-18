@@ -35,6 +35,11 @@ dependencies {
     // that reason about a SAP Commerce installation's layout on disk and
     // need no IDE fixture to exercise.
     testImplementation(kotlin("test"))
+    // The actual JUnit run configuration is used only by IDE fixture tests.
+    testImplementation(files(provider {
+        project.extensions.getByType<org.jetbrains.intellij.platform.gradle.extensions.IntelliJPlatformExtension>()
+            .platformPath.resolve("plugins/junit/lib/idea-junit.jar").toFile()
+    }))
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 

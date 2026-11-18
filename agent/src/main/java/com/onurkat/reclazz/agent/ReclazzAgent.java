@@ -569,7 +569,7 @@ public class ReclazzAgent {
             if (suppliedModules == null) registerPremiumAutomation(modules, config, platformContext);
 
             // Set up file watcher
-            FileWatcher watcher = new FileWatcher(platformContext, config);
+            FileWatcher watcher = new FileWatcher(platformContext, config, attached);
             watcher.onPlatformChange(modules);
             watcher.onPropertyFileFound(ReclazzAgent::baselinePropertyFile);
 

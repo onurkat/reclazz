@@ -50,6 +50,9 @@ Finish with [your first reload](#your-first-reload).
 3. Start a Java run configuration handled by the IDE. Reclazz supplies its bundled
    agent and watches the IDE's module compiler outputs. For a run delegated to
    Gradle or Maven, follow the [Gradle](#gradle) or [Maven](#maven) setup rather than assuming IDE injection.
+   IDE-managed JUnit, TestNG and Spock test runs are skipped by default; enable
+   **Also attach the agent to IDE test runs** to opt in. Delegated builds keep
+   their separate [Gradle `applyToTest`](gradle-plugin.md) and [Maven `skip`](maven.md) settings.
 4. Compile a small edit with the build that writes those watched outputs, then
    check the running application's response. Detailed options: [usage](usage.md).
 

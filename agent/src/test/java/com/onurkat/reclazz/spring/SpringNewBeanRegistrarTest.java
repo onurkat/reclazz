@@ -19,10 +19,10 @@ import static org.junit.jupiter.api.Assertions.*;
 /** A brand-new class carrying a custom meta-annotated stereotype registers as a bean. */
 class SpringNewBeanRegistrarTest {
 
-    private static SpringNewBeanRegistrar registrar(AnnotationConfigApplicationContext context) {
+    private static SpringNewBeanRegistrar registrar(Object... contexts) {
         PlatformContext platform = (PlatformContext) Proxy.newProxyInstance(
                 PlatformContext.class.getClassLoader(), new Class[]{PlatformContext.class},
-                (p, m, a) -> m.getName().equals("getAllApplicationContexts") ? List.of(context) : null);
+                (p, m, a) -> m.getName().equals("getAllApplicationContexts") ? List.of(contexts) : null);
         return new SpringNewBeanRegistrar(platform, new SpringMvcReloader(platform));
     }
 
@@ -30,6 +30,48 @@ class SpringNewBeanRegistrarTest {
         try (var in = type.getResourceAsStream("/" + type.getName().replace('.', '/') + ".class")) {
             return java.util.Objects.requireNonNull(in).readAllBytes();
         }
+    }
+
+
+    public static class FactorylessContext {
+        public ClassLoader getClassLoader() { return PlainDomainComponent.class.getClassLoader(); }
+        public Object getBeanFactory() { return null; }
+    }
+    @Test void annotatedNonComponentWithFactorylessContextDeclinesQuietly() throws Exception {
+        var messages = new java.util.ArrayList<String>();
+        com.onurkat.reclazz.ui.StatusReporter.StatusListener listener = (level,message) -> { if(level.equals("WARN")) messages.add(message); };
+        com.onurkat.reclazz.ui.StatusReporter.addListener(listener);
+        try {
+            System.clearProperty("reclazz.test.factoryless.plain");
+            Class<?> type = com.onurkat.reclazz.spring.newbean.FactorylessPlain.class;
+            assertEquals(SpringNewBeanRegistrar.Outcome.NOT_A_COMPONENT,
+                    registrar(new FactorylessContext()).registerIfComponent(type.getName(),bytecode(type)));
+            assertNull(System.getProperty("reclazz.test.factoryless.plain")); assertEquals(List.of(),messages);
+        } finally { com.onurkat.reclazz.ui.StatusReporter.removeListener(listener); System.clearProperty("reclazz.test.factoryless.plain"); }
+    }
+    @Test void factorylessFirstHomeFallsBackToValidHomeOnce() throws Exception {
+        try(var valid = new AnnotationConfigApplicationContext()) {
+            valid.refresh();
+            var outcome = registrar(new FactorylessContext(),valid).registerIfComponent(
+                    PlainDomainComponent.class.getName(),bytecode(PlainDomainComponent.class));
+            assertEquals(SpringNewBeanRegistrar.Outcome.REGISTERED,outcome);
+            assertEquals(1, java.util.Arrays.stream(valid.getBeanDefinitionNames()).filter("plainDomainComponent"::equals).count());
+            assertSame(valid.getBean("plainDomainComponent"),valid.getBean("plainDomainComponent"));
+        }
+    }
+    @Test void onlyFactorylessHomesDeclineWithMessage() throws Exception {
+        var messages = new java.util.ArrayList<String>();
+        com.onurkat.reclazz.ui.StatusReporter.StatusListener listener = (level,message) -> { if(level.equals("WARN")) messages.add(message); };
+        com.onurkat.reclazz.ui.StatusReporter.addListener(listener);
+        try {
+            System.clearProperty("reclazz.test.factoryless.component");
+            Class<?> type = com.onurkat.reclazz.spring.newbean.FactorylessComponent.class;
+            assertEquals(SpringNewBeanRegistrar.Outcome.DECLINED,
+                    registrar(new FactorylessContext()).registerIfComponent(type.getName(),bytecode(type)));
+            assertNull(System.getProperty("reclazz.test.factoryless.component"));
+            assertEquals(1,messages.size()); assertTrue(messages.get(0).contains("no available bean factory"), messages.toString());
+            assertFalse(messages.get(0).contains("NullPointerException"));
+        } finally { com.onurkat.reclazz.ui.StatusReporter.removeListener(listener); System.clearProperty("reclazz.test.factoryless.component"); }
     }
 
     @Test

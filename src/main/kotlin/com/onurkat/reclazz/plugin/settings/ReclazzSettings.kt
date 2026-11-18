@@ -23,6 +23,7 @@ class ReclazzSettings : PersistentStateComponent<ReclazzSettings.State> {
          * The welcome dialog asks once and flips this.
          */
         var enabled: Boolean = false,
+        var injectIntoTests: Boolean = false,
         var autoCompile: Boolean = false,
         var autoImpex: Boolean = false,
         var autoSolrReindex: Boolean = false,

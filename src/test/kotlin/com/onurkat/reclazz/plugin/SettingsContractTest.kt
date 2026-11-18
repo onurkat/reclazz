@@ -20,6 +20,7 @@ class SettingsContractTest {
 
     private val persisted = mapOf(
         "enabled" to false,
+        "injectIntoTests" to false,
         "autoCompile" to false,
         "autoImpex" to false,
         "autoSolrReindex" to false,

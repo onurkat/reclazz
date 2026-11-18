@@ -34,6 +34,7 @@ class ReclazzConfigurable internal constructor(
 
     private var dialogPanel: DialogPanel? = null
 
+    private var injectIntoTestsCheckbox = false
     private var enabledCheckbox = true
     private var autoCompileCheckbox = false
     private var autoImpexCheckbox = false
@@ -64,6 +65,7 @@ class ReclazzConfigurable internal constructor(
         val settings = ReclazzSettings.getInstance(project).state
         val isHybris = HybrisProjectDetector.isHybrisProject(project)
 
+        injectIntoTestsCheckbox = settings.injectIntoTests
         enabledCheckbox = settings.enabled
         autoCompileCheckbox = settings.autoCompile
         autoImpexCheckbox = settings.autoImpex
@@ -108,6 +110,11 @@ class ReclazzConfigurable internal constructor(
                     .bindSelected(::enabledCheckbox)
                 contextHelp("Adds the agent to Java run configurations and reloads classes when they compile. " +
                             "Turn it off to only watch an agent attached some other way.")
+            }
+            row {
+                checkBox("Also attach the agent to IDE test runs (JUnit, TestNG)")
+                    .bindSelected(::injectIntoTestsCheckbox)
+                    .enabledIf(enabledCell.selected)
             }
             row {
                 label(statusLine)
@@ -418,6 +425,7 @@ class ReclazzConfigurable internal constructor(
     override fun isModified(): Boolean {
         val settings = ReclazzSettings.getInstance(project).state
         return dialogPanel?.isModified() == true || enabledCheckbox != settings.enabled ||
+                injectIntoTestsCheckbox != settings.injectIntoTests ||
                 autoCompileCheckbox != settings.autoCompile ||
                 autoImpexCheckbox != settings.autoImpex ||
                 autoSolrReindexCheckbox != settings.autoSolrReindex ||
@@ -453,6 +461,7 @@ class ReclazzConfigurable internal constructor(
         settings.loadState(
             settings.state.copy(
                 enabled = enabledCheckbox,
+                injectIntoTests = injectIntoTestsCheckbox,
                 autoCompile = autoCompileCheckbox,
                 autoImpex = autoImpexCheckbox,
                 autoSolrReindex = autoSolrReindexCheckbox,
@@ -481,6 +490,7 @@ class ReclazzConfigurable internal constructor(
 
     override fun reset() {
         val settings = ReclazzSettings.getInstance(project).state
+        injectIntoTestsCheckbox = settings.injectIntoTests
         enabledCheckbox = settings.enabled
         autoCompileCheckbox = settings.autoCompile
         autoImpexCheckbox = settings.autoImpex
