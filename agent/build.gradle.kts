@@ -116,16 +116,16 @@ dependencies {
     // runs somebody else's application, so 25 MB of classes to save sixty
     // lines was the wrong trade. It stays as a test dependency because the
     // tests use its agent attach helper, which never ships.
-    implementation("org.ow2.asm:asm:9.10.1")
-    implementation("org.ow2.asm:asm-commons:9.10.1")
-    implementation("org.ow2.asm:asm-tree:9.10.1")
-    implementation("org.ow2.asm:asm-util:9.10.1")
+    implementation("org.ow2.asm:asm:9.11.1")
+    implementation("org.ow2.asm:asm-commons:9.11.1")
+    implementation("org.ow2.asm:asm-tree:9.11.1")
+    implementation("org.ow2.asm:asm-util:9.11.1")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
-    testImplementation("net.bytebuddy:byte-buddy:1.18.14") {
+    testImplementation("net.bytebuddy:byte-buddy:1.18.17") {
         exclude(group = "org.slf4j")
     }
-    testImplementation("net.bytebuddy:byte-buddy-agent:1.18.14") {
+    testImplementation("net.bytebuddy:byte-buddy-agent:1.18.17") {
         exclude(group = "org.slf4j")
     }
     // Test only, and deliberately not an implementation dependency: the agent
@@ -148,9 +148,9 @@ dependencies {
     testImplementation("org.springframework.amqp:spring-rabbit:2.4.17")
     // Real commit/rollback regressions against a local in-memory database only.
     testImplementation("org.springframework:spring-jdbc:5.3.39")
-    testImplementation("com.h2database:h2:2.5.250")
+    testImplementation("com.h2database:h2:2.5.252")
     // Real @Aspect proxy regressions only; no weaving and no production dependency.
-    testImplementation("org.aspectj:aspectjweaver:1.9.25.1")
+    testImplementation("org.aspectj:aspectjweaver:1.9.27")
     // Native method authorization regressions only; never packaged in the agent.
     testImplementation("org.springframework.security:spring-security-config:5.7.11")
     // Real servlet security policy observers only; never packaged with the agent.
@@ -174,12 +174,12 @@ dependencies {
     // Boot 2.7 YAML regression fixtures only; not shipped in the agent.
     testImplementation("org.yaml:snakeyaml:1.30")
     // Real DTO serialization regressions; never included in the agent jar.
-    testImplementation("com.fasterxml.jackson.core:jackson-databind:2.22.3")
+    testImplementation("com.fasterxml.jackson.core:jackson-databind:2.23.0")
     testImplementation("org.hibernate.validator:hibernate-validator:6.2.5.Final")
     testImplementation("org.glassfish:jakarta.el:3.0.4")
     // Native cached-template evidence only; never packaged with the agent.
-    testImplementation("org.freemarker:freemarker:2.3.34")
-    testImplementation("org.thymeleaf:thymeleaf:3.1.3.RELEASE")
+    testImplementation("org.freemarker:freemarker:2.3.35")
+    testImplementation("org.thymeleaf:thymeleaf:3.1.7.RELEASE")
 }
 
 // Core compilation never sees premium output; the optional module sees core.
@@ -292,7 +292,7 @@ configurations[hibernateTests.runtimeOnlyConfigurationName].extendsFrom(configur
 dependencies {
     add(hibernateTests.implementationConfigurationName, "org.hibernate.orm:hibernate-core:6.5.3.Final")
     add(hibernateTests.implementationConfigurationName, "org.hibernate.orm:hibernate-jcache:6.5.3.Final")
-    add(hibernateTests.implementationConfigurationName, "com.github.ben-manes.caffeine:jcache:3.3.0")
+    add(hibernateTests.implementationConfigurationName, "com.github.ben-manes.caffeine:jcache:3.3.1")
 }
 val hibernateTest by tasks.registering(Test::class) {
     group = "verification"
@@ -326,7 +326,7 @@ dependencies {
         exclude(group = "org.apache.tomcat", module = "tomcat-annotations-api")
     }
     // Real Jakarta constraint reload acceptance; test-only, never shipped.
-    add(springSixTests.implementationConfigurationName, "com.fasterxml.jackson.core:jackson-databind:2.22.3")
+    add(springSixTests.implementationConfigurationName, "com.fasterxml.jackson.core:jackson-databind:2.23.0")
     add(springSixTests.implementationConfigurationName, "org.hibernate.validator:hibernate-validator:8.0.2.Final")
     add(springSixTests.implementationConfigurationName, "org.glassfish.expressly:expressly:5.0.0")
     // Native modern method authorization; isolated from Spring 5 and never packaged.
@@ -335,10 +335,10 @@ dependencies {
     // Owner-approved real JPA/schema validation tests; isolated and never packaged.
     add(springSixTests.implementationConfigurationName, "org.springframework:spring-orm:6.1.14")
     add(springSixTests.implementationConfigurationName, "org.hibernate.orm:hibernate-core:6.5.3.Final")
-    add(springSixTests.implementationConfigurationName, "com.h2database:h2:2.5.250")
+    add(springSixTests.implementationConfigurationName, "com.h2database:h2:2.5.252")
     // Native repository refresh regressions only; never shipped with the agent.
     add(springSixTests.implementationConfigurationName, "org.springframework.data:spring-data-jpa:3.3.4")
-    add(springSixTests.implementationConfigurationName, "net.bytebuddy:byte-buddy-agent:1.18.14")
+    add(springSixTests.implementationConfigurationName, "net.bytebuddy:byte-buddy-agent:1.18.17")
     add(springSixTests.implementationConfigurationName, "jakarta.annotation:jakarta.annotation-api:2.1.1")
     // Real Spring Integration endpoint swap regressions; test-only, never packaged.
     add(springSixTests.implementationConfigurationName, "org.springframework.integration:spring-integration-core:6.3.5")
@@ -381,9 +381,9 @@ dependencies {
         exclude(group = "org.apache.tomcat", module = "tomcat-annotations-api")
     }
     // Legacy Jackson 2 fixture sidecar; this does not exercise Jackson 3 defaults.
-    add(springSevenTests.implementationConfigurationName, "com.fasterxml.jackson.core:jackson-databind:2.21.7")
+    add(springSevenTests.implementationConfigurationName, "com.fasterxml.jackson.core:jackson-databind:2.23.0")
     // Real Jackson 3 reload coverage; isolated test graph only.
-    add(springSevenTests.implementationConfigurationName, "tools.jackson.core:jackson-databind:3.1.7")
+    add(springSevenTests.implementationConfigurationName, "tools.jackson.core:jackson-databind:3.3.0")
     add(springSevenTests.implementationConfigurationName, "org.hibernate.validator:hibernate-validator:9.1.5.Final")
     add(springSevenTests.implementationConfigurationName, "org.glassfish.expressly:expressly:6.0.0")
     // Native modern method authorization; isolated from Spring 5 and never packaged.
@@ -392,16 +392,16 @@ dependencies {
     // Owner-approved real JPA/schema validation tests; isolated and never packaged.
     add(springSevenTests.implementationConfigurationName, "org.springframework:spring-orm:7.0.10")
     add(springSevenTests.implementationConfigurationName, "org.hibernate.orm:hibernate-core:7.4.13.Final")
-    add(springSevenTests.implementationConfigurationName, "com.h2database:h2:2.4.240")
+    add(springSevenTests.implementationConfigurationName, "com.h2database:h2:2.5.252")
     // Native repository refresh regressions only; never shipped with the agent.
     add(springSevenTests.implementationConfigurationName, "org.springframework.data:spring-data-jpa:4.1.2")
-    add(springSevenTests.implementationConfigurationName, "net.bytebuddy:byte-buddy-agent:1.18.15")
+    add(springSevenTests.implementationConfigurationName, "net.bytebuddy:byte-buddy-agent:1.18.17")
     add(springSevenTests.implementationConfigurationName, "jakarta.annotation:jakarta.annotation-api:3.0.0")
     // Real Spring Integration endpoint swap regressions; test-only, never packaged.
     add(springSevenTests.implementationConfigurationName, "org.springframework.integration:spring-integration-core:7.1.2")
     // File adapter regressions only; same isolated SI version, never packaged.
     add(springSevenTests.implementationConfigurationName, "org.springframework.integration:spring-integration-file:7.1.2")
-    add(springSevenTests.runtimeOnlyConfigurationName, "org.junit.platform:junit-platform-launcher:6.0.3")
+    add(springSevenTests.runtimeOnlyConfigurationName, "org.junit.platform:junit-platform-launcher:6.1.3")
 }
 val springSevenTest by tasks.registering(Test::class) {
     group = "verification"
@@ -426,7 +426,7 @@ val modernMessagingTests = sourceSets.create("modernMessagingTest") {
 dependencies {
     add(modernMessagingTests.implementationConfigurationName, "org.junit.jupiter:junit-jupiter:5.10.2")
     // Existing repository test-only attacher for native Rabbit worker tracking.
-    add(modernMessagingTests.implementationConfigurationName, "net.bytebuddy:byte-buddy-agent:1.18.14")
+    add(modernMessagingTests.implementationConfigurationName, "net.bytebuddy:byte-buddy-agent:1.18.17")
     add(modernMessagingTests.implementationConfigurationName, "org.springframework:spring-context:6.1.14")
     add(modernMessagingTests.implementationConfigurationName, "org.springframework:spring-messaging:6.1.14")
     add(modernMessagingTests.implementationConfigurationName, "org.springframework:spring-tx:6.1.14")
