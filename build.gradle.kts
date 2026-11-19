@@ -45,8 +45,8 @@ dependencies {
 
     // StartupMustNotShowDialogTest reads our own compiled classes to walk the
     // call graph out of the startup activity. Same version the agent uses.
-    testImplementation("org.ow2.asm:asm:9.8")
-    testImplementation("org.ow2.asm:asm-tree:9.8")
+    testImplementation("org.ow2.asm:asm:9.11.1")
+    testImplementation("org.ow2.asm:asm-tree:9.11.1")
 
     // BasePlatformTestCase descends from junit.framework.TestCase, so the
     // IDE fixtures need JUnit 3/4 on the classpath and the vintage engine to

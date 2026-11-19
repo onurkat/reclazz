@@ -212,7 +212,7 @@ python3 scripts/test-sap-mappings-sdk.py /path/to/hybris
 
 The SDK must contain compiled `commercewebservices` web classes, `commerceservices`
 classes and its Spring test/servlet jars. The runner uses the project's cached ASM
-9.10.1 and a JDK compatible with the SDK; no new dependency is installed. Synthetic
+9.11.1 and a JDK compatible with the SDK; no new dependency is installed. Synthetic
 controllers are redefined in a temporary instrumented JVM around the genuine SDK
 `CommerceHandlerMapping`. Real Spring request lookup is compared with fresh SDK
 initialization after mapping removal/move, override addition/removal, lower priority,

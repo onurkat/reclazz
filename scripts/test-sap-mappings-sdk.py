@@ -21,9 +21,9 @@ if not (main / 'com/onurkat/reclazz/spring/SapCommerceMappings.class').is_file()
     parser.error('Run ./gradlew :agent:compileJava first')
 # Match agent/build.gradle.kts. SDK ASM versions may not support the probe JDK.
 cache = Path(os.environ.get('GRADLE_USER_HOME', Path.home() / '.gradle'))
-asm = sorted((cache / 'caches/modules-2/files-2.1/org.ow2.asm').glob('*/9.10.1/*/*.jar'))
+asm = sorted((cache / 'caches/modules-2/files-2.1/org.ow2.asm').glob('*/9.11.1/*/*.jar'))
 if not asm:
-    parser.error('Project ASM 9.10.1 cache is missing; compile the agent first')
+    parser.error('Project ASM 9.11.1 cache is missing; compile the agent first')
 classpath = os.pathsep.join(map(str, [main, web, services, *asm, *sorted((sdk / 'bin/platform').rglob('*.jar'))]))
 
 def run(command):

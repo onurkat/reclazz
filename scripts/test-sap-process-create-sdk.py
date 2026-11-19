@@ -22,9 +22,9 @@ for required in [main / 'com/onurkat/reclazz/transform/SapProcessDefinitionTrans
     if not required.is_file():
         parser.error('Run ./gradlew :agent:compileJava :agent:compilePremiumJava first')
 asm_root = Path.home() / '.gradle/caches/modules-2/files-2.1/org.ow2.asm'
-asm = sorted(asm_root.glob('*/9.10.1/*/*.jar'))
+asm = sorted(asm_root.glob('*/9.11.1/*/*.jar'))
 if not asm:
-    parser.error('Existing ASM 9.10.1 build dependencies are missing')
+    parser.error('Existing ASM 9.11.1 build dependencies are missing')
 resources = sorted({p.parent.parent for p in platform.rglob('processdefinition.xsd')})
 overrides = [args.reloader_classes.resolve()] if args.reloader_classes else []
 if overrides and not (overrides[0] / 'com/onurkat/reclazz/hybris/SapProcessDefinitionReloader.class').is_file():
