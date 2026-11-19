@@ -7,15 +7,17 @@ import org.objectweb.asm.tree.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class JacksonAccessorTransformerTest {
-    private static byte[] accessor(String owner) {
+    private static byte[] accessor(String owner) { return accessor(owner, "unreflect"); }
+    private static byte[] accessor(String owner, String method) {
+        String argument = method.equals("unreflect") ? "Method" : "Field";
         ClassWriter w=new ClassWriter(0);
         w.visit(Opcodes.V17,Opcodes.ACC_PUBLIC,owner,null,"java/lang/Object",null);
         MethodVisitor m=w.visitMethod(Opcodes.ACC_PUBLIC|Opcodes.ACC_STATIC,"accessor",
-                "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/reflect/Method;)Ljava/lang/invoke/MethodHandle;",
+                "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/reflect/" + argument + ";)Ljava/lang/invoke/MethodHandle;",
                 null,new String[]{"java/lang/IllegalAccessException"});
         m.visitCode();m.visitVarInsn(Opcodes.ALOAD,0);m.visitVarInsn(Opcodes.ALOAD,1);
-        m.visitMethodInsn(Opcodes.INVOKEVIRTUAL,"java/lang/invoke/MethodHandles$Lookup","unreflect",
-                "(Ljava/lang/reflect/Method;)Ljava/lang/invoke/MethodHandle;",false);
+        m.visitMethodInsn(Opcodes.INVOKEVIRTUAL,"java/lang/invoke/MethodHandles$Lookup",method,
+                "(Ljava/lang/reflect/" + argument + ";)Ljava/lang/invoke/MethodHandle;",false);
         m.visitInsn(Opcodes.ARETURN);m.visitMaxs(2,2);m.visitEnd();w.visitEnd();return w.toByteArray();
     }
     @Test void redirectAppliesToEveryDatabindUnreflectSite() {
@@ -36,5 +38,20 @@ class JacksonAccessorTransformerTest {
     @Test void jacksonTwoUnreflectCoverageStaysUnchanged() {
         String name="com/fasterxml/jackson/databind/x/Accessor";
         assertNull(new JacksonAccessorTransformer().transform(null,name,null,null,accessor(name)));
+    }
+    @Test void fieldHandleRedirectsAreConfinedToJacksonThreeDatabind() {
+        for (String method : new String[]{"unreflectGetter", "unreflectSetter"}) {
+            String name = "tools/jackson/databind/x/AnyFieldAccessor";
+            byte[] changed = new JacksonAccessorTransformer().transform(null, name, null, null, accessor(name, method));
+            assertNotNull(changed, method);
+            ClassNode node = new ClassNode(); new ClassReader(changed).accept(node, 0);
+            MethodInsnNode call = null;
+            for (var insn : node.methods.get(0).instructions) if (insn instanceof MethodInsnNode m) call = m;
+            assertNotNull(call); assertEquals(Opcodes.INVOKESTATIC, call.getOpcode());
+            assertEquals("com/onurkat/reclazz/bootstrap/JacksonBridge", call.owner); assertEquals(method, call.name);
+            assertEquals("(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/reflect/Field;)Ljava/lang/invoke/MethodHandle;", call.desc);
+            for (String other : new String[]{"com/fasterxml/jackson/databind/x/AnyFieldAccessor", "com/example/AnyFieldAccessor"})
+                assertNull(new JacksonAccessorTransformer().transform(null, other, null, null, accessor(other, method)), method + " in " + other);
+        }
     }
 }

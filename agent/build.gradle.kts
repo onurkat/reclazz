@@ -440,7 +440,8 @@ val springSevenTest by tasks.registering(Test::class) {
 for ((line, jacksonVersion) in listOf("3_1" to "3.1.8", "3_2" to "3.2.4", "3_3" to "3.3.0")) {
     val matrix = sourceSets.create("jackson3Matrix_$line") {
         java.setSrcDirs(listOf("src/springSixTest/java"))
-        java.include("**/JacksonThreeAddedGetterTest.java", "**/JacksonThreeGetterReloadTest.java")
+        java.include("**/JacksonThreeAddedGetterTest.java", "**/JacksonThreeGetterReloadTest.java",
+                "**/JacksonThreeAddedPropertiesTest.java", "**/JacksonThreeHandlePolicyTest.java")
         compileClasspath += premium.output + sourceSets.main.get().output + sourceSets.test.get().output + sourceSets.main.get().compileClasspath
         runtimeClasspath += premium.output + sourceSets.main.get().runtimeClasspath + sourceSets.test.get().output
     }
@@ -457,7 +458,8 @@ for ((line, jacksonVersion) in listOf("3_1" to "3.1.8", "3_2" to "3.2.4", "3_3" 
         useJUnitPlatform()
         testClassesDirs = matrix.output.classesDirs
         classpath = matrix.runtimeClasspath
-        include("**/JacksonThreeAddedGetterTest*", "**/JacksonThreeGetterReloadTest*")
+        include("**/JacksonThreeAddedGetterTest*", "**/JacksonThreeGetterReloadTest*",
+                "**/JacksonThreeAddedPropertiesTest*", "**/JacksonThreeHandlePolicyTest*")
         dependsOn(tasks.named("shadowJar"))
         systemProperty("reclazz.agent.jar", tasks.named<org.gradle.jvm.tasks.Jar>("shadowJar").get().archiveFile.get().asFile.absolutePath)
         systemProperty("reclazz.jackson3.expectedVersion", jacksonVersion)

@@ -1227,10 +1227,21 @@ and clears mapper caches through the public API; constructor tracking includes
 standalone and rebuilt mappers. Already-prefetched ObjectWriters keep their
 property list while added getter bodies remain live; retained ObjectReaders
 keep their prefetched deserializer. Obtain fresh writers/readers for a new shape.
-This Jackson 3 coverage does not establish added setters or fields for input
-or output, new constructor/record creators, or annotations relocated to
-`tools.jackson.databind.annotation`. Other unlisted Jackson versions and
-accessor-generating extensions such as Afterburner remain unverified.
+Added instance fields (input and output) and one-argument void setters (input)
+are separately covered by targeted component tests on Jackson 3.1.8, 3.2.4 and
+3.3.0. They use the real receiver and virtual field storage, with alias/naming,
+generic conversion, null skipping, removal/restoration, mapper access restrictions,
+final-field write refusal and native method-handle exception boundaries. On the
+Boot 4.1.2 manual-agent sample with Jackson 3.3.0 and Java 17, a mutable DTO's
+added field and setter complete a POST/GET round-trip in the same JVM; a second
+setter body edit also takes effect without restarting. The existing retained
+object remains usable after the shape changes.
+
+New constructor/record creators and annotations relocated to
+`tools.jackson.databind.annotation` remain unverified. Added record components
+are outside this field/setter acceptance: the measured added-constructor failure
+occurs before Jackson runs. Other unlisted Jackson versions and accessor-generating
+extensions such as Afterburner remain unverified.
 
 ## Spring service methods, scheduling and events
 

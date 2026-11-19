@@ -99,28 +99,64 @@ public final class JacksonBridge {
         return schema == null ? member.getDeclaringClass() : schema.owner();
     }
 
-    /** Jackson 3 uses handles for getters; preserve the caller's access check before routing. */
-    @SuppressWarnings("deprecation")
+    /** Jackson3 uses handles; preserve native Lookup checks before schema routing. */
     public static MethodHandle unreflect(MethodHandles.Lookup lookup, Method method)
             throws IllegalAccessException {
         MethodHandle nativeHandle = lookup.unreflect(method);
         Schema schema = routes.get(method.getDeclaringClass()).schema;
-        if (schema == null || method.getParameterCount() != 0
-                || Modifier.isStatic(method.getModifiers()) || !schema.targets().containsKey(method))
-            return nativeHandle;
-        // The carrier is public even when the real owner is not. Preserve the
-        // reflection adapter's owner policy in addition to Lookup's own checks.
-        if (!method.isAccessible() && (!Modifier.isPublic(method.getModifiers())
-                || !Modifier.isPublic(schema.owner().getModifiers())))
-            throw new IllegalAccessException("Accessor access was not enabled by Jackson: " + method.getName());
+        int arity = method.getParameterCount();
+        if (schema == null || arity > 1 || Modifier.isStatic(method.getModifiers())
+                || !schema.targets().containsKey(method)) return nativeHandle;
+        checkHandleAccess(method, method, schema.owner());
         try {
-            MethodHandle invoker = MethodHandles.lookup().findStatic(JacksonBridge.class, "invokeAdded",
-                    MethodType.methodType(Object.class, Method.class, Object.class));
-            return MethodHandles.insertArguments(invoker, 0, method)
-                    .asType(MethodType.methodType(method.getReturnType(), schema.owner()));
-        } catch (NoSuchMethodException impossible) {
-            throw new IllegalStateException(impossible);
-        }
+            MethodType invokerType = arity == 0 ? MethodType.methodType(Object.class, Method.class, Object.class)
+                    : MethodType.methodType(Object.class, Method.class, Object.class, Object.class);
+            MethodHandle invoker = MethodHandles.lookup().findStatic(JacksonBridge.class,
+                    arity == 0 ? "invokeAdded" : "invokeAddedSetter", invokerType);
+            MethodType type = arity == 0 ? MethodType.methodType(method.getReturnType(), schema.owner())
+                    : MethodType.methodType(method.getReturnType(), schema.owner(), method.getParameterTypes()[0]);
+            return MethodHandles.insertArguments(invoker, 0, method).asType(type);
+        } catch (NoSuchMethodException impossible) { throw new IllegalStateException(impossible); }
+    }
+
+    public static MethodHandle unreflectGetter(MethodHandles.Lookup lookup, Field field)
+            throws IllegalAccessException {
+        return fieldHandle(lookup, field, false);
+    }
+
+    public static MethodHandle unreflectSetter(MethodHandles.Lookup lookup, Field field)
+            throws IllegalAccessException {
+        return fieldHandle(lookup, field, true);
+    }
+
+    private static MethodHandle fieldHandle(MethodHandles.Lookup lookup, Field field, boolean write)
+            throws IllegalAccessException {
+        MethodHandle nativeHandle = write ? lookup.unreflectSetter(field) : lookup.unreflectGetter(field);
+        Schema schema = routes.get(field.getDeclaringClass()).schema;
+        if (schema == null) return nativeHandle;
+        checkHandleAccess(field, field, schema.owner());
+        FieldAccess access = schema.fields().get(field);
+        if (access == null) throw new IllegalArgumentException("Unknown Jackson field " + field.getName());
+        MethodHandle target = write ? access.setter() : access.getter();
+        if (target == null) throw new IllegalAccessException("Cannot write final added field " + field.getName());
+        return target.asType(write ? MethodType.methodType(void.class, schema.owner(), field.getType())
+                : MethodType.methodType(field.getType(), schema.owner()));
+    }
+
+    @SuppressWarnings("deprecation")
+    private static void checkHandleAccess(Member member, AccessibleObject accessible, Class<?> owner)
+            throws IllegalAccessException {
+        // A public metadata carrier must not grant a restricted mapper access to a private owner/member.
+        if (!accessible.isAccessible() && (!Modifier.isPublic(member.getModifiers()) || !Modifier.isPublic(owner.getModifiers())))
+            throw new IllegalAccessException("Accessor access was not enabled by Jackson: " + member.getName());
+    }
+
+    private static Object invokeAddedSetter(Method method, Object receiver, Object value) throws Throwable {
+        if (receiver == null) throw new NullPointerException("accessor receiver");
+        Schema schema = routes.get(method.getDeclaringClass()).schema;
+        MethodHandle target = schema == null ? null : schema.targets().get(method);
+        if (target == null) throw new IllegalArgumentException("Unknown Jackson accessor " + method.getName());
+        return target.invoke(receiver, checkedValue(method.getParameterTypes()[0], value));
     }
 
     /** Access is captured by unreflect; retained handles keep calling the live target. */

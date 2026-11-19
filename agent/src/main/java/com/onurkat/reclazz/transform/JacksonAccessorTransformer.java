@@ -44,9 +44,14 @@ public final class JacksonAccessorTransformer implements ClassFileTransformer {
                             String replacement = null;
                             if (opcode == Opcodes.INVOKEVIRTUAL
                                     && reader.getClassName().startsWith("tools/jackson/databind/")
-                                    && owner.equals("java/lang/invoke/MethodHandles$Lookup") && method.equals("unreflect")
-                                    && descriptor.equals("(Ljava/lang/reflect/Method;)Ljava/lang/invoke/MethodHandle;"))
-                                replacement = "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/reflect/Method;)Ljava/lang/invoke/MethodHandle;";
+                                    && owner.equals("java/lang/invoke/MethodHandles$Lookup")) {
+                                if (method.equals("unreflect")
+                                        && descriptor.equals("(Ljava/lang/reflect/Method;)Ljava/lang/invoke/MethodHandle;"))
+                                    replacement = "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/reflect/Method;)Ljava/lang/invoke/MethodHandle;";
+                                if ((method.equals("unreflectGetter") || method.equals("unreflectSetter"))
+                                        && descriptor.equals("(Ljava/lang/reflect/Field;)Ljava/lang/invoke/MethodHandle;"))
+                                    replacement = "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/reflect/Field;)Ljava/lang/invoke/MethodHandle;";
+                            }
                             if (opcode == Opcodes.INVOKEVIRTUAL) {
                                 if (owner.equals("java/lang/Class") && method.equals("getDeclaredMethods")
                                         && descriptor.equals("()[Ljava/lang/reflect/Method;"))

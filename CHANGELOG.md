@@ -19,6 +19,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Jackson 3.1–3.3 added fields and setters use the live DTO and virtual storage
+  while preserving mapper access checks and final-field write restrictions.
+
 - SAP Commerce settings and Install Agent use the resolved installation, including
   nested layouts and module content roots when configuration files are kept elsewhere.
 
