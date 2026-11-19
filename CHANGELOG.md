@@ -19,6 +19,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Enum switches compiled by javac keep the correct case mapping after adding or
+  reordering cases, including a new switch table for another enum.
+
 - Jackson 3.1–3.3 added fields and setters use the live DTO and virtual storage
   while preserving mapper access checks and final-field write restrictions.
 

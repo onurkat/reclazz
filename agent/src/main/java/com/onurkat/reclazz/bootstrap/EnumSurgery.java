@@ -307,6 +307,24 @@ public final class EnumSurgery {
      * @param loadedClasses every class the JVM has, from Instrumentation
      * @return how many tables were grown
      */
+    /** Narrow access to a recognized physical javac switch table. */
+    public static int[] readSwitchTable(Field field) {
+        checkSwitchTable(field);
+        return (int[]) UnsafeAccess.getStatic(field);
+    }
+
+    public static void writeSwitchTable(Field field, int[] table) {
+        checkSwitchTable(field);
+        if (table == null) throw new IllegalArgumentException("Missing switch table");
+        UnsafeAccess.putStatic(field, table);
+    }
+
+    private static void checkSwitchTable(Field field) {
+        if (field.getType() != int[].class || !java.lang.reflect.Modifier.isStatic(field.getModifiers())
+                || !field.getName().startsWith("$SwitchMap$"))
+            throw new IllegalArgumentException("Not a javac switch table");
+    }
+
     public static int growSwitchTables(Class<?>[] loadedClasses, Class<?> enumClass, int newLength) {
         if (loadedClasses == null || enumClass == null || !UnsafeAccess.isAvailable()) return 0;
         // A JVM that has already refused will refuse every one of these, and

@@ -148,7 +148,8 @@ fun main() {
     }
     // RECLAZZ_TEST_ONLY=ConstructorChangeTest,CacheableConditionTest re-runs named scenarios on a fresh server.
     val only = System.getenv("RECLAZZ_TEST_ONLY")?.split(',')?.map { it.trim() }?.filter { it.isNotEmpty() }.orEmpty()
-    val tests = if (only.isEmpty()) allTests else allTests.filter { it::class.simpleName in only }
+    val focusedTests = listOf(EnumSwitchMapLiveTest(config, agentClient, httpVerifier))
+    val tests = if (only.isEmpty()) allTests else (allTests + focusedTests).filter { it::class.simpleName in only }
     if (only.isNotEmpty() && tests.size != only.size) {
         System.err.println("RECLAZZ_TEST_ONLY names unknown scenarios: " + (only - tests.map { it::class.simpleName }.toSet()))
         exitProcess(1)

@@ -209,6 +209,19 @@ public class CompanionGenerator implements Opcodes {
                                                         TransformContext context) {
         MethodVisitor physical = new MethodVisitor(ASM9, visitor) {
             @Override public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
+                if (!owner.equals(originalClass) && (opcode == GETSTATIC || opcode == PUTSTATIC)
+                        && AddedStatics.contains(owner, name, descriptor)) {
+                    if (opcode == PUTSTATIC) CompanionMethodAdapter.box(mv, Type.getType(descriptor));
+                    mv.visitLdcInsn(Type.getObjectType(owner));
+                    mv.visitLdcInsn(name);
+                    mv.visitLdcInsn(descriptor);
+                    mv.visitMethodInsn(INVOKESTATIC, FIELD_STORE,
+                            opcode == GETSTATIC ? "getStaticExtField" : "putStaticExtFieldSwapped",
+                            opcode == GETSTATIC ? "(Ljava/lang/Class;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;"
+                                    : "(Ljava/lang/Object;Ljava/lang/Class;Ljava/lang/String;Ljava/lang/String;)V", false);
+                    if (opcode == GETSTATIC) CompanionMethodAdapter.unbox(mv, Type.getType(descriptor));
+                    return;
+                }
                 String type;
                 int kind;
                 switch (opcode) {

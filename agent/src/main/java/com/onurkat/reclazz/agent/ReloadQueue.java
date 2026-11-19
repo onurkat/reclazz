@@ -50,6 +50,15 @@ public final class ReloadQueue {
         void handle(ChangeEvent event);
     }
 
+    public record SavePlan(List<ChangeEvent> apply, java.util.Map<ChangeEvent, String> refused) {
+        public SavePlan { apply = List.copyOf(apply); refused = java.util.Map.copyOf(refused); }
+    }
+    public interface SavePreparer {
+        SavePlan prepare(List<ChangeEvent> captured);
+        default void complete() { }
+    }
+    private SavePreparer preparer = captured -> new SavePlan(captured, java.util.Map.of());
+
     /** What surrounds a batch of class files: opened before the first, closed after the last. */
     public interface Bracket {
         void begin();
@@ -214,6 +223,11 @@ public final class ReloadQueue {
     }
 
     public static ReloadQueue start(Handler handler, Bracket bracket, Consumer<Runnable> classBoundary) {
+        return start(handler, bracket, classBoundary, captured -> new SavePlan(captured, java.util.Map.of()));
+    }
+
+    public static ReloadQueue start(Handler handler, Bracket bracket, Consumer<Runnable> classBoundary,
+                                    SavePreparer preparer) {
         ExecutorService executor = Executors.newSingleThreadExecutor(r -> {
             Thread t = new Thread(r, "Reclazz-Reloader");
             t.setDaemon(true);
@@ -224,6 +238,7 @@ public final class ReloadQueue {
                 System::currentTimeMillis, Thread::sleep);
         queue.ownedExecutor = executor;
         queue.classBoundary = classBoundary;
+        queue.preparer = preparer;
         queue.startStallWatch();
         return queue;
     }
@@ -235,6 +250,13 @@ public final class ReloadQueue {
 
     ReloadQueue(Handler handler, Bracket bracket, Executor executor, ReloadStall stall,
                 LongSupplier clock, Sleeper sleeper, ByteReader reader) {
+        this(handler, bracket, executor, stall, clock, sleeper, reader,
+                captured -> new SavePlan(captured, java.util.Map.of()));
+    }
+
+    ReloadQueue(Handler handler, Bracket bracket, Executor executor, ReloadStall stall,
+                LongSupplier clock, Sleeper sleeper, ByteReader reader, SavePreparer preparer) {
+        this.preparer = preparer;
         this.reader = reader;
         this.handler = handler;
         this.bracket = bracket;
@@ -530,8 +552,12 @@ public final class ReloadQueue {
     }
 
     private void applyClassBatch(List<ChangeEvent> batch) {
-        if (verification == null) applyCaptured(batch);
-        else verification.applyFiles(batch, () -> applyCaptured(batch));
+        SavePlan plan = preparer.prepare(batch);
+        try {
+            if (plan.apply().isEmpty()) return;
+            if (verification == null) applyCaptured(plan.apply());
+            else verification.applyFiles(plan.apply(), () -> applyCaptured(plan.apply()));
+        } finally { preparer.complete(); }
     }
 
     private void applyCaptured(List<ChangeEvent> batch) {

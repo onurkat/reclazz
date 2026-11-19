@@ -19,6 +19,9 @@ import com.onurkat.reclazz.platform.SapIndexingGuidance;
 import com.onurkat.reclazz.platform.SapConfigFiles;
 import com.onurkat.reclazz.platform.SpringContextInterceptTransformer;
 import com.onurkat.reclazz.reload.StructuralReloader;
+import com.onurkat.reclazz.reload.SwitchMapPlan;
+import com.onurkat.reclazz.reload.SwitchMapPreflight;
+import com.onurkat.reclazz.reload.SwitchMapRefresh;
 import com.onurkat.reclazz.spring.SpringReloadOrchestrator;
 import com.onurkat.reclazz.transform.ReclazzTransformer;
 import com.onurkat.reclazz.transform.ReflectionInterceptTransformer;
@@ -647,7 +650,13 @@ public class ReclazzAgent {
             reloadQueue = ReloadQueue.start(
                     event -> handleChange(event, compiler, reloader,
                             springOrchestrator, modules, watcher::dispatchPlatformChange, config),
-                    batchBracket, config.isRequestBoundary() ? RequestReloadBoundary::run : Runnable::run);
+                    batchBracket, config.isRequestBoundary() ? RequestReloadBoundary::run : Runnable::run,
+                    new ReloadQueue.SavePreparer() {
+                        public ReloadQueue.SavePlan prepare(java.util.List<ChangeEvent> captured) {
+                            return prepareSwitchMaps(captured);
+                        }
+                        public void complete() { SwitchMapRefresh.end(); }
+                    });
 
             reloadQueue.setVerification(verification);
             watcher.onGeneratedOutputHold(reloadQueue::generatedOutputHeld);
@@ -994,6 +1003,207 @@ public class ReclazzAgent {
         }
     }
 
+    private static void refuseSwitchMap(String name, String reason, String source) {
+        String why = "switch table could not be refreshed; restart to apply: " + reason;
+        recordOutcome(name, false, why, source);
+        StatusReporter.error("Hot-swap failed for " + displayName(name) + ": " + why);
+        ReloadEvents.failed(name, why, source);
+        SessionReport.failed();
+    }
+
+    private static Path switchOutputRoot(Path file, String internalName) throws IOException {
+        Path root = file.toAbsolutePath().normalize();
+        for (String part : (internalName + ".class").split("/")) root = root.getParent();
+        if (root == null || !root.resolve(internalName + ".class").equals(file.toAbsolutePath().normalize()))
+            throw new IOException("switch holder path does not match its name");
+        return root;
+    }
+
+    private static Path classOutputRoot(Class<?> type) throws Exception {
+        var source = type.getProtectionDomain().getCodeSource();
+        if (source == null || !"file".equals(source.getLocation().getProtocol()))
+            throw new IOException("class output root is unavailable");
+        return Path.of(source.getLocation().toURI()).toRealPath();
+    }
+
+    /** Capture only a proven append from this holder's actual output and defining loader. */
+    private static void capturePendingEnums(Map<String, byte[]> candidates, Map<String, Path> paths,
+                                           Map<String, SwitchMapPlan> plans, Map<String, String> refused) {
+        for (var item : plans.entrySet()) {
+            String holderName = item.getKey();
+            Map<String, byte[]> pulled = new java.util.LinkedHashMap<>();
+            Map<String, Path> pulledPaths = new java.util.LinkedHashMap<>();
+            try {
+                Class<?> holder = findLoadedClass(holderName);
+                if (holder == null) {
+                    for (var candidate : candidates.entrySet()) {
+                        if (!SwitchMapPlan.references(candidate.getValue()).contains(holderName.replace('.', '/'))) continue;
+                        Class<?> outer = findLoadedClass(candidate.getKey());
+                        if (outer != null) { holder = Class.forName(holderName, false, outer.getClassLoader()); break; }
+                    }
+                }
+                if (holder == null) throw new IOException("switch holder loader is unavailable");
+                for (var table : item.getValue().tables()) {
+                    Class<?> type = Class.forName(table.enumName().replace('/', '.'), false, holder.getClassLoader());
+                    java.util.Set<String> missing = new java.util.LinkedHashSet<>();
+                    for (var entry : table.entries()) missing.add(entry.constant());
+                    Object[] values = type.getEnumConstants();
+                    if (values == null) throw new IOException("switch target is not an enum");
+                    for (Object value : values) missing.remove(((Enum<?>) value).name());
+                    if (missing.isEmpty()) continue;
+                    Path holderPath = paths.get(holderName);
+                    if (holderPath == null) throw new IOException("switch holder output path is unavailable");
+                    Path root = switchOutputRoot(holderPath, holderName.replace('.', '/'));
+                    if (type.getClassLoader() != holder.getClassLoader() || !root.toRealPath().equals(classOutputRoot(type))
+                            || !root.toRealPath().equals(classOutputRoot(holder)))
+                        throw new IOException("pending enum has another output root or defining loader");
+                    String enumName = type.getName();
+                    Path file = root.resolve(table.enumName() + ".class");
+                    byte[] pending = candidates.get(enumName);
+                    if (pending != null && !file.toRealPath().equals(paths.get(enumName).toRealPath()))
+                        throw new IOException("pending enum event has another output path");
+                    if (pending == null) pending = Files.readAllBytes(file);
+                    org.objectweb.asm.ClassReader reader = new org.objectweb.asm.ClassReader(pending);
+                    if (!reader.getClassName().equals(table.enumName()) || (reader.getAccess() & org.objectweb.asm.Opcodes.ACC_ENUM) == 0)
+                        throw new IOException("pending enum bytes have another identity");
+                    java.util.Set<String> declared = new java.util.HashSet<>();
+                    reader.accept(new org.objectweb.asm.ClassVisitor(org.objectweb.asm.Opcodes.ASM9) {
+                        @Override public org.objectweb.asm.FieldVisitor visitField(int access, String name, String descriptor,
+                                                                                  String signature, Object value) {
+                            if ((access & org.objectweb.asm.Opcodes.ACC_ENUM) != 0) declared.add(name);
+                            return null;
+                        }
+                    }, org.objectweb.asm.ClassReader.SKIP_CODE);
+                    missing.retainAll(declared); // absent in both versions: javac's NoSuchFieldError guard skips it.
+                    if (missing.isEmpty()) continue;
+                    if (!com.onurkat.reclazz.reload.EnumConstantChange.isAppendOnly(type, pending)
+                            || !com.onurkat.reclazz.reload.EnumConstantChange.appendedNames(type, pending).containsAll(missing))
+                        throw new IOException("pending enum is not an append of the missing cases");
+                    pulled.put(enumName, pending); pulledPaths.put(enumName, file);
+                }
+                candidates.putAll(pulled); paths.putAll(pulledPaths);
+            } catch (Exception unavailable) {
+                refused.put(holderName, unavailable.getMessage() == null ? unavailable.getClass().getSimpleName() : unavailable.getMessage());
+            }
+        }
+        candidates.forEach((name, bytes) -> {
+            for (String reference : SwitchMapPlan.references(bytes)) {
+                String reason = refused.get(reference.replace('/', '.'));
+                if (reason != null) refused.put(name, reason);
+            }
+        });
+    }
+
+    private static ReloadQueue.SavePlan prepareSwitchMaps(java.util.List<ChangeEvent> captured) {
+        java.util.Map<Path, ChangeEvent> events = new java.util.LinkedHashMap<>();
+        for (ChangeEvent event : captured) {
+            Class<?> owner = findLoadedClass(new org.objectweb.asm.ClassReader(event.getBytes()).getClassName().replace('/', '.'));
+            boolean sameOutput = false;
+            try { sameOutput = owner != null && classOutputRoot(owner).equals(switchOutputRoot(event.getPath(), owner.getName().replace('.', '/')).toRealPath()); }
+            catch (Exception unavailable) { /* Unproven origins never suppress an event. */ }
+            if (sameOutput && SwitchMapRefresh.alreadyApplied(owner, event.getBytes())) {
+                StatusReporter.detail("Unchanged applied class skipped: " + owner.getName());
+                continue;
+            }
+            events.put(event.getPath().toAbsolutePath().normalize(), event);
+        }
+        java.util.Map<ChangeEvent, String> refused = new java.util.LinkedHashMap<>();
+        for (ChangeEvent outer : java.util.List.copyOf(events.values())) {
+            byte[] bytes = outer.getBytes();
+            for (String reference : SwitchMapPlan.references(bytes)) {
+                Path sibling = outer.getPath().toAbsolutePath().normalize().getParent()
+                        .resolve(reference.substring(reference.lastIndexOf('/') + 1) + ".class");
+                if (events.containsKey(sibling)) continue;
+                try {
+                    byte[] holderBytes = Files.readAllBytes(sibling);
+                    if (!new org.objectweb.asm.ClassReader(holderBytes).getClassName().equals(reference)) {
+                        refused.put(outer, "referenced switch holder has a different class name");
+                        continue;
+                    }
+                    var parsed = SwitchMapPlan.parse(holderBytes);
+                    if (parsed.plan() != null && SwitchMapRefresh.matches(
+                            findLoadedClass(reference.replace('/', '.')), parsed.plan())) continue;
+                    events.put(sibling, new ChangeEvent(sibling, ChangeEvent.Type.MODIFIED,
+                            outer.getModuleName(), outer.getSourceRoot()).withBytes(holderBytes));
+                } catch (java.io.IOException unavailable) {
+                    refused.put(outer, "referenced switch holder bytes are unavailable");
+                }
+            }
+        }
+        java.util.Map<String, byte[]> bytes = new java.util.LinkedHashMap<>();
+        for (ChangeEvent event : events.values()) bytes.put(
+                new org.objectweb.asm.ClassReader(event.getBytes()).getClassName().replace('/', '.'), event.getBytes());
+        var preflight = SwitchMapPreflight.check(bytes);
+        Map<String, Path> paths = new java.util.LinkedHashMap<>();
+        events.values().forEach(event -> paths.put(new org.objectweb.asm.ClassReader(event.getBytes()).getClassName().replace('/', '.'), event.getPath()));
+        Map<String, String> pendingRefused = new java.util.LinkedHashMap<>(preflight.refused());
+        capturePendingEnums(bytes, paths, preflight.plans(), pendingRefused);
+        ChangeEvent context = captured.isEmpty() ? null : captured.get(0);
+        if (context != null) bytes.forEach((name, value) -> {
+            Path path = paths.get(name).toAbsolutePath().normalize();
+            events.putIfAbsent(path, new ChangeEvent(path, ChangeEvent.Type.MODIFIED, context.getModuleName(), context.getSourceRoot()).withBytes(value));
+        });
+        java.util.List<ChangeEvent> apply = new java.util.ArrayList<>();
+        java.util.Map<String, byte[]> accepted = new java.util.LinkedHashMap<>();
+        for (ChangeEvent event : events.values()) {
+            String name = new org.objectweb.asm.ClassReader(event.getBytes()).getClassName().replace('/', '.');
+            String reason = pendingRefused.get(name);
+            if (reason != null) refused.put(event, reason);
+            if (!refused.containsKey(event)) { apply.add(event); accepted.put(name, event.getBytes()); }
+        }
+        refused.forEach((event, reason) -> refuseSwitchMap(
+                new org.objectweb.asm.ClassReader(event.getBytes()).getClassName().replace('/', '.'), reason, event.getPath().toString()));
+        SwitchMapRefresh.begin(accepted, preflight.plans(), ReclazzAgent::findLoadedClass);
+        return new ReloadQueue.SavePlan(com.onurkat.reclazz.reload.BatchOrder.calleesFirst(apply), refused);
+    }
+
+    private static Map<String, byte[]> prepareCompiledSwitchMaps(Map<String, byte[]> compiled, Map<String, String> sources) {
+        var preflight = SwitchMapPreflight.check(compiled);
+        Map<String, String> refused = new java.util.LinkedHashMap<>(preflight.refused());
+        compiled.forEach((name, value) -> {
+            for (String reference : SwitchMapPlan.references(value)) {
+                if (compiled.containsKey(reference.replace('/', '.'))) continue;
+                Class<?> holder = findLoadedClass(reference.replace('/', '.'));
+                if (holder == null) continue;
+                try (var input = holder.getResourceAsStream("/" + reference + ".class")) {
+                    var parsed = input == null ? null : SwitchMapPlan.parse(input.readAllBytes());
+                    if (parsed == null || parsed.plan() == null || !SwitchMapRefresh.matches(holder, parsed.plan()))
+                        refused.put(name, "referenced switch holder is absent from compiler output");
+                } catch (java.io.IOException unavailable) {
+                    refused.put(name, "referenced switch holder bytes are unavailable");
+                }
+            }
+        });
+        Map<String, byte[]> accepted = new java.util.LinkedHashMap<>(compiled);
+        Map<String, Path> paths = new java.util.LinkedHashMap<>();
+        for (String name : preflight.plans().keySet()) {
+            Class<?> holder = findLoadedClass(name);
+            if (holder != null) try { paths.put(name, classOutputRoot(holder).resolve(name.replace('.', '/') + ".class")); }
+            catch (Exception unavailable) { refused.put(name, "switch holder output root is unavailable"); }
+        }
+        for (String name : compiled.keySet()) {
+            Class<?> type = findLoadedClass(name);
+            if (type != null) try { paths.putIfAbsent(name, classOutputRoot(type).resolve(name.replace('.', '/') + ".class")); }
+            catch (Exception unavailable) { /* Needed enum origins are refused by capture. */ }
+        }
+        capturePendingEnums(accepted, paths, preflight.plans(), refused);
+        refused.forEach((name, reason) -> {
+            accepted.remove(name); refuseSwitchMap(name, reason, sources.get(name));
+        });
+        java.util.List<ChangeEvent> events = new java.util.ArrayList<>();
+        accepted.forEach((name, value) -> events.add(new ChangeEvent(
+                paths.getOrDefault(name, Path.of(name.replace('.', '/') + ".class")), ChangeEvent.Type.MODIFIED,
+                "compiled", "classes").withBytes(value)));
+        Map<String, byte[]> ordered = new java.util.LinkedHashMap<>();
+        for (ChangeEvent event : com.onurkat.reclazz.reload.BatchOrder.calleesFirst(events)) {
+            String name = new org.objectweb.asm.ClassReader(event.getBytes()).getClassName().replace('/', '.');
+            ordered.put(name, event.getBytes());
+
+        }
+        SwitchMapRefresh.begin(ordered, preflight.plans(), ReclazzAgent::findLoadedClass);
+        return ordered;
+    }
+
     private static void handleClassFileChange(ChangeEvent event,
                                               ClassReloader reloader,
                                               SpringReloadOrchestrator springOrchestrator,
@@ -1272,12 +1482,15 @@ public class ReclazzAgent {
         for (String compiled : compiledClasses.keySet()) sources.put(compiled, sourceOf(compiled, files));
         if (compiledClasses.isEmpty()) return;
 
-        Runnable reload = () -> applyCompiledClasses(compiledClasses, sources, reloader,
-                springOrchestrator, modules);
         Runnable apply = () -> {
-            ReloadVerification v = verification;
-            if (v == null) reload.run();
-            else v.apply(compiledClasses, sources, reload);
+            Map<String, byte[]> prepared = prepareCompiledSwitchMaps(compiledClasses, sources);
+            try {
+                int refusedCount = (int) compiledClasses.keySet().stream().filter(name -> !prepared.containsKey(name)).count();
+                Runnable reload = () -> applyCompiledClasses(prepared, sources, reloader, springOrchestrator, modules, refusedCount);
+                ReloadVerification v = verification;
+                if (v == null) reload.run();
+                else v.apply(prepared, sources, reload);
+            } finally { SwitchMapRefresh.end(); }
         };
         if (agentConfig != null && agentConfig.isRequestBoundary()) RequestReloadBoundary.run(apply);
         else apply.run();
@@ -1325,6 +1538,7 @@ public class ReclazzAgent {
         try {
             StructuralReloader structural = structuralReloader;
             if (structural != null) structural.endBatch();
+            SwitchMapRefresh.complete(structural);
         } finally {
             try {
                 if (--frameworkBatchDepth == 0) {
@@ -1335,8 +1549,8 @@ public class ReclazzAgent {
                     StructuralReloader completedStructural = structuralReloader;
                     for (FrameworkReload work : ready) {
                         Class<?> type = findLoadedClass(work.className);
-                        if (completedStructural == null || completedStructural.nativeOutcome(type)
-                                != StructuralReloader.NativeOutcome.FAILED) {
+                        if (SwitchMapRefresh.failure(type) == null && (completedStructural == null || completedStructural.nativeOutcome(type)
+                                != StructuralReloader.NativeOutcome.FAILED)) {
                             com.onurkat.reclazz.transform.KeepBaseline.advance(type, work.bytes);
                         }
                     }
@@ -1375,10 +1589,11 @@ public class ReclazzAgent {
         try {
             Class<?> type = findLoadedClass(work.className);
             StructuralReloader structural = structuralReloader;
-            if (deferred && structural != null
-                    && structural.nativeOutcome(type) == StructuralReloader.NativeOutcome.FAILED) {
+            String switchFailure = SwitchMapRefresh.failure(type);
+            if (switchFailure != null || (deferred && structural != null
+                    && structural.nativeOutcome(type) == StructuralReloader.NativeOutcome.FAILED)) {
                 work.success = false;
-                String why = "native redefinition failed; framework refresh was not run";
+                String why = switchFailure != null ? switchFailure : "native redefinition failed; framework refresh was not run";
                 recordOutcome(work.className, false, why, work.source);
                 SessionReport.failed();
                 StatusReporter.error("Reload of " + work.className + ": " + why);
@@ -1441,15 +1656,27 @@ public class ReclazzAgent {
 
     private static ClassReloader.ReloadResult reloadWithCacheBoundary(String className, String internalName,
                                                                      byte[] bytecode, ClassReloader reloader) {
-        com.onurkat.reclazz.transform.AdmittedBytes.invalidate(findLoadedClass(className));
+        Class<?> owner = findLoadedClass(className);
+        String dependencyFailure = SwitchMapRefresh.dependencyFailure(owner, structuralReloader);
+        if (dependencyFailure != null) {
+            SwitchMapRefresh.result(owner, false);
+            return ClassReloader.ReloadResult.failure(dependencyFailure, true);
+        }
+        SwitchMapRefresh.mutationStarting(owner);
+        com.onurkat.reclazz.transform.AdmittedBytes.invalidate(owner);
         ReloadVerification v = verification;
         if (v != null) v.invalidateUntracked(className);
         if (cacheTrackingInstalled) CacheDependencyLedger.beginMutation();
         try {
-            if (structuralReloader != null && transformContext != null && transformContext.isWatched(internalName)) {
-                return structuralReloader.reload(className, bytecode);
-            }
-            return reloader.reload(className, bytecode);
+            ClassReloader.ReloadResult result = structuralReloader != null && transformContext != null
+                    && transformContext.isWatched(internalName) ? structuralReloader.reload(className, bytecode)
+                    : reloader.reload(className, bytecode);
+            SwitchMapRefresh.result(findLoadedClass(className), result.isSuccess());
+            if (frameworkBatchDepth == 0) SwitchMapRefresh.complete(structuralReloader);
+            return result;
+        } catch (RuntimeException | Error failure) {
+            SwitchMapRefresh.result(owner, false);
+            throw failure;
         } finally {
             if (cacheTrackingInstalled) CacheDependencyLedger.endMutation();
         }
@@ -1458,11 +1685,11 @@ public class ReclazzAgent {
     private static void applyCompiledClasses(Map<String, byte[]> compiledClasses, Map<String, String> sources,
                                              ClassReloader reloader,
                                              SpringReloadOrchestrator springOrchestrator,
-                                             PremiumModules modules) {
+                                             PremiumModules modules, int refusedCount) {
 
         long startTime = System.currentTimeMillis();
         int successCount = 0;
-        int failCount = 0;
+        int failCount = refusedCount;
         java.util.List<FrameworkReload> frameworkResults = new java.util.ArrayList<>();
 
         // Dependent cascade + stale-reference healing sweep every singleton

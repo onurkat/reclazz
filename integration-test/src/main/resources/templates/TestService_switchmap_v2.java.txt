@@ -1,0 +1,44 @@
+/*
+ * Copyright 2026 Onur Kat
+ * SPDX-License-Identifier: Apache-2.0
+ */
+package com.onurkat.reclazztest.services;
+
+import org.springframework.stereotype.Service;
+
+@Service("reclazzTestService")
+public class TestService {
+
+    private String greeting = "hello";
+
+    public TestService() {
+        // default constructor
+    }
+
+    public String ping() {
+        return "pong-v1";
+    }
+
+    public String getGreeting() {
+        return switchLabel(TestStatus.OPEN) + "|" + switchLabel(TestStatus.CLOSED) + "|" + switchLabel(TestStatus.ARCHIVED);
+    }
+
+    public String echo(String msg, String suffix) {
+        return "echo:" + msg;
+    }
+
+    public String removable() {
+        return "removable-v1";
+    }
+
+    public String getServiceVersion() {
+        return "service-v1";
+    }
+    private String switchLabel(TestStatus status) {
+        return switch (status) {
+            case OPEN -> "open-v2";
+            case CLOSED -> "closed-v2";
+            case ARCHIVED -> "archived-v2";
+        };
+    }
+}

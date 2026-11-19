@@ -1053,9 +1053,9 @@ public class StructuralReloader {
             if(loadedClass!=null)for(var constructor:ReflectionBridge.physicalDeclaredConstructors(loadedClass))
                 physicalConstructors.add(org.objectweb.asm.Type.getConstructorDescriptor(constructor));
             for(var method:constructorShape.methods)if(method.name.equals("<init>") && !physicalConstructors.contains(method.desc))reflectionConstructors.add(method.desc);
-            CompanionGenerator.CompanionResult companion = CompanionGenerator.generate(
+            CompanionGenerator.CompanionResult companion = AddedStatics.generating(loadedClass, () -> CompanionGenerator.generate(
                     internalName, newBytecode, diff, version, staticsNeedingValue,
-                    pinnedMethods.keySet(), context,reflectionConstructors);
+                    pinnedMethods.keySet(), context,reflectionConstructors));
 
             // Get Lookup from the target class's __reclazz$lookup field
             Class<?> targetClass = findLoadedClass(className);
