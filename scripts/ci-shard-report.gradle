@@ -1,0 +1,55 @@
+// Research-free metadata for the portable shard contract. Never executes Test bodies.
+import groovy.json.JsonOutput
+import org.gradle.api.tasks.testing.Test
+import org.gradle.api.tasks.JavaExec
+
+gradle.projectsEvaluated {
+    gradle.rootProject.tasks.register('testTaskTypes') {
+        group = 'help'
+        doLast {
+            def paths = gradle.rootProject.allprojects.collectMany { p ->
+                p.tasks.withType(Test).collect { it.path }
+            }.sort()
+            println('TEST_TASK_TYPES=' + JsonOutput.toJson(paths))
+        }
+    }
+}
+gradle.taskGraph.whenReady { graph ->
+    def destination = System.getProperty('reclazz.ciReport')
+    if (!destination) return
+    def root = gradle.rootProject
+    def roots = [(root.projectDir.absolutePath): '<repo>',
+                 (gradle.gradleUserHomeDir.absolutePath): '<gradle>',
+                 (System.getProperty('java.home')): '<java>',
+                 (System.getProperty('user.home')): '<home>']
+    def normal = { value ->
+        def result = value.toString().replace('\\', '/')
+        roots.each { path, replacement -> result = result.replace(path.replace('\\', '/'), replacement) }
+        result
+    }
+    def describe = { Test task ->
+        [includes: task.includes.sort(), excludes: task.excludes.sort(),
+         includePatterns: task.filter.includePatterns.sort(), excludePatterns: task.filter.excludePatterns.sort(),
+         classDirectories: task.testClassesDirs.files.collect { normal(it.absolutePath) }.sort(),
+         classpath: task.classpath.files.collect { normal(it.absolutePath) },
+         jvmArgs: task.allJvmArgs.collect { normal(it) },
+         systemProperties: task.systemProperties.collectEntries { key, value -> [(key): normal(value)] },
+         javaVersion: task.javaLauncher.get().metadata.languageVersion.toString(),
+         maxParallelForks: task.maxParallelForks, forkEvery: task.forkEvery,
+         bodyEnabled: task.enabled && task.onlyIf.isSatisfiedBy(task),
+         dependencies: task.taskDependencies.getDependencies(task).collect { it.path }.sort()]
+    }
+    def agent = root.project(':agent')
+    def rows = graph.allTasks.collect { task ->
+        def row = [path: task.path, type: task.class.name, group: task.group]
+        if (task instanceof Test) { row.kind = 'Test'; row.test = describe(task) }
+        else if (task instanceof JavaExec) { row.kind = 'JavaExec'; row.mainClass = task.mainClass.orNull }
+        row
+    }
+    def report = [shard: agent.findProperty('reclazz.testShard') ?: 'all',
+                  skipRabbit: agent.findProperty('reclazz.skipRabbitBroker'),
+                  tasks: rows, agentTest: describe(agent.tasks.named('test', Test).get())]
+    def file = new File(destination)
+    file.parentFile.mkdirs()
+    file.text = JsonOutput.prettyPrint(JsonOutput.toJson(report))
+}

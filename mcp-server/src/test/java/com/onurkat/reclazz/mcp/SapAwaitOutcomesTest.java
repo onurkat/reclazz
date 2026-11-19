@@ -27,7 +27,7 @@ class SapAwaitOutcomesTest {
         return data;
     }
     static JsonObject await(AwaitReloadTest.Fixture f, JsonObject cp) {
-        return call(f.server,f.waitFor(cp,false,true),"2025-06-18");
+        return f.observed(call(f.server,f.waitFor(cp,false,true),"2025-06-18"));
     }
     static void empty(JsonObject data) {
         assertTrue(data.getAsJsonArray("sapOutcomes").isEmpty(),data.toString());
@@ -72,9 +72,28 @@ class SapAwaitOutcomesTest {
             for (JsonElement e : d.getAsJsonArray("sapOutcomes")) assertFalse(e.getAsJsonObject().has("ownerClassName"));
             export("await-applied","reclazz_await_reload",d);
             JsonObject fresh = f.checkpoint(); empty(fresh);
-            assertEquals("timeout",await(f,fresh).get("status").getAsString());
+            assertFreshCheckpointExpired(f,fresh);
         }
     }
+    private static void assertFreshCheckpointExpired(AwaitReloadTest.Fixture f, JsonObject fresh) {
+        long before = f.commands.stream().filter(c -> c.startsWith("VERIFY ")).count();
+        JsonObject result = await(f,fresh);
+        AwaitReloadTest.assertRanOutOfTime(result, "fresh checkpoint: ");
+        assertFalse(result.get("reloadConfirmed").getAsBoolean());
+        assertFalse(result.has("receipt"));
+        empty(result);
+        assertEquals(before, f.commands.stream().filter(c -> c.startsWith("VERIFY ")).count());
+    }
+    @Test void freshCheckpointReadOnlyDeadlineHasNoNeighborReceipt() throws Exception {
+        try (var f = new AwaitReloadTest.Fixture()) {
+            JsonObject fresh = f.checkpoint();
+            var release = new java.util.concurrent.CountDownLatch(1);
+            f.beforeState = out -> assertTrue(release.await(5, java.util.concurrent.TimeUnit.SECONDS));
+            try { assertFreshCheckpointExpired(f,fresh); }
+            finally { release.countDown(); }
+        }
+    }
+
     @Test void sapSuccessDoesNotOverrideJavaFailureOrUnverifiedReceipt() throws Exception {
         for (String mode : List.of("compile_error","refused","unavailable","restart_required")) try (var f = new AwaitReloadTest.Fixture()) {
             JsonObject cp = f.checkpoint(); f.emit("OK",SapOperationObservationTest.ITEMS);

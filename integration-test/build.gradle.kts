@@ -137,3 +137,17 @@ val newRelationContractTest by tasks.registering(JavaExec::class) {
     classpath = sourceSets.test.get().runtimeClasspath
     mainClass.set("com.onurkat.reclazz.inttest.tests.NewRelationContractTestKt")
 }
+
+// Narrow watcher-ownership contracts; the aggregate check already calls these functions.
+val impexHarnessContractTest by tasks.registering(JavaExec::class) {
+    group = "verification"
+    dependsOn(tasks.testClasses)
+    classpath = sourceSets.test.get().runtimeClasspath
+    mainClass.set("com.onurkat.reclazz.inttest.tests.ImpexTranslatorHarnessContractTestKt")
+}
+val removeHarnessContractTest by tasks.registering(JavaExec::class) {
+    group = "verification"
+    dependsOn(tasks.testClasses)
+    classpath = sourceSets.test.get().runtimeClasspath
+    mainClass.set("com.onurkat.reclazz.inttest.tests.RemoveHarnessContractTestKt")
+}

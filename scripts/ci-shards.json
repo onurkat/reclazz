@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "oracle": ["build", "buildPlugin", "-Preclazz.skipRabbitBroker=true"],
+  "allowed_missing_tasks": [":agent:jacocoTestReport", ":agent:jacocoTestCoverageVerification"],
+  "windows": {
+    "agent-unit": [":agent:test", "-Preclazz.testShard=unit", "-Preclazz.skipRabbitBroker=true"],
+    "agent-e2e": [":agent:test", "-Preclazz.testShard=e2e", "-Preclazz.skipRabbitBroker=true"],
+    "agent-isolated": [":agent:test", "-Preclazz.testShard=isolated", "-Preclazz.skipRabbitBroker=true"],
+    "rest": ["build", "buildPlugin", "-x", ":agent:test", "-x", ":agent:jacocoTestReport", "-x", ":agent:jacocoTestCoverageVerification", "-Preclazz.skipRabbitBroker=true"]
+  },
+  "minimum_test_tasks": [":test", ":agent:hibernateTest", ":agent:jackson3Matrix_3_1", ":agent:jackson3Matrix_3_2", ":agent:jackson3Matrix_3_3", ":agent:jmsTest", ":agent:modernMessagingTest", ":agent:rabbitTest", ":agent:solrUnitTest", ":agent:springSevenTest", ":agent:springSixTest", ":agent:test", ":gradle-plugin:test", ":integration-test:test", ":mcp-server:test", ":spring-boot-starter:test"]
+}

@@ -22,6 +22,8 @@ private class RemoveContractServer(private val source:Path,private val mode:Stri
     private lateinit var writer:java.io.PrintWriter
     private val http=HttpServer.create(InetSocketAddress("127.0.0.1",0),0)
     @Volatile private var watching=true
+    private val watcher:Thread
+    private val watcherFailure=java.util.concurrent.atomic.AtomicReference<Throwable>()
     @Volatile var rows=0
     @Volatile var cleaned=false
     private var held=0
@@ -79,7 +81,8 @@ private class RemoveContractServer(private val source:Path,private val mode:Stri
                 val bytes=batchJson.writeValueAsBytes(result);exchange.sendResponseHeaders(status,bytes.size.toLong());exchange.responseBody.use {it.write(bytes)}
             } catch(e:Exception) {exchange.sendResponseHeaders(500,-1);exchange.close()}
         };http.start()
-        Thread({
+        watcher=Thread({
+            try {
             var previous=baseline
             while(watching) {
                 val next=settledBytes(source) ?: previous
@@ -94,12 +97,29 @@ private class RemoveContractServer(private val source:Path,private val mode:Stri
                 }
                 Thread.sleep(5)
             }
-        },"remove-contract-watcher").apply {isDaemon=true;start()}
+            } catch(stopped:InterruptedException) {
+                if(watching)throw stopped
+            }
+        },"remove-contract-watcher").apply {
+            isDaemon=true
+            uncaughtExceptionHandler=Thread.UncaughtExceptionHandler {_,failure -> watcherFailure.compareAndSet(null,failure)}
+            start()
+        }
     }
     val baseUrl get()="http://127.0.0.1:${http.address.port}"
     @Synchronized fun emit(level:String,message:String) {writer.println(batchJson.writeValueAsString(mapOf("level" to level,"message" to message,"timestamp" to "contract")))}
     fun receipt() {emit("COMPILE","Compiled ProbeRemoveInterceptor.java (1ms)");emit("RELOAD","Reloaded com.onurkat.reclazztest.batch.ProbeRemoveInterceptor (1ms)")}
-    override fun close() {watching=false;http.stop(0);connection?.close();socket.close();Files.deleteIfExists(portFile)}
+    fun verifyWatcher() {
+        watcher.join(5000)
+        check(!watcher.isAlive) {"Owned watcher did not stop: ${watcher.name}"}
+        watcherFailure.get()?.let {throw AssertionError("Owned watcher failed: ${watcher.name}",it)}
+    }
+    override fun close() {
+        watching=false
+        watcher.interrupt()
+        try {verifyWatcher()}
+        finally {http.stop(0);connection?.close();socket.close();Files.deleteIfExists(portFile)}
+    }
 }
 
 fun runRemoveHarnessContracts():Int {
@@ -113,7 +133,8 @@ fun runRemoveHarnessContracts():Int {
         val baseline=RemoveInterceptorLiveTest::class.java.classLoader.getResourceAsStream("templates/batch/$relative")!!.use {it.readBytes()}
         val file=root.resolve(relative);Files.createDirectories(file.parent);Files.write(file,baseline)
         val copy=Files.createTempFile("reclazz-remove-withheld-",".java")
-        try {RemoveContractServer(file,mode).use {server ->
+        var observer:RemoveContractServer?=null
+        try {RemoveContractServer(file,mode).also {observer=it}.use {server ->
             val client=AgentEventClient(server.portFile.toString());client.connect()
             try {
                 server.receipt()
@@ -131,6 +152,9 @@ fun runRemoveHarnessContracts():Int {
                 cases++;println("REMOVE_HARNESS PASS $mode")
             } finally {client.disconnect()}
         }} finally {root.toFile().deleteRecursively();Files.deleteIfExists(copy)}
+        observer?.verifyWatcher()
     }
     return cases
 }
+
+fun main(){println("REMOVE_HARNESS: ${runRemoveHarnessContracts()} cases, 0 failures")}

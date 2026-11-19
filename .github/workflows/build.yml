@@ -5,8 +5,8 @@ on:
   # was running on every push to main and every pull request, including the many
   # prose-only commits. To keep Actions spend down it no longer runs
   # automatically: it runs on demand, and when a release tag is pushed, which is
-  # when the full cross-platform check is actually wanted. The local gate
-  # (./gradlew :agent:test) is the check for ordinary commits.
+  # when the full cross-platform check is actually wanted. Local lanes run
+  # targeted checks; full suites run only on owner request or before release.
   workflow_dispatch:
   push:
     tags:
@@ -58,24 +58,35 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
-        jdk: ['17', '21']
-        exclude:
-          - os: windows-latest
-            jdk: '21'
         include:
           - os: ubuntu-latest
             jdk: '17'
             build: '17'
+            shard: all
           - os: ubuntu-latest
             jdk: '21'
             build: '21'
+            shard: all
           - os: windows-latest
             jdk: '17'
             build: '17'
+            shard: agent-unit
+          - os: windows-latest
+            jdk: '17'
+            build: '17'
+            shard: agent-e2e
+          - os: windows-latest
+            jdk: '17'
+            build: '17'
+            shard: agent-isolated
+          - os: windows-latest
+            jdk: '17'
+            build: '17'
+            shard: rest
           - os: ubuntu-latest
             jdk: '25'
             build: '21'
+            shard: all
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -100,6 +111,16 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
 
+      - name: Check Windows shard coverage without executing tests
+        if: matrix.os == 'ubuntu-latest' && matrix.jdk == '17'
+        run: python3 scripts/ci-shard-contract.py --self-test
+
+      - name: Set up Python for Windows shard commands
+        if: matrix.os == 'windows-latest'
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+
       # One Gradle invocation for both: the second one paid the whole
       # configuration again, on every job, for a task the first could have
       # run. The runner is fresh, so there is nothing for clean to clean.
@@ -120,10 +141,11 @@ jobs:
         # Git Bash, not the default PowerShell: pwsh splits the -P property
         # argument, so Gradle saw a bogus task name and the build never ran.
         shell: bash
-        run: ./gradlew build buildPlugin -Preclazz.skipRabbitBroker=true
+        # Linux keeps the original coverage floors; Windows partitions the same tests.
+        run: python scripts/ci-shard.py ${{ matrix.shard }}
 
       - name: Set up independent MCP client
-        if: matrix.jdk == '17'
+        if: matrix.jdk == '17' && (matrix.shard == 'all' || matrix.shard == 'rest')
         uses: actions/setup-node@v7
         with:
           node-version: '22'
@@ -147,22 +169,22 @@ jobs:
           if-no-files-found: ignore
 
       - name: Install locked test-only MCP SDK
-        if: matrix.jdk == '17'
+        if: matrix.jdk == '17' && (matrix.shard == 'all' || matrix.shard == 'rest')
         working-directory: mcp-server/src/test/client
         run: npm ci --ignore-scripts --no-audit --no-fund
 
       # Uses JAVA_HOME from setup-java and the jars built above. This exercises
       # real stdio/process paths on both Windows and Linux, including spaces.
       - name: Independent MCP SDK and live JVM acceptance
-        if: matrix.jdk == '17'
+        if: matrix.jdk == '17' && (matrix.shard == 'all' || matrix.shard == 'rest')
         working-directory: mcp-server/src/test/client
         run: npm test
 
       - name: Upload independent client evidence
-        if: always() && matrix.jdk == '17'
+        if: always() && matrix.jdk == '17' && (matrix.shard == 'all' || matrix.shard == 'rest')
         uses: actions/upload-artifact@v7
         with:
-          name: client-matrix-${{ matrix.os }}-jdk${{ matrix.jdk }}
+          name: client-matrix-${{ matrix.os }}-jdk${{ matrix.jdk }}-${{ matrix.shard }}
           path: mcp-server/build/client-matrix/
           if-no-files-found: ignore
 
@@ -183,9 +205,10 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: test-reports-${{ matrix.os }}-jdk${{ matrix.jdk }}
+          name: test-reports-${{ matrix.os }}-jdk${{ matrix.jdk }}-${{ matrix.shard }}
           path: |
             **/build/reports/tests/
             **/build/test-results/
             build/reports/pluginVerifier/
+            build/ci-shard-contract/
           if-no-files-found: ignore

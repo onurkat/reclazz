@@ -62,6 +62,23 @@ plugins {
 group = "com.onurkat.reclazz"
 version = rootProject.version
 
+// CI partitions the original Test task, preserving its runtime and local defaults.
+val testShard = providers.gradleProperty("reclazz.testShard").orNull
+require(testShard in setOf(null, "unit", "e2e", "isolated")) {
+    "Unknown reclazz.testShard: $testShard (expected unit, e2e or isolated)"
+}
+fun isolatedSuite(suite: org.gradle.api.tasks.TaskProvider<out org.gradle.api.Task>) {
+    tasks.named<Test>("test") {
+        if (testShard == null || testShard == "isolated") dependsOn(suite)
+        else {
+            // Main-source-set evidence tests inspect isolated compiled fixtures too.
+            // Depend on their build inputs, never on the isolated Test body.
+            val isolated = suite.get() as Test
+            dependsOn(isolated.testClassesDirs, isolated.classpath)
+        }
+    }
+}
+
 // Test tooling only; this is the first JaCoCo release with official Java 25 support.
 jacoco {
     toolVersion = "0.8.14"
@@ -210,7 +227,7 @@ val solrUnitTest by tasks.registering(Test::class) {
     classpath = solrTests.runtimeClasspath
     outputs.upToDateWhen { false }
 }
-tasks.named<Test>("test") { dependsOn(solrUnitTest) }
+isolatedSuite(solrUnitTest)
 
 // The broker's Jackson/SLF4J versions belong to JMS tests only. Extending the
 // dependency declarations resolves a separate graph; it does not change test.
@@ -447,7 +464,7 @@ for ((line, jacksonVersion) in listOf("3_1" to "3.1.8", "3_2" to "3.2.4", "3_3" 
         jvmArgs("-Djdk.attach.allowAttachSelf=true")
         testLogging { events("passed", "failed", "skipped") }
     }
-    tasks.named<Test>("test") { dependsOn(matrixTask) }
+    isolatedSuite(matrixTask)
 }
 
 // Native Spring 6 messaging regressions on an independent, test-only graph.
@@ -500,15 +517,16 @@ val modernMessagingTest by tasks.registering(Test::class) {
     }
 }
 
+// All isolated graph edges belong to one CI shard; unset keeps the original graph.
+for (suite in listOf(modernMessagingTest, springSixTest, springSevenTest,
+        hibernateTest, rabbitTest, jmsTest)) isolatedSuite(suite)
+
 tasks.test {
-    dependsOn(modernMessagingTest)
-    dependsOn(springSixTest)
-    // The Spring 7 / Boot 4 / Jackson 3 graph: its tests skip themselves in springSixTest,
-    // so without this the gate passed with 35 of them never run (1.7.0 gate).
-    dependsOn(springSevenTest)
-    dependsOn(hibernateTest)
-    dependsOn(rabbitTest)
-    dependsOn(jmsTest)
+    when (testShard) {
+        "unit" -> exclude("com/onurkat/reclazz/e2e/**")
+        "e2e" -> include("com/onurkat/reclazz/e2e/**")
+        "isolated" -> onlyIf { false }
+    }
     useJUnitPlatform()
     // The generic-path smoke test launches a child JVM with -javaagent, so
     // it needs the shaded agent jar. Built here rather than assumed so a
@@ -837,4 +855,18 @@ tasks.register<Test>("operationMetadataResearchTest") {
     classpath = operationMetadataResearch.runtimeClasspath
     useJUnitPlatform()
     jvmArgs("-Djdk.attach.allowAttachSelf=true")
+}
+
+// Metadata only: the CI contract never executes Test bodies to inspect a partition.
+tasks.register("testShardReport") {
+    group = "help"
+    doLast {
+        val task = tasks.named<Test>("test").get()
+        println("TEST_SHARD_REPORT=" + groovy.json.JsonOutput.toJson(mapOf(
+            "shard" to (testShard ?: "all"),
+            "includes" to task.includes.sorted(), "excludes" to task.excludes.sorted(),
+            "jvmArgs" to task.allJvmArgs, "systemProperties" to task.systemProperties,
+            "testDependencies" to task.taskDependencies.getDependencies(task)
+                .filterIsInstance<Test>().map { it.path }.sorted())))
+    }
 }

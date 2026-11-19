@@ -93,8 +93,11 @@ class AwaitReloadTest {
         final McpServer server = new McpServer();
         volatile String status = "applied", session = "session-test";
         volatile boolean acceptsReset;
+        volatile java.net.SocketException resetFailure;
         volatile String admission = "paused=false pendingClasses=0 pendingActions=0 buildHold=none";
         volatile java.util.function.Consumer<PrintWriter> duringVerify = out -> { };
+        interface StateReply { void run(PrintWriter out) throws Exception; }
+        volatile StateReply beforeState = out -> { };
         final BuildSafetyTest.FakeAgent agent;
         Fixture() throws Exception {
             agent = new BuildSafetyTest.FakeAgent((in, out) -> {
@@ -111,12 +114,26 @@ class AwaitReloadTest {
                         if (!command.endsWith(ReloadVerificationTest.HASH) && status.equals("applied")) r.addProperty("status", "mismatch");
                         ReloadVerificationTest.send(out, r.get("requestId").getAsString(), r);
                     } else if (command.startsWith("RELOAD status request=")) {
+                        beforeState.run(out);
                         event(out, "INFO", "RELOAD_STATE " + command.substring(command.indexOf("request=") + 8) + " status " + admission);
                     } else fail("Await must never mutate: " + command);
-                } } catch (java.net.SocketException reset) { if (!acceptsReset) throw reset; }
+                } } catch (java.net.SocketException reset) {
+                    // The response may not have reached the test thread yet. Classify only
+                    // after it has observed the outcome, rather than racing that reader.
+                    resetFailure = reset;
+                }
             });
         }
         JsonObject checkpoint() { return data(server, request(agent.server.getLocalPort(), "checkpoint")); }
+        JsonObject observed(JsonObject result) {
+            if ("unavailable".equals(result.get("status").getAsString())
+                    && result.has("reasonCode") && "response_timeout".equals(result.get("reasonCode").getAsString())
+                    && !result.get("reloadConfirmed").getAsBoolean()) acceptsReset = true;
+            return result;
+        }
+        JsonObject await(JsonObject checkpoint, boolean source, boolean hash) {
+            return observed(data(server, waitFor(checkpoint, source, hash)));
+        }
         JsonObject waitFor(JsonObject checkpoint, boolean source, boolean hash) {
             JsonObject r = waitRequest(agent.server.getLocalPort(), checkpoint);
             JsonObject a = r.getAsJsonObject("params").getAsJsonObject("arguments");
@@ -134,7 +151,42 @@ class AwaitReloadTest {
             while (output.get() == null && System.nanoTime() < until) Thread.onSpinWait();
             event(output.get(), level, message);
         }
-        @Override public void close() throws Exception { server.close(); agent.verify(); agent.close(); }
+        @Override public void close() throws Exception {
+            try {
+                server.close();
+                agent.verify();
+                if (resetFailure != null && !acceptsReset) throw resetFailure;
+            } finally { agent.close(); }
+        }
+    }
+
+    @Test void responseTimeoutResetDoesNotFailFixtureClose() throws Exception {
+        try (var f = new Fixture()) {
+            JsonObject cp = f.checkpoint();
+            var release = new java.util.concurrent.CountDownLatch(1);
+            f.beforeState = out -> {
+                assertTrue(release.await(5, java.util.concurrent.TimeUnit.SECONDS));
+                throw new java.net.SocketException("response-timeout reset witness");
+            };
+            try {
+                JsonObject d = f.await(cp, true, true);
+                assertRanOutOfTime(d, "forced read-only deadline: ");
+                assertEquals("response_timeout", d.get("reasonCode").getAsString(), d.toString());
+                assertFalse(d.get("reloadConfirmed").getAsBoolean());
+                assertEquals(0, f.commands.stream().filter(c -> c.startsWith("VERIFY ")).count());
+            } finally { release.countDown(); }
+        }
+    }
+
+    @Test void resetWithoutObservedResponseTimeoutStillFailsFixtureClose() throws Exception {
+        var f = new Fixture();
+        try {
+            f.checkpoint();
+            f.output.get().close();
+            f.agent.done.get(5, java.util.concurrent.TimeUnit.SECONDS);
+            assertFalse(f.acceptsReset);
+            assertThrows(java.net.SocketException.class, f::close);
+        } finally { f.server.close(); f.agent.close(); }
     }
 
     @Test void sourceModeRequiresCompileBeforeExactOwnerAndDiscoversThenReverifiesHash() throws Exception {
@@ -142,7 +194,7 @@ class AwaitReloadTest {
             JsonObject cp = f.checkpoint();
             f.emit("COMPILE", "Compiled Service.java (1ms)");
             f.emit("STRUCTURAL_RELOAD", "Structural reload: " + OWNER + " (+1 method, 2ms): refreshed");
-            JsonObject d = data(f.server, f.waitFor(cp, true, false));
+            JsonObject d = f.await(cp, true, false);
             assertEquals("applied", d.get("status").getAsString(), d.toString());
             assertEquals("receipt", d.get("hashSource").getAsString());
             assertEquals(2, f.commands.stream().filter(c -> c.startsWith("VERIFY ")).count());
@@ -164,7 +216,7 @@ class AwaitReloadTest {
                     case "wrong-file" -> { f.emit("COMPILE", "Compiled Service.javaOther (1ms)"); f.emit("RELOAD", "Reloaded " + OWNER + " (1ms)"); }
                     case "wrong-order" -> { f.emit("RELOAD", "Reloaded " + OWNER + " (1ms)"); f.emit("COMPILE", "Compiled Service.java (1ms)"); }
                 }
-                JsonObject d = data(f.server, f.waitFor(cp, true, true));
+                JsonObject d = f.await(cp, true, true);
                 assertRanOutOfTime(d, mode);
                 assertEquals(0, f.commands.stream().filter(c -> c.startsWith("VERIFY ")).count(), mode);
             }
@@ -174,7 +226,7 @@ class AwaitReloadTest {
     // Nothing matching arrives, so the wait runs to its total deadline. When that deadline
     // falls inside a read-only query the answer is unavailable/response_timeout instead of
     // timeout; on a slow or busy machine either can come first. Both refuse the reload.
-    private static void assertRanOutOfTime(JsonObject d, String context) {
+    static void assertRanOutOfTime(JsonObject d, String context) {
         String status = d.get("status").getAsString();
         assertTrue(status.equals("timeout")
                 || (status.equals("unavailable") && d.get("reasonCode").getAsString().equals("response_timeout")),
@@ -187,7 +239,7 @@ class AwaitReloadTest {
             try (var f = new Fixture()) {
                 f.status = status; JsonObject cp = f.checkpoint();
                 f.emit("RELOAD", "Reloaded " + OWNER + " (1ms)");
-                JsonObject d = data(f.server, f.waitFor(cp, false, true));
+                JsonObject d = f.await(cp, false, true);
                 assertNotEquals("applied", d.get("status").getAsString(), status + d);
                 assertFalse(d.get("reloadConfirmed").getAsBoolean());
             }
@@ -218,7 +270,7 @@ class AwaitReloadTest {
                         f.emit("RELOAD", "Reloaded " + OWNER + " (1ms)");
                     }
                 }
-                JsonObject d = data(f.server, f.waitFor(cp, true, true));
+                JsonObject d = f.await(cp, true, true);
                 assertEquals(expected, d.get("status").getAsString(), d.toString());
                 assertFalse(d.get("reloadConfirmed").getAsBoolean());
             }
@@ -229,7 +281,7 @@ class AwaitReloadTest {
         for (String diagnostic : List.of("  Other.java:1: missing", "  Service.javaOther:1: missing", "Compilation failed for module", "  Service.java: no line")) {
             try (var f = new Fixture()) {
                 JsonObject cp = f.checkpoint(); f.emit("ERROR", "Compilation failed:"); f.emit("ERROR", diagnostic);
-                assertRanOutOfTime(data(f.server, f.waitFor(cp, true, true)), diagnostic);
+                assertRanOutOfTime(f.await(cp, true, true), diagnostic);
             }
         }
     }
@@ -240,7 +292,7 @@ class AwaitReloadTest {
                 "paused=false pendingClasses=1 pendingActions=0 buildHold=legacy")) {
             try (var f = new Fixture()) {
                 f.admission = admission; JsonObject cp = f.checkpoint();
-                JsonObject d = data(f.server, f.waitFor(cp, true, true));
+                JsonObject d = f.await(cp, true, true);
                 assertEquals("held", d.get("status").getAsString());
                 assertFalse(d.get("sourcePathConfirmed").getAsBoolean());
                 assertTrue(f.commands.stream().noneMatch(c -> c.startsWith("BUILD ") || c.startsWith("SCAN") || c.startsWith("RELOAD resume")));
@@ -255,7 +307,7 @@ class AwaitReloadTest {
                 f.duringVerify = ignored -> { }; f.status = "failed";
                 event(out, "ERROR", "Hot-swap failed for " + OWNER + ": later save failed");
             };
-            JsonObject d = data(f.server, f.waitFor(cp, false, true));
+            JsonObject d = f.await(cp, false, true);
             assertEquals("refused", d.get("status").getAsString());
         }
     }
@@ -267,7 +319,7 @@ class AwaitReloadTest {
             assertEquals("owner_required", data(f.server, r).get("reasonCode").getAsString());
             f.emit("COMPILE", "Compiled Service.java (1ms)"); f.emit("COMPILE", "Compiled Service.java (2ms)");
             f.emit("RELOAD", "Reloaded " + OWNER + " (1ms)");
-            assertEquals("ambiguous_source", data(f.server, f.waitFor(cp, true, true)).get("reasonCode").getAsString());
+            assertEquals("ambiguous_source", f.await(cp, true, true).get("reasonCode").getAsString());
         }
     }
 

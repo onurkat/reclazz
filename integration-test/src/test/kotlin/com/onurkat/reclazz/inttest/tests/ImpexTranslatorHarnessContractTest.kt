@@ -16,6 +16,8 @@ private class ImpexContractServer(private val root:Path,private val mode:String)
     private lateinit var writer:java.io.PrintWriter
     private val http=HttpServer.create(InetSocketAddress("127.0.0.1",0),0)
     @Volatile private var watching=true
+    private val watcher:Thread
+    private val watcherFailure=java.util.concurrent.atomic.AtomicReference<Throwable>()
     @Volatile var cleaned=false
     private var run="";private var steps=0
     private val events=mutableListOf<Map<String,Any>>()
@@ -70,7 +72,8 @@ private class ImpexContractServer(private val root:Path,private val mode:String)
                 val bytes=(text ?: batchJson.writeValueAsString(response)).toByteArray();x.sendResponseHeaders(status,bytes.size.toLong());x.responseBody.use {it.write(bytes)}
             }catch(e:Exception){x.sendResponseHeaders(500,-1);x.close()}
         };http.start()
-        Thread({
+        watcher=Thread({
+            try {
             val previous=source.mapValues {Files.readAllBytes(it.value)}.toMutableMap()
             val seen=mutableMapOf<Path,ByteArray>()
             val pending=mutableListOf<Pair<Long,String>>()
@@ -127,11 +130,28 @@ private class ImpexContractServer(private val root:Path,private val mode:String)
                 }
                 Thread.sleep(3)
             }
-        },"impex-contract-watch").apply {isDaemon=true;start()}
+            } catch(stopped:InterruptedException) {
+                if(watching)throw stopped
+            }
+        },"impex-contract-watch").apply {
+            isDaemon=true
+            uncaughtExceptionHandler=Thread.UncaughtExceptionHandler {_,failure -> watcherFailure.compareAndSet(null,failure)}
+            start()
+        }
     }
     val baseUrl get()="http://127.0.0.1:${http.address.port}"
     @Synchronized fun emit(level:String,message:String) {writer.println(batchJson.writeValueAsString(mapOf("level" to level,"message" to message,"timestamp" to "contract")))}
-    override fun close(){watching=false;http.stop(0);connection?.close();socket.close();Files.deleteIfExists(portFile)}
+    fun verifyWatcher() {
+        watcher.join(5000)
+        check(!watcher.isAlive) {"Owned watcher did not stop: ${watcher.name}"}
+        watcherFailure.get()?.let {throw AssertionError("Owned watcher failed: ${watcher.name}",it)}
+    }
+    override fun close() {
+        watching=false
+        watcher.interrupt()
+        try {verifyWatcher()}
+        finally {http.stop(0);connection?.close();socket.close();Files.deleteIfExists(portFile)}
+    }
 }
 
 fun runImpexTranslatorHarnessContracts():Int {
@@ -141,10 +161,11 @@ fun runImpexTranslatorHarnessContracts():Int {
         val root=Files.createTempDirectory("reclazz-impex-harness-")
         val relative=listOf("src/com/onurkat/reclazztest/batch/ProbeImpexValueTranslator.java","src/com/onurkat/reclazztest/batch/ProbeImpexCellDecorator.java",
             "src/com/onurkat/reclazztest/batch/ProbeImpexState.java","web/src/com/onurkat/reclazztest/controllers/ImpexTranslatorProbeController.java")
+        var observer:ImpexContractServer?=null
         try {
             for(rel in relative) {val p=root.resolve(rel);Files.createDirectories(p.parent);Files.write(p,ImpexTranslatorLiveTest::class.java.classLoader.getResourceAsStream("templates/batch/$rel")!!.use {it.readBytes()})}
             val before=relative.associateWith {Files.readAllBytes(root.resolve(it))}
-            ImpexContractServer(root,mode).use {server ->
+            ImpexContractServer(root,mode).also {observer=it}.use {server ->
                 val client=AgentEventClient(server.portFile.toString());client.connect()
                 try {
                     val until=System.nanoTime()+TimeUnit.SECONDS.toNanos(3)
@@ -162,6 +183,7 @@ fun runImpexTranslatorHarnessContracts():Int {
                 }finally{client.disconnect()}
             }
         }finally{root.toFile().deleteRecursively()}
+        observer?.verifyWatcher()
     }
     return modes.size
 }
