@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- Eligible annotated singletons also retain state when creation setters and callbacks are
+  inherited from unchanged platform/library classes. Previously reloaded watched
+  superclasses or missing superclass baselines still select recreation.
+
 - Eligible Spring singletons keep their identity and mutable state across
   business method edits, added methods and supported added-field initializers.
   Changes to creation, injection or lifecycle code still recreate the bean;

@@ -14,6 +14,8 @@
     <import resource="reclazztest-process-resources-spring.xml"/>
     <import resource="reclazztest-si-probe-spring.xml"/>
 
+    <bean id="reclazzKeepStateInheritedService" class="com.onurkat.reclazztest.inherited.KeepStateInheritedService" parent="abstractBusinessService"/>
+
     <bean id="reclazzProbeInitDefaultsInterceptor" class="com.onurkat.reclazztest.batch.ProbeInitDefaultsInterceptor"/>
     <bean id="reclazzProbeInitDefaultsMapping" class="de.hybris.platform.servicelayer.interceptor.impl.InterceptorMapping">
         <property name="interceptor" ref="reclazzProbeInitDefaultsInterceptor"/>

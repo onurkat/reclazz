@@ -17,14 +17,40 @@ public final class KeepBaseline {
                               Map<String,String> memberAnnotations) { }
     public record Input(Fingerprint old, byte[] newRaw) { }
     private static final ReferenceQueue<ClassLoader> COLLECTED = new ReferenceQueue<>();
-    private static final Map<LoaderKey,Map<String,Fingerprint>> OWNERS = new HashMap<>();
+    private static final Map<LoaderKey,Map<String,Entry>> OWNERS = new HashMap<>();
+    private static final class Entry {
+        Fingerprint fingerprint;
+        long reloads;
+        Entry(Fingerprint fingerprint) { this.fingerprint=fingerprint; }
+    }
+    private static volatile java.util.function.Predicate<String> watched = name -> true;
+    /** No installed watch inventory means unknown, not immutable. */
+    public static void setWatchedPredicate(java.util.function.Predicate<String> predicate) {
+        watched=predicate==null ? name -> true : predicate;
+    }
+    /** An ancestor's creation code is safe only with complete loader-specific history. */
+    public static boolean unchangedAncestor(Class<?> type) {
+        if(type==null)return false;
+        try {
+            if(!watched.test(type.getName().replace('.','/')))return true;
+            synchronized(KeepBaseline.class) {
+                Entry entry=owners(type.getClassLoader(),false).get(type.getName().replace('.','/'));
+                return entry!=null && entry.fingerprint!=null && entry.reloads==0;
+            }
+        } catch(RuntimeException|LinkageError unavailable) { return false; }
+    }
+    public static synchronized long reloadCount(Class<?> type) {
+        if(type==null)return 0;
+        Entry entry=owners(type.getClassLoader(),false).get(type.getName().replace('.','/'));
+        return entry==null ? 0 : entry.reloads;
+    }
     private static final class LoaderKey extends WeakReference<ClassLoader> {
         private final int hash;
         LoaderKey(ClassLoader loader) { super(loader,COLLECTED); hash=System.identityHashCode(loader); }
         public int hashCode() { return hash; }
         public boolean equals(Object other) { return this==other || other instanceof LoaderKey k && get()!=null && get()==k.get(); }
     }
-    private static Map<String,Fingerprint> owners(ClassLoader loader, boolean create) {
+    private static Map<String,Entry> owners(ClassLoader loader, boolean create) {
         Reference<? extends ClassLoader> dead;
         while ((dead=COLLECTED.poll())!=null) OWNERS.remove(dead);
         if (loader==null) return Map.of();
@@ -36,20 +62,24 @@ public final class KeepBaseline {
         if(loader==null)return;
         Fingerprint print;
         try { print=fingerprint(raw); } catch(RuntimeException|LinkageError unavailable) { return; }
-        synchronized(KeepBaseline.class) { owners(loader,true).putIfAbsent(internalName,print); }
+        synchronized(KeepBaseline.class) { owners(loader,true).putIfAbsent(internalName,new Entry(print)); }
     }
     public static synchronized Fingerprint get(Class<?> type) {
-        return type==null ? null : owners(type.getClassLoader(),false).get(type.getName().replace('.','/'));
+        Entry entry=type==null ? null : owners(type.getClassLoader(),false).get(type.getName().replace('.','/'));
+        return entry==null ? null : entry.fingerprint;
     }
     /** A fingerprint that cannot be read drops the old one: a stale baseline must not decide the next reload. */
     public static void advance(Class<?> type,byte[] raw) {
         if(type==null || type.getClassLoader()==null)return;
         String name=type.getName().replace('.','/');
+        synchronized(KeepBaseline.class) {
+            owners(type.getClassLoader(),true).computeIfAbsent(name,k->new Entry(null)).reloads++;
+        }
         Fingerprint print;
         try { print=fingerprint(raw); } catch(RuntimeException|LinkageError unavailable) { print=null; }
         synchronized(KeepBaseline.class) {
             var owned=owners(type.getClassLoader(),true);
-            if(print==null) owned.remove(name); else owned.put(name,print);
+            owned.get(name).fingerprint=print;
         }
     }
     public static ClassNode read(byte[] raw) {

@@ -338,7 +338,12 @@ the service, and then of the controller, serves the new code while both
 objects keep their identity and the counter and the map keep counting from
 where they were. Each file is restored and the original code is verified
 again. Constructor, injection and lifecycle changes still recreate the bean;
-those cases are covered in the agent regression suite.
+those cases are covered in the agent regression suite. A third body save edits an XML
+`@Service` bean whose XML parent is `abstractBusinessService`, inheriting the platform's
+property setters and lifecycle callbacks. Its injected platform dependencies
+remain configured, its identity and map continue, and the controller and plain
+service keep their state too. The agent event after that save explicitly confirms
+`bean reclazzKeepStateInheritedService kept, state preserved`. The scenario count remains 65.
 
 ## Localization and properties
 

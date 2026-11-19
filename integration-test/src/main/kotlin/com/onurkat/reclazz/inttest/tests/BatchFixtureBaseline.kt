@@ -8,6 +8,7 @@ import java.nio.file.Path
 class BatchFixtureBaseline(private val config:TestConfig) {
     private val relative=listOf("web/src/com/onurkat/reclazztest/controllers/ImpexUpdateProbeController.java","src/com/onurkat/reclazztest/batch/ProbeOccErrorService.java","src/com/onurkat/reclazztest/occ/OccErrorProbeController.java","web/src/com/onurkat/reclazztest/controllers/NewOccControllerProbeController.java","src/com/onurkat/reclazztest/batch/ProbeFacadeProductService.java","web/src/com/onurkat/reclazztest/controllers/FacadeChainProbeController.java","src/com/onurkat/reclazztest/batch/ProbeSearchRestrictionDao.java","web/src/com/onurkat/reclazztest/controllers/SearchRestrictionProbeController.java","web/src/com/onurkat/reclazztest/controllers/VelocityTemplateProbeController.java","web/src/com/onurkat/reclazztest/controllers/StoredScriptProbeController.java","src/com/onurkat/reclazztest/batch/ProbeProcessAction.java",
         "resources/process/reclazz-process-action.xml",
+        "src/com/onurkat/reclazztest/inherited/KeepStateInheritedService.java",
         "web/src/com/onurkat/reclazztest/controllers/ProcessActionProbeController.java","src/com/onurkat/reclazztest/services/ProbeScheduledMetadataJob.java",
         "src/com/onurkat/reclazztest/batch/ProbeScheduledMetadataState.java",
         "web/src/com/onurkat/reclazztest/controllers/ScheduledMetadataProbeController.java","web/src/com/onurkat/reclazztest/controllers/TriggerProbeController.java",

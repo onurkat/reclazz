@@ -3,7 +3,7 @@ import re
 
 DEFAULT_CASES = 65
 DEFAULT_OUTCOME = {'PASS': 65, 'FAIL': 0, 'ERROR': 0, 'SKIP': 0}
-NORMAL_FIXTURE_FILES = 118
+NORMAL_FIXTURE_FILES = 119
 # Report labels from the committed Kotlin scenario constructors; replacements cannot pass by count.
 DEFAULT_TEST_NAMES = (
     'Method body change',

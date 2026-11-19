@@ -57,6 +57,42 @@ class KeepBaselineTest {
         assertNull(KeepBaseline.get(c));
         assertFalse(SingletonKeepPolicy.compare(new KeepBaseline.Input(KeepBaseline.get(c),bytes(2)),Set.of(),false).keep());
     }
+    @org.junit.jupiter.api.AfterEach void resetWatchedPredicate() { KeepBaseline.setWatchedPredicate(null); }
+    @Test void advanceWithUnreadableBytesKeepsReloadHistory() {
+        var loader=new Loader();var raw=bytes(1);var type=loader.define(raw);
+        KeepBaseline.capture(loader,"example/Baseline",raw);
+        assertTrue(KeepBaseline.unchangedAncestor(type));
+        KeepBaseline.advance(type,new byte[]{0});
+        assertEquals(1,KeepBaseline.reloadCount(type));assertNull(KeepBaseline.get(type));
+        KeepBaseline.capture(loader,"example/Baseline",raw);
+        assertFalse(KeepBaseline.unchangedAncestor(type),"recapture must not erase reload history");
+        KeepBaseline.advance(type,bytes(2));
+        assertEquals(2,KeepBaseline.reloadCount(type));
+        assertFalse(KeepBaseline.unchangedAncestor(type));
+    }
+    @Test void watchedWithoutBaselineIsNotEvidence() {
+        var type=new Loader().define(bytes(1));
+        assertFalse(KeepBaseline.unchangedAncestor(type));
+        KeepBaseline.setWatchedPredicate(name->false);
+        assertTrue(KeepBaseline.unchangedAncestor(type));
+    }
+    @Test void sameNameInAnotherLoaderDoesNotSupplyEvidence() {
+        var a=new Loader();var b=new Loader();byte[] raw=bytes(1);
+        var ca=a.define(raw);var cb=b.define(raw);
+        KeepBaseline.capture(a,"example/Baseline",raw);
+        assertTrue(KeepBaseline.unchangedAncestor(ca));assertFalse(KeepBaseline.unchangedAncestor(cb));
+        KeepBaseline.capture(b,"example/Baseline",raw);KeepBaseline.advance(ca,raw);
+        assertFalse(KeepBaseline.unchangedAncestor(ca));assertTrue(KeepBaseline.unchangedAncestor(cb));
+    }
+    @Test void predicateDefaultFailsClosed() {
+        KeepBaseline.setWatchedPredicate(null);
+        assertFalse(KeepBaseline.unchangedAncestor(String.class));
+        assertFalse(KeepBaseline.unchangedAncestor(null));
+        KeepBaseline.setWatchedPredicate(name->{throw new IllegalStateException("unavailable");});
+        assertFalse(KeepBaseline.unchangedAncestor(String.class));
+        KeepBaseline.setWatchedPredicate(name->false);
+        assertTrue(KeepBaseline.unchangedAncestor(String.class),"known bootstrap library class is external");
+    }
     private static WeakReference<ClassLoader> temporaryLoader() {
         var l=new Loader();l.define(bytes(1));KeepBaseline.capture(l,"example/Baseline",bytes(1));return new WeakReference<>(l);
     }

@@ -198,6 +198,94 @@ class SingletonKeepPolicyTest {
         assertFalse(SingletonKeepPolicy.forBean(factory,"bean",type,new KeepBaseline.Input(KeepBaseline.fingerprint(raw),raw)).keep());
     }
 
+    @org.junit.jupiter.api.AfterEach void resetWatchedPredicate() { KeepBaseline.setWatchedPredicate(null); }
+    private record Inherited(Class<?> type, byte[] before, byte[] after, byte[] base) { }
+    private Inherited inherited(String baseDeclaration,String members,boolean intermediate) throws Exception {
+        Path dir=Files.createDirectories(tmp.resolve("inherited"+(compilation++)));
+        Files.writeString(dir.resolve("Base.java"),"package example; public class Base "+baseDeclaration+" { "+members+" }");
+        Files.writeString(dir.resolve("Parent.java"),"package example; public class Parent extends Base { public Parent(){} }");
+        String child="package example; public class Bean extends "+(intermediate?"Parent":"Base")+" { public int value(){return 1;} }";
+        Files.writeString(dir.resolve("Bean.java"),child);
+        assertEquals(0,ToolProvider.getSystemJavaCompiler().run(null,null,null,"-classpath",System.getProperty("java.class.path"),"-d",dir.toString(),dir.resolve("Base.java").toString(),dir.resolve("Parent.java").toString(),dir.resolve("Bean.java").toString()));
+        byte[] base=Files.readAllBytes(dir.resolve("example/Base.class"));
+        var loader=new ClassLoader(getClass().getClassLoader()) {
+            Class<?> define(String name,byte[] raw){return defineClass(name,raw,0,raw.length);}
+        };
+        loader.define("example.Base",base);
+        if(intermediate)loader.define("example.Parent",Files.readAllBytes(dir.resolve("example/Parent.class")));
+        byte[] before=Files.readAllBytes(dir.resolve("example/Bean.class"));var type=loader.define("example.Bean",before);
+        Files.writeString(dir.resolve("Bean.java"),child.replace("return 1","return 2"));
+        assertEquals(0,ToolProvider.getSystemJavaCompiler().run(null,null,null,"-classpath",dir+java.io.File.pathSeparator+System.getProperty("java.class.path"),"-d",dir.toString(),dir.resolve("Bean.java").toString()));
+        return new Inherited(type,before,Files.readAllBytes(dir.resolve("example/Bean.class")),base);
+    }
+    private SingletonKeepPolicy.Decision inheritedDecision(Inherited fixture,java.util.function.Consumer<org.springframework.beans.factory.support.RootBeanDefinition> metadata) throws Exception {
+        var factory=new org.springframework.beans.factory.support.DefaultListableBeanFactory();
+        var definition=new org.springframework.beans.factory.support.RootBeanDefinition(fixture.type());metadata.accept(definition);
+        factory.registerBeanDefinition("bean",definition);factory.registerSingleton("bean",fixture.type().getConstructor().newInstance());
+        return SingletonKeepPolicy.forBean(factory,"bean",fixture.type(),new KeepBaseline.Input(KeepBaseline.fingerprint(fixture.before()),fixture.after()));
+    }
+    @Test void inheritedExternalCreationMembersKeep() throws Exception {
+        KeepBaseline.setWatchedPredicate(name->false);
+        for(String callback:List.of("setter","aware","initializing","annotation","init","dispose","close","shutdown")) {
+            String declaration=callback.equals("aware")?"implements org.springframework.beans.factory.BeanNameAware":"";
+            String method=switch(callback) {
+                case "setter" -> "public void setLimit(int value){}";
+                case "aware" -> "public void setBeanName(String name){}";
+                case "initializing" -> "public void afterPropertiesSet(){}";
+                case "annotation" -> "@javax.annotation.PostConstruct public void initialized(){}";
+                default -> "public void "+callback+"(){}";
+            };
+            var fixture=inherited(declaration,method,false);
+            var decision=inheritedDecision(fixture,d->{
+                switch(callback) {
+                    case "setter" -> d.getPropertyValues().add("limit",3);
+                    case "init" -> d.setInitMethodName("init");
+                    case "dispose" -> d.setDestroyMethodName("dispose");
+                    case "close", "shutdown" -> d.setDestroyMethodName("(inferred)");
+                }
+            });
+            assertTrue(decision.keep(),callback+": "+decision.reason());
+        }
+    }
+    @Test void watchedNeverReloadedAncestorKeepsThenAnyAdvanceRefuses() throws Exception {
+        var fixture=inherited("","public void setLimit(int value){}",false);
+        Class<?> base=fixture.type().getSuperclass();
+        KeepBaseline.capture(base.getClassLoader(),"example/Base",fixture.base());
+        var kept=inheritedDecision(fixture,d->d.getPropertyValues().add("limit",3));assertTrue(kept.keep(),kept.reason());
+        KeepBaseline.advance(base,fixture.base());
+        var refused=inheritedDecision(fixture,d->d.getPropertyValues().add("limit",3));
+        assertFalse(refused.keep());assertTrue(refused.reason().contains("watched superclass example.Base"),refused.reason());
+    }
+    @Test void watchedAncestorWithoutBaselineRefuses() throws Exception {
+        var fixture=inherited("","public void setLimit(int value){}",false);
+        assertFalse(inheritedDecision(fixture,d->d.getPropertyValues().add("limit",3)).keep());
+    }
+    @Test void intermediateWatchedParentWithoutCreationMethodsStillGuarded() throws Exception {
+        var fixture=inherited("","public void setLimit(int value){}",true);
+        KeepBaseline.setWatchedPredicate(name->name.equals("example/Parent"));
+        Class<?> parent=fixture.type().getSuperclass();
+        Path dir=tmp.resolve("inherited"+(compilation-1));byte[] raw=Files.readAllBytes(dir.resolve("example/Parent.class"));
+        KeepBaseline.capture(parent.getClassLoader(),"example/Parent",raw);
+        assertTrue(inheritedDecision(fixture,d->d.getPropertyValues().add("limit",3)).keep());
+        KeepBaseline.advance(parent,new byte[]{0});
+        var refused=inheritedDecision(fixture,d->d.getPropertyValues().add("limit",3));
+        assertFalse(refused.keep());assertTrue(refused.reason().contains("example.Parent"),refused.reason());
+    }
+
+    @Test void unavailableCreationMethodStillRefusesWhenSingletonIsASubclass() throws Exception {
+        KeepBaseline.setWatchedPredicate(name->false);
+        var fixture=inherited("","public void setLimit(int value){}",false);
+        var factory=new org.springframework.beans.factory.support.DefaultListableBeanFactory();
+        var definition=new org.springframework.beans.factory.support.RootBeanDefinition(fixture.type());
+        definition.setInitMethodName("missingInit");factory.registerBeanDefinition("bean",definition);
+        factory.registerSingleton("bean",fixture.type().getConstructor().newInstance());
+        Class<?> base=fixture.type().getSuperclass();
+        var input=new KeepBaseline.Input(KeepBaseline.fingerprint(fixture.base()),fixture.base());
+        var decision=SingletonKeepPolicy.forBean(factory,"bean",base,input);
+        assertFalse(decision.keep(),decision.reason());
+        assertTrue(decision.reason().contains("missingInit"),decision.reason());
+    }
+
     @Test void debugInformationDoesNotChangeFingerprint()throws Exception {
         byte[] bytes=compile("public int value(){return 1;}");
         var reader=new org.objectweb.asm.ClassReader(bytes);var writer=new org.objectweb.asm.ClassWriter(0);

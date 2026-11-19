@@ -473,6 +473,20 @@ Changes to annotations on existing fields, methods or constructor parameters
 also take the recreate path; annotations on newly added members are evaluated
 with those additions.
 
+For stereotype-annotated beans (for example `@Service` or `@Component`),
+inherited property setters, Aware callbacks and lifecycle methods from unwatched
+platform or library classes do not prevent retention. Every watched superclass
+must have its own loader-specific baseline and must never have been reloaded in
+this JVM. Any prior superclass reload, including a constructor or initializer
+change, or missing superclass evidence selects recreation on the subclass's next
+save. This conservative rule also applies when the ancestor reload changed only
+a business method; it does not automatically recreate subclasses at that earlier
+helper save.
+
+Unannotated XML beans already keep their identity across business-body saves
+through the helper reload path. This change does not add generic XML bean
+classification or creation/lifecycle refresh to that path.
+
 This retention covers plain singletons and supported static proxy targets.
 A CGLIB proxy gaining a public method recreates. Configuration classes,
 FactoryBean/factory-method products, listener owners and specialized constructor

@@ -409,6 +409,7 @@ public class ReclazzAgent {
             if (!enableStructural) {
                 transformContext = new TransformContext();
                 transformContext.populateFromPlatformContext(platformContext);
+                com.onurkat.reclazz.transform.KeepBaseline.setWatchedPredicate(transformContext::isWatched);
                 instrumentation.addTransformer(new java.lang.instrument.ClassFileTransformer() {
                     @Override public byte[] transform(ClassLoader loader, String name, Class<?> redefining,
                             java.security.ProtectionDomain domain, byte[] bytes) {
@@ -425,6 +426,7 @@ public class ReclazzAgent {
             if (enableStructural) {
                 transformContext = new TransformContext();
                 transformContext.populateFromPlatformContext(platformContext);
+                com.onurkat.reclazz.transform.KeepBaseline.setWatchedPredicate(transformContext::isWatched);
                 if (config.isVerbose()) StatusReporter.info("Structural reload: watching " + transformContext.getWatchedClassCount() + " class directories");
 
                 ReclazzTransformer transformer = new ReclazzTransformer(transformContext, config);
@@ -719,6 +721,7 @@ public class ReclazzAgent {
                 if (reloadQueue != null) {
                     generatedClassScan=null;
                     heldSourceRetry=null;
+                    com.onurkat.reclazz.transform.KeepBaseline.setWatchedPredicate(null);
                     reloadQueue.shutdown();
                 }
                 if (watcherExecutor != null) {
@@ -750,6 +753,7 @@ public class ReclazzAgent {
             if (reloadQueue != null) {
                 generatedClassScan=null;
                 heldSourceRetry=null;
+                com.onurkat.reclazz.transform.KeepBaseline.setWatchedPredicate(null);
                 reloadQueue.shutdown();
                 reloadQueue = null;
             }
@@ -1296,6 +1300,16 @@ public class ReclazzAgent {
                 if (--frameworkBatchDepth == 0) {
                     ready = java.util.List.copyOf(pendingFramework);
                     pendingFramework.clear();
+                    // Every keep decision must see all successful reloads in this save,
+                    // even when a child is completed before its changed ancestor.
+                    StructuralReloader completedStructural = structuralReloader;
+                    for (FrameworkReload work : ready) {
+                        Class<?> type = findLoadedClass(work.className);
+                        if (completedStructural == null || completedStructural.nativeOutcome(type)
+                                != StructuralReloader.NativeOutcome.FAILED) {
+                            com.onurkat.reclazz.transform.KeepBaseline.advance(type, work.bytes);
+                        }
+                    }
                     for (FrameworkReload work : ready) completeFramework(work, true);
                 }
             } finally {
@@ -1341,7 +1355,7 @@ public class ReclazzAgent {
                 ReloadEvents.failed(work.className, why, work.source);
                 return;
             }
-            com.onurkat.reclazz.transform.KeepBaseline.advance(type, work.bytes);
+            if (!deferred) com.onurkat.reclazz.transform.KeepBaseline.advance(type, work.bytes);
             if (work.wasLoaded) JpaMappingRefresh.retryPendingEntity(work.className, work.bytes);
             var interceptor = work.result.isInterceptor() && work.modules != null
                     && platformContext.getPlatformId() == PlatformContext.Platform.HYBRIS

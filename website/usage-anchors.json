@@ -1,7 +1,7 @@
 {
   "source": "docs/usage.md",
   "baseline": "3327bc6",
-  "source_sha256": "8f1073e7b270afb190cb79bac2dd08e21ca1d0f2189fd578ee65a4435ec53631",
+  "source_sha256": "3a8f072ca125a0f914dbdc504de72d7073b4dc561859b39bbd71075ba77c4862",
   "headings": [
     {
       "key": "usage-guide",
@@ -187,7 +187,7 @@
       "level": 3,
       "title": "Singleton state across class saves",
       "id": "singleton-state-across-class-saves",
-      "body_sha256": "61c5ee870fb78c2b99d456a7322006c241a8bd236d9e166192f8b75808335fd7",
+      "body_sha256": "2f6cdf680837737b70f4c2318d1f3f94afc664617fed8140a487c098fd83bd63",
       "heading": "### Singleton state across class saves\n",
       "key": "singleton-state-across-class-saves",
       "identity": [

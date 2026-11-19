@@ -28,6 +28,99 @@ public class KeepSingletonStateReloadTest {
     }
 
 
+    @Test void plainXmlChildKeepsStateViaHelperPath() throws Exception { inherited("external"); }
+    @Test void annotatedXmlChildWithExternalInheritedSetterKeepsState() throws Exception { inherited("external",true); }
+    @Test void annotatedChildOfEditedWatchedBaseSetterRecreates() throws Exception { inherited("setter",true); }
+    @Test void annotatedChildOfEditedWatchedParentConstructorRecreates() throws Exception { inherited("constructor",true); }
+
+    @Test void parentConstructorAndChildBodySavedTogetherRecreates() throws Exception { inherited("constructor",true,true); }
+    @Test void parentSetterAndChildBodySavedTogetherRecreates() throws Exception { inherited("setter",true,true); }
+
+    private void inherited(String mode) throws Exception { inherited(mode,false); }
+    private void inherited(String mode,boolean annotated) throws Exception { inherited(mode,annotated,false); }
+    private void inherited(String mode,boolean annotated,boolean together) throws Exception {
+        var client = HttpClient.newHttpClient();
+        String cp = ValidationConstraintReloadTest.nativeClasspath();
+        String base = "package external; public class Base { protected int limit; public void setLimit(int value){limit=value;} }";
+        Path source = tmp.resolve("Base.java"), classes = java.nio.file.Files.createDirectories(tmp.resolve("library"));
+        java.nio.file.Files.writeString(source,base);
+        assertEquals(0,javax.tools.ToolProvider.getSystemJavaCompiler().run(null,null,null,"--release","17","-d",classes.toString(),source.toString()));
+        Path jar=tmp.resolve("base.jar");
+        try(var out=new java.util.jar.JarOutputStream(java.nio.file.Files.newOutputStream(jar))) {
+            out.putNextEntry(new java.util.jar.JarEntry("external/Base.class"));
+            out.write(java.nio.file.Files.readAllBytes(classes.resolve("external/Base.class")));out.closeEntry();
+        }
+        cp += java.io.File.pathSeparator + jar;
+        Path xml=tmp.resolve("state.xml");
+        java.nio.file.Files.writeString(xml,"""
+                <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+                 <bean id="parent" abstract="true"><property name="limit" value="3"/></bean>
+                 <bean id="stateful" class="app.Stateful" parent="parent"/>
+                </beans>
+                """);
+        String parentName=together ? "ZParent" : "Parent";
+        String parent="package app; public class "+parentName+" extends external.Base { "+
+                (mode.equals("setter")?"public void setLimit(int value){limit=value;}":"public "+parentName+"(){System.setProperty(\"r10.parent\",\"v1\");}")+" }";
+        String initial="package app; "+(annotated?"@org.springframework.stereotype.Service(\"stateful\") ":"")+"public class Stateful extends "+(mode.equals("external")?"external.Base":parentName)+
+                " { int count; public String next(){return \"v1:\"+(++count)+\":\"+limit+\":\"+System.identityHashCode(this);} }";
+        Path agentPort=tmp.resolve("agent.port");
+        var builder=WatchedApp.in(tmp).classpath(cp).agentArgs("startupDelaySec=1,debounceMs=300,verbose=true,portFile="+agentPort+",autoCompile="+together)
+                .jvmArgs("-Dprobe.dir="+tmp).with("App",APP.replace("@Configuration @EnableWebMvc", "@org.springframework.context.annotation.ImportResource(\""+xml.toUri()+"\") @Configuration @EnableWebMvc"))
+                .with("Stateful",initial).with("Endpoint",endpoint(false));
+        if(together)builder.mavenLayout();
+        if(!mode.equals("external"))builder.with(parentName,parent);
+        try(var app=builder.start()) {
+            app.awaitOrFail("PORT=","servlet missing");app.awaitOrFail("] Watching ","watcher missing");
+            app.awaitOrFail("Last-known-good bytecode cache:","startup baseline missing");
+            int port=Integer.parseInt(app.latest("PORT=").substring(5));
+            String[] first=request(client,port).split(":");
+            if(together) {
+                batchControl(agentPort,"SCAN\nRELOAD pause request=hold\n","RELOAD_STATE hold pause ");
+                java.nio.file.Files.writeString(tmp.resolve("src/main/java/app/Stateful.java"),initial.replace("v1:","v3:"));
+                java.nio.file.Files.writeString(tmp.resolve("src/main/java/app/"+parentName+".java"),
+                        mode.equals("setter") ? parent.replace("limit=value","limit=value+4") : parent.replace("v1","v2"));
+                batchControl(agentPort,"SCAN\nRELOAD status request=scanned\n","RELOAD_STATE scanned status ");
+                batchControl(agentPort,"RELOAD resume request=go\n","RELOAD_STATE go resume ");
+                awaitReloads(app,1);
+                String[] recreated=request(client,port).split(":");
+                assertEquals("v3",recreated[0],app.tail());assertEquals("1",recreated[1],app.tail());
+                assertNotEquals(first[3],recreated[3],app.tail());
+                assertEquals(mode.equals("setter")?"7":"3",recreated[2],app.tail());
+                assertTrue(app.output().stream().anyMatch(line->line.contains("Compiled Stateful.java")),app.tail());
+                assertTrue(app.output().stream().anyMatch(line->line.contains("bean stateful re-created (watched superclass app.ZParent")),app.tail());
+                return;
+            }
+            long before=reloads(app);app.rewrite("Stateful",initial.replace("v1:","v2:"));awaitReloads(app,before+1);
+            String[] kept=request(client,port).split(":");
+            assertEquals("v2",kept[0],app.tail());assertEquals("2",kept[1],app.tail());assertEquals(first[3],kept[3],app.tail());
+            var firstDecisions=app.output().stream().filter(line->line.contains("bean stateful ")).toList();
+            if(annotated)assertTrue(firstDecisions.stream().anyMatch(line->line.contains("kept, state preserved")),app.tail());
+            else assertTrue(firstDecisions.isEmpty(),"plain XML is the existing helper-path control: "+app.tail());
+            if(mode.equals("external"))return;
+            String changedParent=mode.equals("setter") ? parent.replace("limit=value","limit=value+4") : parent.replace("v1","v2");
+            app.rewrite("Parent",changedParent);
+            app.awaitOrFail("Reloaded app.Parent ","parent reload did not complete");
+            before=reloads(app);app.rewrite("Stateful",initial.replace("v1:","v3:"));awaitReloads(app,before+1);
+            String[] recreated=request(client,port).split(":");
+            assertEquals("v3",recreated[0],app.tail());assertEquals("1",recreated[1],app.tail());assertNotEquals(kept[3],recreated[3],app.tail());
+            assertEquals(mode.equals("setter")?"7":"3",recreated[2],app.tail());
+            assertTrue(app.output().stream().anyMatch(line->line.contains("bean stateful re-created (watched superclass app.Parent")),app.tail());
+        }
+    }
+
+    private static void batchControl(Path port,String commands,String prefix) throws Exception {
+        try(var socket=new java.net.Socket("127.0.0.1",Integer.parseInt(java.nio.file.Files.readString(port).trim()))) {
+            socket.setSoTimeout(15000);
+            socket.getOutputStream().write(commands.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            socket.getOutputStream().flush();
+            var input=new java.io.BufferedReader(new java.io.InputStreamReader(socket.getInputStream(),java.nio.charset.StandardCharsets.UTF_8));
+            var json=new com.fasterxml.jackson.databind.ObjectMapper();
+            for(String line;(line=input.readLine())!=null;)if(json.readTree(line).path("message").asText().startsWith(prefix))return;
+            fail("missing control response: "+prefix);
+        }
+    }
+
     String annotationNamespace() { return "javax.annotation"; }
 
     @Test void addedMethodAndLiftedFieldKeepInstance() throws Exception { variant("field", false); }
@@ -274,7 +367,7 @@ public class KeepSingletonStateReloadTest {
     }
 
     private static long reloads(WatchedApp app) {
-        return app.output().stream().filter(s -> s.contains("Reloaded app.Stateful ")
+        return app.output().stream().filter(s -> (s.contains("Reloaded app.Stateful ") || s.contains("Reloaded app.Stateful:"))
                 || s.contains("Structural reload: app.Stateful ")).count();
     }
 

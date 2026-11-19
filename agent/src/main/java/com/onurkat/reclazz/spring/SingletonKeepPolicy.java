@@ -76,8 +76,10 @@ public final class SingletonKeepPolicy {
             if(target==null||!type.isInstance(target))return no("unknown proxy or class ownership");
             ClassNode cls=KeepBaseline.read(input.newRaw());
             if(cls.visibleAnnotations!=null&&cls.visibleAnnotations.stream().anyMatch(a->a.desc.equals("Lorg/springframework/context/annotation/Configuration;")))return no("configuration class");
-            // An inherited creation member has no digest in this class's raw baseline: refuse below.
-            Set<String> creation=new HashSet<>();
+            // Guard every ancestor, including those declaring only constructors or injected fields.
+            for(Class<?> owner=type.getSuperclass();owner!=null&&owner!=Object.class;owner=owner.getSuperclass())
+                if(!KeepBaseline.unchangedAncestor(owner))return no("watched superclass "+owner.getName()+" reloaded or without baseline");
+            Map<String,Class<?>> creation=new HashMap<>();
             for(Class<?> owner=target.getClass();owner!=null&&owner!=Object.class;owner=owner.getSuperclass()) {
                 if((cglib||jdk)&&owner==target.getClass()&&owner.getName().contains("$$"))continue;
                 for(Method m:owner.getDeclaredMethods()) {
@@ -87,7 +89,7 @@ public final class SingletonKeepPolicy {
                         String desc=org.objectweb.asm.Type.getDescriptor(a.annotationType());
                         callback|=KeepBaseline.injection(desc)||KeepBaseline.lifecycle(desc);
                     }
-                    if(callback)creation.add(m.getName()+":"+org.objectweb.asm.Type.getMethodDescriptor(m));
+                    if(callback)creation.putIfAbsent(m.getName()+":"+org.objectweb.asm.Type.getMethodDescriptor(m),m.getDeclaringClass());
                 }
             }
             // Also read raw annotations: added methods may not be visible through native reflection yet.
@@ -95,7 +97,7 @@ public final class SingletonKeepPolicy {
                 var annotations=new ArrayList<AnnotationNode>();
                 if(m.visibleAnnotations!=null)annotations.addAll(m.visibleAnnotations);
                 if(m.invisibleAnnotations!=null)annotations.addAll(m.invisibleAnnotations);
-                if(annotations.stream().anyMatch(a->KeepBaseline.injection(a.desc)||KeepBaseline.lifecycle(a.desc)))creation.add(m.name+":"+m.desc);
+                if(annotations.stream().anyMatch(a->KeepBaseline.injection(a.desc)||KeepBaseline.lifecycle(a.desc)))creation.put(m.name+":"+m.desc,type);
             }
             for(String getter:List.of("getInitMethodName","getDestroyMethodName")) {
                 Object configured=call(definition,getter);
@@ -112,23 +114,35 @@ public final class SingletonKeepPolicy {
                 addNamed(creation,target.getClass(),"set"+Character.toUpperCase(prop.charAt(0))+prop.substring(1),true);
             }
             addAware(creation,type,new HashSet<>());
-            return compare(input,creation,cglib);
+            Set<String> own=new HashSet<>();
+            for(var member:creation.entrySet()) {
+                if(member.getValue()==type || member.getKey().endsWith(":<unavailable>"))own.add(member.getKey());
+                else if(!KeepBaseline.unchangedAncestor(member.getValue()))
+                    return no("inherited creation member "+member.getKey()+" reloaded or without baseline");
+            }
+            return compare(input,own,cglib);
         }catch(Exception|LinkageError e) { return no("bean creation metadata unavailable: "+e.getClass().getSimpleName()); }
     }
-    private static void addAware(Set<String> creation,Class<?> type,Set<Class<?>> seen) {
+    private static void addAware(Map<String,Class<?>> creation,Class<?> type,Set<Class<?>> seen) throws NoSuchMethodException {
+        addAware(creation,type,type,seen);
+    }
+    private static void addAware(Map<String,Class<?>> creation,Class<?> target,Class<?> type,Set<Class<?>> seen) throws NoSuchMethodException {
         if(type==null||!seen.add(type))return;
         for(Class<?> iface:type.getInterfaces()) {
             if(iface.getName().startsWith("org.springframework.")&&iface.getSimpleName().endsWith("Aware"))
-                for(Method m:iface.getMethods())creation.add(m.getName()+":"+org.objectweb.asm.Type.getMethodDescriptor(m));
-            addAware(creation,iface,seen);
+                for(Method m:iface.getMethods()) {
+                    Method implementation=target.getMethod(m.getName(),m.getParameterTypes());
+                    creation.putIfAbsent(m.getName()+":"+org.objectweb.asm.Type.getMethodDescriptor(m),implementation.getDeclaringClass());
+                }
+            addAware(creation,target,iface,seen);
         }
-        addAware(creation,type.getSuperclass(),seen);
+        addAware(creation,target,type.getSuperclass(),seen);
     }
-    private static void addNamed(Set<String> creation,Class<?> owner,String name,boolean required) {
+    private static void addNamed(Map<String,Class<?>> creation,Class<?> owner,String name,boolean required) {
         boolean found=false;
         for(Class<?> c=owner;c!=null&&c!=Object.class;c=c.getSuperclass())for(Method m:c.getDeclaredMethods())
-            if(m.getName().equals(name)&&!m.isSynthetic()) { creation.add(name+":"+org.objectweb.asm.Type.getMethodDescriptor(m));found=true; }
-        if(required&&!found)creation.add(name+":<unavailable>");
+            if(m.getName().equals(name)&&!m.isSynthetic()) { creation.putIfAbsent(name+":"+org.objectweb.asm.Type.getMethodDescriptor(m),m.getDeclaringClass());found=true; }
+        if(required&&!found)creation.put(name+":<unavailable>",owner);
     }
     private static Object call(Object owner,String name,Object... args)throws Exception {
         for(Method m:owner.getClass().getMethods())if(m.getName().equals(name)&&m.getParameterCount()==args.length) {
