@@ -5,7 +5,8 @@ import re
 from pathlib import Path
 
 PUBLIC_PAGES = {'index.html': 'home', 'compare/index.html': 'compare',
-                'privacy/index.html': 'privacy', 'license/index.html': 'license', '404.html': '404'}
+                'privacy/index.html': 'privacy', 'license/index.html': 'license', '404.html': '404',
+                'tr/sap-commerce-kurulum/index.html': 'setup-tr'}
 
 
 def icon(name, css=''):

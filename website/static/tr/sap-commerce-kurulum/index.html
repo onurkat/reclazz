@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="Reclazz'ı SAP Commerce geliştirme ortamına IntelliJ eklentisiyle kurma adımları: Install Agent ile kolay yol ya da local.properties ile manuel yol.">
+    <meta name="robots" content="index, follow">
+    <title>SAP Commerce kurulumu | Reclazz</title>
+    <link rel="canonical" href="https://reclazz.com/tr/sap-commerce-kurulum/">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+    {{SITE_HEAD}}
+    <style>
+        .setup-guide h2 { font-family: var(--font-primary); font-size: 1.5rem; font-weight: 700; margin: 48px 0 16px; }
+        .setup-guide h3 { font-family: var(--font-primary); font-size: 1.15rem; font-weight: 700; margin: 32px 0 12px; }
+        .setup-guide p, .setup-guide li { color: var(--text-secondary); }
+        .setup-guide ol, .setup-guide ul { padding-left: 1.4em; margin: 12px 0; }
+        .setup-guide li { margin: 6px 0; }
+        .setup-guide pre { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; overflow-x: auto; margin: 12px 0; }
+        .setup-guide pre code { font-size: 0.85rem; white-space: pre; }
+        .setup-guide .table-scroll { overflow-x: auto; margin: 12px 0; }
+        .setup-guide table { border-collapse: collapse; width: 100%; font-size: 0.95rem; }
+        .setup-guide th, .setup-guide td { border: 1px solid var(--border); padding: 8px 10px; text-align: left; vertical-align: top; color: var(--text-secondary); }
+        .setup-guide th { color: var(--text-primary); }
+    </style>
+</head>
+<body class="marketing privacy-page">
+
+{{SITE_HEADER}}
+
+<main class="license-page setup-guide" id="main" tabindex="-1">
+    <div class="container">
+        <a href="/" class="back-link">
+            &larr; Reclazz ana sayfası
+        </a>
+
+        <h1><span class="text-gradient">Reclazz ile SAP Commerce kurulumu</span></h1>
+        <p class="subtitle">Reclazz, SAP Commerce'te Java, Spring XML, items.xml, beans.xml, ImpEx ve properties değişikliklerini sunucuyu yeniden başlatmadan uygular. Kurulum IntelliJ eklentisiyle yapılır; ajanı eklentinin Install Agent düğmesiyle (kolay yol) ya da local.properties dosyasını elle düzenleyerek (manuel yol) eklersiniz. Yaklaşık 10 dakika sürer. Ücretsiz ve açık kaynaktır (Apache 2.0).</p>
+        <p>Reclazz yalnızca geliştirme ortamı içindir. Production'a, CCv2 manifest'ine ya da projenin build'ine girmez; eklediğiniz satır sizin makinenizde kalır.</p>
+
+        <h2 id="gereksinimler">Gereksinimler</h2>
+        <div class="table-scroll">
+            <table>
+                <thead><tr><th>Bileşen</th><th>Gereken</th></tr></thead>
+                <tbody>
+                    <tr><td>Java</td><td>JDK 17 veya üstü (SAP Commerce tarafında SapMachine 17 ve 21 test ediliyor)</td></tr>
+                    <tr><td>SAP Commerce</td><td>Yerel geliştirme kurulumu; test edilen sürüm 2211</td></tr>
+                    <tr><td>Reclazz ajanı</td><td>Eklentinin içinde gelir</td></tr>
+                    <tr><td>IntelliJ IDEA</td><td>2023.3-2026.3 arası bir sürüm, Reclazz eklentisi 1.7.2</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p>Aşağıdaki örneklerde <code>HYBRIS_HOME</code>, kurulumunuzdaki <code>hybris</code> klasörünün tam yoludur (örneğin <code>/Users/ad/projeler/proje/hybris</code>).</p>
+
+        <h2 id="eklenti">1. IntelliJ eklentisini kurun</h2>
+        <ol>
+            <li>IntelliJ'de <strong>Settings → Plugins → Marketplace</strong> açın, <strong>Reclazz</strong> arayın ve kurun.</li>
+            <li>IDE yeniden başlatma isterse yeniden başlatın.</li>
+        </ol>
+        <p>Sonra iki yoldan birini seçin. <strong>Kolay yol</strong>da eklenti ajanı sizin yerinize kurar. <strong>Manuel yol</strong>da ayarları kendiniz düzenlersiniz. İkisinin sonunda 3. adımdan devam edin.</p>
+
+        <h2 id="kolay-yol">2A. Kolay yol: Install Agent</h2>
+        <ol>
+            <li><strong>Settings → Tools → Reclazz</strong> ekranında <strong>Enable Reclazz in this project</strong> kutusunu işaretleyin.</li>
+            <li><strong>SAP Commerce</strong> bölümünde <strong>Compile Java in the IDE instead of ant</strong> kutusunu işaretleyin.</li>
+            <li><strong>Install Agent</strong> düğmesine basın. Eklenti ajanı <code>local.properties</code> dosyasına (opsiyonel config klasörü varsa <code>95-local.properties</code>) işaretli bir blok olarak yazar ve dosyanın yedeğini alır.</li>
+            <li>Ekranda "Agent installed in the server startup properties" yazmalı.</li>
+            <li>Yazılan dosyada <code>tomcat.debugjavaoptions</code> satırını kontrol edin: debug bayraklarınız (<code>-Xdebug</code>, <code>-Xrunjdwp:...</code>) durmalı ve satırda tek bir <code>-javaagent:...reclazz-agent.jar</code> olmalı. Gerekirse elle düzeltin.</li>
+        </ol>
+        <p>Settings'teki seçenekleri sonradan değiştirirseniz <strong>Reinstall</strong> düğmesine basıp 3. adımı tekrarlayın.</p>
+        <p>Yazılan blok makineye özel bir yol içerir; dosya git'te tutuluyorsa commit etmeyin.</p>
+
+        <h2 id="manuel-yol">2B. Manuel yol</h2>
+        <p>Ayarları kendiniz yönetmek istiyorsanız bu üç adımı izleyin; Install Agent düğmesine basmayın.</p>
+
+        <h3 id="manuel-1">Manuel 1. Ajanı sabit bir konuma kopyalayın</h3>
+        <p>Ajan eklentinin içinde gelir; ayrıca indirmeniz gerekmez. Ancak eklenti klasörünün yolu IDE sürümüyle değişir (örneğin <code>IntelliJIdea2025.2</code>, <code>IntelliJIdea2026.1</code>). Sunucuya bu yolu yazarsanız IDE güncellendiğinde sunucu ajanı bulamaz. Bu yüzden jar'ı bir kez sabit bir yere kopyalayın.</p>
+        <ol>
+            <li>Eklentinin içindeki jar'ı bulun (<code>&lt;sürüm&gt;</code> yerine kullandığınız IntelliJ'in klasörü, Community sürümünde <code>IdeaIC...</code>):
+                <ul>
+                    <li>macOS: <code>~/Library/Application Support/JetBrains/IntelliJIdea&lt;sürüm&gt;/plugins/reclazz/agent/reclazz-agent.jar</code></li>
+                    <li>Windows: <code>%APPDATA%\JetBrains\IntelliJIdea&lt;sürüm&gt;\plugins\reclazz\agent\reclazz-agent.jar</code></li>
+                    <li>Linux: <code>~/.local/share/JetBrains/IntelliJIdea&lt;sürüm&gt;/plugins/reclazz/agent/reclazz-agent.jar</code></li>
+                </ul>
+            </li>
+            <li>Dosyayı tam olarak şu konuma kopyalayın: <code>~/.reclazz/agent/reclazz-agent.jar</code> (Windows'ta kullanıcı klasörünüzün altında <code>.reclazz\agent\reclazz-agent.jar</code>).</li>
+        </ol>
+        <p>macOS için komut (Linux'ta kaynak yolu yukarıdaki Linux yoludur):</p>
+<pre><code>mkdir -p ~/.reclazz/agent
+cp ~/Library/Application\ Support/JetBrains/IntelliJIdea&lt;sürüm&gt;/plugins/reclazz/agent/reclazz-agent.jar ~/.reclazz/agent/</code></pre>
+        <p>Bu konumdaki kopyayı eklenti her IDE açılışında güncel tutar; eklentiyi güncellediğinizde sunucunun ajanı da güncellenir.</p>
+
+        <h3 id="manuel-2">Manuel 2. local.properties dosyasını elle düzenleyin</h3>
+        <p>SAP Commerce sunucusu Tanuki wrapper ile başlar. <code>tomcat/conf/wrapper.conf</code> her <code>ant</code> çalıştığında yeniden üretilir; oraya yazılan satır kaybolur. Doğru yer platformun kendi ayarlarıdır: <code>tomcat.javaoptions</code> (normal başlatma) ve <code>tomcat.debugjavaoptions</code> (debug başlatma).</p>
+        <ol>
+            <li><code>HYBRIS_HOME/config/local.properties</code> dosyasını açın.</li>
+            <li>Bu iki ayar zaten varsa değerlerini silmeyin; ajanı mevcut değerin sonuna ekleyin. Özellikle <code>tomcat.debugjavaoptions</code> genelde <code>-Xdebug</code> ve <code>-Xrunjdwp:...</code> gibi debug bayraklarını taşır, silerseniz debug çalışmaz.</li>
+            <li>Her iki satırda da yalnızca bir tane <code>-javaagent:...reclazz-agent.jar</code> olsun.</li>
+        </ol>
+<pre><code>tomcat.javaoptions=&lt;mevcut değerler&gt; -javaagent:/Users/ad/.reclazz/agent/reclazz-agent.jar=hybrisHome=/tam/yol/hybris,autoCompile=true
+tomcat.debugjavaoptions=&lt;mevcut debug bayrakları&gt; -javaagent:/Users/ad/.reclazz/agent/reclazz-agent.jar=hybrisHome=/tam/yol/hybris,autoCompile=true</code></pre>
+        <p><code>autoCompile=true</code> kaydettiğiniz Java dosyasını <code>ant build</code> beklemeden derletir. Elle eklenen satırda bu ayarı Settings'teki kutu değil, bu satır belirler. Satırlar makineye özel yol içerir; <code>local.properties</code> git'te tutuluyorsa commit etmeyin.</p>
+
+        <h3 id="manuel-3">Manuel 3. IntelliJ'de Reclazz'ı açın (otomatik kurulum olmadan)</h3>
+        <ol>
+            <li>Projeyi IntelliJ'de açın. Bir Reclazz bildirimi <strong>Install Agent</strong> ya da <strong>Enable Reclazz</strong> düğmesiyle gelirse basmayın; ikisi de ajanı sizin yerinize ayarlara yazar. Bildirim hiç çıkmayabilir, sorun değil.</li>
+            <li><strong>Settings → Tools → Reclazz</strong> ekranını açın.</li>
+            <li>En üstteki <strong>Enable Reclazz in this project</strong> kutusunu işaretleyin. Bu kutu ayarlara bir şey yazmaz. Açıkken eklenti "Reclazz is off" önerisini artık göstermez ve ayarlardaki ajan jar'ı silinmişse sizi uyarır. IntelliJ ajana bu kutudan bağımsız olarak bağlanır.</li>
+            <li><strong>SAP Commerce</strong> bölümündeki <strong>Install Agent</strong> düğmesine basmayın.</li>
+            <li><strong>OK</strong> ile kaydedin.</li>
+        </ol>
+        <p>Elle kurulumda bu ekranda şunları görmeniz normaldir:</p>
+        <ul>
+            <li><strong>Agent not installed in the server:</strong> Eklenti yalnız kendi yazdığı bloğu arar; elle eklenen satırı burada göstermez. Ajanın çalıştığını sunucu konsolundan ve bağlantı durumundan anlarsınız.</li>
+            <li><strong>Agent: not connected:</strong> Sunucu kapalıyken böyle yazar. Sunucu açılınca IntelliJ ajana <code>HYBRIS_HOME/.reclazz/agent.port</code> dosyası üzerinden bağlanır; <strong>Test connection</strong> ile kontrol edebilirsiniz.</li>
+        </ul>
+
+        <h2 id="baslatma">3. Ayarları uygulayın ve sunucuyu başlatın</h2>
+        <p>Ayarlar <code>wrapper.conf</code> dosyasına ancak <code>ant</code> ile geçer. Sadece sunucuyu yeniden başlatmak yetmez.</p>
+<pre><code>cd $HYBRIS_HOME/bin/platform
+. ./setantenv.sh
+ant server
+./hybrisserver.sh          # debug için: ./hybrisserver.sh debug</code></pre>
+        <p>Windows'ta aynı klasörde <code>setantenv.bat</code>, <code>ant server</code> ve <code>hybrisserver.bat</code> kullanın.</p>
+        <p>Sunucu açılırken konsolda Reclazz satırlarını görmelisiniz:</p>
+<pre><code>[Reclazz] [INFO] Agent loaded via -javaagent (premain)
+[Reclazz] [ OK ] Reclazz is active. Watching for changes...
+[Reclazz] [INFO] Watching ... directories</code></pre>
+        <p>Bu satırlar yoksa ajan yüklenmemiştir; önce Sorun giderme bölümüne bakın. IntelliJ'in alt durum çubuğundaki gösterge de "Reclazz: Connected" yazar; "Reclazz: Not connected" kalıyorsa ajan sunucuya bağlanmamıştır.</p>
+
+        <h2 id="ilk-deneme">4. İlk deneme</h2>
+        <p>Kurulumun çalıştığını görmenin en kısa yolu, sık kullandığınız bir endpoint'te küçük bir değişikliktir.</p>
+        <ol>
+            <li>Bir OCC controller'ın ya da servisin döndürdüğü bir değeri seçin ve endpoint'i çağırıp cevabı not edin.</li>
+            <li>Metodun içindeki dönen metni değiştirin ve dosyayı kaydedin.</li>
+            <li>Konsolda <code>Compiled ...java</code> ve ardından <code>Reloaded ...</code> satırlarını bekleyin; genelde bir iki saniye sürer.</li>
+            <li>Endpoint'i tekrar çağırın. Yeni metin gelmeli; sunucu yeniden başlamamalı.</li>
+        </ol>
+
+        <h2 id="sorun-giderme">Sorun giderme</h2>
+        <div class="table-scroll">
+            <table>
+                <thead><tr><th>Belirti</th><th>Neden</th><th>Çözüm</th></tr></thead>
+                <tbody>
+                    <tr><td>Açılışta hiç <code>[Reclazz]</code> satırı yok</td><td>Ayarlar <code>wrapper.conf</code> dosyasına geçmemiş</td><td><code>ant server</code> çalıştırıp sunucuyu yeniden başlatın</td></tr>
+                    <tr><td>Normal modda çalışıyor, debug modda Reclazz satırı yok</td><td><code>tomcat.debugjavaoptions</code> içinde ajan yok</td><td>Kolay yolda 2A'nın 5. maddesini, manuel yolda Manuel 2'yi yapın, sonra <code>ant server</code></td></tr>
+                    <tr><td>Debug modda breakpoint'ler çalışmıyor</td><td><code>tomcat.debugjavaoptions</code> düzenlenirken JDWP bayrakları silinmiş</td><td><code>.reclazz-bak</code> yedeğinden ya da ekibin ayarından bayrakları geri ekleyin</td></tr>
+                    <tr><td>Kaydediyorum ama değişiklik gelmiyor</td><td>Java derlenmiyor ya da uzantı izlenmiyor</td><td>local.properties satırınızda <code>autoCompile=true</code> var mı bakın; <strong>Tools → Why Didn't My Class Reload?</strong> ile sınıfı sorun</td></tr>
+                    <tr><td>Konsolda <code>Holding 1 source files</code></td><td>Dosya derlenemedi (örneğin yeni DTO alanı henüz üretilmedi)</td><td>Hatayı düzeltin ya da "DTOs ready" sonrası dosyayı tekrar kaydedin</td></tr>
+                    <tr><td>Yeni items.xml attribute'u hata veriyor</td><td>Veritabanı kolonu yok</td><td><strong>HAC → Update Running System</strong></td></tr>
+                    <tr><td>Bir değişiklik için restart isteniyor</td><td>Bazı değişiklikler (örneğin üst sınıf değişikliği) restart gerektirir</td><td><strong>Tools → What Still Needs a Restart?</strong> listesine bakın; nedeni orada yazar</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p>Çözemediğiniz bir durumda <a href="https://github.com/onurkat/reclazz/issues">GitHub'da issue</a> açabilirsiniz; konsoldaki <code>[Reclazz]</code> satırlarını eklemeniz yeterli.</p>
+
+        <h2 id="kaldirma">Kaldırma</h2>
+        <ol>
+            <li>Kolay yolla kurduysanız: <strong>Settings → Tools → Reclazz → SAP Commerce</strong> bölümünde <strong>Remove</strong> bağlantısına tıklayın; eklenti kendi bloğunu ya da <code>95-local.properties</code> dosyasını kaldırır. <code>tomcat.debugjavaoptions</code> satırını elle düzelttiyseniz oradaki <code>-javaagent:...</code> kısmını da silin.</li>
+            <li>Manuel kurduysanız: <code>local.properties</code> dosyasında iki satırdan yalnızca <code>-javaagent:...reclazz-agent.jar...</code> kısmını silin; diğer değerlere ve debug bayraklarına dokunmayın.</li>
+            <li><code>ant server</code> çalıştırıp sunucuyu yeniden başlatın.</li>
+            <li>İsterseniz IntelliJ'de <strong>Enable Reclazz in this project</strong> kutusunu kapatın ya da eklentiyi kaldırın.</li>
+        </ol>
+        <p>Projenin koduna ve build'ine hiçbir şey eklenmediği için kaldırmak bu kadardır.</p>
+    </div>
+</main>
+
+{{SITE_FOOTER}}
+{{SITE_UTILITIES}}
+
+
+</body>
+</html>

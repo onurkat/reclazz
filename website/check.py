@@ -157,7 +157,7 @@ def check_site(output, revision='main'):
     for error in contrast_errors((output/'assets/tokens.css').read_text()): check(False,error)
     for path, doc in documents.items():
         for error in page_quality_errors(output,path): check(False,str(path.relative_to(output))+': '+error)
-        check(doc.lang == 'en', str(path) + ': missing language')
+        check(doc.lang == ('tr' if path.is_relative_to(output/'tr') else 'en'), str(path) + ': missing language')
         check(doc.headings.count(1) == 1 and doc.mains == 1 and doc.title_count == 1, str(path) + ': require one H1/main/title')
         check(len(doc.ids) == len(set(doc.ids)), str(path) + ': duplicate IDs')
         if path in docs: check(doc.active == (0 if path == output/'docs/evidence/index.html' else 2), str(path) + ': desktop/mobile active navigation mismatch')
