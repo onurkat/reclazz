@@ -108,9 +108,11 @@ public class FileWatcher {
     boolean jdkPolls = watchServicePolls();
 
     private static boolean watchServicePolls() {
-        try {
-            return FileSystems.getDefault().newWatchService()
-                    .getClass().getSimpleName().contains("Polling");
+        // Closed at once: on Linux every open WatchService holds one of the
+        // user's inotify instances (128 by default), and this probe used to
+        // keep one per FileWatcher for the life of the JVM.
+        try (WatchService probe = FileSystems.getDefault().newWatchService()) {
+            return probe.getClass().getSimpleName().contains("Polling");
         } catch (Exception cannotTell) {
             return false;
         }
