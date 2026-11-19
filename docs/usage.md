@@ -2544,6 +2544,13 @@ probe, but P5 has no fresh native Boot 3 graph and does not certify that probe
 against the current tree. Record replacement has component evidence; a watched
 constructor-bound record with held consumers is not currently observed.
 
+Focused property checks also cover Boot 3.3.5 and Boot 4.1.2. Boot 4 scratch
+checks close their own fallback validation factories on success, rejection and
+unexpected binding failures, while retaining the application's custom validator
+and native self-validation order. A manual-agent Boot 4.1.2 sample also updates
+its JavaBean property object, direct field and Environment in the same process.
+This focused coverage does not certify every P5 scenario on Boot 3 or Boot 4.
+
 No new option is needed. With `reloadBoundary=request`, successful changes
 wait for the existing request boundary before application. A save made during
 that wait becomes another candidate; accepting the earlier candidate never

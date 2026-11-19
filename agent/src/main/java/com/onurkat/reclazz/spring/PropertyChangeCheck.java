@@ -41,7 +41,7 @@ public final class PropertyChangeCheck {
         List<String> unavailable = new ArrayList<>();
         for (Object context : contexts) {
             String location = context.getClass().getName();
-            Object binder = null;
+            ScratchBinder binder = null;
             try {
                 // Non-Spring contexts have no Environment and are not binding targets.
                 if (Arrays.stream(context.getClass().getMethods())
@@ -85,7 +85,7 @@ public final class PropertyChangeCheck {
                 unavailable.add(location + ": " + Failures.describe(unwrap(failure)));
             } finally {
                 if (binder != null) {
-                    try { closeScratchValidator(binder); }
+                    try { binder.close(); }
                     catch (Throwable failure) {
                         unavailable.add(location + ": scratch validator cleanup failed: " + Failures.describe(failure));
                     }
@@ -197,7 +197,7 @@ public final class PropertyChangeCheck {
         }
     }
 
-    private static Object scratchBinder(Object live, Object environment, ClassLoader loader) throws Exception {
+    private static ScratchBinder scratchBinder(Object live, Object environment, ClassLoader loader) throws Exception {
         Class<?> sources = Class.forName(PROPERTIES + "source.ConfigurationPropertySources", true, loader);
         sources.getMethod("attach", Class.forName("org.springframework.core.env.Environment", true, loader))
                 .invoke(null, environment);
@@ -223,7 +223,7 @@ public final class PropertyChangeCheck {
         Class<?> type = Class.forName(PROPERTIES + "ConfigurationPropertiesBinder", true, loader);
         Constructor<?> constructor = type.getDeclaredConstructor(applicationContext);
         constructor.setAccessible(true);
-        return constructor.newInstance(proxy);
+        return new ScratchBinder(constructor.newInstance(proxy), live, loader);
     }
 
     private static boolean hiddenLookup(Object[] args) {
@@ -233,7 +233,7 @@ public final class PropertyChangeCheck {
         return name.equals(BOUND) || name.equals(PLACEHOLDERS);
     }
 
-    private static Object checkBean(Object context, String name, Object live, Object binder,
+    private static Object checkBean(Object context, String name, Object live, ScratchBinder binder,
                                   ClassLoader loader) throws Exception {
         Class<?> metadata = Class.forName(PROPERTIES + "ConfigurationPropertiesBean", true, loader);
         Class<?> appContext = Class.forName("org.springframework.context.ApplicationContext", true, loader);
@@ -271,10 +271,131 @@ public final class PropertyChangeCheck {
         constructor.setAccessible(true);
         Object detached = boot3 ? constructor.newInstance(name, instance, target)
                 : constructor.newInstance(name, instance, call(bean, "getAnnotation"), target);
-        Method bind = binder.getClass().getDeclaredMethod(valueObject ? "bindOrCreate" : "bind", metadata);
+        binder.prepare(target, javaType);
+        Method bind = binder.nativeBinder.getClass().getDeclaredMethod(valueObject ? "bindOrCreate" : "bind", metadata);
         bind.setAccessible(true);
-        bind.invoke(binder, detached);
+        bind.invoke(binder.nativeBinder, detached);
         return instance;
+    }
+
+    /** Per-save ownership; live context validators are borrowed and never closed here. */
+    private static final class ScratchBinder {
+        final Object nativeBinder;
+        final Object context;
+        final ClassLoader loader;
+        final Field cached;
+        final Field customField;
+        final Object originalCustom;
+        final boolean jsr303Present;
+        final List<Object> owned = new ArrayList<>();
+
+        ScratchBinder(Object binder, Object context, ClassLoader loader) throws Exception {
+            this.nativeBinder = binder; this.context = context; this.loader = loader;
+            Field old;
+            try { old = binder.getClass().getDeclaredField("jsr303Validator"); }
+            catch (NoSuchFieldException absent) { old = null; }
+            cached = old;
+            if (cached != null) {
+                customField = null; originalCustom = null; jsr303Present = false;
+                return;
+            }
+            Class<?> validator = Class.forName("org.springframework.validation.Validator", false, loader);
+            Class<?> bindable = Class.forName(PROPERTIES + "bind.Bindable", false, loader);
+            if (!binder.getClass().getName().equals(PROPERTIES + "ConfigurationPropertiesBinder")
+                    || !perBindValidatorShape(binder.getClass(), validator, bindable))
+                throw new IllegalStateException("unknown Spring Boot validator lifecycle");
+            customField = binder.getClass().getDeclaredField("configurationPropertiesValidator");
+            customField.setAccessible(true); originalCustom = customField.get(binder);
+            Field present = binder.getClass().getDeclaredField("jsr303Present");
+            present.setAccessible(true); jsr303Present = present.getBoolean(binder);
+            // Only this detached binder changes. It must not create unowned per-bind factories.
+            present.setBoolean(binder, false);
+            if (jsr303Present) {
+                Class<?> fallback = Class.forName(PROPERTIES + "ConfigurationPropertiesJsr303Validator", false, loader);
+                try {
+                    fallback.getDeclaredConstructor(Class.forName("org.springframework.context.ApplicationContext", false, loader), Class.class);
+                    Field delegate = fallback.getDeclaredField("delegate");
+                    delegate.getType().getMethod("close");
+                } catch (ReflectiveOperationException | LinkageError unknown) {
+                    throw new IllegalStateException("unknown Spring Boot validator lifecycle", unknown);
+                }
+            }
+        }
+
+        void prepare(Object target, Class<?> type) throws Exception {
+            if (cached != null) return;
+            List<Object> validators = new ArrayList<>();
+            if (originalCustom != null) validators.add(originalCustom);
+            Class<?> validated = Class.forName("org.springframework.validation.annotation.Validated", false, loader);
+            if (jsr303Present && call(target, "getAnnotation", validated) != null) {
+                Class<?> fallback = Class.forName(PROPERTIES + "ConfigurationPropertiesJsr303Validator", true, loader);
+                Method present = fallback.getDeclaredMethod("isJsr303Present",
+                        Class.forName("org.springframework.context.ApplicationContext", false, loader));
+                present.setAccessible(true);
+                if (!Boolean.TRUE.equals(present.invoke(null, context)))
+                    throw new IllegalStateException("unknown Spring Boot validator lifecycle: JSR303 availability changed");
+                Constructor<?> constructor = fallback.getDeclaredConstructor(
+                        Class.forName("org.springframework.context.ApplicationContext", false, loader), Class.class);
+                constructor.setAccessible(true);
+                Object validator = constructor.newInstance(context, type);
+                owned.add(validator);
+                validators.add(validator);
+            }
+            if (validators.isEmpty()) { customField.set(nativeBinder, null); return; }
+            Class<?> validatorType = Class.forName("org.springframework.validation.Validator", false, loader);
+            // Boot calls supports then validate immediately with the resolved bindable type.
+            // Keep that type, including nested bindables, and preserve supports/validate order.
+            Class<?>[] currentType = new Class<?>[1];
+            Object composite = Proxy.newProxyInstance(loader, new Class<?>[]{validatorType}, (proxy, method, args) -> {
+                if (method.getName().equals("supports")) { currentType[0] = (Class<?>) args[0]; return true; }
+                if (method.getName().equals("validate")) {
+                    Class<?> selected = currentType[0];
+                    for (Object validator : validators)
+                        if (Boolean.TRUE.equals(call(validator, "supports", selected)))
+                            call(validator, "validate", args);
+                    return null;
+                }
+                if (method.getName().equals("toString")) return "Reclazz scratch validators";
+                if (method.getName().equals("hashCode")) return System.identityHashCode(proxy);
+                if (method.getName().equals("equals")) return proxy == args[0];
+                throw new UnsupportedOperationException(method.toString());
+            });
+            customField.set(nativeBinder, composite);
+        }
+
+        void close() throws Exception {
+            if (cached != null) { closeScratchValidator(nativeBinder); return; }
+            Exception failure = null;
+            for (Object validator : owned) {
+                try { closeValidator(validator); }
+                catch (Exception problem) {
+                    if (failure == null) failure = problem; else failure.addSuppressed(problem);
+                }
+            }
+            if (failure != null) throw failure;
+        }
+    }
+
+    static boolean perBindValidatorShape(Class<?> binder, Class<?> validator, Class<?> bindable) {
+        try {
+            Field custom = binder.getDeclaredField("configurationPropertiesValidator");
+            Field present = binder.getDeclaredField("jsr303Present");
+            if (custom.getType() != validator || !Modifier.isFinal(custom.getModifiers())
+                    || present.getType() != boolean.class || !Modifier.isFinal(present.getModifiers())) return false;
+            for (Field field : binder.getDeclaredFields())
+                if (!field.equals(custom)
+                        && (validator.isAssignableFrom(field.getType()) || validatorFactoryType(field.getType()))) return false;
+            Method fallback = binder.getDeclaredMethod("getJsr303Validator", Class.class);
+            Method validators = binder.getDeclaredMethod("getValidators", bindable);
+            return Modifier.isPrivate(fallback.getModifiers()) && fallback.getReturnType() == validator
+                    && Modifier.isPrivate(validators.getModifiers()) && validators.getReturnType() == List.class;
+        } catch (ReflectiveOperationException | LinkageError unknown) { return false; }
+    }
+
+    private static boolean validatorFactoryType(Class<?> type) {
+        if (type.getName().equals("jakarta.validation.ValidatorFactory")) return true;
+        for (Class<?> face : type.getInterfaces()) if (validatorFactoryType(face)) return true;
+        return type.getSuperclass() != null && validatorFactoryType(type.getSuperclass());
     }
 
     /** Boot's private fallback owns a validator factory; a per-save instance must close it. */
@@ -283,6 +404,10 @@ public final class PropertyChangeCheck {
         field.setAccessible(true);
         Object validator = field.get(binder);
         if (validator == null) return;
+        closeValidator(validator);
+    }
+
+    private static void closeValidator(Object validator) throws Exception {
         Field delegateField = validator.getClass().getDeclaredField("delegate");
         delegateField.setAccessible(true);
         call(delegateField.get(validator), "close");

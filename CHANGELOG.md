@@ -23,6 +23,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Boot 4 configuration-property changes pass the scratch binding check, with
+  fallback validator factories closed after successful and rejected checks.
+
 - Enum switches compiled by javac keep the correct case mapping after adding or
   reordering cases, including a new switch table for another enum.
 
