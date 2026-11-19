@@ -1,3 +1,11 @@
+import javax.inject.Inject
+import org.gradle.process.ExecOperations
+
+// Public service injection works on Gradle 8 and 9; Project.exec was removed in 9.
+abstract class ReleasePublisherProcesses {
+    @Inject abstract ExecOperations getExecOperations()
+}
+
 // Release uploads must consume the files already checked by release.sh.
 // This init script is used only for the upload invocation, never for builds.
 def uploads = [':publishPlugin', ':gradle-plugin:publishPlugins'] as Set
@@ -29,7 +37,8 @@ gradle.taskGraph.whenReady { graph ->
                     files += task.project.tasks.getByName('generatePomFileForPluginMavenPublication').destination.absolutePath
                     files += task.project.tasks.getByName('generateMetadataFileForPluginMavenPublication').outputFile.get().asFile.absolutePath
                 }
-                task.project.exec {
+                def processes = task.project.objects.newInstance(ReleasePublisherProcesses)
+                processes.execOperations.exec {
                     workingDir gradle.rootProject.projectDir
                     commandLine(['python3', 'scripts/release-evidence.py', 'verify-publisher', publisher] + files)
                 }

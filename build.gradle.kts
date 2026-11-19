@@ -2,8 +2,8 @@ import org.gradle.kotlin.dsl.support.serviceOf
 
 plugins {
     id("java")
-    id("org.jetbrains.kotlin.jvm") version "1.9.25"
-    id("org.jetbrains.intellij.platform") version "2.2.1"
+    id("org.jetbrains.kotlin.jvm") version "2.3.21"
+    id("org.jetbrains.intellij.platform") version "2.20.1"
 }
 
 group = providers.gradleProperty("pluginGroup").get()
@@ -18,6 +18,13 @@ repositories {
 
 kotlin {
     jvmToolchain(17)
+    // The oldest supported IDE (2023.3) supplies Kotlin stdlib 1.9.21.
+    compilerOptions {
+        apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_1_9)
+        languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_1_9)
+        // Avoid generating overrides of internal defaults on older IDE interfaces.
+        jvmDefault.set(org.jetbrains.kotlin.gradle.dsl.JvmDefaultMode.NO_COMPATIBILITY)
+    }
 }
 
 dependencies {
@@ -70,7 +77,7 @@ val signingKeyFile = file("certificate/private.pem")
  * publishPlugin` can upload an UNSIGNED plugin while looking like it
  * worked. Fail loudly instead: signing is only ever requested on purpose.
  */
-val requireSigningMaterial by tasks.registering {
+val requireSigningMaterial = tasks.register("requireSigningMaterial") {
     doFirst {
         val missing = buildList {
             if (!signingChainFile.exists()) add("certificate/chain.crt")
@@ -117,7 +124,7 @@ tasks.matching { it.name == "verifyPluginSignature" }.configureEach {
  * rejection that costs a review round into a build failure. Add an entry every
  * time review finds one.
  */
-val checkInternalApiUsage by tasks.registering {
+val checkInternalApiUsage = tasks.register("checkInternalApiUsage") {
     val sources = fileTree("src/main") { include("**/*.kt", "**/*.java") }
     inputs.files(sources)
 
@@ -226,7 +233,7 @@ tasks.matching { it.name == "buildSearchableOptions" }.configureEach {
  * mention the version being built keeps them independent and still catches the
  * omission before it can ship.
  */
-val checkReleaseNotes by tasks.registering {
+val checkReleaseNotes = tasks.register("checkReleaseNotes") {
     group = "verification"
     description = "Fails when the version being built has no entry in the changelog or in plugin.xml change-notes"
 
@@ -266,6 +273,8 @@ val checkReleaseNotes by tasks.registering {
 
 tasks.named("check") { dependsOn(checkInternalApiUsage) }
 tasks.named("check") { dependsOn(checkReleaseNotes) }
+// Keep the project-configuration verifier in check instead of relying on an implicit plugin edge.
+tasks.named("check") { dependsOn("verifyPluginProjectConfiguration") }
 tasks.matching { it.name == "buildPlugin" }.configureEach { dependsOn(checkInternalApiUsage) }
 tasks.matching { it.name == "publishPlugin" || it.name == "signPlugin" }
     .configureEach { dependsOn(checkReleaseNotes) }
@@ -311,16 +320,16 @@ intellijPlatform {
 
         ides {
             // Keep historical Community targets; 2025.3+ uses the unified IU installer.
-            // IPGP 2.2.1 / Gradle 8.10.2 resolves these installers without an upgrade.
+            // IPGP 2.20.1 uses create with an explicit installer setting for unified IU targets.
             // Each additional IDE download is about 1.5 GB, before verifier dependencies.
-            ide(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaCommunity, "2023.3")
-            ide(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaCommunity, "2024.1")
-            ide(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaCommunity, "2025.1")
-            ide(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaCommunity, "2025.2")
-            ide(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaUltimate, "2025.3", true)
-            ide(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaUltimate, "2026.1", true)
-            ide(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaUltimate, "2026.2.5", true)
-            ide(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaUltimate, "2026.3", true)
+            create(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaCommunity, "2023.3")
+            create(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaCommunity, "2024.1")
+            create(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaCommunity, "2025.1")
+            create(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaCommunity, "2025.2")
+            create(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaUltimate, "2025.3") { useInstaller.set(true) }
+            create(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaUltimate, "2026.1") { useInstaller.set(true) }
+            create(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaUltimate, "2026.2.5") { useInstaller.set(true) }
+            create(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaUltimate, "2026.3") { useInstaller.set(true) }
         }
     }
 
@@ -345,7 +354,7 @@ intellijPlatform {
 // Bundle the agent shadow JAR as a separate file in the plugin distribution
 evaluationDependsOn(":agent")
 
-val copyAgentJar by tasks.registering(Copy::class) {
+val copyAgentJar = tasks.register("copyAgentJar", Copy::class) {
     val agentShadowJar = project(":agent").tasks.named("shadowJar")
     dependsOn(agentShadowJar)
     from(agentShadowJar)

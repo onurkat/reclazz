@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- Build tooling uses Gradle 9.9.1, IntelliJ Platform Gradle Plugin 2.20.1 and
+  Kotlin 2.3.21 while preserving the IDE 2023.3 API target. Gradle plugin
+  TestKit coverage selects both 8.10.2 and 9.9.1 consumer runtimes.
+
 - Eligible annotated singletons also retain state when creation setters and callbacks are
   inherited from unchanged platform/library classes. Previously reloaded watched
   superclasses or missing superclass baselines still select recreation.

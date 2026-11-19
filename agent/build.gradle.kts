@@ -54,7 +54,7 @@ fun ensurePinnedRabbitImage(exec: org.gradle.process.ExecOperations, logger: org
 plugins {
     id("java")
     id("jacoco")
-    id("com.gradleup.shadow") version "8.3.5"
+    id("com.gradleup.shadow") version "8.3.11"
     `maven-publish`
     signing
 }
@@ -219,7 +219,7 @@ val solrTests = sourceSets.create("solrTest") {
 }
 configurations[solrTests.implementationConfigurationName].extendsFrom(configurations.testImplementation.get())
 configurations[solrTests.runtimeOnlyConfigurationName].extendsFrom(configurations.testRuntimeOnly.get())
-val solrUnitTest by tasks.registering(Test::class) {
+val solrUnitTest = tasks.register("solrUnitTest", Test::class) {
     group = "verification"
     description = "Isolated SDK-shaped Solr coordinator contracts"
     useJUnitPlatform()
@@ -241,14 +241,14 @@ dependencies {
     add(jmsTests.implementationConfigurationName, "org.springframework:spring-jms:5.3.39")
     add(jmsTests.implementationConfigurationName, "org.apache.activemq:activemq-broker:5.19.11")
 }
-val jmsTest by tasks.registering(Test::class) {
+val jmsTest = tasks.register("jmsTest", Test::class) {
     description = "All JMS regressions with isolated real-broker dependencies"
 }
-val jmsUnitTest by tasks.registering(Test::class) {
+val jmsUnitTest = tasks.register("jmsUnitTest", Test::class) {
     description = "JMS regressions without starting an agent JVM"
     exclude("com/onurkat/reclazz/e2e/**")
 }
-val jmsE2eTest by tasks.registering(Test::class) {
+val jmsE2eTest = tasks.register("jmsE2eTest", Test::class) {
     description = "JMS regressions against a real agent JVM"
     include("com/onurkat/reclazz/e2e/**")
 }
@@ -274,7 +274,7 @@ val rabbitTests = sourceSets.create("rabbitTest") {
 }
 configurations[rabbitTests.implementationConfigurationName].extendsFrom(configurations.testImplementation.get())
 configurations[rabbitTests.runtimeOnlyConfigurationName].extendsFrom(configurations.testRuntimeOnly.get())
-val rabbitTest by tasks.registering(Test::class) {
+val rabbitTest = tasks.register("rabbitTest", Test::class) {
     group = "verification"
     description = "Real RabbitMQ broker tests (requires Docker; explicit Windows CI opt-out only)"
     jvmArgs("-Djdk.attach.allowAttachSelf=true")
@@ -311,7 +311,7 @@ dependencies {
     add(hibernateTests.implementationConfigurationName, "org.hibernate.orm:hibernate-jcache:6.5.3.Final")
     add(hibernateTests.implementationConfigurationName, "com.github.ben-manes.caffeine:jcache:3.3.1")
 }
-val hibernateTest by tasks.registering(Test::class) {
+val hibernateTest = tasks.register("hibernateTest", Test::class) {
     group = "verification"
     description = "Real Hibernate ORM L2 cache regressions on H2 with isolated dependencies"
     useJUnitPlatform()
@@ -363,7 +363,7 @@ dependencies {
     add(springSixTests.implementationConfigurationName, "org.springframework.integration:spring-integration-file:6.3.5")
     add(springSixTests.runtimeOnlyConfigurationName, "org.junit.platform:junit-platform-launcher")
 }
-val springSixTest by tasks.registering(Test::class) {
+val springSixTest = tasks.register("springSixTest", Test::class) {
     group = "verification"
     description = "Real Spring 6 / Jakarta lifecycle regressions on an isolated dependency graph"
     useJUnitPlatform()
@@ -420,7 +420,7 @@ dependencies {
     add(springSevenTests.implementationConfigurationName, "org.springframework.integration:spring-integration-file:7.1.2")
     add(springSevenTests.runtimeOnlyConfigurationName, "org.junit.platform:junit-platform-launcher:6.1.3")
 }
-val springSevenTest by tasks.registering(Test::class) {
+val springSevenTest = tasks.register("springSevenTest", Test::class) {
     systemProperty("reclazz.jackson3.expectedVersion", "3.3.0")
     group = "verification"
     description = "Focused Spring 7 / Jakarta lifecycle regressions on an isolated dependency graph"
@@ -492,7 +492,7 @@ dependencies {
 configurations[modernMessagingTests.runtimeClasspathConfigurationName].resolutionStrategy.eachDependency {
     if (requested.group == "org.springframework") useVersion("6.1.14")
 }
-val modernMessagingTest by tasks.registering(Test::class) {
+val modernMessagingTest = tasks.register("modernMessagingTest", Test::class) {
     group = "verification"
     description = "Native modern Kafka/Jakarta JMS/Rabbit reload and refusal regressions"
     jvmArgs("-Djdk.attach.allowAttachSelf=true")
@@ -564,7 +564,7 @@ tasks.test {
 // The suite is two minutes, and 104 of those seconds are the 24 end-to-end
 // tests, each of which starts a JVM. The other 850 tests take under twenty.
 // `unitTest` is the inner loop; `test` still runs everything and is the gate.
-val unitTest by tasks.registering(Test::class) {
+val unitTest = tasks.register("unitTest", Test::class) {
     dependsOn(solrUnitTest)
     // Evidence checks inspect isolated compiled test methods without loading Spring 6.
     dependsOn(tasks.named("springSixTestClasses"))
@@ -585,7 +585,7 @@ val unitTest by tasks.registering(Test::class) {
     exclude("com/onurkat/reclazz/e2e/**")
 }
 
-val e2eTest by tasks.registering(Test::class) {
+val e2eTest = tasks.register("e2eTest", Test::class) {
     dependsOn(rabbitTest)
     dependsOn(jmsE2eTest)
     group = "verification"
@@ -652,7 +652,7 @@ tasks.check {
 }
 
 // Build a standalone bootstrap JAR from compiled bootstrap classes only (no shading, pure JDK)
-val bootstrapJar by tasks.registering(Jar::class) {
+val bootstrapJar = tasks.register("bootstrapJar", Jar::class) {
     dependsOn(tasks.compileJava)
     from(tasks.compileJava.get().destinationDirectory) {
         include("com/onurkat/reclazz/bootstrap/**")
@@ -663,7 +663,7 @@ val bootstrapJar by tasks.registering(Jar::class) {
 
 // Copy bootstrap JAR into resources so it gets picked up by both jar and shadowJar
 // Renamed to .bin to avoid ShadowJar's default JAR file exclusion
-val copyBootstrapJar by tasks.registering(Copy::class) {
+val copyBootstrapJar = tasks.register("copyBootstrapJar", Copy::class) {
     dependsOn(bootstrapJar)
     from(layout.buildDirectory.file("bootstrap/reclazz-bootstrap.jar"))
     into(layout.buildDirectory.dir("resources/main/META-INF"))
@@ -716,7 +716,7 @@ tasks.shadowJar {
 }
 
 // Local verification artifact only; publication and every consumer keep shadowJar.
-val coreShadowJar by tasks.registering(ShadowJar::class) {
+val coreShadowJar = tasks.register("coreShadowJar", ShadowJar::class) {
     archiveClassifier.set("core")
     // Match the manifest inherited by the canonical Shadow task from the Java jar.
     manifest { attributes("Implementation-Version" to project.version) }
@@ -835,7 +835,7 @@ publishing {
     }
 }
 
-val centralBundle by tasks.registering(Zip::class) {
+val centralBundle = tasks.register("centralBundle", Zip::class) {
     group = "publishing"
     description = "Zips the signed Maven bundle for a Central Portal upload"
     dependsOn("publishMavenPublicationToCentralBundleRepository")

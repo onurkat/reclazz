@@ -103,7 +103,7 @@ signing {
     sign(publishing.publications["maven"])
 }
 
-val centralBundle by tasks.registering(Zip::class) {
+val centralBundle = tasks.register("centralBundle", Zip::class) {
     group = "publishing"
     description = "Zips the signed Maven bundle for a Central Portal upload"
     dependsOn("publishMavenPublicationToCentralBundleRepository")

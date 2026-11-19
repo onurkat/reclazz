@@ -16,15 +16,20 @@ import java.util.List;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.io.TempDir;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class ReclazzPluginFunctionalTest {
+
+    private String gradleVersion;
 
     @TempDir
     Path projectDir;
 
-    @Test
-    void wiresJavaagentIntoBootRun() throws IOException {
+    @ParameterizedTest(name = "Gradle {0}")
+    @ValueSource(strings = {"8.10.2", "9.9.1"})
+    void wiresJavaagentIntoBootRun(String gradleVersion) throws IOException {
+        this.gradleVersion = gradleVersion;
         write("settings.gradle", "rootProject.name = 'sample'");
         write("agent.jar", "not a real jar, only a path for the flag");
         write("build.gradle",
@@ -51,8 +56,10 @@ class ReclazzPluginFunctionalTest {
         assertTrue(out.contains("watchDirs="), out);
     }
 
-    @Test
-    void addsNothingWhenDisabled() throws IOException {
+    @ParameterizedTest(name = "Gradle {0}")
+    @ValueSource(strings = {"8.10.2", "9.9.1"})
+    void addsNothingWhenDisabled(String gradleVersion) throws IOException {
+        this.gradleVersion = gradleVersion;
         write("settings.gradle", "rootProject.name = 'sample'");
         write("agent.jar", "path only");
         write("build.gradle",
@@ -73,8 +80,10 @@ class ReclazzPluginFunctionalTest {
         assertFalse(result.getOutput().contains("-javaagent:"), result.getOutput());
     }
 
-    @Test
-    void reclazzStatusReportsNotAttachedWithNoAgent() throws IOException {
+    @ParameterizedTest(name = "Gradle {0}")
+    @ValueSource(strings = {"8.10.2", "9.9.1"})
+    void reclazzStatusReportsNotAttachedWithNoAgent(String gradleVersion) throws IOException {
+        this.gradleVersion = gradleVersion;
         write("settings.gradle", "rootProject.name = 'sample'");
         write("build.gradle", "plugins { id 'java'; id 'com.onurkat.reclazz' }\n");
 
@@ -82,13 +91,17 @@ class ReclazzPluginFunctionalTest {
         assertTrue(result.getOutput().contains("\"attached\":false"), result.getOutput());
     }
 
-    @Test
-    void defaultsToPackagedVersionInsteadOfConsumerVersion() throws Exception {
+    @ParameterizedTest(name = "Gradle {0}")
+    @ValueSource(strings = {"8.10.2", "9.9.1"})
+    void defaultsToPackagedVersionInsteadOfConsumerVersion(String gradleVersion) throws Exception {
+        this.gradleVersion = gradleVersion;
         assertDefaultVersion("version = '0.0.1-SNAPSHOT'\n");
     }
 
-    @Test
-    void defaultsToPackagedVersionWithoutConsumerVersion() throws Exception {
+    @ParameterizedTest(name = "Gradle {0}")
+    @ValueSource(strings = {"8.10.2", "9.9.1"})
+    void defaultsToPackagedVersionWithoutConsumerVersion(String gradleVersion) throws Exception {
+        this.gradleVersion = gradleVersion;
         assertDefaultVersion("");
     }
 
@@ -110,8 +123,10 @@ class ReclazzPluginFunctionalTest {
         assertTrue(out.contains("AGENT:reclazz-agent-" + version + ".jar"), out);
     }
 
-    @Test
-    void explicitAgentVersionOverridesDefault() throws Exception {
+    @ParameterizedTest(name = "Gradle {0}")
+    @ValueSource(strings = {"8.10.2", "9.9.1"})
+    void explicitAgentVersionOverridesDefault(String gradleVersion) throws Exception {
+        this.gradleVersion = gradleVersion;
         write("settings.gradle", "rootProject.name = 'sample'");
         write("build.gradle", "plugins { id 'java'; id 'com.onurkat.reclazz' }\n"
                 + "reclazz { agentVersion = '7.8.9' }\n"
@@ -119,8 +134,10 @@ class ReclazzPluginFunctionalTest {
         assertTrue(run("versionCheck").getOutput().contains("VERSION:7.8.9"));
     }
 
-    @Test
-    void disabledBootRunDoesNotResolveAgent() throws Exception {
+    @ParameterizedTest(name = "Gradle {0}")
+    @ValueSource(strings = {"8.10.2", "9.9.1"})
+    void disabledBootRunDoesNotResolveAgent(String gradleVersion) throws Exception {
+        this.gradleVersion = gradleVersion;
         write("settings.gradle", "rootProject.name = 'sample'");
         write("src/main/java/Main.java", "public class Main { public static void main(String[] args) {"
                 + "System.out.println(\"APPLICATION_RAN\"); } }");
@@ -130,63 +147,73 @@ class ReclazzPluginFunctionalTest {
         assertTrue(run("bootRun").getOutput().contains("APPLICATION_RAN"));
     }
 
-    @Test
-    void safeBuildRequiresExplicitConfiguration() throws Exception {
+    @ParameterizedTest(name = "Gradle {0}")
+    @ValueSource(strings = {"8.10.2", "9.9.1"})
+    void safeBuildRequiresExplicitConfiguration(String gradleVersion) throws Exception {
+        this.gradleVersion = gradleVersion;
         write("settings.gradle", "rootProject.name = 'sample'");
         write("build.gradle", "plugins { id 'com.onurkat.reclazz' }\n");
-        String out = GradleRunner.create().withProjectDir(projectDir.toFile()).withPluginClasspath()
+        String out = GradleRunner.create().withGradleVersion(gradleVersion).withProjectDir(projectDir.toFile()).withPluginClasspath()
                 .withArguments("reclazzSafeBuild", "--stacktrace").buildAndFail().getOutput();
         assertTrue(out.contains("Configure mcpJar"), out);
     }
 
-    @Test
-    void mixedSafetyTaskGraphFailsBeforeAnyOutputTask() throws Exception {
+    @ParameterizedTest(name = "Gradle {0}")
+    @ValueSource(strings = {"8.10.2", "9.9.1"})
+    void mixedSafetyTaskGraphFailsBeforeAnyOutputTask(String gradleVersion) throws Exception {
+        this.gradleVersion = gradleVersion;
         write("settings.gradle", "rootProject.name = 'sample'");
         write("build.gradle", "plugins { id 'com.onurkat.reclazz' }\n"
                 + "tasks.register('unsafeWrite') { doLast { file('wrote').text = 'bad' } }\n"
                 + "tasks.named('reclazzSafeBuild') { dependsOn 'unsafeWrite' }\n");
-        String out = GradleRunner.create().withProjectDir(projectDir.toFile()).withPluginClasspath()
+        String out = GradleRunner.create().withGradleVersion(gradleVersion).withProjectDir(projectDir.toFile()).withPluginClasspath()
                 .withArguments("reclazzSafeBuild", "--stacktrace").buildAndFail().getOutput();
         assertTrue(out.contains("Invoke reclazzSafeBuild alone"), out);
         assertFalse(Files.exists(projectDir.resolve("wrote")));
     }
 
-    @Test
-    void continuousAndConfigurationCacheCannotBypassOuterGraphGuard() throws Exception {
+    @ParameterizedTest(name = "Gradle {0}")
+    @ValueSource(strings = {"8.10.2", "9.9.1"})
+    void continuousAndConfigurationCacheCannotBypassOuterGraphGuard(String gradleVersion) throws Exception {
+        this.gradleVersion = gradleVersion;
         write("settings.gradle", "rootProject.name = 'sample'");
         write("build.gradle", "plugins { id 'com.onurkat.reclazz' }\n");
-        String cache = GradleRunner.create().withProjectDir(projectDir.toFile()).withPluginClasspath()
+        String cache = GradleRunner.create().withGradleVersion(gradleVersion).withProjectDir(projectDir.toFile()).withPluginClasspath()
                 .withArguments("reclazzSafeBuild", "--configuration-cache", "--stacktrace").buildAndFail().getOutput();
         assertTrue(cache.contains("Invoke reclazzSafeBuild alone"), cache);
         // Continuous mode must never run the wrapper. The task-graph guard rejects it where Gradle can
         // start continuous; on a host without file system watching (Windows CI TestKit) Gradle refuses
         // continuous outright before the graph is ready. Either refusal proves the wrapper cannot run,
         // and neither reaches the task action, which would instead report "Configure mcpJar".
-        String continuous = GradleRunner.create().withProjectDir(projectDir.toFile()).withPluginClasspath()
+        String continuous = GradleRunner.create().withGradleVersion(gradleVersion).withProjectDir(projectDir.toFile()).withPluginClasspath()
                 .withArguments("reclazzSafeBuild", "--continuous", "--stacktrace").buildAndFail().getOutput();
         assertTrue(continuous.contains("Invoke reclazzSafeBuild alone")
                 || continuous.contains("Continuous build does not work"), continuous);
         assertFalse(continuous.contains("Configure mcpJar"), continuous);
     }
 
-    @Test
-    void nestedSafeBuildIsRefusedBeforeAnyAgentConnection() throws Exception {
+    @ParameterizedTest(name = "Gradle {0}")
+    @ValueSource(strings = {"8.10.2", "9.9.1"})
+    void nestedSafeBuildIsRefusedBeforeAnyAgentConnection(String gradleVersion) throws Exception {
+        this.gradleVersion = gradleVersion;
         write("settings.gradle", "rootProject.name = 'sample'");
         write("build.gradle", "plugins { id 'com.onurkat.reclazz' }\n");
         var environment = new java.util.HashMap<>(System.getenv());
         environment.put("RECLAZZ_SAFE_BUILD_ACTIVE", "1");
-        String out = GradleRunner.create().withProjectDir(projectDir.toFile()).withPluginClasspath()
+        String out = GradleRunner.create().withGradleVersion(gradleVersion).withProjectDir(projectDir.toFile()).withPluginClasspath()
                 .withEnvironment(environment).withArguments("reclazzSafeBuild", "--stacktrace")
                 .buildAndFail().getOutput();
         assertTrue(out.contains("Nested Reclazz safe build refused"), out);
     }
 
-    @Test
-    void ordinaryCompilationStillReusesConfigurationCacheWithoutSafetyConfiguration() throws Exception {
+    @ParameterizedTest(name = "Gradle {0}")
+    @ValueSource(strings = {"8.10.2", "9.9.1"})
+    void ordinaryCompilationStillReusesConfigurationCacheWithoutSafetyConfiguration(String gradleVersion) throws Exception {
+        this.gradleVersion = gradleVersion;
         write("settings.gradle", "rootProject.name = 'sample'");
         write("build.gradle", "plugins { id 'java'; id 'com.onurkat.reclazz' }\n");
         write("src/main/java/Main.java", "public class Main {}\n");
-        GradleRunner runner = GradleRunner.create().withProjectDir(projectDir.toFile()).withPluginClasspath()
+        GradleRunner runner = GradleRunner.create().withGradleVersion(gradleVersion).withProjectDir(projectDir.toFile()).withPluginClasspath()
                 .withArguments("compileJava", "--configuration-cache", "--stacktrace");
         runner.build();
         String out = runner.build().getOutput();
@@ -194,8 +221,10 @@ class ReclazzPluginFunctionalTest {
         assertTrue(Files.exists(projectDir.resolve("build/classes/java/main/Main.class")));
     }
 
-    @Test
-    void watchesEveryMainClassesDirectoryInStableOrderWithoutDuplicates() throws Exception {
+    @ParameterizedTest(name = "Gradle {0}")
+    @ValueSource(strings = {"8.10.2", "9.9.1"})
+    void watchesEveryMainClassesDirectoryInStableOrderWithoutDuplicates(String gradleVersion) throws Exception {
+        this.gradleVersion = gradleVersion;
         // Deliberately reverse order, repeat an entry and leave both directories nonexistent.
         configureOutputs("sourceSets.main.output.classesDirs.setFrom(files('z output', 'a output', 'z output'))\n", "");
         String expected = "watchDirs=" + projectDir.resolve("a output") + ";" + projectDir.resolve("z output");
@@ -203,35 +232,45 @@ class ReclazzPluginFunctionalTest {
         assertFalse(Files.exists(projectDir.resolve("a output")));
     }
 
-    @Test
-    void omitsAutomaticWatchDirsWhenMainOutputsAreEmpty() throws Exception {
+    @ParameterizedTest(name = "Gradle {0}")
+    @ValueSource(strings = {"8.10.2", "9.9.1"})
+    void omitsAutomaticWatchDirsWhenMainOutputsAreEmpty(String gradleVersion) throws Exception {
+        this.gradleVersion = gradleVersion;
         configureOutputs("sourceSets.main.output.classesDirs.setFrom(files())\n", "");
         assertGeneratedArguments("");
     }
 
-    @Test
-    void omitsAutomaticWatchDirsWithoutMainSourceSet() throws Exception {
+    @ParameterizedTest(name = "Gradle {0}")
+    @ValueSource(strings = {"8.10.2", "9.9.1"})
+    void omitsAutomaticWatchDirsWithoutMainSourceSet(String gradleVersion) throws Exception {
+        this.gradleVersion = gradleVersion;
         configureOutputs("sourceSets.remove(sourceSets.main)\n", "");
         assertGeneratedArguments("");
     }
 
-    @Test
-    void omitsAutomaticWatchDirsWithoutJavaPlugin() throws Exception {
+    @ParameterizedTest(name = "Gradle {0}")
+    @ValueSource(strings = {"8.10.2", "9.9.1"})
+    void omitsAutomaticWatchDirsWithoutJavaPlugin(String gradleVersion) throws Exception {
+        this.gradleVersion = gradleVersion;
         configureOutputs("", "");
         Path build = projectDir.resolve("build.gradle");
         Files.writeString(build, Files.readString(build).replace("id 'java'; ", ""));
         assertGeneratedArguments("");
     }
 
-    @Test
-    void explicitWatchDirsKeepTheirOrderAndOverrideAutomaticOutputs() throws Exception {
+    @ParameterizedTest(name = "Gradle {0}")
+    @ValueSource(strings = {"8.10.2", "9.9.1"})
+    void explicitWatchDirsKeepTheirOrderAndOverrideAutomaticOutputs(String gradleVersion) throws Exception {
+        this.gradleVersion = gradleVersion;
         configureOutputs("sourceSets.main.output.classesDirs.setFrom(files('auto1', 'auto2'))\n",
                 "watchDirs.set(['chosen two', 'chosen one'])");
         assertGeneratedArguments("watchDirs=chosen two;chosen one");
     }
 
-    @Test
-    void argumentMapWatchDirsOverridesBothExplicitAndAutomaticOutputs() throws Exception {
+    @ParameterizedTest(name = "Gradle {0}")
+    @ValueSource(strings = {"8.10.2", "9.9.1"})
+    void argumentMapWatchDirsOverridesBothExplicitAndAutomaticOutputs(String gradleVersion) throws Exception {
+        this.gradleVersion = gradleVersion;
         configureOutputs("sourceSets.main.output.classesDirs.setFrom(files('auto1', 'auto2'))\n",
                 "watchDirs.set(['chosen']); arguments.put('watchDirs', 'map override')");
         assertGeneratedArguments("watchDirs=map override");
@@ -265,7 +304,7 @@ class ReclazzPluginFunctionalTest {
     }
 
     private BuildResult run(String task) {
-        return GradleRunner.create()
+        return GradleRunner.create().withGradleVersion(gradleVersion)
                 .withProjectDir(projectDir.toFile())
                 .withPluginClasspath()
                 .withArguments(task, "-q", "--stacktrace")

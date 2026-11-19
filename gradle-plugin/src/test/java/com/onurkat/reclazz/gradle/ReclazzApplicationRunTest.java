@@ -13,38 +13,49 @@ import java.util.concurrent.TimeUnit;
 import javax.tools.ToolProvider;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.jupiter.api.io.TempDir;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ReclazzApplicationRunTest {
+    private String gradleVersion;
+
     @TempDir Path projectDir;
 
-    @Test
-    void applicationRunIsOffByDefaultWithoutResolvingAgent() throws Exception {
+    @ParameterizedTest(name = "Gradle {0}")
+    @ValueSource(strings = {"8.10.2", "9.9.1"})
+    void applicationRunIsOffByDefaultWithoutResolvingAgent(String gradleVersion) throws Exception {
+        this.gradleVersion = gradleVersion;
         plain("", "id 'application'; id 'com.onurkat.reclazz'");
         String out = run("run").getOutput();
         assertTrue(out.contains("MARKER=kept"), out);
         assertFalse(out.contains("-javaagent:"), out);
     }
 
-    @Test
-    void explicitOptOutIsLazyAfterEarlyTaskRealization() throws Exception {
+    @ParameterizedTest(name = "Gradle {0}")
+    @ValueSource(strings = {"8.10.2", "9.9.1"})
+    void explicitOptOutIsLazyAfterEarlyTaskRealization(String gradleVersion) throws Exception {
+        this.gradleVersion = gradleVersion;
         plain("applyToRun = false", "id 'com.onurkat.reclazz'; id 'application'");
         assertFalse(run("run").getOutput().contains("-javaagent:"));
     }
 
-    @Test
-    void globalDisableDoesNotResolveAgentEvenWhenRunOptedIn() throws Exception {
+    @ParameterizedTest(name = "Gradle {0}")
+    @ValueSource(strings = {"8.10.2", "9.9.1"})
+    void globalDisableDoesNotResolveAgentEvenWhenRunOptedIn(String gradleVersion) throws Exception {
+        this.gradleVersion = gradleVersion;
         plain("applyToRun = true; enabled = false", "id 'application'; id 'com.onurkat.reclazz'");
         String out = run("run").getOutput();
         assertTrue(out.contains("MARKER=kept"), out);
         assertFalse(out.contains("-javaagent:"), out);
     }
 
-    @Test
-    void eitherPluginOrderUsesOneExplicitJarAndDoesNotForceSpring() throws Exception {
+    @ParameterizedTest(name = "Gradle {0}")
+    @ValueSource(strings = {"8.10.2", "9.9.1"})
+    void eitherPluginOrderUsesOneExplicitJarAndDoesNotForceSpring(String gradleVersion) throws Exception {
+        this.gradleVersion = gradleVersion;
         for (String plugins : new String[]{"id 'application'; id 'com.onurkat.reclazz'",
                 "id 'com.onurkat.reclazz'; id 'application'"}) {
             plain("applyToRun = true; agentJar = file('agent with spaces.jar')", plugins);
@@ -63,8 +74,10 @@ class ReclazzApplicationRunTest {
         }
     }
 
-    @Test
-    void unrelatedJavaExecAndPackagedLaunchersRemainUninstrumented() throws Exception {
+    @ParameterizedTest(name = "Gradle {0}")
+    @ValueSource(strings = {"8.10.2", "9.9.1"})
+    void unrelatedJavaExecAndPackagedLaunchersRemainUninstrumented(String gradleVersion) throws Exception {
+        this.gradleVersion = gradleVersion;
         plain("applyToRun = true; agentJar = file('agent.jar')", "id 'application'; id 'com.onurkat.reclazz'");
         write("agent.jar", "path only: the unrelated task must not load this");
         Files.writeString(projectDir.resolve("build.gradle"), """
@@ -84,8 +97,10 @@ class ReclazzApplicationRunTest {
         }
     }
 
-    @Test
-    void runNamedTaskWithoutApplicationPluginIsNotSelected() throws Exception {
+    @ParameterizedTest(name = "Gradle {0}")
+    @ValueSource(strings = {"8.10.2", "9.9.1"})
+    void runNamedTaskWithoutApplicationPluginIsNotSelected(String gradleVersion) throws Exception {
+        this.gradleVersion = gradleVersion;
         write("settings.gradle", "rootProject.name = 'plain'");
         write("src/main/java/Main.java", simpleMain());
         write("build.gradle", """
@@ -101,8 +116,10 @@ class ReclazzApplicationRunTest {
         assertFalse(out.contains("-javaagent:"), out);
     }
 
-    @Test
-    void realApplicationRunReloadsRetainedObjectInSameJvm() throws Exception {
+    @ParameterizedTest(name = "Gradle {0}")
+    @ValueSource(strings = {"8.10.2", "9.9.1"})
+    void realApplicationRunReloadsRetainedObjectInSameJvm(String gradleVersion) throws Exception {
+        this.gradleVersion = gradleVersion;
         String agent = System.getProperty("reclazz.agent.jar");
         assertNotNull(agent);
         assertTrue(Files.isRegularFile(Path.of(agent)), agent);
@@ -191,7 +208,7 @@ class ReclazzApplicationRunTest {
     private GradleRunner runner(String... tasks) {
         var args = new java.util.ArrayList<>(java.util.List.of(tasks));
         args.add("--offline"); args.add("--stacktrace");
-        return GradleRunner.create().withProjectDir(projectDir.toFile()).withPluginClasspath().withArguments(args);
+        return GradleRunner.create().withGradleVersion(gradleVersion).withProjectDir(projectDir.toFile()).withPluginClasspath().withArguments(args);
     }
 
     private BuildResult run(String... tasks) { return runner(tasks).build(); }

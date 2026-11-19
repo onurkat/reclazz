@@ -2,7 +2,7 @@ import java.security.MessageDigest
 
 plugins {
     id("java")
-    id("com.gradleup.shadow") version "8.3.5"
+    id("com.gradleup.shadow") version "8.3.11"
 }
 
 group = providers.gradleProperty("pluginGroup").get()
@@ -50,7 +50,7 @@ tasks.named("assemble") {
 // Local release assets only; publication belongs to the tag workflow.
 val releaseJar = layout.buildDirectory.file("distributions/mcp/reclazz-mcp-${project.version}.jar")
 val releaseChecksum = layout.buildDirectory.file("distributions/mcp/reclazz-mcp-${project.version}.jar.sha256")
-val mcpRelease by tasks.registering {
+val mcpRelease = tasks.register("mcpRelease") {
     group = "distribution"
     description = "Stage the standalone MCP jar and its portable SHA-256 sidecar (no upload)."
     val fatJar = tasks.named<org.gradle.jvm.tasks.Jar>("shadowJar").flatMap { it.archiveFile }

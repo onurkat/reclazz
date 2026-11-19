@@ -5,6 +5,8 @@
 package com.onurkat.reclazz.plugin
 
 import org.junit.jupiter.api.Test
+import org.objectweb.asm.ClassReader
+import org.objectweb.asm.tree.ClassNode
 import java.io.File
 import kotlin.test.assertTrue
 
@@ -29,5 +31,17 @@ class NoInternalPluginLookupTest {
             }
         }
         assertTrue(hits.isEmpty(), "Internal plugin lookup at: ${hits.joinToString()}")
+    }
+    @Test
+    fun compiledToolWindowFactoryDoesNotOverrideInternalIdeDefaults() {
+        val path = "com/onurkat/reclazz/plugin/ui/ReloadToolWindowFactory.class"
+        val input = javaClass.classLoader.getResourceAsStream(path)
+            ?: error("Compiled tool-window factory is missing")
+        val node = input.use { stream -> ClassNode().also { ClassReader(stream).accept(it, ClassReader.SKIP_FRAMES) } }
+        // These IDE defaults are internal on our supported 233–252 targets.
+        // Compiler compatibility bridges are overrides too, although no source names them.
+        val internalDefaults = setOf("getAnchor", "getIcon", "manage")
+        val overrides = node.methods.filter { it.name in internalDefaults }.map { it.name + it.desc }
+        assertTrue(overrides.isEmpty(), "Compiler introduced internal IDE overrides: ${overrides.joinToString()}")
     }
 }

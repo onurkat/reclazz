@@ -37,7 +37,10 @@ gradle.taskGraph.whenReady { graph ->
          javaVersion: task.javaLauncher.get().metadata.languageVersion.toString(),
          maxParallelForks: task.maxParallelForks, forkEvery: task.forkEvery,
          bodyEnabled: task.enabled && task.onlyIf.isSatisfiedBy(task),
-         dependencies: task.taskDependencies.getDependencies(task).collect { it.path }.sort()]
+         // The graph is already resolved. Re-resolving provider dependencies here
+         // re-enters scheduling on Gradle 9 (including cross-project test inputs).
+         dependencies: (graph.hasTask(task) ? graph.getDependencies(task)
+             : task.taskDependencies.getDependencies(task)).collect { it.path }.sort()]
     }
     def agent = root.project(':agent')
     def rows = graph.allTasks.collect { task ->

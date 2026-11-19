@@ -13,7 +13,7 @@ repositories {
 
 dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.11.0")
     // Test runner only; same parsed-JSON version already used by the agent tests.
     implementation("com.fasterxml.jackson.core:jackson-databind:2.23.0")
 }
@@ -23,7 +23,7 @@ application {
 }
 
 // Uses the JDK HTTP server and Kotlin check(), without another test dependency.
-val sapProofTest by tasks.registering(JavaExec::class) {
+val sapProofTest = tasks.register("sapProofTest", JavaExec::class) {
     group = "verification"
     description = "Exercise SAP proof acceptance against real local HTTP responses"
     dependsOn(tasks.testClasses)
@@ -33,7 +33,7 @@ val sapProofTest by tasks.registering(JavaExec::class) {
 tasks.check { dependsOn(sapProofTest) }
 
 // Independent portable runner contract: fake event stream and real loopback HTTP.
-val harnessContractTest by tasks.registering(JavaExec::class) {
+val harnessContractTest = tasks.register("harnessContractTest", JavaExec::class) {
     group = "verification"
     description = "Exercise live runner ordering, polling and restoration without SAP"
     dependsOn(tasks.testClasses)
@@ -43,7 +43,7 @@ val harnessContractTest by tasks.registering(JavaExec::class) {
 tasks.check { dependsOn(harnessContractTest) }
 
 // Narrow C61 runner contract; broad harness remains an independent audit gate.
-val storedScriptContractTest by tasks.registering(JavaExec::class) {
+val storedScriptContractTest = tasks.register("storedScriptContractTest", JavaExec::class) {
     group = "verification"
     description = "Exercise only stored-script live runner contracts"
     dependsOn(tasks.testClasses)
@@ -52,7 +52,7 @@ val storedScriptContractTest by tasks.registering(JavaExec::class) {
 }
 
 // Focused C63 runner contract, independently of the full audit harness.
-val velocityTemplateContractTest by tasks.registering(JavaExec::class) {
+val velocityTemplateContractTest = tasks.register("velocityTemplateContractTest", JavaExec::class) {
     group = "verification"
     description = "Exercise only native Velocity template runner contracts"
     dependsOn(tasks.testClasses)
@@ -61,7 +61,7 @@ val velocityTemplateContractTest by tasks.registering(JavaExec::class) {
 }
 
 // Narrow C39 proof checks; full harness belongs to audit.
-val cmsUidContractTest by tasks.registering(JavaExec::class) {
+val cmsUidContractTest = tasks.register("cmsUidContractTest", JavaExec::class) {
     group = "verification"
     dependsOn(tasks.testClasses)
     classpath = sourceSets.test.get().runtimeClasspath
@@ -69,7 +69,7 @@ val cmsUidContractTest by tasks.registering(JavaExec::class) {
 }
 
 // Narrow C40 page/slot proof oracle; full harness remains an audit gate.
-val cmsPageSlotContractTest by tasks.registering(JavaExec::class) {
+val cmsPageSlotContractTest = tasks.register("cmsPageSlotContractTest", JavaExec::class) {
     group = "verification"
     dependsOn(tasks.testClasses)
     classpath = sourceSets.test.get().runtimeClasspath
@@ -77,7 +77,7 @@ val cmsPageSlotContractTest by tasks.registering(JavaExec::class) {
 }
 
 // Narrow native JSP HTML oracle; broad harness runs at independent audit.
-val cmsJspResourceContractTest by tasks.registering(JavaExec::class) {
+val cmsJspResourceContractTest = tasks.register("cmsJspResourceContractTest", JavaExec::class) {
     group = "verification"
     dependsOn(tasks.testClasses)
     classpath = sourceSets.test.get().runtimeClasspath
@@ -85,7 +85,7 @@ val cmsJspResourceContractTest by tasks.registering(JavaExec::class) {
 }
 
 // Narrow C17 native PK/context oracle and directly affected default membership.
-val searchRestrictionContractTest by tasks.registering(JavaExec::class) {
+val searchRestrictionContractTest = tasks.register("searchRestrictionContractTest", JavaExec::class) {
     group = "verification"
     dependsOn(tasks.testClasses)
     classpath = sourceSets.test.get().runtimeClasspath
@@ -93,7 +93,7 @@ val searchRestrictionContractTest by tasks.registering(JavaExec::class) {
 }
 
 // Narrow C19 native facade response and identity oracle.
-val facadeChainContractTest by tasks.registering(JavaExec::class) {
+val facadeChainContractTest = tasks.register("facadeChainContractTest", JavaExec::class) {
     group = "verification"
     dependsOn(tasks.testClasses)
     classpath = sourceSets.test.get().runtimeClasspath
@@ -101,7 +101,7 @@ val facadeChainContractTest by tasks.registering(JavaExec::class) {
 }
 
 // Narrow C22 new-controller enrollment evidence; broad harness belongs to audit.
-val newOccControllerContractTest by tasks.registering(JavaExec::class) {
+val newOccControllerContractTest = tasks.register("newOccControllerContractTest", JavaExec::class) {
     group = "verification"
     dependsOn(tasks.testClasses)
     classpath = sourceSets.test.get().runtimeClasspath
@@ -109,7 +109,7 @@ val newOccControllerContractTest by tasks.registering(JavaExec::class) {
 }
 
 // Narrow native OCC error oracle; full harness remains an independent audit gate.
-val occErrorResponseContractTest by tasks.registering(JavaExec::class) {
+val occErrorResponseContractTest = tasks.register("occErrorResponseContractTest", JavaExec::class) {
     group = "verification"
     dependsOn(tasks.testClasses)
     classpath = sourceSets.test.get().runtimeClasspath
@@ -117,21 +117,21 @@ val occErrorResponseContractTest by tasks.registering(JavaExec::class) {
 }
 
 // Narrow C28 watched macro UPDATE/guard recovery contract.
-val impexUpdateMacrosContractTest by tasks.registering(JavaExec::class) {
+val impexUpdateMacrosContractTest = tasks.register("impexUpdateMacrosContractTest", JavaExec::class) {
     group = "verification"
     dependsOn(tasks.testClasses)
     classpath = sourceSets.test.get().runtimeClasspath
     mainClass.set("com.onurkat.reclazz.inttest.tests.ImpexUpdateMacrosContractTestKt")
 }
 
-val newItemTypeContractTest by tasks.registering(JavaExec::class) {
+val newItemTypeContractTest = tasks.register("newItemTypeContractTest", JavaExec::class) {
     group = "verification"
     dependsOn(tasks.testClasses)
     classpath = sourceSets.test.get().runtimeClasspath
     mainClass.set("com.onurkat.reclazz.inttest.tests.NewItemTypeContractTestKt")
 }
 
-val newRelationContractTest by tasks.registering(JavaExec::class) {
+val newRelationContractTest = tasks.register("newRelationContractTest", JavaExec::class) {
     group = "verification"
     dependsOn(tasks.testClasses)
     classpath = sourceSets.test.get().runtimeClasspath
@@ -139,13 +139,13 @@ val newRelationContractTest by tasks.registering(JavaExec::class) {
 }
 
 // Narrow watcher-ownership contracts; the aggregate check already calls these functions.
-val impexHarnessContractTest by tasks.registering(JavaExec::class) {
+val impexHarnessContractTest = tasks.register("impexHarnessContractTest", JavaExec::class) {
     group = "verification"
     dependsOn(tasks.testClasses)
     classpath = sourceSets.test.get().runtimeClasspath
     mainClass.set("com.onurkat.reclazz.inttest.tests.ImpexTranslatorHarnessContractTestKt")
 }
-val removeHarnessContractTest by tasks.registering(JavaExec::class) {
+val removeHarnessContractTest = tasks.register("removeHarnessContractTest", JavaExec::class) {
     group = "verification"
     dependsOn(tasks.testClasses)
     classpath = sourceSets.test.get().runtimeClasspath

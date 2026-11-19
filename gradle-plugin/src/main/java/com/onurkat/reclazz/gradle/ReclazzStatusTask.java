@@ -9,6 +9,7 @@ import java.util.Map;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.options.Option;
+import org.gradle.work.DisableCachingByDefault;
 
 /**
  * Prints, as one JSON line, whether the Reclazz agent is attached to a running
@@ -16,6 +17,7 @@ import org.gradle.api.tasks.options.Option;
  * inner loop: {@code ./gradlew reclazzStatus}. It reads the loopback status
  * socket and asks nothing of the agent beyond its own state.
  */
+@DisableCachingByDefault(because = "Each invocation queries the current live agent state")
 public abstract class ReclazzStatusTask extends DefaultTask {
 
     private String portFile;

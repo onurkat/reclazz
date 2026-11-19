@@ -62,7 +62,7 @@ Only the standard `application` plugin's `run` task is selected. A custom JavaEx
 named `run` without that plugin, other JavaExec tasks, `applicationDefaultJvmArgs`
 and generated Unix/Windows distribution launch scripts are unchanged. Test-task
 and `bootRun` attachment keep their own options. The run integration is exercised
-with Gradle 8.10.2; other versions require separate acceptance. See Gradle's
+with explicitly selected Gradle 8.10.2 and 9.9.1 consumers; other versions require separate acceptance. See Gradle's
 [application plugin](https://docs.gradle.org/8.10.2/userguide/application_plugin.html).
 
 ### Offline, or pinned to a local jar
@@ -184,4 +184,4 @@ Protection covers only outputs written synchronously by the selected child build
 to the selected agent's watched directories. Configuration-time writes by the
 outer build, external writers, asynchronously spawned work, unselected modules
 and other agents are outside that boundary. It is not an atomic reload or rollback.
-Gradle 8.10.2 is the exercised version; other versions need separate acceptance.
+Gradle 8.10.2 and 9.9.1 are explicitly exercised consumer versions; other versions need separate acceptance.
