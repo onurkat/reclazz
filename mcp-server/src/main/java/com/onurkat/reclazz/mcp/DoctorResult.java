@@ -26,7 +26,7 @@ final class DoctorResult {
         if (!status.equals("observed")) throw new IOException("Unknown doctor status");
         for (String name : Set.of("sessionId", "agentVersion", "pid", "javaVersion", "vmName", "workingDirectory")) string(data, name);
         if (!string(data,"pid").matches("[1-9][0-9]*")) throw new IOException("Invalid JVM identity");
-        if (!Set.of("starting", "watching", "stopped", "unavailable").contains(string(data, "watcherState"))
+        if (!Set.of("starting", "watching", "stalled", "stopped", "unavailable").contains(string(data, "watcherState"))
                 || !Set.of("none", "named", "legacy", "unavailable").contains(string(data, "buildHold")))
             throw new IOException("Invalid lifecycle evidence");
         for (String name : Set.of("watchSampleTruncated", "buildOwnershipSupported", "verifySupported", "scanSupported", "reloadConfirmed")) bool(data,name);

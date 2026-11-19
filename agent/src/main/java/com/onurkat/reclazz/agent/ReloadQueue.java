@@ -86,6 +86,10 @@ public final class ReloadQueue {
     private GeneratedHold generatedHold;
     private long generatedEpoch;
 
+    public boolean generatedOutputHeld() {
+        synchronized(buildLock) { return generatedHold!=null; }
+    }
+
     /** A native compiler owns only these paths, independently of user BUILD/pause. */
     public com.onurkat.reclazz.ext.PremiumContext.GeneratedOutput holdGeneratedClasses(
             java.util.Collection<Path> roots, Runnable scan) {

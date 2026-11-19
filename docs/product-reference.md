@@ -558,7 +558,7 @@ from the code. What that means concretely:
 | Spring Boot | 2.7 | the same six, including a new endpoint mapped without a restart |
 | JDK | SapMachine 17 and 21, JBR 25 | companion-class engine on both, plus native enhanced redefinition |
 | Spring Framework | 6.2 (through the SAP Commerce run) and 5.3 / 6.1 (through Spring Boot 2.7 / 3.3) | bean refresh, MVC re-scan, cache, scheduler, events |
-| IntelliJ IDEA | 2023.3 to 2026.2 | the range the plugin declares |
+| IntelliJ IDEA | 2023.3 to 2026.3 | the range the plugin declares |
 
 Older or newer versions are likely to work, and are not claimed to until they
 have been run.

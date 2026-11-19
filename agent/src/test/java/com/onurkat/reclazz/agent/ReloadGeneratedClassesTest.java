@@ -205,4 +205,11 @@ class ReloadGeneratedClassesTest {
  interface Check { boolean done() throws Exception; }
  static void await(Check check) throws Exception {long end=System.nanoTime()+TimeUnit.SECONDS.toNanos(10);while(!check.done()){if(System.nanoTime()>end)throw new AssertionError("fixture timeout");Thread.sleep(10);}}
  static boolean running(CodegenReloader r) throws Exception {var field=CodegenReloader.class.getDeclaredField("running");field.setAccessible(true);return field.getBoolean(r);}
+ @Test void generatedHoldSignalTracksCompletionFailureAndShutdown() {
+  var f=new ReloadBuildTest.Fixture();assertFalse(f.queue.generatedOutputHeld());
+  var hold=f.queue.holdGeneratedClasses(List.of(Path.of("/output")),()->{});assertTrue(f.queue.generatedOutputHeld());
+  hold.compiled(()->assertTrue(f.queue.generatedOutputHeld()));f.run();assertFalse(f.queue.generatedOutputHeld());
+  hold=f.queue.holdGeneratedClasses(List.of(Path.of("/output")),()->{});hold.failed();assertFalse(f.queue.generatedOutputHeld());
+  f.queue.holdGeneratedClasses(List.of(Path.of("/output")),()->{});f.queue.shutdown();assertFalse(f.queue.generatedOutputHeld());
+ }
 }

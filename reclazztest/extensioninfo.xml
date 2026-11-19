@@ -1,6 +1,6 @@
 <extensioninfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                xsi:noNamespaceSchemaLocation="extensioninfo.xsd">
-    <extension classprefix="reclazztest" name="reclazztest"
+    <extension abstractclassprefix="Generated" classprefix="reclazztest" name="reclazztest"
                usemaven="false">
         <requires-extension name="commercewebservicescommons"/>
         <requires-extension name="commercewebservices"/>

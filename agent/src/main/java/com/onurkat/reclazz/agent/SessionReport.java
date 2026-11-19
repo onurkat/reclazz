@@ -108,7 +108,13 @@ public final class SessionReport {
      */
     public static List<String> lines(int watchedDirectories, int unwatchable, int needingRestart,
                                      int watchedFiles, boolean polling) {
+        return lines(watchedDirectories,unwatchable,needingRestart,watchedFiles,polling,null);
+    }
+
+    public static List<String> lines(int watchedDirectories,int unwatchable,int needingRestart,
+                                     int watchedFiles,boolean polling,com.onurkat.reclazz.watcher.WatcherHealth health) {
         List<String> report = new ArrayList<>();
+        if(health!=null && health.unhealthy())report.add(health.line());
         int reloads = bodyReloads.get() + structuralReloads.get();
 
         report.add("Reclazz " + AgentVersion.get() + ", up " + humanDuration(
@@ -129,7 +135,7 @@ public final class SessionReport {
             report.add(Plural.of(compiles.get(), "Java file") + " compiled by Reclazz itself.");
         }
 
-        if (watchedDirectories >= 0) {
+        if (watchedDirectories >= 0 && (health==null || !health.unhealthy())) {
             report.add(Plural.of(watchedDirectories, "directory", "directories") + " watched"
                     + (watchedFiles >= 0 ? ", holding " + Plural.of(watchedFiles, "file") : "")
                     + (unwatchable > 0

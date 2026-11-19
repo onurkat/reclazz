@@ -27,6 +27,10 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class ProtocolContractTest {
 
+    @Test void doctorWatcherStateIncludesStalled() throws Exception {
+        assertTrue(doc().contains("`watcherState` is starting, watching, stalled, stopped or unavailable."));
+    }
+
     private static String doc() throws IOException {
         Path root = AgentSources.root().getParent().getParent().getParent().getParent();
         return Files.readString(root.resolve("docs/protocol.md"));

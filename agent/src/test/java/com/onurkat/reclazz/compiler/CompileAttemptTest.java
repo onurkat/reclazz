@@ -37,6 +37,29 @@ class CompileAttemptTest {
         return new IncrementalCompiler(new ClasspathResolver(context).resolve(), context);
     }
 
+    @Test void platformGeneratedByproductIsNotWrittenIntoExtension() throws Exception {
+        Path generated = tmp.resolve("bin/platform/bootstrap/gensrc/example/Dto.java");
+        Files.createDirectories(generated.getParent());
+        Files.writeString(generated, "package example; public class Dto { public int value() { return 7; } }");
+        Path caller = source("core", "src", "Caller", "public int value() { return new Dto().value(); }");
+        var result = compiler().compileBatch(List.of(caller), "core");
+        assertTrue(result.isSuccess(), result.getErrors().toString());
+        assertTrue(result.getCompiledClasses().containsKey("example.Dto"), "still returned for in-memory admission");
+        assertFalse(Files.exists(module("core").resolve("classes/example/Dto.class")), "must not shadow models.jar");
+        assertTrue(Files.isRegularFile(module("core").resolve("classes/example/Caller.class")));
+    }
+
+    @Test void ownExtensionGensrcClassIsStillWritten() throws Exception {
+        Path generated = source("core", "gensrc", "Dto", "public int value() { return 3; }");
+        Path bootstrap = tmp.resolve("bin/platform/bootstrap/gensrc/example/Dto.java");
+        Files.createDirectories(bootstrap.getParent());
+        Files.writeString(bootstrap, "package example; public class Dto { public int value() { return 7; } }");
+        var result = compiler().compileBatch(List.of(generated), "core");
+        assertTrue(result.isSuccess(), result.getErrors().toString());
+        assertTrue(result.getCompiledClasses().containsKey("example.Dto"));
+        assertTrue(Files.isRegularFile(module("core").resolve("classes/example/Dto.class")));
+    }
+
     @Test void failedModuleLeavesAllOutputsAndRetriesWithStagedDependencies() throws Exception {
         Path core = source("core", "src", "Core", "public int old() { return 1; }");
         Path web = source("web", "src", "Web", "public int value() { return new Core().old(); }");
@@ -115,5 +138,65 @@ class CompileAttemptTest {
         assertEquals(List.of(dependent), CompileAttempt.dropSpeculative(pending, speculative));
         assertEquals(Set.of(saved, savedLater), pending.keySet());
         assertTrue(speculative.isEmpty());
+    }
+    @Test void loadedIdenticalByproductIsSkippedWithoutRewritingItsFile() throws Exception {
+        Path helper=source("core","src","Helper","public int value(){return 3;}");
+        Path own=source("core","src","Own","public int value(){return new Helper().value();}");
+        var compiler=compiler();
+        Path published=module("core").resolve("classes/example/Helper.class");
+        assertTrue(compiler.compileBatch(List.of(helper),"core").isSuccess());
+        byte[] before=Files.readAllBytes(published);
+        var originalTime=java.nio.file.attribute.FileTime.fromMillis(10000);Files.setLastModifiedTime(published,originalTime);
+        List<String> checked=new ArrayList<>();
+        compiler.setByproductAlreadyRunning((name,bytes)->{checked.add(name);return name.equals("example.Helper");});
+        var result=compiler.compileBatch(List.of(own),"core");
+        assertTrue(result.isSuccess(),result.getErrors().toString());
+        assertEquals(Set.of("example.Own"),result.getCompiledClasses().keySet());
+        assertEquals(List.of("example.Helper"),checked);assertArrayEquals(before,Files.readAllBytes(published));
+        assertEquals(originalTime,Files.getLastModifiedTime(published));
+    }
+    @Test void unknownUnloadedAndExternallyChangedByproductsAreReturnedEvenIfDiskMatches() throws Exception {
+        Path helper=source("core","src","Helper","public static final int VALUE=2;");
+        Path own=source("core","src","Own","public int value(){return Helper.VALUE;}");
+        var compiler=compiler();
+        var initial=compiler.compileBatch(List.of(own),"core");assertTrue(initial.isSuccess());
+        // Force javac's implicit-source path again, with already matching disk output.
+        Files.setLastModifiedTime(helper,java.nio.file.attribute.FileTime.fromMillis(System.currentTimeMillis()+5000));
+        compiler.setByproductAlreadyRunning((name,bytes)->false);
+        var result=compiler.compileBatch(List.of(own),"core");assertTrue(result.isSuccess());
+        assertTrue(result.getCompiledClasses().containsKey("example.Helper"));
+        Files.delete(module("core").resolve("classes/example/Helper.class"));
+        compiler.setByproductAlreadyRunning((name,bytes)->{throw new IllegalStateException("proof unavailable");});
+        assertTrue(compiler.compileBatch(List.of(own),"core").getCompiledClasses().containsKey("example.Helper"));
+    }
+    @Test void ownSecondaryTopLevelAndNestedClassesAlwaysReachReload() throws Exception {
+        Path own=source("core","src","Own","static class Nested {} } class Secondary {");
+        var compiler=compiler();compiler.setByproductAlreadyRunning((name,bytes)->true);
+        var result=compiler.compileBatch(List.of(own),"core");assertTrue(result.isSuccess(),result.getErrors().toString());
+        assertEquals(Set.of("example.Own","example.Own$Nested","example.Secondary"),result.getCompiledClasses().keySet());
+    }
+    @Test void byproductSnapshotIsRequestedOnceWithAllNames() throws Exception {
+        source("core","src","HelperA","public int value(){return 1;}");
+        source("core","src","HelperB","public int value(){return 2;}");
+        Path own=source("core","src","Own","public int value(){return new HelperA().value()+new HelperB().value();}");
+        var compiler=compiler();var requests=new ArrayList<Set<String>>();var lookups=new ArrayList<String>();
+        compiler.setByproductProof(names->{requests.add(names);return (name,bytes)->{lookups.add(name);return true;};});
+        var result=compiler.compileBatch(List.of(own),"core");assertTrue(result.isSuccess(),result.getErrors().toString());
+        assertEquals(List.of(Set.of("example.HelperA","example.HelperB")),requests);
+        assertEquals(Set.of("example.HelperA","example.HelperB"),new HashSet<>(lookups));assertEquals(2,lookups.size());
+        assertEquals(Set.of("example.Own"),result.getCompiledClasses().keySet());
+    }
+    @Test void ownOnlyCompileDoesNotRequestALoadedSnapshot() throws Exception {
+        Path own=source("core","src","Own","public int value(){return 1;}");var compiler=compiler();
+        compiler.setByproductProof(names->{fail("own-only attempt must not enumerate loaded classes");return null;});
+        var result=compiler.compileBatch(List.of(own),"core");assertTrue(result.isSuccess());
+        assertEquals(Set.of("example.Own"),result.getCompiledClasses().keySet());
+    }
+    @Test void unavailableSnapshotNeverDiscardsByproducts() throws Exception {
+        source("core","src","Helper","public int value(){return 1;}");
+        Path own=source("core","src","Own","public int value(){return new Helper().value();}");var compiler=compiler();
+        compiler.setByproductProof(names->{throw new IllegalStateException("snapshot unavailable");});
+        var result=compiler.compileBatch(List.of(own),"core");assertTrue(result.isSuccess());
+        assertEquals(Set.of("example.Own","example.Helper"),result.getCompiledClasses().keySet());
     }
 }

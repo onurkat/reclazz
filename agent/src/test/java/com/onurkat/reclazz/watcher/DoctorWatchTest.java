@@ -12,6 +12,14 @@ import org.junit.jupiter.api.io.TempDir;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DoctorWatchTest {
+    @Test void deadThreadIsStoppedAlthoughWatchStateWasNeverSet() throws Exception {
+        var watcher=new FileWatcher(new NoopPlatformContext(),AgentConfig.parse(null));
+        try {
+            var state=FileWatcher.class.getDeclaredField("watchState");state.setAccessible(true);state.set(watcher,"watching");
+            var thread=FileWatcher.class.getDeclaredField("watchThread");thread.setAccessible(true);thread.set(watcher,new Thread());
+            assertEquals("stopped",watcher.doctorEvidence().state());
+        } finally {watcher.stopWatching();}
+    }
     @TempDir Path dir;
     @Test void reportsRegistrationsNotConfigurationAndBoundsItsSample() throws Exception {
         var watcher=new FileWatcher(new NoopPlatformContext(),AgentConfig.parse("watchDirs="+dir));

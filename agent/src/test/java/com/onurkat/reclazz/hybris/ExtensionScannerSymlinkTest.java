@@ -103,4 +103,15 @@ class ExtensionScannerSymlinkTest {
         assertNotNull(extensions.get("otherext"),
                 "custom-dir scan must follow symlinks too");
     }
+    @Test void constantsSourceRequiresExplicitPrefixAndCorePackage() throws Exception {
+        Path ext=customDir.resolve("example");Files.createDirectories(ext);
+        Files.writeString(ext.resolve("extensioninfo.xml"),"<extensioninfo><extension name='example' classprefix='Example'><coremodule packageroot='com.example'/></extension></extensioninfo>");
+        writeLocalExtensions("example");
+        var info=new ExtensionScanner(platformHome,configDir).scanExtensions().get("example");
+        assertEquals(ext.resolve("src/com/example/constants/ExampleConstants.java").toAbsolutePath(),info.constantsSource().orElseThrow());
+        Files.writeString(ext.resolve("extensioninfo.xml"),"<extensioninfo><extension name='example'><coremodule packageroot='com.example'/></extension></extensioninfo>");
+        assertTrue(new ExtensionScanner(platformHome,configDir).scanExtensions().get("example").constantsSource().isEmpty());
+        Files.writeString(ext.resolve("extensioninfo.xml"),"<extensioninfo><extension name='example' classprefix='Example'/></extensioninfo>");
+        assertTrue(new ExtensionScanner(platformHome,configDir).scanExtensions().get("example").constantsSource().isEmpty());
+    }
 }

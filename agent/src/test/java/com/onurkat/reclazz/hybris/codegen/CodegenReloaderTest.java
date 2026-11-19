@@ -283,6 +283,42 @@ class CodegenReloaderTest {
         }
     }
 
+    @Test
+    void removesWatchedBootstrapCopiesBeforeAntButLeavesUnwatchedOutput() throws Exception {
+        Path watched = tempDir.resolve("bin/custom/watched"), other = tempDir.resolve("bin/custom/other");
+        registerExtensions(new ExtensionInfo("watched", watched, List.of(), true, false, true),
+                new ExtensionInfo("other", other, List.of(), true, false, true));
+        Path generated = tempDir.resolve("bin/platform/bootstrap/gensrc/example/Dto.java");
+        Files.createDirectories(generated.getParent()); Files.writeString(generated, "// generated ownership");
+        org.objectweb.asm.ClassWriter writer = new org.objectweb.asm.ClassWriter(0);
+        writer.visit(org.objectweb.asm.Opcodes.V17, org.objectweb.asm.Opcodes.ACC_PUBLIC,
+                "example/Dto", null, "java/lang/Object", null);
+        writer.visitSource("Dto.java", null); writer.visitEnd();
+        Path stale = watched.resolve("classes/example/Dto.class"), retained = other.resolve("classes/example/Dto.class");
+        for (Path file : List.of(stale, retained)) { Files.createDirectories(file.getParent()); Files.write(file, writer.toByteArray()); }
+        Path xml = watched.resolve("resources/watched-beans.xml"); Files.createDirectories(xml.getParent()); Files.writeString(xml, "<beans/>");
+        var observed = new java.util.concurrent.atomic.AtomicBoolean();
+        var runs = new java.util.concurrent.atomic.AtomicInteger();
+        CodegenReloader candidate = new CodegenReloader(hybrisContext) {
+            @Override boolean runAnt(ExtensionInfo extension) {
+                observed.set(!Files.exists(stale) && Files.exists(retained)); runs.incrementAndGet(); return true;
+            }
+        };
+        candidate.setWatchedExtensions("watched"::equals);
+        try {
+            candidate.handle(new com.onurkat.reclazz.watcher.ChangeEvent(xml,
+                    com.onurkat.reclazz.watcher.ChangeEvent.Type.MODIFIED, "watched", "resources"));
+            Field running = CodegenReloader.class.getDeclaredField("running"); running.setAccessible(true);
+            long end = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(10);
+            while (running.getBoolean(candidate) && System.nanoTime() < end) Thread.sleep(10);
+            assertTrue(!running.getBoolean(candidate), "codegen worker did not finish");
+            assertEquals(1, runs.get()); assertTrue(observed.get(), "cleanup must precede ant and respect watched ownership");
+        } finally {
+            Field executor = CodegenReloader.class.getDeclaredField("executor"); executor.setAccessible(true);
+            ((java.util.concurrent.ExecutorService) executor.get(candidate)).shutdownNow();
+        }
+    }
+
     // ─── Helpers ──────────────────────────────────────────────────────────────
 
     private void registerExtensions(ExtensionInfo... exts) throws Exception {

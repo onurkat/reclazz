@@ -414,7 +414,8 @@ public class ReclazzAgent {
                     @Override public byte[] transform(ClassLoader loader, String name, Class<?> redefining,
                             java.security.ProtectionDomain domain, byte[] bytes) {
                         if (name != null && loader != null && redefining == null && transformContext.isWatched(name)) {
-                            try { com.onurkat.reclazz.transform.KeepBaseline.capture(loader, name, bytes); }
+                            try { com.onurkat.reclazz.transform.KeepBaseline.capture(loader, name, bytes);
+                                com.onurkat.reclazz.transform.AdmittedBytes.defined(loader,name,bytes); }
                             catch (RuntimeException unavailable) { /* Missing evidence selects recreation. */ }
                         }
                         return null;
@@ -525,6 +526,13 @@ public class ReclazzAgent {
             // Set up incremental compiler (only if autoCompile is enabled)
             final IncrementalCompiler compiler;
             if (config.isAutoCompile()) {
+                com.onurkat.reclazz.transform.AdmittedBytes.clear();
+                if (isHybris) {
+                    var hybris = ((HybrisPlatformContext) platformContext).getHybrisContext();
+                    com.onurkat.reclazz.platform.BootstrapGeneratedCopies.remove(hybris.getPlatformHome(),
+                            hybris.getExtensions().values().stream()
+                                    .filter(ext -> platformContext.shouldWatch(ext.getName())).toList());
+                }
                 String classpath = platformContext.resolveClasspath();
                 if (isHybris) {
                     compiler = new IncrementalCompiler(classpath,
@@ -533,6 +541,28 @@ public class ReclazzAgent {
                 } else {
                     compiler = new IncrementalCompiler(classpath, platformContext);
                 }
+                compiler.setByproductProof(names -> {
+                    Map<String, List<Class<?>>> byName = new java.util.HashMap<>();
+                    if (transformContext != null && instrumentation != null) {
+                        java.util.Set<String> watched = new java.util.HashSet<>();
+                        for (String name : names)
+                            if (transformContext.isWatched(name.replace('.', '/'))) watched.add(name);
+                        // One census per attempt, never Class.forName: an unloaded
+                        // constant owner must still reach dependent rebuilding.
+                        if (!watched.isEmpty()) for (Class<?> loaded : instrumentation.getAllLoadedClasses()) {
+                            String name = loaded.getName();
+                            if (watched.contains(name))
+                                byName.computeIfAbsent(name, ignored -> new java.util.ArrayList<>()).add(loaded);
+                        }
+                    }
+                    return (name, bytes) -> {
+                        List<Class<?>> loaded = byName.get(name);
+                        if (loaded == null) return false;
+                        for (Class<?> type : loaded)
+                            if (!com.onurkat.reclazz.transform.AdmittedBytes.matches(type, bytes)) return false;
+                        return true;
+                    };
+                });
                 StatusReporter.info("AutoCompile enabled: watching source files, compiling internally");
             } else {
                 compiler = null;
@@ -587,7 +617,7 @@ public class ReclazzAgent {
                         watcher.unwatchableCount(),
                         RestartLedger.size(),
                         watcher.watchedFileCount(),
-                        watcher.polls())));
+                        watcher.polls(),watcher.health())));
             }
 
             // Single-threaded, and that is a correctness requirement rather
@@ -620,6 +650,7 @@ public class ReclazzAgent {
                     batchBracket, config.isRequestBoundary() ? RequestReloadBoundary::run : Runnable::run);
 
             reloadQueue.setVerification(verification);
+            watcher.onGeneratedOutputHold(reloadQueue::generatedOutputHeld);
             generatedClassScan=watcher::scanNow;
             heldSourceRetry=compiler == null ? null : () -> retryHeldSourcesAfterCodegen(reloadQueue,
                     () -> handleJavaBatch(compiler, reloader, springOrchestrator, modules));
@@ -630,6 +661,8 @@ public class ReclazzAgent {
             if (statusServer != null) {
                 statusServer.setOwnedBuildListener((owner, state) -> reloadQueue.build(owner, state, watcher::scanNow));
                 statusServer.setDoctorContext(watcher, reloadQueue::buildHoldKind);
+                // PENDING asks for this read-only record too; link it before jar replacement.
+                reloadQueue.control("status", watcher::scanNow).fields();
                 statusServer.setReloadControl(action -> reloadQueue.control(action, watcher::scanNow).fields());
             }
 
@@ -706,10 +739,7 @@ public class ReclazzAgent {
             // nothing, for as long as the server is up, with the IDE still
             // showing a connected agent because the heartbeat is another
             // thread.
-            watcherExecutor.submit(Supervised.forever(
-                    "The file watcher",
-                    "Nothing will reload until this application is restarted.",
-                    watcher::startWatching));
+            watcherExecutor.submit(watcher::startWatching);
 
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 running = false;
@@ -1356,6 +1386,9 @@ public class ReclazzAgent {
                 return;
             }
             if (!deferred) com.onurkat.reclazz.transform.KeepBaseline.advance(type, work.bytes);
+            if (structural == null || structural.nativeOutcome(type) == StructuralReloader.NativeOutcome.APPLIED)
+                com.onurkat.reclazz.transform.AdmittedBytes.admitted(type, work.bytes);
+            else com.onurkat.reclazz.transform.AdmittedBytes.invalidate(type);
             if (work.wasLoaded) JpaMappingRefresh.retryPendingEntity(work.className, work.bytes);
             var interceptor = work.result.isInterceptor() && work.modules != null
                     && platformContext.getPlatformId() == PlatformContext.Platform.HYBRIS
@@ -1408,6 +1441,7 @@ public class ReclazzAgent {
 
     private static ClassReloader.ReloadResult reloadWithCacheBoundary(String className, String internalName,
                                                                      byte[] bytecode, ClassReloader reloader) {
+        com.onurkat.reclazz.transform.AdmittedBytes.invalidate(findLoadedClass(className));
         ReloadVerification v = verification;
         if (v != null) v.invalidateUntracked(className);
         if (cacheTrackingInstalled) CacheDependencyLedger.beginMutation();

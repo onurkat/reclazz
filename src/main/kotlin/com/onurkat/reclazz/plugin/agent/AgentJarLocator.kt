@@ -28,7 +28,7 @@ object AgentJarLocator {
         // The owning loader exposes this plugin's descriptor across supported IDEs.
         val plugin = PluginPresence.enabledDescriptor(RECLAZZ_PLUGIN_ID.idString)
         if (plugin == null) {
-            log.warn("Reclazz plugin not found in PluginManager")
+            log.warn("No enabled Reclazz plugin descriptor available via PluginPresence")
             return null
         }
 

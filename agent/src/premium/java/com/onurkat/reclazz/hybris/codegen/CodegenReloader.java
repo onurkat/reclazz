@@ -91,6 +91,7 @@ public class CodegenReloader {
     }
 
     private final HybrisContext hybrisContext;
+    private java.util.function.Predicate<String> watchedExtensions = name -> true;
     private final boolean autoUpdateRunningSystem;
     private final RunningSystemUpdater runningSystemUpdater;
     private final Runnable generatedClassesReady;
@@ -164,6 +165,10 @@ public class CodegenReloader {
         });
     }
 
+    public void setWatchedExtensions(java.util.function.Predicate<String> watchedExtensions) {
+        this.watchedExtensions = java.util.Objects.requireNonNull(watchedExtensions);
+    }
+
     public void handle(ChangeEvent event) {
         Path file = event.getPath();
         String fileName = file.getFileName().toString();
@@ -225,6 +230,9 @@ public class CodegenReloader {
                 // short-circuit. See class-level docs.
                 touchFile(file);
 
+                com.onurkat.reclazz.platform.BootstrapGeneratedCopies.remove(hybrisContext.getPlatformHome(),
+                        hybrisContext.getExtensions().values().stream()
+                                .filter(candidate -> watchedExtensions.test(candidate.getName())).toList());
                 long started = System.currentTimeMillis();
                 boolean ok = runAnt(ext);
                 long elapsedMs = System.currentTimeMillis() - started;

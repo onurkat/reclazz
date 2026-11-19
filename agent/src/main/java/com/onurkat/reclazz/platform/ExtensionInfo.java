@@ -20,6 +20,7 @@ public class ExtensionInfo {
     private final boolean hasWebModule;
     private final boolean isCustom;
     private final boolean hasBackofficeModule;
+    private final String classPrefix, packageRoot;
 
     public ExtensionInfo(String name, Path path, List<String> requiredExtensions,
                          boolean hasCoreModule, boolean hasWebModule, boolean isCustom) {
@@ -29,6 +30,13 @@ public class ExtensionInfo {
     public ExtensionInfo(String name, Path path, List<String> requiredExtensions,
                          boolean hasCoreModule, boolean hasWebModule, boolean isCustom,
                          boolean hasBackofficeModule) {
+        this(name,path,requiredExtensions,hasCoreModule,hasWebModule,isCustom,hasBackofficeModule,null,null);
+    }
+
+    public ExtensionInfo(String name,Path path,List<String> requiredExtensions,
+                         boolean hasCoreModule,boolean hasWebModule,boolean isCustom,
+                         boolean hasBackofficeModule,String classPrefix,String packageRoot) {
+        this.classPrefix=classPrefix;this.packageRoot=packageRoot;
         this.hasBackofficeModule = hasBackofficeModule;
         this.name = name;
         this.path = path;
@@ -45,6 +53,15 @@ public class ExtensionInfo {
     public boolean hasWebModule() { return hasWebModule; }
     public boolean hasBackofficeModule() { return hasBackofficeModule; }
     public boolean isCustom() { return isCustom; }
+
+    /** Only explicitly configured platform-generated constants sources are eligible. */
+    public java.util.Optional<Path> constantsSource() {
+        if(!hasCoreModule || classPrefix==null || packageRoot==null
+                || !classPrefix.matches("[A-Za-z_$][A-Za-z0-9_$]*")
+                || !packageRoot.matches("[A-Za-z_$][A-Za-z0-9_$]*(\\.[A-Za-z_$][A-Za-z0-9_$]*)*"))return java.util.Optional.empty();
+        return java.util.Optional.of(path.resolve("src").resolve(packageRoot.replace('.', '/'))
+                .resolve("constants").resolve(classPrefix+"Constants.java").toAbsolutePath().normalize());
+    }
 
     @Override
     public String toString() {

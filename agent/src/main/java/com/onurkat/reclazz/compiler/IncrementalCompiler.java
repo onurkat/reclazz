@@ -24,6 +24,31 @@ public class IncrementalCompiler {
     private final HybrisContext context; // null for non-Hybris platforms
     private final PlatformContext platformContext; // used for non-Hybris platforms
     private final JavaCompiler compiler;
+    private java.util.function.Function<Set<String>, java.util.function.BiPredicate<String, byte[]>> byproductProof =
+            names -> (name, bytes) -> false;
+
+    public void setByproductAlreadyRunning(java.util.function.BiPredicate<String, byte[]> proof) {
+        Objects.requireNonNull(proof);
+        setByproductProof(names -> proof);
+    }
+
+    public void setByproductProof(java.util.function.Function<Set<String>, java.util.function.BiPredicate<String, byte[]>> proof) {
+        byproductProof = Objects.requireNonNull(proof);
+    }
+
+    java.util.function.BiPredicate<String, byte[]> byproductProofFor(Set<String> names) {
+        if (names.isEmpty()) return (name, bytes) -> false;
+        try {
+            var proof = byproductProof.apply(Set.copyOf(names));
+            if (proof == null) return (name, bytes) -> false;
+            return (name, bytes) -> {
+                try { return proof.test(name, bytes); }
+                catch (RuntimeException | LinkageError unknown) { return false; }
+            };
+        } catch (RuntimeException | LinkageError unknown) {
+            return (name, bytes) -> false;
+        }
+    }
     private final Set<String> watchedBackofficeModules;
 
     public IncrementalCompiler(String classpath, HybrisContext context) {
@@ -162,6 +187,18 @@ public class IncrementalCompiler {
             dir = dir.getParent();
         }
         return null;
+    }
+
+    /** Bootstrap sourcepath byproducts belong to platform output, never an extension. */
+    boolean mayPublish(Path output, byte[] bytes) {
+        if (context == null) return true;
+        Path destination = output.toAbsolutePath().normalize();
+        ExtensionInfo owner = context.getExtensions().values().stream()
+                .filter(ext -> destination.startsWith(ext.getPath().toAbsolutePath().normalize()))
+                .max(Comparator.comparingInt(ext -> ext.getPath().toAbsolutePath().normalize().getNameCount()))
+                .orElse(null);
+        return owner == null || !com.onurkat.reclazz.platform.BootstrapGeneratedCopies.isPlatformGenerated(
+                bytes, context.getPlatformHome(), owner.getPath());
     }
 
     /**

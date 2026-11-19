@@ -169,6 +169,22 @@ public class FileWatcher {
     }
 
     private final Map<Path, FileState> fileStates = new ConcurrentHashMap<>();
+    private final Set<Path> constantsSources=ConcurrentHashMap.newKeySet();
+    private volatile java.util.function.BooleanSupplier generatedOutputHeld=()->false;
+
+    public void onGeneratedOutputHold(java.util.function.BooleanSupplier hold) {
+        generatedOutputHeld=Objects.requireNonNull(hold);
+    }
+    void baselineConstantsSource(Path file) { Path source=file;baselineConstantsSource(source,()->computeContentHash(source)); }
+    void baselineConstantsSource(Path file,java.util.function.LongSupplier hash) {
+        file=file.toAbsolutePath().normalize();constantsSources.add(file);
+        FileState state=stateOf(file);
+        state.contentHash=-1;state.baselineMtime=0;state.deliveredSourceMtime=0;
+        long before=lastModifiedMillis(file),value=hash.getAsLong(),after=lastModifiedMillis(file);
+        if(before>0 && before==after && value!=-1) {
+            state.contentHash=value;state.baselineMtime=before;state.deliveredSourceMtime=before;
+        }
+    }
 
     private FileState stateOf(Path file) {
         return fileStates.computeIfAbsent(file, f -> new FileState());
@@ -237,6 +253,13 @@ public class FileWatcher {
     }
     private volatile boolean active = true;
     private volatile String watchState = "starting";
+    private volatile Thread watchThread;
+    private volatile long completedPoll = System.nanoTime();
+    private volatile String watchFailure;
+
+    public WatcherHealth health() {
+        return WatcherHealth.observe(watchThread,watchState,completedPoll,System.nanoTime(),IDLE_WAIT_MS,watchFailure);
+    }
     private Consumer<ChangeEvent> changeHandler;
     private Consumer<List<ChangeEvent>> batchHandler;
 
@@ -252,6 +275,7 @@ public class FileWatcher {
         this.platformContext = platformContext;
         this.config = config;
         this.watchService = FileSystems.getDefault().newWatchService();
+        health().line(); // Load the independent report before any watcher failure.
     }
 
     /**
@@ -301,6 +325,7 @@ public class FileWatcher {
      * This method blocks until stopWatching() is called.
      */
     public void startWatching() {
+        watchThread=Thread.currentThread();
         try {
             int delaySec = config.getStartupDelaySec();
             if (delaySec > 0) {
@@ -318,27 +343,18 @@ public class FileWatcher {
 
             registerDirectories();
             reportUnwatchable();
+            completedPoll=System.nanoTime();
             watchState = "watching";
             pollLoop();
 
-            // The loop ends when active goes false, which is a stop somebody
-            // asked for. Ending while it is still true is the loop giving up,
-            // and it used to return from here as quietly as a clean shutdown.
-            if (active) {
-                Supervised.stoppedUnexpectedly("The file watcher",
-                        "Nothing will reload until this application is restarted.");
-            }
-        } catch (IOException e) {
-            // Named for what it costs rather than for where it happened. This
-            // returns, so the watcher is over: "FileWatcher error" read like
-            // one error among many, in a session that would never reload again.
-            StatusReporter.error("The file watcher stopped: "
-                    + Failures.describe(e)
-                    + ". Nothing will reload until this application is restarted.");
-            RestartLedger.note("The file watcher",
-                    "it stopped during this session with " + e.getClass().getSimpleName());
+            if(active)watchFailure="loop ended unexpectedly";
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            watchFailure="InterruptedException";
+        } catch (Throwable failure) {
+            // Capture only JDK-owned text. Reporting runs on the status side, even
+            // when the failed watcher's jar can no longer load reporting classes.
+            watchFailure=failure.getClass().getSimpleName();
         } finally {
             watchState = "stopped";
             failScanBarriers();
@@ -357,6 +373,11 @@ public class FileWatcher {
         int watchCount = 0;
 
         if (config.isAutoCompile()) {
+            // Snapshot before watch registration; a raced/uncertain version is delivered.
+            if(platformContext instanceof HybrisPlatformContext hybris) {
+                for(var extension:hybris.getHybrisContext().getExtensions().values())
+                    if(platformContext.shouldWatch(extension.getName()))extension.constantsSource().ifPresent(this::baselineConstantsSource);
+            }
             // AutoCompile mode: watch source directories for .java changes
             for (var entry : platformContext.getSourceDirs().entrySet()) {
                 String moduleName = entry.getKey();
@@ -592,7 +613,7 @@ public class FileWatcher {
                 paths.add(directory.toAbsolutePath().normalize().toString());
         }
         List<String> sample = paths.stream().filter(path -> path.length() <= 256).limit(8).toList();
-        return new WatchEvidence(watchState, paths.size(), unwatchableCount(), sample, sample.size() < paths.size());
+        return new WatchEvidence(health().state(), paths.size(), unwatchableCount(), sample, sample.size() < paths.size());
     }
 
     private void registerSingle(Path dir, String moduleName, String sourceRoot, long baselineMillis) throws IOException {
@@ -950,6 +971,7 @@ public class FileWatcher {
             if (lastModifiedMap.size() > MAX_DEDUP_ENTRIES) {
                 evictOldEntries();
             }
+            completedPoll=System.nanoTime();
         }
     }
 
@@ -1192,6 +1214,7 @@ public class FileWatcher {
                 if (versionedSource) {
                     state.deliveredSourceMtime = 0;
                     state.contentHash = -1L;
+                    state.baselineMtime=0;
                 }
             }
         }
@@ -1206,10 +1229,15 @@ public class FileWatcher {
             long hash = computeContentHash(pending.path);
             if (mtime > 0 && hash != -1L) {
                 FileState state = stateOf(pending.path);
-                boolean duplicate = state.deliveredSourceMtime == mtime && state.contentHash == hash;
+                boolean racedBaseline=state.baselineMtime!=0 && state.baselineMtime==mtime;
+                boolean buildTouch=kind==ChangeKind.JAVA_SOURCE
+                        && constantsSources.contains(pending.path.toAbsolutePath().normalize())
+                        && state.contentHash==hash && !racedBaseline && generatedOutputHeld.getAsBoolean();
+                boolean duplicate = !racedBaseline && state.deliveredSourceMtime == mtime && state.contentHash == hash;
+                state.baselineMtime=0;
                 state.deliveredSourceMtime = mtime;
                 state.contentHash = hash;
-                if (duplicate) return null;
+                if (buildTouch || duplicate) return null;
             }
         }
 

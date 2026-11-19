@@ -20,6 +20,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ### Fixed
 
 - Added getter serialization works with Jackson 3.3.
+- SAP Commerce compilation keeps bootstrap-generated DTO/model classes out of extension output
+  and removes proven stale copies before codegen so combined XML and Java saves compile.
+- Watcher health and pushed failure reports detect a stopped or stalled watcher,
+  including failure after the agent jar is overwritten.
+- SAP Commerce codegen ignores unchanged generated constants source touches while
+  generated output is held. Already running, byte-identical javac byproducts no
+  longer cause redundant reloads; real constant edits still rebuild consumers.
 
 - IDE-managed Java test runs skip agent injection by default, with an explicit
   opt-in in Settings. Server run configurations retain their existing behaviour.

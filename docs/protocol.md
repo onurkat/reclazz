@@ -332,7 +332,7 @@ JSON suffix. No build, scan, reload or hold change is performed.
 `status:observed` carries `requestId`, `detail`, `sessionId` (the same process
 identity used by VERIFY), `agentVersion`, string `pid`, `javaVersion`, `vmName`,
 and target JVM `workingDirectory`. A working directory is not a repository root.
-`watcherState` is starting, watching, stopped or unavailable. `buildHold` is none,
+`watcherState` is starting, watching, stalled, stopped or unavailable. Stalled means the live watcher has not completed a poll within its liveness bound; stopped also covers a dead watcher thread. `buildHold` is none,
 named, legacy or unavailable; owner tokens are never disclosed. Boolean
 `buildOwnershipSupported`, `verifySupported` and `scanSupported` describe wired
 handlers, not capabilities inferred from a version string. Before wiring, support

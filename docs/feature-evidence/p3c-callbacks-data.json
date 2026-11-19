@@ -2989,13 +2989,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 98,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Scheduler Reload**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3093,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-SCHEDULED-TIMER"
         }
       ],
@@ -3041,13 +3041,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 98,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Scheduler Reload**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3117,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-SCHEDULED-CURRENT"
         }
       ],
@@ -3093,13 +3093,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 98,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Scheduler Reload**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3141,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-SCHEDULED-PROXY"
         }
       ],
@@ -3133,13 +3133,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 98,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Scheduler Reload**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3165,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-SCHEDULES-REPEATABLE"
         }
       ],
@@ -3173,13 +3173,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 98,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Scheduler Reload**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3189,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-SCHEDULED-ROLLBACK-PREPARATION"
         }
       ],
@@ -3213,13 +3213,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 98,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Scheduler Reload**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3213,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-SCHEDULED-REFUSAL"
         }
       ],
@@ -3253,13 +3253,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 98,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Scheduler Reload**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3237,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-SCHEDULED-PROTOTYPE"
         }
       ],
@@ -3305,13 +3305,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3261,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-EVENT-DELIVERY"
         }
       ],
@@ -3357,13 +3357,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3285,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-EVENT-CURRENT"
         }
       ],
@@ -3409,13 +3409,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3309,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-EVENT-PROXY"
         }
       ],
@@ -3461,13 +3461,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3333,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-EVENT-RESULT"
         }
       ],
@@ -3501,13 +3501,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3357,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-EVENT-ORDER-NAMES"
         }
       ],
@@ -3541,13 +3541,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3381,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-EVENT-DEBUG-NAMES"
         }
       ],
@@ -3581,13 +3581,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3405,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-EVENT-PROTOTYPE-PROXY-REFUSAL"
         }
       ],
@@ -3621,13 +3621,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3429,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-EVENT-CUSTOM-FACTORY-REFUSAL"
         }
       ],
@@ -3661,13 +3661,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3453,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-EVENT-RESULT-REFUSAL"
         }
       ],
@@ -3701,13 +3701,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3477,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-EVENT-ACTUAL-RESULT-REFUSAL"
         }
       ],
@@ -3753,13 +3753,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3501,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-TXEVENT-BEFORE-COMMIT"
         }
       ],
@@ -3805,13 +3805,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3525,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-TXEVENT-AFTER-COMMIT"
         }
       ],
@@ -3857,13 +3857,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3549,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-TXEVENT-AFTER-ROLLBACK"
         }
       ],
@@ -3909,13 +3909,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3573,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-TXEVENT-AFTER-COMPLETION"
         }
       ],
@@ -3961,13 +3961,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3597,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-TXEVENT-RETIRE"
         }
       ],
@@ -4013,13 +4013,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3621,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-TXEVENT-FALLBACK"
         }
       ],
@@ -4053,13 +4053,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3645,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-TXEVENT-BEFORE-FAILURE"
         }
       ],
@@ -4093,13 +4093,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3669,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-TXEVENT-AFTER-FAILURE"
         }
       ],
@@ -4133,13 +4133,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3693,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-TXEVENT-CONTEXT-REFUSAL"
         }
       ],
@@ -4173,13 +4173,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3717,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-TXEVENT-PHASE-EDIT"
         }
       ],
@@ -4225,13 +4225,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 102,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Async Re-processing**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3741,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-ASYNC-SERVICE-COMPLETABLE"
         }
       ],
@@ -4277,13 +4277,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 102,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Async Re-processing**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3765,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-ASYNC-SERVICE-CANCEL-ROLLBACK"
         }
       ],
@@ -4329,13 +4329,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 102,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Async Re-processing**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3789,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-ASYNC-SERVICE-REMOVE"
         }
       ],
@@ -4369,13 +4369,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 102,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Async Re-processing**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3813,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-ASYNC-SERVICE-VOID"
         }
       ],
@@ -4409,13 +4409,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 102,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Async Re-processing**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3837,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-ASYNC-SERVICE-FUTURE"
         }
       ],
@@ -4449,13 +4449,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 102,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Async Re-processing**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3861,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-ASYNC-SERVICE-GENERICS"
         }
       ],
@@ -4489,13 +4489,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 102,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Async Re-processing**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3885,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-ASYNC-SERVICE-REFUSAL"
         }
       ],
@@ -4529,13 +4529,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 102,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Async Re-processing**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3909,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-ASYNC-SERVICE-EXCEPTIONAL-FUTURE"
         }
       ],
@@ -4569,13 +4569,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 102,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Async Re-processing**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3933,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-ASYNC-SERVICE-CACHE"
         }
       ],
@@ -4621,13 +4621,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 102,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Async Re-processing**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3957,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-ASYNC-EVENT"
         }
       ],
@@ -4673,13 +4673,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 98,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Scheduler Reload**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3981,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-ASYNC-SCHEDULED"
         }
       ],
@@ -4713,13 +4713,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 102,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Async Re-processing**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4005,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-ASYNC-DEFAULT-EXECUTOR"
         }
       ],
@@ -4753,13 +4753,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 102,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Async Re-processing**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4029,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-ASYNC-NAMED-DEFAULT"
         }
       ],
@@ -4793,13 +4793,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 102,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Async Re-processing**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4053,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-ASYNC-INFRASTRUCTURE-REFUSAL"
         }
       ],
@@ -4833,13 +4833,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 102,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Async Re-processing**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4077,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-ASYNC-ADVISOR-REFUSAL"
         }
       ],
@@ -4891,7 +4891,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4101,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-CALLBACK-TRANSACTIONS"
         }
       ],
@@ -4943,7 +4943,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4125,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-CALLBACK-CACHE"
         }
       ],
@@ -4983,7 +4983,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4149,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-CALLBACK-INSPECT-REFUSAL"
         }
       ],
@@ -5015,7 +5015,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4173,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-CALLBACK-COMPOSED"
         }
       ],
@@ -5047,13 +5047,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 56,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "| New `@Entity` class picks up a mapping"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4197,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-JPA-NEW-ENTITY"
         }
       ],
@@ -5087,13 +5087,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 56,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "| New `@Entity` class picks up a mapping"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4221,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-JPA-PENDING-METADATA"
         }
       ],
@@ -5127,13 +5127,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 56,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "| New `@Entity` class picks up a mapping"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4245,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-JPA-VALIDATION-FAILURE"
         }
       ],
@@ -5167,13 +5167,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 56,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "| New `@Entity` class picks up a mapping"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4269,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-JPA-PREPARED-SCHEMA"
         }
       ],
@@ -5207,13 +5207,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 56,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "| New `@Entity` class picks up a mapping"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4293,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-JPA-SCHEMA-OVERRIDES"
         }
       ],
@@ -5247,13 +5247,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 56,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "| New `@Entity` class picks up a mapping"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4317,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-JPA-OPTIN-AMBIGUITY"
         }
       ],
@@ -5287,13 +5287,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 56,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "| New `@Entity` class picks up a mapping"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4341,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-JPA-CLOSE-REPORT"
         }
       ],
@@ -5333,7 +5333,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4365,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-JPA-QUERY-WATCHER"
         }
       ],
@@ -5373,7 +5373,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4389,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-JPA-QUERY-COMPONENT"
         }
       ],
@@ -5420,7 +5420,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4413,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-JPA-REPOSITORY-AFTER-EMF-SWAP"
         }
       ],
@@ -5482,13 +5482,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 56,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "| New `@Entity` class picks up a mapping"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4437,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-JPA-FIELD-DETECTION"
         }
       ],
@@ -5522,13 +5522,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 56,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "| New `@Entity` class picks up a mapping"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4461,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-JPA-UPDATE-ADVICE"
         }
       ],
@@ -5562,13 +5562,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 56,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "| New `@Entity` class picks up a mapping"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4485,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-JPA-VALIDATE-ADVICE"
         }
       ],
@@ -5602,13 +5602,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 56,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "| New `@Entity` class picks up a mapping"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4509,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-JPA-FIELD-REFRESH-GATE"
         }
       ],
@@ -5642,13 +5642,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 56,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "| New `@Entity` class picks up a mapping"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4533,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-JPA-DDL-GATE"
         }
       ],
@@ -5674,13 +5674,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 56,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "| New `@Entity` class picks up a mapping"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4557,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-JPA-ENHANCED-FIELD"
         }
       ],
@@ -5704,13 +5704,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 56,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "| New `@Entity` class picks up a mapping"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4581,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-JPA-SPRING5"
         }
       ],
@@ -5748,7 +5748,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4605,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-HIBERNATE-L2-ENTITY"
         }
       ],
@@ -5788,7 +5788,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4629,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-HIBERNATE-L2-QUERY"
         }
       ],
@@ -5828,7 +5828,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4653,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-HIBERNATE-L2-ALIASES"
         }
       ],
@@ -5868,7 +5868,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4677,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-HIBERNATE-L2-DISABLED"
         }
       ],
@@ -5900,7 +5900,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4701,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-HIBERNATE-L2-WATCHER"
         }
       ],
@@ -5949,13 +5949,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4725,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-SPRING6-NATIVE-EVENT-FAILURE"
         }
       ],
@@ -5994,13 +5994,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4749,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-SPRING6-NATIVE-TXEVENT-FAILURE"
         }
       ],
@@ -6046,13 +6046,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 98,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Scheduler Reload**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4773,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-SCHEDULED-REREGISTER"
         }
       ],
@@ -6086,13 +6086,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4797,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-EVENT-EXISTING-COMPONENT"
         }
       ],
@@ -6126,13 +6126,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 102,
-          "sha256": "11088db82cb0662b9fbadb422e685f5c06112dc7d619e898fcaaf78a32b2fc94",
+          "sha256": "fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5",
           "quote": "**Async Re-processing**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4821,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-ASYNC-EXISTING-COMPONENT"
         }
       ],
@@ -6172,7 +6172,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4845,
-          "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+          "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
           "quote": "### P3C-JPA-SQL-NATIVE-QUERY"
         }
       ],
@@ -6525,7 +6525,7 @@
     "agent/src/main/java/com/onurkat/reclazz/bootstrap/MvcSingletonBridge.java": "6861752df75dde039075be0c3e6a24a44b0f33f4233ad1685b7f82ed84f7121c",
     "agent/src/main/java/com/onurkat/reclazz/bootstrap/EnumSurgery.java": "bcdeacb9e0f737613b755a4ba60b7df29845eacb3a41a33c57236a813eed7f00",
     "agent/src/main/java/com/onurkat/reclazz/watcher/ChangeKind.java": "e79a2fa1559ebd96ab9622876c681db06f7259e7be15425d6b20c9837915ae6a",
-    "agent/src/main/java/com/onurkat/reclazz/watcher/FileWatcher.java": "0de2a56a42770ec93f71273a8fe7e00def141bca81dd458a3b3a4144e7ec22e1",
+    "agent/src/main/java/com/onurkat/reclazz/watcher/FileWatcher.java": "214c166f69de9a8d4b403df6b3e46dd2d2fc72f61822535530d129b292c3714a",
     "agent/src/main/java/com/onurkat/reclazz/watcher/ChangeEvent.java": "d7efd83bf62fa7380880dbaeb6ae318581cf8557b9af98ec925e36c3065d29b4",
     "agent/src/main/java/com/onurkat/reclazz/util/Reflect.java": "dbdcdc2a9ec9daceec4fc121c2659b002422b92520674fb316e7bdf8749b1554",
     "agent/src/main/java/com/onurkat/reclazz/util/ContentChangeGuard.java": "1250fce7c498842b0c7c56b73c4e336f06fee1ebacd6f5128845f55a3d24b7dc",
@@ -6565,7 +6565,7 @@
     "agent/src/main/java/com/onurkat/reclazz/hybris/impex/ImpexAutoImporter.java": "6e044387ff6a399011ea6836626976be7d6bd593b7ca87279429796b82d056bc",
     "agent/src/main/java/com/onurkat/reclazz/hybris/interceptor/InterceptorReloader.java": "daf563cdd605588e730e6fe4e416b6772f0dbe92486412dcfedf207089916527",
     "agent/src/main/java/com/onurkat/reclazz/agent/JvmCapabilityProbe.java": "1e0b13a6af91a96a92acb5a5ca9699b303bcf21a5a62ee19fbc60e03dc034dab",
-    "agent/src/main/java/com/onurkat/reclazz/agent/SessionReport.java": "3d42508921772c02c4b65b20faf6c8106cbca02ce45b5f26089af39a13d63e3b",
+    "agent/src/main/java/com/onurkat/reclazz/agent/SessionReport.java": "aa8092f7adc0b58430df6e994056551101f3df5794e307ed57c73c079191bf51",
     "agent/src/main/java/com/onurkat/reclazz/agent/ReloadVerification.java": "7dcafa50ec2712c60ac8c80ef6611fc5a98a89f1aeab1c95447d501c6aed1708",
     "agent/src/main/java/com/onurkat/reclazz/agent/RequestReloadBoundary.java": "71a2eecdc61e41283e4cbdb9e39fe66d5de0e9c4b084ba15f6931639f004b329",
     "agent/src/main/java/com/onurkat/reclazz/agent/ReloadDiagnostics.java": "f21dc2e76ff1e92c4a1023c9447ab9cdcebefa9146610c5c78372042b795d29d",
@@ -6574,9 +6574,9 @@
     "agent/src/main/java/com/onurkat/reclazz/agent/ReloadStall.java": "c9dfb7f64a47aaf1f31bda457f508da5fe7b7b5e09d11e254b9439275c461dd2",
     "agent/src/main/java/com/onurkat/reclazz/agent/ClassReloader.java": "dbe39f267f56c8190152d610c812b2bb53d9fca8fccca5bd8c079d2b2451877c",
     "agent/src/main/java/com/onurkat/reclazz/agent/DoctorReport.java": "3742f0a7211e4acaa5daa54375091bb448948e458eb062f85250600ac646fe48",
-    "agent/src/main/java/com/onurkat/reclazz/agent/ReloadQueue.java": "d81117fc880dd99c6dda4d098a708413e7852adcd21a897ea91c0d1c2e4ade1e",
-    "agent/src/main/java/com/onurkat/reclazz/agent/StatusServer.java": "e02ba0dc4109508cedb63a5304501443eb698839f1a5f5ca488647eba9bee410",
-    "agent/src/main/java/com/onurkat/reclazz/agent/ReclazzAgent.java": "51f6024a03c1e78aa536296c58136f3bc3340f3ecae7913bcce882f24da55f52",
+    "agent/src/main/java/com/onurkat/reclazz/agent/ReloadQueue.java": "2a5893b36054a2386c2b5339b5c9b49a720712f431accd9a6d0c08f1391b26d6",
+    "agent/src/main/java/com/onurkat/reclazz/agent/StatusServer.java": "2f160bb50a40b89f5dc3dc2e7f1c6ebf21a2175ac95655ccb5be591133779454",
+    "agent/src/main/java/com/onurkat/reclazz/agent/ReclazzAgent.java": "c652dab09d4b50c354e5f910aceca3b09c499e5cf75d4a95f22a31400d5b3f29",
     "agent/src/main/java/com/onurkat/reclazz/reload/StructuralReloader.java": "194ace6c5dcb4fbb3ea9fda10f9f22fe2be463109d0ab06c5e4d41b9de8ff8b1",
     "agent/src/main/java/com/onurkat/reclazz/reload/CompanionGenerator.java": "28b0f4420d27e046025329972c8e06d65845f4562e59f0659bb4000aa452bd57",
     "agent/src/main/java/com/onurkat/reclazz/reload/SynchronizedBodyAdapter.java": "0340e35581c61f4a5d3fe3422c41fdaa5403bcbcddd680e747cfc4a31043f89f",
@@ -6606,11 +6606,11 @@
     "agent/src/main/java/com/onurkat/reclazz/transform/FieldAccessAdapter.java": "42b7b6f51b7de961d2f6ee3b7286d07167ccb885a058d4a38b1f89d17c417c8e",
     "agent/src/main/java/com/onurkat/reclazz/transform/MethodTrampolineAdapter.java": "e417b27e90a8bf6de60cdb5482a42ad1dca51b1b2b1cc67bde8798f3c7473d9e",
     "agent/src/main/java/com/onurkat/reclazz/transform/EnumCollectionTransformer.java": "13300bb225221f4ec970e91adc683a73f6a3a11914cd62017f0ae318ca9f132e",
-    "agent/src/main/java/com/onurkat/reclazz/transform/JacksonAccessorTransformer.java": "f894ff3932fa4c054230d54c11ec84147930a7f6accd5a15a8861c000098f077",
+    "agent/src/main/java/com/onurkat/reclazz/transform/JacksonAccessorTransformer.java": "80ba5fd456321a06e674c98c5d9a1be1c39042c2ac7b734613f9646deac961fe",
     "agent/src/main/java/com/onurkat/reclazz/transform/RabbitConsumerTransformer.java": "a568314f41d6d44902150b6544a21b4627bc50f6b1ca3feb2748a48e80295df5",
     "agent/src/main/java/com/onurkat/reclazz/transform/AddedMemberStripper.java": "9e1f91da33fa675e95af831dc8892893448a3e5bfd8160f6ca60f660e5bc834e",
     "agent/src/main/java/com/onurkat/reclazz/transform/MvcBindingTransformer.java": "946be753c1e1798abfdc924d52154d22abe69d17d952f8e0b29fde30e59056cf",
-    "agent/src/main/java/com/onurkat/reclazz/transform/ReclazzTransformer.java": "ba9c461883609fac9030746c4af763d5690da840d3a96b4c0bd56394c5e3caaa",
+    "agent/src/main/java/com/onurkat/reclazz/transform/ReclazzTransformer.java": "dd779f3eb0ed8d26fef2ecc0f7f9ce6ae005e05bbb57b9f9b326a082d7c5e812",
     "agent/src/main/java/com/onurkat/reclazz/transform/TransformedClassCache.java": "38b40c1483fa600f54d9192c95c08492bf62a1bf168f8f2f5109a76cd5f0f0fb",
     "agent/src/main/java/com/onurkat/reclazz/transform/ExcludedClasses.java": "0cac646e53b05a99b778825b9705df445cbdccd4e5aa761d6dac81300ca2fd76",
     "agent/src/main/java/com/onurkat/reclazz/transform/SafeClassWriter.java": "4258a10301a8dbf9dc10ce0f4a2df95760d36ff3cd41501a2c3982adcb19b2a3",
@@ -6627,8 +6627,8 @@
     "agent/src/main/java/com/onurkat/reclazz/transform/ExceptionHandlerTransformer.java": "c474ee57d0bbbce1ac3976942f348ed323a98b028cfe56c38d82c396bec64567",
     "agent/src/main/java/com/onurkat/reclazz/transform/TransformExclusions.java": "afa9a2033ce04281fa8c17c8b29669bf39d5dedeadc97403d0a0190977276453",
     "agent/src/main/java/com/onurkat/reclazz/compiler/ClasspathResolver.java": "9c82750874ac8261dd9eff90c63b42ab7f4c8e87d70d9501ced284a5a79f0dfd",
-    "agent/src/main/java/com/onurkat/reclazz/compiler/IncrementalCompiler.java": "7c6adb8fc702e082ba2946f3f9640a9ca2b11313087aa2e213e6d3fc70fe3638",
-    "agent/src/main/java/com/onurkat/reclazz/compiler/CompileAttempt.java": "8f914a8d091e96fcece12747f6c0f87f0e9b02f13de7bc53c83b941294b8e530",
+    "agent/src/main/java/com/onurkat/reclazz/compiler/IncrementalCompiler.java": "5660369c3a3cb7f04d3e880bb5214fb83a2d4e0a25354732bc81b66a33c99960",
+    "agent/src/main/java/com/onurkat/reclazz/compiler/CompileAttempt.java": "699c86f787da3e899e70d33fa1480dca1295b5b084e840b79653b669f3e43dba",
     "agent/src/main/java/com/onurkat/reclazz/spring/SpringKafkaListenerExpressions.java": "8ad5ec2813c6477a51b910468160f852f2fd2b8c3e8cd07eb680b56b904421ba",
     "agent/src/main/java/com/onurkat/reclazz/spring/SpringNewBeanRegistrar.java": "99672e89b500fbf53385a866cdd56d94df1d6d1026f8950a9f260cc7afa0d50e",
     "agent/src/main/java/com/onurkat/reclazz/spring/SpringLifecycleReloader.java": "b8f0c1121b8bb0bd5858dfda7fb6063da78b6c228d79ec9b38ad01e8dd184342",
@@ -6743,7 +6743,7 @@
           {
             "path": "docs/feature-evidence.md",
             "line": 3501,
-            "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+            "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
             "quote": "### P3C-TXEVENT-BEFORE-COMMIT"
           }
         ],
@@ -6783,7 +6783,7 @@
           {
             "path": "docs/feature-evidence.md",
             "line": 3525,
-            "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+            "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
             "quote": "### P3C-TXEVENT-AFTER-COMMIT"
           }
         ],
@@ -6823,7 +6823,7 @@
           {
             "path": "docs/feature-evidence.md",
             "line": 3549,
-            "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+            "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
             "quote": "### P3C-TXEVENT-AFTER-ROLLBACK"
           }
         ],
@@ -6863,7 +6863,7 @@
           {
             "path": "docs/feature-evidence.md",
             "line": 3573,
-            "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+            "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
             "quote": "### P3C-TXEVENT-AFTER-COMPLETION"
           }
         ],
@@ -6903,7 +6903,7 @@
           {
             "path": "docs/feature-evidence.md",
             "line": 3597,
-            "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+            "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
             "quote": "### P3C-TXEVENT-RETIRE"
           }
         ],
@@ -6943,7 +6943,7 @@
           {
             "path": "docs/feature-evidence.md",
             "line": 3621,
-            "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+            "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
             "quote": "### P3C-TXEVENT-FALLBACK"
           }
         ],
@@ -6983,7 +6983,7 @@
           {
             "path": "docs/feature-evidence.md",
             "line": 3957,
-            "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+            "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
             "quote": "### P3C-ASYNC-EVENT"
           }
         ],
@@ -7023,7 +7023,7 @@
           {
             "path": "docs/feature-evidence.md",
             "line": 4101,
-            "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+            "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
             "quote": "### P3C-CALLBACK-TRANSACTIONS"
           }
         ],
@@ -7063,7 +7063,7 @@
           {
             "path": "docs/feature-evidence.md",
             "line": 4125,
-            "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+            "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
             "quote": "### P3C-CALLBACK-CACHE"
           }
         ],
@@ -7103,7 +7103,7 @@
           {
             "path": "docs/feature-evidence.md",
             "line": 4725,
-            "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+            "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
             "quote": "### P3C-SPRING6-NATIVE-EVENT-FAILURE"
           }
         ],
@@ -7143,7 +7143,7 @@
           {
             "path": "docs/feature-evidence.md",
             "line": 4749,
-            "sha256": "4e20698d56cc47ba3c0448268d2a389bc20f378cec80e54d3dbdd96b5423be12",
+            "sha256": "45f4a2a5c2984aa6b4c7b928c316b10accc871b7dd33629f6dbb8756235f20c4",
             "quote": "### P3C-SPRING6-NATIVE-TXEVENT-FAILURE"
           }
         ],
@@ -9858,7 +9858,7 @@
       "agent/src/main/java/com/onurkat/reclazz/bootstrap/MvcSingletonBridge.java": "6861752df75dde039075be0c3e6a24a44b0f33f4233ad1685b7f82ed84f7121c",
       "agent/src/main/java/com/onurkat/reclazz/bootstrap/EnumSurgery.java": "bcdeacb9e0f737613b755a4ba60b7df29845eacb3a41a33c57236a813eed7f00",
       "agent/src/main/java/com/onurkat/reclazz/watcher/ChangeKind.java": "e79a2fa1559ebd96ab9622876c681db06f7259e7be15425d6b20c9837915ae6a",
-      "agent/src/main/java/com/onurkat/reclazz/watcher/FileWatcher.java": "0de2a56a42770ec93f71273a8fe7e00def141bca81dd458a3b3a4144e7ec22e1",
+      "agent/src/main/java/com/onurkat/reclazz/watcher/FileWatcher.java": "214c166f69de9a8d4b403df6b3e46dd2d2fc72f61822535530d129b292c3714a",
       "agent/src/main/java/com/onurkat/reclazz/watcher/ChangeEvent.java": "d7efd83bf62fa7380880dbaeb6ae318581cf8557b9af98ec925e36c3065d29b4",
       "agent/src/main/java/com/onurkat/reclazz/util/Reflect.java": "dbdcdc2a9ec9daceec4fc121c2659b002422b92520674fb316e7bdf8749b1554",
       "agent/src/main/java/com/onurkat/reclazz/util/ContentChangeGuard.java": "1250fce7c498842b0c7c56b73c4e336f06fee1ebacd6f5128845f55a3d24b7dc",
@@ -9898,7 +9898,7 @@
       "agent/src/main/java/com/onurkat/reclazz/hybris/impex/ImpexAutoImporter.java": "6e044387ff6a399011ea6836626976be7d6bd593b7ca87279429796b82d056bc",
       "agent/src/main/java/com/onurkat/reclazz/hybris/interceptor/InterceptorReloader.java": "daf563cdd605588e730e6fe4e416b6772f0dbe92486412dcfedf207089916527",
       "agent/src/main/java/com/onurkat/reclazz/agent/JvmCapabilityProbe.java": "1e0b13a6af91a96a92acb5a5ca9699b303bcf21a5a62ee19fbc60e03dc034dab",
-      "agent/src/main/java/com/onurkat/reclazz/agent/SessionReport.java": "3d42508921772c02c4b65b20faf6c8106cbca02ce45b5f26089af39a13d63e3b",
+      "agent/src/main/java/com/onurkat/reclazz/agent/SessionReport.java": "aa8092f7adc0b58430df6e994056551101f3df5794e307ed57c73c079191bf51",
       "agent/src/main/java/com/onurkat/reclazz/agent/ReloadVerification.java": "5ecd346a55d75f1e6ceb688e44e44c1adb35445a5c96bca15f3f4c6b883eefb4",
       "agent/src/main/java/com/onurkat/reclazz/agent/RequestReloadBoundary.java": "71a2eecdc61e41283e4cbdb9e39fe66d5de0e9c4b084ba15f6931639f004b329",
       "agent/src/main/java/com/onurkat/reclazz/agent/ReloadDiagnostics.java": "f21dc2e76ff1e92c4a1023c9447ab9cdcebefa9146610c5c78372042b795d29d",
@@ -9907,9 +9907,9 @@
       "agent/src/main/java/com/onurkat/reclazz/agent/ReloadStall.java": "c9dfb7f64a47aaf1f31bda457f508da5fe7b7b5e09d11e254b9439275c461dd2",
       "agent/src/main/java/com/onurkat/reclazz/agent/ClassReloader.java": "dbe39f267f56c8190152d610c812b2bb53d9fca8fccca5bd8c079d2b2451877c",
       "agent/src/main/java/com/onurkat/reclazz/agent/DoctorReport.java": "3742f0a7211e4acaa5daa54375091bb448948e458eb062f85250600ac646fe48",
-      "agent/src/main/java/com/onurkat/reclazz/agent/ReloadQueue.java": "d81117fc880dd99c6dda4d098a708413e7852adcd21a897ea91c0d1c2e4ade1e",
-      "agent/src/main/java/com/onurkat/reclazz/agent/StatusServer.java": "e02ba0dc4109508cedb63a5304501443eb698839f1a5f5ca488647eba9bee410",
-      "agent/src/main/java/com/onurkat/reclazz/agent/ReclazzAgent.java": "51f6024a03c1e78aa536296c58136f3bc3340f3ecae7913bcce882f24da55f52",
+      "agent/src/main/java/com/onurkat/reclazz/agent/ReloadQueue.java": "2a5893b36054a2386c2b5339b5c9b49a720712f431accd9a6d0c08f1391b26d6",
+      "agent/src/main/java/com/onurkat/reclazz/agent/StatusServer.java": "2f160bb50a40b89f5dc3dc2e7f1c6ebf21a2175ac95655ccb5be591133779454",
+      "agent/src/main/java/com/onurkat/reclazz/agent/ReclazzAgent.java": "c652dab09d4b50c354e5f910aceca3b09c499e5cf75d4a95f22a31400d5b3f29",
       "agent/src/main/java/com/onurkat/reclazz/reload/StructuralReloader.java": "51d541346cdef5ce50f4a0a23e85b1daf5b1a521eb1b73b8d47d4ca9b80fcc07",
       "agent/src/main/java/com/onurkat/reclazz/reload/CompanionGenerator.java": "28b0f4420d27e046025329972c8e06d65845f4562e59f0659bb4000aa452bd57",
       "agent/src/main/java/com/onurkat/reclazz/reload/SynchronizedBodyAdapter.java": "0340e35581c61f4a5d3fe3422c41fdaa5403bcbcddd680e747cfc4a31043f89f",
@@ -9939,11 +9939,11 @@
       "agent/src/main/java/com/onurkat/reclazz/transform/FieldAccessAdapter.java": "42b7b6f51b7de961d2f6ee3b7286d07167ccb885a058d4a38b1f89d17c417c8e",
       "agent/src/main/java/com/onurkat/reclazz/transform/MethodTrampolineAdapter.java": "e417b27e90a8bf6de60cdb5482a42ad1dca51b1b2b1cc67bde8798f3c7473d9e",
       "agent/src/main/java/com/onurkat/reclazz/transform/EnumCollectionTransformer.java": "13300bb225221f4ec970e91adc683a73f6a3a11914cd62017f0ae318ca9f132e",
-      "agent/src/main/java/com/onurkat/reclazz/transform/JacksonAccessorTransformer.java": "f894ff3932fa4c054230d54c11ec84147930a7f6accd5a15a8861c000098f077",
+      "agent/src/main/java/com/onurkat/reclazz/transform/JacksonAccessorTransformer.java": "80ba5fd456321a06e674c98c5d9a1be1c39042c2ac7b734613f9646deac961fe",
       "agent/src/main/java/com/onurkat/reclazz/transform/RabbitConsumerTransformer.java": "a568314f41d6d44902150b6544a21b4627bc50f6b1ca3feb2748a48e80295df5",
       "agent/src/main/java/com/onurkat/reclazz/transform/AddedMemberStripper.java": "9e1f91da33fa675e95af831dc8892893448a3e5bfd8160f6ca60f660e5bc834e",
       "agent/src/main/java/com/onurkat/reclazz/transform/MvcBindingTransformer.java": "946be753c1e1798abfdc924d52154d22abe69d17d952f8e0b29fde30e59056cf",
-      "agent/src/main/java/com/onurkat/reclazz/transform/ReclazzTransformer.java": "ba9c461883609fac9030746c4af763d5690da840d3a96b4c0bd56394c5e3caaa",
+      "agent/src/main/java/com/onurkat/reclazz/transform/ReclazzTransformer.java": "dd779f3eb0ed8d26fef2ecc0f7f9ce6ae005e05bbb57b9f9b326a082d7c5e812",
       "agent/src/main/java/com/onurkat/reclazz/transform/TransformedClassCache.java": "38b40c1483fa600f54d9192c95c08492bf62a1bf168f8f2f5109a76cd5f0f0fb",
       "agent/src/main/java/com/onurkat/reclazz/transform/ExcludedClasses.java": "0cac646e53b05a99b778825b9705df445cbdccd4e5aa761d6dac81300ca2fd76",
       "agent/src/main/java/com/onurkat/reclazz/transform/SafeClassWriter.java": "4258a10301a8dbf9dc10ce0f4a2df95760d36ff3cd41501a2c3982adcb19b2a3",
@@ -9960,8 +9960,8 @@
       "agent/src/main/java/com/onurkat/reclazz/transform/ExceptionHandlerTransformer.java": "c474ee57d0bbbce1ac3976942f348ed323a98b028cfe56c38d82c396bec64567",
       "agent/src/main/java/com/onurkat/reclazz/transform/TransformExclusions.java": "afa9a2033ce04281fa8c17c8b29669bf39d5dedeadc97403d0a0190977276453",
       "agent/src/main/java/com/onurkat/reclazz/compiler/ClasspathResolver.java": "9c82750874ac8261dd9eff90c63b42ab7f4c8e87d70d9501ced284a5a79f0dfd",
-      "agent/src/main/java/com/onurkat/reclazz/compiler/IncrementalCompiler.java": "7c6adb8fc702e082ba2946f3f9640a9ca2b11313087aa2e213e6d3fc70fe3638",
-      "agent/src/main/java/com/onurkat/reclazz/compiler/CompileAttempt.java": "8f914a8d091e96fcece12747f6c0f87f0e9b02f13de7bc53c83b941294b8e530",
+      "agent/src/main/java/com/onurkat/reclazz/compiler/IncrementalCompiler.java": "5660369c3a3cb7f04d3e880bb5214fb83a2d4e0a25354732bc81b66a33c99960",
+      "agent/src/main/java/com/onurkat/reclazz/compiler/CompileAttempt.java": "699c86f787da3e899e70d33fa1480dca1295b5b084e840b79653b669f3e43dba",
       "agent/src/main/java/com/onurkat/reclazz/spring/SpringKafkaListenerExpressions.java": "8ad5ec2813c6477a51b910468160f852f2fd2b8c3e8cd07eb680b56b904421ba",
       "agent/src/main/java/com/onurkat/reclazz/spring/SpringNewBeanRegistrar.java": "99672e89b500fbf53385a866cdd56d94df1d6d1026f8950a9f260cc7afa0d50e",
       "agent/src/main/java/com/onurkat/reclazz/spring/SpringLifecycleReloader.java": "b8f0c1121b8bb0bd5858dfda7fb6063da78b6c228d79ec9b38ad01e8dd184342",

@@ -76,10 +76,20 @@ public class StatusServer implements StatusReporter.StatusListener {
     private static final String DOCTOR = "DOCTOR";
     private volatile com.onurkat.reclazz.watcher.FileWatcher doctorWatcher;
     private volatile java.util.function.Supplier<String> buildHold;
+    private String lastWatcherState="starting";
 
     void setDoctorContext(com.onurkat.reclazz.watcher.FileWatcher watcher, java.util.function.Supplier<String> hold) {
         doctorWatcher = watcher;
         buildHold = hold;
+        // Warm the read-only socket/report path while the agent jar is intact.
+        DoctorReport.snapshot("warmup",verification,watcher,"none",false,false);
+        if(health!=null)health.get();
+        Failures.describe(new IllegalStateException("warmup"));
+        RestartLedger.size();
+        RestartLedger.class.getDeclaredClasses();
+        RestartLedger.digest();
+        StatusReporter.class.getDeclaredClasses();
+        StatusServer.class.getDeclaredClasses();
     }
     private volatile ReloadVerification verification;
 
@@ -142,6 +152,8 @@ public class StatusServer implements StatusReporter.StatusListener {
                 Supervised.once("The heartbeat", this::sendHeartbeat),
                 HEARTBEAT_INTERVAL_SECONDS, HEARTBEAT_INTERVAL_SECONDS, TimeUnit.SECONDS);
 
+        heartbeatExecutor.scheduleAtFixedRate(
+                Supervised.once("Watcher health",this::checkWatcherHealth),1,1,TimeUnit.SECONDS);
         StatusReporter.addListener(this);
         StatusReporter.info("Status server listening on 127.0.0.1:" + actualPort);
     }
@@ -378,6 +390,21 @@ public class StatusServer implements StatusReporter.StatusListener {
             );
         }
         broadcast(json);
+    }
+
+    private void checkWatcherHealth() {
+        var watcher=doctorWatcher;
+        if(watcher==null)return;
+        var snapshot=watcher.health();
+        if(snapshot.state().equals(lastWatcherState))return;
+        String previous=lastWatcherState;lastWatcherState=snapshot.state();
+        if(snapshot.unhealthy()) {
+            if(snapshot.state().equals("stopped"))
+                RestartLedger.note("The file watcher", "it stopped during this session ("+snapshot.cause()+")");
+            StatusReporter.error(snapshot.line());
+        }
+        else if(snapshot.state().equals("watching") && (previous.equals("stalled") || previous.equals("stopped")))
+            StatusReporter.info("file watcher resumed");
     }
 
     private void sendHeartbeat() {

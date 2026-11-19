@@ -64,6 +64,7 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
                         },
                         () -> context.holdGeneratedClasses(hybris.getGeneratedClassDirs().values().stream()
                                 .flatMap(List::stream).toList()), context::generatedOutputAccepted);
+                codegen.setWatchedExtensions(platform::shouldWatch);
             } else codegen = null;
             java.util.Map<Capability, PlatformChangeHandler> handlers = new java.util.EnumMap<>(Capability.class);
             // This dispatch also existed for non-SAP contexts; preserve it.

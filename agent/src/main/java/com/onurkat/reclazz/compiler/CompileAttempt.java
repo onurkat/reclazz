@@ -45,19 +45,33 @@ public final class CompileAttempt {
             }
             if (!errors.isEmpty()) return IncrementalCompiler.CompileResult.failure(errors);
 
+            Set<Path> savedSources=new HashSet<>();
+            modules.values().forEach(sources->sources.forEach(p->savedSources.add(p.toAbsolutePath().normalize())));
             Map<Path, byte[]> files = new LinkedHashMap<>();
             Map<String, byte[]> classes = new LinkedHashMap<>();
+            List<Output> emitted = new ArrayList<>();
+            Set<String> byproducts = new LinkedHashSet<>();
             for (var output : outputs.entrySet()) {
                 try (var walk = Files.walk(output.getValue())) {
                     for (Path file : walk.filter(Files::isRegularFile)
                             .filter(f -> f.toString().endsWith(".class")).sorted().toList()) {
                         Path relative = output.getValue().relativize(file);
                         byte[] bytes = Files.readAllBytes(file);
-                        files.put(compiler.publicationDir(output.getKey(), relative).resolve(relative), bytes);
                         String name = relative.toString().replace(java.io.File.separatorChar, '.');
-                        classes.put(name.substring(0, name.length() - 6), bytes);
+                        name=name.substring(0,name.length()-6);
+                        boolean own = ownSource(bytes, savedSources);
+                        Path directory = compiler.publicationDir(output.getKey(), relative);
+                        emitted.add(new Output(directory.resolve(relative), name, bytes, own,
+                                compiler.mayPublish(directory, bytes)));
+                        if (!own) byproducts.add(name);
                     }
                 }
+            }
+            var proof = compiler.byproductProofFor(byproducts);
+            for (Output output : emitted) {
+                if (!output.own && proof.test(output.name, output.bytes)) continue;
+                if (output.publish) files.put(output.path, output.bytes);
+                classes.put(output.name, output.bytes);
             }
             for (var file : files.entrySet()) {
                 try {
@@ -80,6 +94,20 @@ public final class CompileAttempt {
                 }
             }
         }
+    }
+
+    private record Output(Path path, String name, byte[] bytes, boolean own, boolean publish) { }
+
+    private static boolean ownSource(byte[] bytes,Set<Path> saved) {
+        var node=new org.objectweb.asm.tree.ClassNode();
+        new org.objectweb.asm.ClassReader(bytes).accept(node,org.objectweb.asm.ClassReader.SKIP_CODE|org.objectweb.asm.ClassReader.SKIP_FRAMES);
+        if(node.sourceFile==null)return true; // Unknown provenance is never skip authority.
+        int slash=node.name.lastIndexOf('/');
+        Path relative=Path.of((slash<0 ? "" : node.name.substring(0,slash+1))+node.sourceFile);
+        if(saved.stream().anyMatch(p->p.endsWith(relative)))return true;
+        // javac also accepts a source outside its package's directory layout.
+        // An ambiguous same basename is conservatively an own output.
+        return saved.stream().anyMatch(p->p.getFileName().toString().equals(node.sourceFile));
     }
 
     private void order(String module, Map<String, List<Path>> modules, List<String> order, Set<String> visiting) {

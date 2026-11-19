@@ -238,6 +238,7 @@ public class ExtensionScanner {
         boolean hasCoreModule = Files.isDirectory(extPath.resolve("src"));
         boolean hasWebModule = Files.isDirectory(extPath.resolve("web").resolve("src"));
         boolean hasBackofficeModule = false;
+        String classPrefix=null,packageRoot=null;
         List<String> requiredExtensions = new ArrayList<>();
 
         if (Files.exists(extInfoFile)) {
@@ -245,10 +246,13 @@ public class ExtensionScanner {
                 DocumentBuilder builder = newDocumentBuilder();
                 Document doc = builder.parse(extInfoFile.toFile());
 
+                NodeList definitions=doc.getElementsByTagName("extension");
+                if(definitions.getLength()>0)classPrefix=((Element)definitions.item(0)).getAttribute("classprefix");
                 // Check for coremodule and webmodule elements
                 NodeList coreModules = doc.getElementsByTagName("coremodule");
                 if (coreModules.getLength() > 0) {
                     hasCoreModule = true;
+                    packageRoot=((Element)coreModules.item(0)).getAttribute("packageroot");
                 }
                 NodeList webModules = doc.getElementsByTagName("webmodule");
                 if (webModules.getLength() > 0) {
@@ -299,7 +303,7 @@ public class ExtensionScanner {
                        !pathStr.contains("/bin/ext/");
         }
 
-        return new ExtensionInfo(name, extPath, requiredExtensions, hasCoreModule, hasWebModule, isCustom, hasBackofficeModule);
+        return new ExtensionInfo(name, extPath, requiredExtensions, hasCoreModule, hasWebModule, isCustom, hasBackofficeModule, classPrefix, packageRoot);
     }
 
     private void scanCustomExtensions(Path customDir, Map<String, ExtensionInfo> extensions,

@@ -11,6 +11,10 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DoctorTest {
+    @Test void stalledWatcherRemainsValidEvidence() throws Exception {
+        JsonObject data=evidence("DOCTOR stalled");data.addProperty("watcherState","stalled");
+        assertEquals("stalled",DoctorResult.parse(data.toString(),"stalled").get("watcherState").getAsString());
+    }
     static JsonObject evidence(String command) {
         JsonObject d=new JsonObject();d.addProperty("requestId",command.substring("DOCTOR ".length()));
         d.addProperty("status","observed");d.addProperty("detail","Point-in-time evidence");
