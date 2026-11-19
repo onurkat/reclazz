@@ -527,51 +527,11 @@ public class ReclazzAgent {
                 statusServer.setDiagnoser(diagnostics::explain);
             }
 
-            // Set up incremental compiler (only if autoCompile is enabled)
-            final IncrementalCompiler compiler;
+            var compilerHolder = new java.util.concurrent.atomic.AtomicReference<IncrementalCompiler>();
             if (config.isAutoCompile()) {
-                com.onurkat.reclazz.transform.AdmittedBytes.clear();
-                if (isHybris) {
-                    var hybris = ((HybrisPlatformContext) platformContext).getHybrisContext();
-                    com.onurkat.reclazz.platform.BootstrapGeneratedCopies.remove(hybris.getPlatformHome(),
-                            hybris.getExtensions().values().stream()
-                                    .filter(ext -> platformContext.shouldWatch(ext.getName())).toList());
-                }
-                String classpath = platformContext.resolveClasspath();
-                if (isHybris) {
-                    compiler = new IncrementalCompiler(classpath,
-                            ((HybrisPlatformContext) platformContext).getHybrisContext(),
-                            ((HybrisPlatformContext) platformContext).getBackofficeClassDirs().keySet());
-                } else {
-                    compiler = new IncrementalCompiler(classpath, platformContext);
-                }
-                compiler.setByproductProof(names -> {
-                    Map<String, List<Class<?>>> byName = new java.util.HashMap<>();
-                    if (transformContext != null && instrumentation != null) {
-                        java.util.Set<String> watched = new java.util.HashSet<>();
-                        for (String name : names)
-                            if (transformContext.isWatched(name.replace('.', '/'))) watched.add(name);
-                        // One census per attempt, never Class.forName: an unloaded
-                        // constant owner must still reach dependent rebuilding.
-                        if (!watched.isEmpty()) for (Class<?> loaded : instrumentation.getAllLoadedClasses()) {
-                            String name = loaded.getName();
-                            if (watched.contains(name))
-                                byName.computeIfAbsent(name, ignored -> new java.util.ArrayList<>()).add(loaded);
-                        }
-                    }
-                    return (name, bytes) -> {
-                        List<Class<?>> loaded = byName.get(name);
-                        if (loaded == null) return false;
-                        for (Class<?> type : loaded)
-                            if (!com.onurkat.reclazz.transform.AdmittedBytes.matches(type, bytes)) return false;
-                        return true;
-                    };
-                });
+                prepareCompiler(platformContext); compilerHolder.set(createCompiler(platformContext));
                 StatusReporter.info("AutoCompile enabled: watching source files, compiling internally");
-            } else {
-                compiler = null;
-                StatusReporter.info("Default mode: watching compiled class files");
-            }
+            } else StatusReporter.info("Default mode: watching compiled class files");
 
             // Set up class reloader
             ClassReloader reloader = new ClassReloader(instrumentation, config);
@@ -649,7 +609,7 @@ public class ReclazzAgent {
                 }
             };
             reloadQueue = ReloadQueue.start(
-                    event -> handleChange(event, compiler, reloader,
+                    event -> handleChange(event, compilerHolder.get(), reloader,
                             springOrchestrator, modules, watcher::dispatchPlatformChange, config),
                     batchBracket, config.isRequestBoundary() ? RequestReloadBoundary::run : Runnable::run,
                     new ReloadQueue.SavePreparer() {
@@ -662,8 +622,15 @@ public class ReclazzAgent {
             reloadQueue.setVerification(verification);
             watcher.onGeneratedOutputHold(reloadQueue::generatedOutputHeld);
             generatedClassScan=watcher::scanNow;
-            heldSourceRetry=compiler == null ? null : () -> retryHeldSourcesAfterCodegen(reloadQueue,
-                    () -> handleJavaBatch(compiler, reloader, springOrchestrator, modules));
+            heldSourceRetry=() -> retryHeldSourcesAfterCodegen(reloadQueue, () -> {
+                var compiler = compilerHolder.get();
+                if (config.liveOptions().autoCompile() && compiler != null)
+                    handleJavaBatch(compiler, reloader, springOrchestrator, modules);
+            });
+            var compilerLifecycle = new CompilerLifecycle(reloadQueue, watcher, compilerHolder,
+                    () -> prepareCompiler(platformContext), () -> createCompiler(platformContext),
+                    () -> { var retry=heldSourceRetry; if(retry!=null)retry.run(); });
+            if (statusServer != null) statusServer.setLiveConfig(new LiveConfigController(config, isHybris, compilerLifecycle::transition));
             final ReloadQueue repairQueue=reloadQueue;
             final StatusServer repairTimer=statusServer;
             springOrchestrator.setOperationScheduler(repairTimer==null?null:repairTimer::scheduleOperationRepair,
@@ -688,7 +655,7 @@ public class ReclazzAgent {
                 int classFiles = 0;
                 for (ChangeEvent event : events) {
                     String fn = event.getPath().getFileName().toString();
-                    if (fn.endsWith(".java") && config.isAutoCompile() && compiler != null) {
+                    if (fn.endsWith(".java") && config.isAutoCompile() && compilerHolder.get() != null) {
                         synchronized (pendingJavaChanges) {
                             javaChangeGeneration++;
                             speculativeJava.remove(event.getPath());
@@ -703,7 +670,7 @@ public class ReclazzAgent {
                     }
                     reloadQueue.submitAutomatic(event.getPath().toString(),
                             "Handling " + event.getPath().getFileName(),
-                            () -> handleChange(event, compiler, reloader,
+                            () -> handleChange(event, compilerHolder.get(), reloader,
                                     springOrchestrator, modules, watcher::dispatchPlatformChange, config));
                 }
                 if (classFiles > 0) {
@@ -717,8 +684,9 @@ public class ReclazzAgent {
             // Only when Reclazz is the compiler: otherwise the project's build
             // owns the output directory, and writing into it behind that
             // build's back is not ours to do.
-            if (config.isAutoCompile() && compiler != null) {
+            {
                 constantRebuild = byModule -> {
+                    if (!config.liveOptions().autoCompile() || compilerHolder.get() == null) return;
                     synchronized (pendingJavaChanges) {
                         for (var moduleEntry : byModule.entrySet()) {
                             for (Path file : moduleEntry.getValue()) {
@@ -732,8 +700,11 @@ public class ReclazzAgent {
                         }
                     }
                     reloadQueue.submitAutomatic("constant-dependents", "Rebuilding constant dependents",
-                            () -> handleJavaBatch(compiler, reloader,
-                                    springOrchestrator, modules));
+                            () -> {
+                                var compiler=compilerHolder.get();
+                                if(config.liveOptions().autoCompile() && compiler!=null)
+                                    handleJavaBatch(compiler, reloader, springOrchestrator, modules);
+                            });
                 };
             }
 
@@ -930,6 +901,50 @@ public class ReclazzAgent {
                 throw new IllegalStateException("Optional platform automation factory could not be created", failure);
             }
         });
+    }
+
+    private static void prepareCompiler(PlatformContext platform) {
+        com.onurkat.reclazz.transform.AdmittedBytes.clear();
+        if (platform instanceof HybrisPlatformContext hybrisPlatform) {
+            var hybris = hybrisPlatform.getHybrisContext();
+            com.onurkat.reclazz.platform.BootstrapGeneratedCopies.remove(hybris.getPlatformHome(),
+                    hybris.getExtensions().values().stream().filter(ext -> platform.shouldWatch(ext.getName())).toList());
+        }
+    }
+    private static IncrementalCompiler createCompiler(PlatformContext platform) {
+        boolean isHybris = platform.getPlatformId() == PlatformContext.Platform.HYBRIS;
+        IncrementalCompiler compiler;
+                String classpath = platform.resolveClasspath();
+                if (isHybris) {
+                    compiler = new IncrementalCompiler(classpath,
+                            ((HybrisPlatformContext) platform).getHybrisContext(),
+                            ((HybrisPlatformContext) platform).getBackofficeClassDirs().keySet());
+                } else {
+                    compiler = new IncrementalCompiler(classpath, platform);
+                }
+                compiler.setByproductProof(names -> {
+                    Map<String, List<Class<?>>> byName = new java.util.HashMap<>();
+                    if (transformContext != null && instrumentation != null) {
+                        java.util.Set<String> watched = new java.util.HashSet<>();
+                        for (String name : names)
+                            if (transformContext.isWatched(name.replace('.', '/'))) watched.add(name);
+                        // One census per attempt, never Class.forName: an unloaded
+                        // constant owner must still reach dependent rebuilding.
+                        if (!watched.isEmpty()) for (Class<?> loaded : instrumentation.getAllLoadedClasses()) {
+                            String name = loaded.getName();
+                            if (watched.contains(name))
+                                byName.computeIfAbsent(name, ignored -> new java.util.ArrayList<>()).add(loaded);
+                        }
+                    }
+                    return (name, bytes) -> {
+                        List<Class<?>> loaded = byName.get(name);
+                        if (loaded == null) return false;
+                        for (Class<?> type : loaded)
+                            if (!com.onurkat.reclazz.transform.AdmittedBytes.matches(type, bytes)) return false;
+                        return true;
+                    };
+                });
+        return compiler;
     }
 
     private static void handleChange(ChangeEvent event,

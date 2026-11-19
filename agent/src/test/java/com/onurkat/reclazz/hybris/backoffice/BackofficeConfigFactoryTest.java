@@ -13,13 +13,14 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BackofficeConfigFactoryTest {
-    private void apply(GenericApplicationContext context,AgentConfig config) {
+    private void apply(GenericApplicationContext context,AgentConfig config) { apply(module(context,config)); }
+    private PremiumModule module(GenericApplicationContext context,AgentConfig config) {
         PlatformContext platform=(PlatformContext)java.lang.reflect.Proxy.newProxyInstance(getClass().getClassLoader(),new Class<?>[]{PlatformContext.class},(p,m,a)->switch(m.getName()){
             case "getPlatformId" -> PlatformContext.Platform.GENERIC;
             case "getAllApplicationContexts" -> List.of(context);
             default -> throw new UnsupportedOperationException(m.getName());
         });
-        PremiumModule module=new SapPremiumModuleFactory().create(new PremiumContext(){
+        return new SapPremiumModuleFactory().create(new PremiumContext(){
             public PlatformContext platform(){return platform;}
             public AgentConfig config(){return config;}
             public PropertyFileSnapshots propertySnapshots(){return new PropertyFileSnapshots();}
@@ -27,6 +28,8 @@ class BackofficeConfigFactoryTest {
             public int applyLoggerLevels(Map<String,String> content,Collection<String> keys){throw new AssertionError();}
             public boolean requestRunningSystemUpdate(){throw new AssertionError();}
         });
+    }
+    private void apply(PremiumModule module) {
         module.changeHandlers().get(Capability.BACKOFFICE_RELOAD).handle(new PlatformChangeHandler.Change(Capability.BACKOFFICE_RELOAD,Path.of("example-backoffice-config.xml"),"MODIFIED","example","resources"));
     }
     @Test void realFactoryUsesOwnerTenantSessionAndRestoresCallerOnSuccessAndFailure(@TempDir Path dir) throws Exception {
@@ -56,4 +59,14 @@ class BackofficeConfigFactoryTest {
             assertTrue(messages.stream().anyMatch(m->m.contains("No running backoffice")));assertTrue(messages.stream().noneMatch(m->m.startsWith("OK:")));
         }
     }
+    @Test void resetFollowsLiveOption(@TempDir Path dir)throws Exception {
+        ProcessTenantFixture.reset();
+        try(var loader=BackofficeConfigReloaderTest.fixture(dir);var ctx=new GenericApplicationContext()){
+            Object service=BackofficeConfigReloaderTest.make(loader,"Service");service.getClass().getField("checkTenant").setBoolean(service,true);ctx.getBeanFactory().registerSingleton("cockpitConfigurationService",service);ctx.refresh();ProcessTenantFixture.attach(ctx);ctx.setClassLoader(loader);
+            var config=AgentConfig.parse("backofficeConfigReset=false");var module=module(ctx,config);apply(module);assertEquals(0,BackofficeConfigReloaderTest.count(service,"defaults"));
+            config.publishLiveOptions(config.liveOptions().with(Map.of("backofficeConfigReset",true)));apply(module);assertEquals(1,BackofficeConfigReloaderTest.count(service,"defaults"));
+            config.publishLiveOptions(config.liveOptions().with(Map.of("backofficeConfigReset",false)));apply(module);assertEquals(1,BackofficeConfigReloaderTest.count(service,"defaults"));
+        }finally{ProcessTenantFixture.reset();}
+    }
+
 }

@@ -92,6 +92,11 @@ public class ImpexAutoImporter {
      * Import an ImpEx file into the running system.
      */
     public void importFile(Path impexFile, HybrisContext context) {
+        importFile(impexFile, context, allowRemove);
+    }
+
+    /** The caller passes the REMOVE policy from the same snapshot that admitted this import. */
+    public void importFile(Path impexFile, HybrisContext context, boolean allowRemove) {
         Thread caller = Thread.currentThread();
         ClassLoader originalLoader = caller.getContextClassLoader();
         boolean nativeScope = false;

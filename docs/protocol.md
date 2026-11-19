@@ -68,10 +68,12 @@ to every client, except requested BUILD receipts, RELOAD state, DOCTOR observati
 | `VERIFY <token> <class> <sha256>` | read the latest exact-byte reload receipt for one class; requester-only structured result (below) |
 | `DOCTOR <token>` | read bounded JVM, session, watcher and capability evidence; requester-only result (below) |
 | `RELOAD <action> request=<token>` | pause/resume/status automatic reload admission; requester-only correlated state (below) |
+| `CONFIG <action> <id> ...` | GET reads effective runtime options; SET with base and key/value pairs applies one atomic revision; requester-only correlated results (below) |
 | `SCAN [request=<token>]` | look at the watched directories now, instead of on the next poll. Files changed since their recorded baseline, or first seen with an mtime after the original watched-root registration, are handled as usual. Older unseen files establish a silent baseline and are not auto-applied just because they were found. Send it when a build has just finished |
 
-Nothing a client sends makes the agent load, reload or run anything it
-would not have on its own.
+CONFIG replies are also requester-only. CONFIG changes only the listed runtime
+options; it accepts no script, class payload or arbitrary path. Actual compilation,
+reload and platform actions still use the existing watched-file/admission pipeline.
 
 ## SCAN completion
 
@@ -363,3 +365,67 @@ receipts and one total time budget. It preserves earlier receipts and marks
 remaining items unavailable on connection/evidence failure. Cancelling the MCP
 request closes only that observation connection; the running agent's reload and
 build ownership are unaffected. See [MCP batch and cancellation](mcp-server.md#bounded-batch-verification-and-cancellation).
+
+
+## Live runtime settings
+
+`CONFIG GET <id>` returns an INFO message beginning `CONFIG <id> OK rev=<n>`,
+followed by all six effective booleans, `live=<keys>`, `watchExtensions.count=<n>`
+and `watchExtensions.sha256=<hash>`. The id is 1–64 ASCII letters, digits,
+underscores or hyphens. Keys in `live` are the only options the peer may SET:
+
+| Key | Runtime scope |
+|---|---|
+| `autoCompile` | internal Java compiler and source/class watcher transition |
+| `autoImpex` | ImpEx import on a save whose action starts after the change |
+| `impexAllowRemove` | REMOVE permission captured with the import decision |
+| `backofficeConfigReset` | Backoffice reset on the next configuration dispatch |
+| `autoUpdateRunningSystem` | update policy captured at codegen/localization operation start |
+| `autoSolrReindex` | new indexing enqueues; queued/running work drains when disabled |
+
+A SAP agent advertises all six; a non-SAP agent advertises only `autoCompile`.
+The watch filter hash is SHA-256 of sorted, distinct nonblank configured names
+joined by semicolons (UTF-8); `*` represents watch-all. Count/hash are display
+and comparison evidence, never SET inputs. They describe the startup filter,
+not the actual registered-directory count. DOCTOR's `options` object, when the
+runtime controller is wired, includes the revision, six booleans and a watch
+filter count/hash plus at most five names, each bounded to 40 characters, with
+an explicit `truncated` flag. Its existing 3900-character budget still applies.
+
+`CONFIG SET <id> base=<rev> <key>=<value>...` accepts one to six live boolean
+changes. Values are exactly `true` or `false`; keys are unique. The full batch
+is validated before publication. Unknown keys, duplicates, malformed revisions
+and unsupported platform keys make no option change. Attempting
+`watchExtensions` (alone or in a batch) returns `ERROR restart_required`;
+watch ownership remains a startup-only setting.
+
+One serial settings executor compares `base` with the current revision when the
+transaction executes. A matching revision publishes the entire options snapshot
+and increments the revision once; a stale one returns
+`CONFIG <id> CONFLICT rev=<current> ...` with the effective fields. Other replies
+are `CONFIG <id> ERROR <code> <reason>`, with `bad_request`, `unknown_key`,
+`restart_required`, `unavailable` or `failed`. Reasons are bounded. Before runtime
+wiring, GET returns `ERROR unavailable`; this is distinct from an older agent
+that ignores CONFIG entirely.
+
+AutoCompile preparation runs on the reload executor. It waits for BUILD ownership,
+manual pause and native generated-output admission without releasing their holds.
+Generation checks and protected cleanup/commit steps share the queue lock. A new
+hold invalidates the staged transition and requeues it. Registration failure leaves
+old roots/options intact; startup-equivalent admitted-byte/generated-copy cleanup
+is idempotent and is not rolled back if subsequent compiler construction fails.
+The compiler is retained idle when disabled and reused on enable.
+
+After ten seconds a slow/held SET reports `CONFIG <id> PENDING rev=<current>`.
+It keeps the same request id until a terminal OK, CONFLICT or ERROR reply follows.
+The client may read GET while waiting but must not resend the pending SET. GET
+alone cannot attribute a revision advanced by an earlier queued request to this
+transaction. The plugin retains pending correlation alongside its GET requests,
+drops replies from old connection generations, refetches once on a conflict and
+never echoes a successful acknowledgement as another SET. The latest Apply owns
+the status line. On reconnect it GETs effective values and SETs only supported
+differences from persisted project settings. A watch-filter mismatch is shown as
+restart-required without sending that setting.
+
+The startup argument line is unchanged. With no IDE connection after a restart,
+its original options apply; the plugin resends saved differences on reconnect.

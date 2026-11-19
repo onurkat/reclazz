@@ -56,6 +56,25 @@ class ReloadManager(private val project: Project) : Disposable {
     var pauseState: PauseState? = null
         private set
 
+    private val connectionGeneration = java.util.concurrent.atomic.AtomicLong(0)
+    @Volatile var liveSettingsStatus: String = "No running agent connected; saved settings will be sent on reconnect."
+        private set
+    private val liveSettingsTimer = Executors.newSingleThreadScheduledExecutor { task ->
+        Thread(task, "Reclazz-LiveSettings").apply { isDaemon = true }
+    }
+    private val liveSettingsSync = LiveSettingsSync(
+        desired = {
+            val state = ReclazzSettings.getInstance(project).state.copy()
+            LiveSettingsSync.Desired(mapOf("autoCompile" to state.autoCompile, "autoImpex" to state.autoImpex,
+                "impexAllowRemove" to state.impexAllowRemove, "autoUpdateRunningSystem" to state.autoUpdateRunningSystem,
+                "autoSolrReindex" to state.autoSolrReindex, "backofficeConfigReset" to state.backofficeConfigReset), state.watchExtensions)
+        },
+        send = { generation, command -> generation == connectionGeneration.get() && (statusClient?.send(command) ?: false) },
+        report = { message -> if (message != liveSettingsStatus) { liveSettingsStatus = message; notifyListeners(AgentEvent("LIVE_SETTINGS", message, "")) } },
+        defer = { delay, action -> if (!liveSettingsTimer.isShutdown) liveSettingsTimer.schedule({ action() }, delay, TimeUnit.MILLISECONDS) }
+    )
+    fun applyLiveSettings() { liveSettingsSync.apply() }
+
     private val reloadRequests = AtomicInteger(0)
     @Volatile
     private var pausePoller: ScheduledExecutorService? = null
@@ -96,10 +115,13 @@ class ReloadManager(private val project: Project) : Disposable {
                 }
                 // Disconnect on pooled thread, stopReconnect() may block up to 2s
                 disconnectFromAgent()
+                val generation = connectionGeneration.incrementAndGet()
                 statusClient = AgentStatusClient(
                     port = port,
-                    onEvent = { event -> handleEvent(event) },
-                    onDisconnect = {
+                    onEvent = { event -> if (generation == connectionGeneration.get() && !project.isDisposed) handleEvent(event) },
+                    onDisconnect = disconnected@{
+                        if (!connectionGeneration.compareAndSet(generation, generation + 1)) return@disconnected
+                        liveSettingsSync.disconnected(generation)
                         isConnected = false
                         pauseState = null
                         stopPausePoll()
@@ -122,6 +144,7 @@ class ReloadManager(private val project: Project) : Disposable {
     enum class ConnectResult { CONNECTED, NO_AGENT_FOUND, FAILED, ALREADY_IN_PROGRESS }
 
     fun disconnectFromAgent() {
+        liveSettingsSync.disconnected(connectionGeneration.getAndIncrement())
         stopReconnect()
         stopPausePoll()
         pauseState = null
@@ -158,6 +181,7 @@ class ReloadManager(private val project: Project) : Disposable {
     }
 
     private fun handleEvent(event: AgentEvent) {
+        if (event.level == "INFO" && liveSettingsSync.receive(connectionGeneration.get(), event.message)) return
         if (event.level == "INFO" && event.message.startsWith("RELOAD_STATE ")) {
             handleReloadState(event)
             return
@@ -170,6 +194,7 @@ class ReloadManager(private val project: Project) : Disposable {
                 reportVersionMismatchOnce(event.agentVersion)
                 // The pause outlives this connection, so learn it now.
                 sendReloadControl("status")
+                liveSettingsSync.connected(connectionGeneration.get())
             }
             "RELOAD", "STRUCTURAL_RELOAD" -> {
                 // Both light (method-body) and heavy (structural / companion
@@ -212,6 +237,7 @@ class ReloadManager(private val project: Project) : Disposable {
      * dismissed and, for a while, could not be.
      */
     fun postLocalMessage(level: String, message: String) {
+        if (level == "LIVE_SETTINGS") liveSettingsStatus = message
         notifyListeners(AgentEvent(level, message, ""))
     }
 
@@ -384,8 +410,8 @@ class ReloadManager(private val project: Project) : Disposable {
     }
 
     override fun dispose() {
-        stopReconnect()
         disconnectFromAgent()
+        liveSettingsTimer.shutdownNow()
     }
 
     companion object {

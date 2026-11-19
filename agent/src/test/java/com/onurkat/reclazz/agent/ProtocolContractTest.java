@@ -157,4 +157,26 @@ class ProtocolContractTest {
         assertTrue(replies.get(0).contains("unavailable"));assertFalse(replies.get(0).contains("enqueued"));
     }
 
+    @Test void configCommandRepliesWhenControllerUnavailable() {
+        var server=new StatusServer(0,null);var replies=new java.util.ArrayList<String>();
+        server.handleCommand("CONFIG GET live1",replies::add);
+        assertEquals(1,replies.size(),"valid CONFIG request must get a correlated reply");
+        assertTrue(replies.get(0).contains("CONFIG live1 ERROR unavailable"));
+    }
+
+    @Test void pendingConfigKeepsItsTerminalConflictCorrelation()throws Exception {
+        var config=com.onurkat.reclazz.config.AgentConfig.parse(null);var admitted=new java.util.concurrent.CountDownLatch(1);var finish=new java.util.concurrent.CompletableFuture<Void>();var publish=new java.util.concurrent.atomic.AtomicReference<Runnable>();
+        try(var controller=new LiveConfigController(config,true,(key,target,commit)->{publish.set(commit);admitted.countDown();return finish;},20)){
+            var first=java.util.concurrent.CompletableFuture.supplyAsync(()->controller.reply("CONFIG SET first base=0 autoCompile=true",20));assertTrue(admitted.await(2,java.util.concurrent.TimeUnit.SECONDS));
+            var server=new StatusServer(0,null);server.setLiveConfig(controller);var replies=new java.util.concurrent.CopyOnWriteArrayList<String>();server.handleCommand("CONFIG SET second base=0 autoImpex=true",replies::add);
+            assertEquals(1,replies.size());assertTrue(replies.get(0).contains("CONFIG second PENDING rev=0"));assertTrue(first.get(2,java.util.concurrent.TimeUnit.SECONDS).contains("PENDING"));
+            publish.get().run();finish.complete(null);long end=System.nanoTime()+java.util.concurrent.TimeUnit.SECONDS.toNanos(2);while(replies.size()<2&&System.nanoTime()<end)Thread.sleep(10);
+            assertEquals(2,replies.size());assertTrue(replies.get(1).contains("CONFIG second CONFLICT rev=1"));assertFalse(config.isAutoImpex());assertTrue(config.isAutoCompile());
+        }
+    }
+
+    @Test void configGrammarAndPendingResultsAreDocumented()throws Exception {
+        String text=doc();for(String part:List.of("CONFIG GET <id>","CONFIG SET <id> base=<rev>","live=<keys>","watchExtensions.sha256","same request id","PENDING","requester-only"))assertTrue(text.contains(part),part);
+    }
+
 }

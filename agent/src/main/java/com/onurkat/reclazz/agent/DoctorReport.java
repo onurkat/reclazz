@@ -19,6 +19,10 @@ final class DoctorReport {
 
     static String snapshot(String token, ReloadVerification verification, FileWatcher watcher,
                            String hold, boolean build, boolean scan, boolean scanCompletion) {
+        return snapshot(token, verification, watcher, hold, build, scan, scanCompletion, null);
+    }
+    static String snapshot(String token, ReloadVerification verification, FileWatcher watcher,
+                           String hold, boolean build, boolean scan, boolean scanCompletion, String options) {
         FileWatcher.WatchEvidence watch = watcher == null
                 ? new FileWatcher.WatchEvidence("unavailable", 0, 0, List.of(), false) : watcher.doctorEvidence();
         String json = "{" + field("requestId", token) + "," + field("status", "observed")
@@ -38,6 +42,7 @@ final class DoctorReport {
                 + ",\"buildOwnershipSupported\":" + build
                 + ",\"verifySupported\":" + (verification != null)
                 + ",\"scanSupported\":" + scan + ",\"scanCompletionSupported\":" + scanCompletion
+                + (options == null ? "" : ",\"options\":" + options)
                 + ",\"reloadConfirmed\":false}";
         // StatusServer's outer message escaping must never truncate a JSON receipt.
         if (json.length() > 3900) throw new IllegalStateException("Doctor report exceeds bounded message size");

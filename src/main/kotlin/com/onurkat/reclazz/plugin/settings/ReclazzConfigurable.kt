@@ -61,7 +61,20 @@ class ReclazzConfigurable internal constructor(
 
     override fun getDisplayName(): String = "Reclazz"
 
+    private var liveSettingsManager: ReloadManager? = null
+    private var liveSettingsLabel: javax.swing.JLabel? = null
+    private val liveSettingsListener: (com.onurkat.reclazz.plugin.reload.AgentEvent) -> Unit = { event ->
+        if (event.level == "LIVE_SETTINGS") {
+            val update = { liveSettingsLabel?.text = liveSettingsMarkup(event.message) }
+            if (javax.swing.SwingUtilities.isEventDispatchThread()) update() else javax.swing.SwingUtilities.invokeLater { update() }
+        }
+    }
+    private fun liveSettingsMarkup(text: String): String = "<html><body style='width: 480px'>" +
+        text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;") + "</body></html>"
+
     override fun createComponent(): JComponent {
+        liveSettingsManager?.removeEventListener(liveSettingsListener)
+        liveSettingsManager = ReloadManager.getInstance(project).also { it.addEventListener(liveSettingsListener) }
         val settings = ReclazzSettings.getInstance(project).state
         val isHybris = HybrisProjectDetector.isHybrisProject(project)
 
@@ -124,6 +137,9 @@ class ReclazzConfigurable internal constructor(
                 }
             }
 
+            row {
+                label(liveSettingsMarkup(liveSettingsManager?.liveSettingsStatus.orEmpty())).applyToComponent { liveSettingsLabel = this }
+            }
             if (isHybris) {
                 group("SAP Commerce") {
                     row {
@@ -486,6 +502,7 @@ class ReclazzConfigurable internal constructor(
         // The tool window and the status bar item both exist only where
         // Reclazz is on, and the platform re-reads that only when asked.
         ReclazzSurfaces.refresh(project)
+        ReloadManager.getInstance(project).applyLiveSettings()
     }
 
     override fun reset() {
@@ -515,6 +532,9 @@ class ReclazzConfigurable internal constructor(
     }
 
     override fun disposeUIResources() {
+        liveSettingsManager?.removeEventListener(liveSettingsListener)
+        liveSettingsManager = null
+        liveSettingsLabel = null
         dialogPanel = null
         watchExtensionsTextField = null
         supportRow = null

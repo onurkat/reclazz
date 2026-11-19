@@ -70,7 +70,7 @@
             <li>Ekranda "Agent installed in the server startup properties" yazmalı.</li>
             <li>Yazılan dosyada <code>tomcat.debugjavaoptions</code> satırını kontrol edin: debug bayraklarınız (<code>-Xdebug</code>, <code>-Xrunjdwp:...</code>) durmalı ve satırda tek bir <code>-javaagent:...reclazz-agent.jar</code> olmalı. Gerekirse elle düzeltin.</li>
         </ol>
-        <p>Settings'teki seçenekleri sonradan değiştirirseniz <strong>Reinstall</strong> düğmesine basıp 3. adımı tekrarlayın.</p>
+        <p>Çalışan ajana bağlıyken AutoCompile, ImpEx import, Allow REMOVE, Backoffice reset, Update Running System ve Solr reindex seçenekleri <strong>Apply</strong> ile ve yeniden bağlanınca canlı uygulanır. Ayarlardaki durum satırı ajanın gerçekte kullandığı değerleri ya da bekleme/hata sonucunu gösterir. Watch extensions canlı değişmez; onun ve diğer başlangıç ayarlarının değişikliği için <strong>Reinstall</strong> düğmesine basıp 3. adımı tekrarlayın.</p>
         <p>Yazılan blok makineye özel bir yol içerir; dosya git'te tutuluyorsa commit etmeyin.</p>
 
         <h2 id="manuel-yol">2B. Manuel yol</h2>
@@ -102,7 +102,7 @@ cp ~/Library/Application\ Support/JetBrains/IntelliJIdea&lt;sürüm&gt;/plugins/
         </ol>
 <pre><code>tomcat.javaoptions=&lt;mevcut değerler&gt; -javaagent:/Users/ad/.reclazz/agent/reclazz-agent.jar=hybrisHome=/tam/yol/hybris,autoCompile=true
 tomcat.debugjavaoptions=&lt;mevcut debug bayrakları&gt; -javaagent:/Users/ad/.reclazz/agent/reclazz-agent.jar=hybrisHome=/tam/yol/hybris,autoCompile=true</code></pre>
-        <p><code>autoCompile=true</code> kaydettiğiniz Java dosyasını <code>ant build</code> beklemeden derletir. Elle eklenen satırda bu ayarı Settings'teki kutu değil, bu satır belirler. Satırlar makineye özel yol içerir; <code>local.properties</code> git'te tutuluyorsa commit etmeyin.</p>
+        <p><code>autoCompile=true</code> kaydettiğiniz Java dosyasını <code>ant build</code> beklemeden ajana derletir. Elle eklenen satır başlangıç varsayımıdır; IDE ajana bağlandığında yukarıdaki altı canlı seçenek Settings'teki kayıtlı değerlerle eşitlenir. IDE bağlantısı yoksa başlangıç satırı geçerlidir. Canlı değişiklik satırı yeniden yazmaz. Satırlar makineye özel yol içerir; <code>local.properties</code> git'te tutuluyorsa commit etmeyin.</p>
 
         <h3 id="manuel-3">Manuel 3. IntelliJ'de Reclazz'ı açın (otomatik kurulum olmadan)</h3>
         <ol>
@@ -119,7 +119,7 @@ tomcat.debugjavaoptions=&lt;mevcut debug bayrakları&gt; -javaagent:/Users/ad/.r
         </ul>
 
         <h2 id="baslatma">3. Ayarları uygulayın ve sunucuyu başlatın</h2>
-        <p>Ayarlar <code>wrapper.conf</code> dosyasına ancak <code>ant</code> ile geçer. Sadece sunucuyu yeniden başlatmak yetmez.</p>
+        <p>Başlangıç satırındaki ayarlar <code>wrapper.conf</code> dosyasına ancak <code>ant</code> ile geçer. Bu varsayımları kalıcı değiştirmek için sadece sunucuyu yeniden başlatmak yetmez; canlı seçenekler ise bağlı ajanda ayrıca uygulanır.</p>
 <pre><code>cd $HYBRIS_HOME/bin/platform
 . ./setantenv.sh
 ant server

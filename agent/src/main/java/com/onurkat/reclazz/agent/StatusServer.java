@@ -66,6 +66,9 @@ public class StatusServer implements StatusReporter.StatusListener {
     private volatile java.util.function.IntSupplier scanCompleter;
     private volatile java.util.function.Consumer<String> build;
     private volatile java.util.function.BiPredicate<String, String> ownedBuild;
+    private static final String CONFIG = "CONFIG";
+    private volatile LiveConfigController liveConfig;
+    void setLiveConfig(LiveConfigController controller) { liveConfig = controller; }
     private static final String RELOAD = "RELOAD";
     private volatile java.util.function.Function<String, String> reloadControl;
 
@@ -194,12 +197,26 @@ public class StatusServer implements StatusReporter.StatusListener {
         handleCommand(line, ignored -> { });
     }
 
+    private static void configReply(java.util.function.Consumer<String> reply, String message) {
+        reply.accept(String.format("{\"level\":\"INFO\",\"message\":\"%s\",\"timestamp\":\"%s\"}",
+                escapeJson(message), Instant.now().toString()));
+    }
+
     void handleCommand(String line, java.util.function.Consumer<String> reply) {
         if (line == null) return;
         String trimmed = line.strip();
         if (trimmed.length() > MAX_COMMAND_LENGTH) return;
 
         try {
+            if (trimmed.startsWith(CONFIG + " ")) {
+                String[] parts = trimmed.split("\\s+");
+                if (parts.length < 3 || !parts[2].matches("[A-Za-z0-9_-]{1,64}")) return;
+                var controller = liveConfig;
+                String message = controller == null ? "CONFIG " + parts[2] + " ERROR unavailable Live settings are unavailable"
+                        : controller.reply(trimmed, terminal -> configReply(reply, terminal));
+                if (message != null) configReply(reply, message);
+                return;
+            }
             if (trimmed.startsWith(RELOAD + " ")) {
                 String[] parts = trimmed.split("\\s+");
                 var control = reloadControl;
@@ -219,7 +236,8 @@ public class StatusServer implements StatusReporter.StatusListener {
                     var hold = buildHold;
                     result = DoctorReport.snapshot(token, verification, doctorWatcher,
                             hold == null ? "unavailable" : hold.get(), ownedBuild != null, scanner != null,
-                            scanCompleter != null && verification != null);
+                            scanCompleter != null && verification != null,
+                            liveConfig == null ? null : liveConfig.doctorOptions());
                 } catch (RuntimeException unavailable) { result = DoctorReport.unavailable(token); }
                 String message = "DOCTOR_RESULT " + token + " " + result;
                 reply.accept(String.format("{\"level\":\"INFO\",\"message\":\"%s\",\"timestamp\":\"%s\"}",
@@ -350,6 +368,8 @@ public class StatusServer implements StatusReporter.StatusListener {
 
     public void stop() {
         running = false;
+        var controller = liveConfig; liveConfig = null;
+        if (controller != null) controller.close();
         StatusReporter.removeListener(this);
         if (heartbeatExecutor != null) {
             heartbeatExecutor.shutdownNow();

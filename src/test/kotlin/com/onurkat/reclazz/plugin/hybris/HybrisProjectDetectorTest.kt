@@ -52,9 +52,7 @@ class HybrisProjectDetectorTest : BasePlatformTestCase() {
         val home = install(directory().resolve("hybris"))
         ModuleRootModificationUtil.addContentRoot(module, home.toString())
         val candidate = at(base)
-        // The content root comes back through the VFS, which spells the temp
-        // directory in long form on Windows (RUNNER~1 becomes runneradmin).
-        assertEquals(home.toRealPath(), HybrisProjectDetector.findHybrisHome(candidate)?.toRealPath())
+        assertEquals(home, HybrisProjectDetector.findHybrisHome(candidate))
         assertTrue(HybrisProjectDetector.isHybrisProject(candidate))
     }
     fun testBasePathWinsOverModuleRoots() {

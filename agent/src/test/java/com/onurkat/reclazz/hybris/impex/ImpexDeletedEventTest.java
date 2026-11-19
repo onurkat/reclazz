@@ -20,7 +20,9 @@ class ImpexDeletedEventTest {
     @BeforeEach void start() { RestartLedger.clear(); StatusReporter.addListener(listener); }
     @AfterEach void stop() { StatusReporter.removeListener(listener); RestartLedger.clear(); }
     private int dispatch(Path path, ChangeEvent.Type type) throws Exception {
-        var config=AgentConfig.parse("autoImpex=true");
+        return dispatch(path,type,AgentConfig.parse("autoImpex=true"),new ArrayList<>());
+    }
+    private int dispatch(Path path, ChangeEvent.Type type,AgentConfig config,List<Boolean> policies) throws Exception {
         var platform=new HybrisPlatformContext(root,config);
         PremiumContext context=new PremiumContext() {
             public PlatformContext platform(){return platform;}
@@ -34,7 +36,7 @@ class ImpexDeletedEventTest {
         var constructor=assembly.getDeclaredConstructor(PremiumContext.class);constructor.setAccessible(true);
         var method=assembly.getDeclaredMethod("handleImpexChange",ChangeEvent.class,ImpexAutoImporter.class);method.setAccessible(true);
         int[] calls={0};
-        var importer=new ImpexAutoImporter(){@Override public void importFile(Path file,HybrisContext owner){assertEquals(path,file);calls[0]++;}};
+        var importer=new ImpexAutoImporter(){@Override public void importFile(Path file,HybrisContext owner,boolean allowRemove){assertEquals(path,file);policies.add(allowRemove);calls[0]++;}};
         method.invoke(constructor.newInstance(context),new ChangeEvent(path,type,"example","resources"),importer);
         return calls[0];
     }
@@ -57,4 +59,14 @@ class ImpexDeletedEventTest {
         new ImpexAutoImporter().importFile(root.resolve("missing.impex"),null);
         assertEquals(1,messages.size());assertTrue(messages.get(0).startsWith("WARN:ImpEx file not found:"));assertEquals(0,RestartLedger.size());
     }
+    @Test void autoImpexOffSkipsQueuedSaveStartedAfterChange()throws Exception {
+        Path path=Files.writeString(root.resolve("owned.impex"),"# existing");var config=AgentConfig.parse("autoImpex=true");var policies=new ArrayList<Boolean>();
+        config.publishLiveOptions(config.liveOptions().with(Map.of("autoImpex",false,"impexAllowRemove",true)));
+        assertEquals(0,dispatch(path,ChangeEvent.Type.MODIFIED,config,policies));assertTrue(policies.isEmpty());
+        config.publishLiveOptions(config.liveOptions().with(Map.of("autoImpex",true)));
+        assertEquals(1,dispatch(path,ChangeEvent.Type.MODIFIED,config,policies));assertEquals(List.of(true),policies);
+        config.publishLiveOptions(config.liveOptions().with(Map.of("impexAllowRemove",false)));
+        assertEquals(1,dispatch(path,ChangeEvent.Type.MODIFIED,config,policies));assertEquals(List.of(true,false),policies);
+    }
+
 }

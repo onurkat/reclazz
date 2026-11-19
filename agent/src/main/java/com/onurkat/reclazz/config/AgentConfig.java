@@ -59,6 +59,35 @@ public class AgentConfig {
     /** F4-equivalent cockpit-config reset; also resets UI-made configuration. */
     private boolean backofficeConfigReset = true;
     private boolean autoCompile = false;
+    /** Runtime options are one immutable publication; the argument fields remain startup defaults. */
+    public record LiveOptions(boolean autoCompile, boolean autoImpex, boolean impexAllowRemove,
+                              boolean autoUpdateRunningSystem, boolean autoSolrReindex,
+                              boolean backofficeConfigReset) {
+        public static final List<String> KEYS = List.of("autoCompile", "autoImpex", "impexAllowRemove",
+                "autoUpdateRunningSystem", "autoSolrReindex", "backofficeConfigReset");
+        public Map<String, Boolean> values() {
+            var result = new LinkedHashMap<String, Boolean>();
+            result.put("autoCompile", autoCompile); result.put("autoImpex", autoImpex);
+            result.put("impexAllowRemove", impexAllowRemove); result.put("autoUpdateRunningSystem", autoUpdateRunningSystem);
+            result.put("autoSolrReindex", autoSolrReindex); result.put("backofficeConfigReset", backofficeConfigReset);
+            return Collections.unmodifiableMap(result);
+        }
+        public LiveOptions with(Map<String, Boolean> changes) {
+            if (!KEYS.containsAll(changes.keySet())) throw new IllegalArgumentException("Unknown live option");
+            var values = new LinkedHashMap<>(values()); values.putAll(changes);
+            return new LiveOptions(values.get("autoCompile"), values.get("autoImpex"), values.get("impexAllowRemove"),
+                    values.get("autoUpdateRunningSystem"), values.get("autoSolrReindex"), values.get("backofficeConfigReset"));
+        }
+    }
+    private final java.util.concurrent.atomic.AtomicReference<LiveOptions> liveOptions =
+            new java.util.concurrent.atomic.AtomicReference<>(new LiveOptions(false, false, false, false, false, true));
+    public LiveOptions liveOptions() { return liveOptions.get(); }
+    public void publishLiveOptions(LiveOptions options) { liveOptions.set(Objects.requireNonNull(options)); }
+    private void initializeLiveOptions() {
+        publishLiveOptions(new LiveOptions(autoCompile, autoImpex, impexAllowRemove,
+                autoUpdateRunningSystem, autoSolrReindex, backofficeConfigReset));
+    }
+
     private long debounceMs = 500;
     private boolean verbose = false;
 
@@ -139,7 +168,8 @@ public class AgentConfig {
         AgentConfig config = new AgentConfig();
 
         if (agentArgs == null || agentArgs.isBlank()) {
-            return config;
+            config.initializeLiveOptions();
+        return config;
         }
 
         Map<String, String> params = new HashMap<>();
@@ -308,6 +338,7 @@ public class AgentConfig {
         }
 
         config.unknownKeys = unknownKeysIn(params, agentArgs);
+        config.initializeLiveOptions();
         return config;
     }
 
@@ -391,12 +422,13 @@ public class AgentConfig {
 
     public Path getHybrisHome() { return hybrisHome; }
     public boolean isWatchAllExtensions() { return watchAllExtensions; }
-    public boolean isAutoImpex() { return autoImpex; }
-    public boolean isImpexAllowRemove() { return impexAllowRemove; }
-    public boolean isAutoUpdateRunningSystem() { return autoUpdateRunningSystem; }
-    public boolean isBackofficeConfigReset() { return backofficeConfigReset; }
-    public boolean isAutoSolrReindex() { return autoSolrReindex; }
-    public boolean isAutoCompile() { return autoCompile; }
+    public Set<String> getWatchExtensions() { return Collections.unmodifiableSet(watchExtensions); }
+    public boolean isAutoImpex() { return liveOptions().autoImpex(); }
+    public boolean isImpexAllowRemove() { return liveOptions().impexAllowRemove(); }
+    public boolean isAutoUpdateRunningSystem() { return liveOptions().autoUpdateRunningSystem(); }
+    public boolean isBackofficeConfigReset() { return liveOptions().backofficeConfigReset(); }
+    public boolean isAutoSolrReindex() { return liveOptions().autoSolrReindex(); }
+    public boolean isAutoCompile() { return liveOptions().autoCompile(); }
     public long getDebounceMs() { return debounceMs; }
     public boolean isVerbose() { return verbose; }
 

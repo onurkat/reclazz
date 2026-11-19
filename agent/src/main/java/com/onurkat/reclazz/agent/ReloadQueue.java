@@ -84,7 +84,7 @@ public final class ReloadQueue {
     private boolean holding;
     private boolean paused;
     private long pauseGeneration;
-    private record AutomaticWork(String description, Runnable work) { }
+    private record AutomaticWork(String description, Runnable work, boolean waitGenerated) { }
     private final LinkedHashMap<String, AutomaticWork> pendingActions = new LinkedHashMap<>();
     private String buildOwner;
     private long heldSince;
@@ -140,8 +140,10 @@ public final class ReloadQueue {
             submitGenerated(); return completion;
         }
         public void failed() {
+            boolean released = false;
             synchronized (buildLock) {
                 if (generatedHold == this) {
+                    released = true;
                     // Failed compiler output may be partial. Retire the gate, but
                     // discard its pending output; only later writes are ordinary work.
                     discarded = true;
@@ -151,6 +153,7 @@ public final class ReloadQueue {
                 }
                 reject(new IllegalStateException("Generated output failed or was superseded"));
             }
+            if (released) submitPendingAutomatic();
         }
         void reject(Throwable failure) {
             synchronized (buildLock) { ready=false; completion.completeExceptionally(failure); }
@@ -196,6 +199,7 @@ public final class ReloadQueue {
                     generatedHold=null; generatedEpoch++; hold.completion.complete(null);
                 }
             }
+            submitPendingAutomatic();
             submitClassBatch(0);
         } catch (Throwable failure) {
             synchronized (buildLock) { restoreGenerated(batch, hold); hold.reject(failure); }
@@ -296,15 +300,39 @@ public final class ReloadQueue {
 
     /** Automatic work is coalesced by key until admitted; control tasks use submit directly. */
     public void submitAutomatic(String key, String what, Runnable work) {
-        synchronized (buildLock) { pendingActions.put(key, new AutomaticWork(what, work)); }
+        submitAutomatic(key, what, work, false);
+    }
+
+    /** Configuration cleanup also waits for the native generated-output owner. */
+    void submitAutomatic(String key, String what, Runnable work, boolean waitGenerated) {
+        synchronized (buildLock) { pendingActions.put(key, new AutomaticWork(what, work, waitGenerated)); }
         submit(what, () -> runAutomatic(key));
+    }
+
+    record ControlStamp(long build, long pause, long generated) { }
+    ControlStamp controlStamp() {
+        synchronized (buildLock) {
+            if (!running) throw new java.util.concurrent.RejectedExecutionException("Reload queue stopped");
+            return holding || paused || generatedHold != null ? null
+                    : new ControlStamp(generation, pauseGeneration, generatedEpoch);
+        }
+    }
+    /** Check and protected mutation are one critical section, ordered against BUILD started. */
+    boolean guardControl(ControlStamp stamp, Runnable mutation) {
+        synchronized (buildLock) {
+            if (!running || stamp == null || holding || paused || generatedHold != null || stamp.build != generation
+                    || stamp.pause != pauseGeneration || stamp.generated != generatedEpoch) return false;
+            mutation.run(); return true;
+        }
     }
 
     private void runAutomatic(String key) {
         AutomaticWork action;
         synchronized (buildLock) {
             if (holding || paused) return;
-            action = pendingActions.remove(key); // admission; a later pause does not cancel it
+            action = pendingActions.get(key);
+            if (action != null && action.waitGenerated && generatedHold != null) return;
+            pendingActions.remove(key); // admission; a later pause does not cancel ordinary work
         }
         if (action != null) action.work().run();
     }

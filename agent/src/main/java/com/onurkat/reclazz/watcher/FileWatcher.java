@@ -357,16 +357,195 @@ public class FileWatcher {
             watchFailure=failure.getClass().getSimpleName();
         } finally {
             watchState = "stopped";
-            failScanBarriers();
+            failScanBarriers(); failReconfigurations();
         }
     }
 
     public void stopWatching() {
-        failScanBarriers();
+        failScanBarriers(); failReconfigurations();
         watchState = "stopped";
         try {
             watchService.close();
         } catch (IOException ignored) {}
+    }
+
+    private record Reconfiguration(AgentConfig.LiveOptions target,
+            java.util.function.Predicate<Runnable> guard, Runnable publish,
+            java.util.concurrent.CompletableFuture<Boolean> result) { }
+    private final java.util.Queue<Reconfiguration> reconfigurations = new java.util.concurrent.ConcurrentLinkedQueue<>();
+
+    /** Staging and event draining run on the watcher thread; the caller never swaps live maps. */
+    public java.util.concurrent.CompletionStage<Boolean> requestReconfigure(AgentConfig.LiveOptions target,
+            java.util.function.Predicate<Runnable> guard, Runnable publish) {
+        var result = new java.util.concurrent.CompletableFuture<Boolean>();
+        if ("stopped".equals(watchState)) result.completeExceptionally(new IllegalStateException("Watcher is stopped"));
+        else reconfigurations.add(new Reconfiguration(target, guard, publish, result));
+        return result;
+    }
+    private void processReconfigurations(Map<Path, PendingEvent> pending) {
+        for (var request = reconfigurations.poll(); request != null; request = reconfigurations.poll()) {
+            try { request.result.complete(reconfigureNow(request.target, request.guard, request.publish, pending)); }
+            catch (Throwable failure) { request.result.completeExceptionally(failure); }
+        }
+    }
+    private void failReconfigurations() {
+        for (var request = reconfigurations.poll(); request != null; request = reconfigurations.poll())
+            request.result.completeExceptionally(new IllegalStateException("Watcher stopped before configuration commit"));
+    }
+    private void inventoryRoots(Map<Path, WatchedDirectory> target, Map<String, List<Path>> roots,
+                                String sourceRoot, long baseline) throws IOException {
+        for (var entry : roots.entrySet()) {
+            if (!platformContext.shouldWatch(entry.getKey())) continue;
+            for (Path path : entry.getValue()) {
+                // Discovery retains roots across a clean build. Match startup:
+                // an output/source root absent now is not a failed transition.
+                if (!Files.isDirectory(path)) continue;
+                Path spelling = path.toAbsolutePath().normalize();
+                try {
+                    Path root = path.toRealPath();
+                    Files.walkFileTree(root, new SimpleFileVisitor<>() {
+                        @Override public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
+                            // Canonical identity is only the comparison key. Events keep
+                            // the platform's path spelling for source/output resolution.
+                            Path eventDirectory = spelling.resolve(root.relativize(dir));
+                            target.put(dir, new WatchedDirectory(eventDirectory, entry.getKey(), sourceRoot, baseline));
+                            return FileVisitResult.CONTINUE;
+                        }
+                        @Override public FileVisitResult visitFileFailed(Path file, IOException failure) {
+                            noteUnwatchable(spelling.resolve(root.relativize(file)), failure);
+                            return FileVisitResult.CONTINUE;
+                        }
+                        @Override public FileVisitResult postVisitDirectory(Path dir, IOException failure) {
+                            if (failure != null) {
+                                target.remove(dir);
+                                noteUnwatchable(spelling.resolve(root.relativize(dir)), failure);
+                            }
+                            return FileVisitResult.CONTINUE;
+                        }
+                    });
+                } catch (NoSuchFileException | NotDirectoryException gone) {
+                    // Root disappeared between the existence check and the walk.
+                } catch (IOException cannotWalk) {
+                    noteUnwatchable(spelling, cannotWalk);
+                }
+            }
+        }
+    }
+    Map<Path, WatchedDirectory> inventory(AgentConfig.LiveOptions options) throws IOException {
+        Map<Path, WatchedDirectory> target = new LinkedHashMap<>(); long baseline = System.currentTimeMillis();
+        if (options.autoCompile()) {
+            inventoryRoots(target, platformContext.getSourceDirs(), "src", baseline);
+            inventoryRoots(target, platformContext.getGeneratedClassDirs(), "classes", baseline);
+        } else inventoryRoots(target, platformContext.getClassOutputDirs(), "classes", baseline);
+        inventoryRoots(target, platformContext.getResourceDirs(), "resources", baseline);
+        return target;
+    }
+    /** Kept separate so the failure/alias tests use actual WatchKeys without replacing the watch service. */
+    WatchKey registerReconfiguredDirectory(Path dir) throws IOException {
+        return dir.register(watchService, ENTRY_CREATE, ENTRY_MODIFY, ENTRY_DELETE);
+    }
+    private static Set<WatchKey> identityKeys(Collection<WatchKey> keys) {
+        Set<WatchKey> result = Collections.newSetFromMap(new IdentityHashMap<>()); result.addAll(keys); return result;
+    }
+    private void scanRemoved(WatchedDirectory owner, Map<Path, PendingEvent> pending) {
+        // A polling WatchService may not have queued an edit made during
+        // staging yet. Inventory the departing directory before any key is cancelled.
+        try (var files = Files.newDirectoryStream(owner.directory())) {
+            for (Path file : files) {
+                if (!Files.isRegularFile(file) || !isInterestingFile(file) || config.isExcluded(file.getFileName().toString())) continue;
+                var type = inventoryChange(file, owner.baselineMillis());
+                var state = fileStates.get(file);
+                if (type == null && file.getFileName().toString().endsWith(".class") && state != null
+                        && state.contentHash != -1L && state.contentHash != computeContentHash(file)) type = ChangeEvent.Type.MODIFIED;
+                if (type != null) pending.put(file, new PendingEvent(System.currentTimeMillis(), file, type, owner.moduleName(), owner.sourceRoot()));
+            }
+        } catch (NoSuchFileException | NotDirectoryException gone) {
+            // A clean build may have removed a departing root entirely.
+        } catch (IOException cannotRead) { noteUnwatchable(owner.directory(), cannotRead); }
+    }
+    private void drainRemoved(WatchKey key, WatchedDirectory owner, Map<Path, PendingEvent> pending) {
+        for (WatchEvent<?> event : key.pollEvents()) {
+            if (event.kind() == OVERFLOW) { handleOverflow(owner, pending); continue; }
+            if (!(event.context() instanceof Path relative)) continue;
+            Path file = owner.directory().resolve(relative);
+            if (Files.isDirectory(file)) {
+                if (event.kind() == ENTRY_CREATE) enqueueRecoveredFiles(new WatchedDirectory(file, owner.moduleName(), owner.sourceRoot(), owner.baselineMillis()), pending);
+            } else if (isInterestingFile(file) && !config.isExcluded(file.getFileName().toString())) {
+                ChangeEvent.Type type = event.kind() == ENTRY_DELETE ? ChangeEvent.Type.DELETED
+                        : event.kind() == ENTRY_CREATE ? ChangeEvent.Type.CREATED : ChangeEvent.Type.MODIFIED;
+                pending.put(file, new PendingEvent(System.currentTimeMillis(), file, type, owner.moduleName(), owner.sourceRoot()));
+            }
+        }
+    }
+    boolean reconfigureNow(AgentConfig.LiveOptions options, java.util.function.Predicate<Runnable> guard,
+                           Runnable publish, Map<Path, PendingEvent> pending) throws IOException {
+        int refusedBefore = unwatchableCount();
+        var target = inventory(options);
+        Map<Path, WatchKey> current = new HashMap<>();
+        for (var entry : watchKeyMap.entrySet()) {
+            try { current.put(entry.getValue().directory().toRealPath(), entry.getKey()); }
+            catch (IOException gone) { current.put(entry.getValue().directory().toAbsolutePath().normalize(), entry.getKey()); }
+        }
+        Set<WatchKey> before = identityKeys(watchKeyMap.keySet());
+        Map<WatchKey, WatchedDirectory> desired = new LinkedHashMap<>();
+        Map<Path, FileState> newBaselines = new HashMap<>();
+        Set<WatchKey> created = identityKeys(List.of());
+        boolean committed = false;
+        try {
+            for (var entry : target.entrySet()) {
+                WatchedDirectory wanted = entry.getValue(); WatchKey key = current.get(entry.getKey());
+                if (key == null) {
+                    try { key = registerReconfiguredDirectory(wanted.directory()); }
+                    catch (IOException cannotWatch) { noteUnwatchable(wanted.directory(), cannotWatch); continue; }
+                }
+                if (before.contains(key)) {
+                    WatchedDirectory old = watchKeyMap.get(key);
+                    desired.put(key, new WatchedDirectory(old.directory(), wanted.moduleName(), wanted.sourceRoot(), old.baselineMillis()));
+                } else {
+                    created.add(key); desired.put(key, wanted);
+                    // Snapshot after registration. A real native event racing this walk
+                    // retains baselineMtime and is delivered, even for equal class hashes.
+                    try (var files = Files.newDirectoryStream(wanted.directory())) {
+                        for (Path file : files) if (Files.isRegularFile(file)) {
+                            var baseline = new FileState(); baseline.seenMtime = lastModifiedMillis(file);
+                            baseline.baselineMtime = baseline.seenMtime;
+                            if (file.getFileName().toString().endsWith(".class")) baseline.contentHash = computeContentHash(file);
+                            newBaselines.put(file, baseline);
+                        }
+                    } catch (IOException cannotRead) {
+                        noteUnwatchable(wanted.directory(), cannotRead);
+                        desired.remove(key); created.remove(key); key.cancel();
+                        newBaselines.keySet().removeIf(file -> file.getParent().equals(wanted.directory()));
+                    }
+                }
+            }
+            Set<WatchKey> retained = identityKeys(desired.keySet());
+            Set<Path> removed = new HashSet<>();
+            for (var entry : watchKeyMap.entrySet()) if (!retained.contains(entry.getKey())) removed.add(entry.getValue().directory());
+            committed = guard.test(() -> {
+                for (var entry : watchKeyMap.entrySet()) if (!retained.contains(entry.getKey())) scanRemoved(entry.getValue(), pending);
+                for (var entry : new ArrayList<>(watchKeyMap.entrySet())) if (!retained.contains(entry.getKey())) {
+                    drainRemoved(entry.getKey(), entry.getValue(), pending);
+                    watchKeyMap.remove(entry.getKey()); entry.getKey().cancel();
+                }
+                hotFiles.keySet().removeIf(file -> removed.contains(file.getParent()));
+                fileStates.keySet().removeIf(file -> removed.contains(file.getParent()));
+                lastModifiedMap.keySet().removeIf(file -> removed.contains(file.getParent()));
+                lostDirectories.keySet().removeIf(path -> !target.containsKey(path.toAbsolutePath().normalize()));
+                Map<Path, WatchedDirectory> owners = new HashMap<>();
+                desired.values().forEach(owner -> owners.put(owner.directory(), owner));
+                hotFiles.replaceAll((file, hot) -> {
+                    var owner = owners.get(file.getParent());
+                    return owner == null ? hot : new WatchedFile(hot.modifiedAt(), hot.lastChangedAt(), owner.moduleName(), owner.sourceRoot());
+                });
+                fileStates.putAll(newBaselines); watchKeyMap.putAll(desired);
+                publish.run();
+            });
+            if (committed && unwatchableCount() > refusedBefore) reportUnwatchable();
+            return committed;
+        } finally {
+            if (!committed) for (WatchKey key : created) if (!before.contains(key)) key.cancel();
+        }
     }
 
     private void registerDirectories() throws IOException {
@@ -860,6 +1039,7 @@ public class FileWatcher {
                 scanRequested = false;
                 scanWatchedDirectories(pendingEvents, debounceMs);
             }
+            processReconfigurations(pendingEvents);
 
             if (key != null) {
                 WatchedDirectory watchedDir = watchKeyMap.get(key);

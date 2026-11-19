@@ -87,4 +87,14 @@ class DoctorReportTest {
             observer.setSoTimeout(200);assertThrows(SocketTimeoutException.class,other::readLine);
         } finally {server.stop();}
     }
+    @Test void optionsStayBoundedWithTwoHundredLongExtensionNames()throws Exception {
+        var names=java.util.stream.IntStream.range(0,200).mapToObj(i->"synthetic"+i+"x".repeat(180)).collect(java.util.stream.Collectors.joining(";"));
+        var config=com.onurkat.reclazz.config.AgentConfig.parse("watchExtensions="+names+",autoImpex=true");
+        try(var controller=new LiveConfigController(config,true,(key,target,publish)->{publish.run();return java.util.concurrent.CompletableFuture.completedFuture(null);})){
+            var server=new StatusServer(0,null);server.setLiveConfig(controller);var result=query(server);assertTrue(result.get("options").get("autoImpex").asBoolean());
+            var watched=result.get("options").get("watchExtensions");assertEquals(200,watched.get("count").asInt());assertEquals(5,watched.get("sample").size());assertTrue(watched.get("truncated").asBoolean());assertTrue(result.toString().length()<3900);
+            controller.reply("CONFIG SET off base=0 autoImpex=false");assertFalse(query(server).get("options").get("autoImpex").asBoolean());
+        }
+    }
+
 }

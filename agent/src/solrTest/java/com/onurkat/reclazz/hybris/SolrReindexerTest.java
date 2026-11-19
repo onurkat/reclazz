@@ -285,4 +285,29 @@ class SolrReindexerTest {
         });
         assertFalse(modules.reindex(SolrNativeFixture.Provider.class)); assertEquals(0, calls.get());
     }
+    @Test void solrEnableCreatesWorkerDisableDrains()throws Exception {
+        var config=AgentConfig.parse("autoSolrReindex=false");var root=java.nio.file.Files.createTempDirectory("reclazz-solr-live-options");
+        var platform=new com.onurkat.reclazz.platform.HybrisPlatformContext(root,config){@Override public List<Object> getAllApplicationContexts(){return List.of(fixture.context);}};
+        var context=new PremiumContext(){
+            public com.onurkat.reclazz.platform.PlatformContext platform(){return platform;}
+            public AgentConfig config(){return config;}
+            public com.onurkat.reclazz.platform.PropertyFileSnapshots propertySnapshots(){return new com.onurkat.reclazz.platform.PropertyFileSnapshots();}
+            public java.lang.instrument.Instrumentation instrumentation(){return null;}
+            public int applyLoggerLevels(Map<String,String> values,Collection<String> keys){throw new AssertionError();}
+            public boolean requestRunningSystemUpdate(){throw new AssertionError();}
+        };
+        var module=new SapPremiumModuleFactory().create(context);
+        var field=Arrays.stream(module.getClass().getDeclaredFields()).filter(f->f.getType()==java.util.concurrent.atomic.AtomicReference.class).findFirst().orElseThrow();field.setAccessible(true);
+        var worker=(java.util.concurrent.atomic.AtomicReference<?>)field.get(module);
+        try {
+            assertFalse(module.reindex(SolrNativeFixture.Provider.class));assertNull(worker.get());
+            config.publishLiveOptions(config.liveOptions().with(Map.of("autoSolrReindex",true)));
+            assertTrue(module.reindex(SolrNativeFixture.Provider.class));Object first=worker.get();assertNotNull(first);
+            config.publishLiveOptions(config.liveOptions().with(Map.of("autoSolrReindex",false)));
+            assertFalse(module.reindex(SolrNativeFixture.Provider.class));
+            long end=System.nanoTime()+TimeUnit.SECONDS.toNanos(5);while(fixture.executions.isEmpty()&&System.nanoTime()<end)Thread.sleep(20);assertEquals(1,fixture.executions.size(),messages.toString());
+            config.publishLiveOptions(config.liveOptions().with(Map.of("autoSolrReindex",true)));assertTrue(module.reindex(SolrNativeFixture.Provider.class));assertSame(first,worker.get());
+        } finally {if(worker.get()!=null)((SolrReindexer)worker.get()).close();java.nio.file.Files.deleteIfExists(root);}
+    }
+
 }

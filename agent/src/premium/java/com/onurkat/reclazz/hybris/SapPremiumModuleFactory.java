@@ -46,8 +46,7 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
             boolean sap = platform.getPlatformId() == PlatformContext.Platform.HYBRIS;
             InterceptorReloader interceptors = sap ? new InterceptorReloader() : null;
             ImpexAutoImporter importer = sap ? new ImpexAutoImporter(config.isImpexAllowRemove()) : null;
-            SolrReindexer solr = sap && config.isAutoSolrReindex()
-                    ? new SolrReindexer(platform::getAllApplicationContexts) : null;
+            var solr = new java.util.concurrent.atomic.AtomicReference<SolrReindexer>();
             CodegenReloader codegen;
             if (platform instanceof HybrisPlatformContext hybris) {
                 java.util.function.Supplier<ClassLoader> loader = () -> {
@@ -65,6 +64,7 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
                         () -> context.holdGeneratedClasses(hybris.getGeneratedClassDirs().values().stream()
                                 .flatMap(List::stream).toList()), context::generatedOutputAccepted);
                 codegen.setWatchedExtensions(platform::shouldWatch);
+                codegen.setLiveOptions(config::liveOptions);
             } else codegen = null;
             java.util.Map<Capability, PlatformChangeHandler> handlers = new java.util.EnumMap<>(Capability.class);
             // This dispatch also existed for non-SAP contexts; preserve it.
@@ -102,7 +102,14 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
             return new PremiumModule() {
                 @Override public java.util.Set<Capability> capabilities() { return capabilities; }
                 @Override public java.util.Map<Capability, PlatformChangeHandler> changeHandlers() { return handlers; }
-                @Override public boolean reindex(Class<?> type) { return solr != null && solr.enqueue(type); }
+                @Override public boolean reindex(Class<?> type) {
+                    var options = config.liveOptions();
+                    if (!sap || !options.autoSolrReindex()) return false;
+                    synchronized (solr) {
+                        if (solr.get() == null) solr.set(new SolrReindexer(platform::getAllApplicationContexts));
+                        return solr.get().enqueue(type);
+                    }
+                }
                 @Override public com.onurkat.reclazz.platform.XmlBeanLifecycle xmlBeanLifecycle() {
                     if (!sap) return com.onurkat.reclazz.platform.XmlBeanLifecycle.NONE;
                     var mappings = new com.onurkat.reclazz.hybris.interceptor.XmlInterceptorMappings();
@@ -184,11 +191,12 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
         }
 
         private void handleBackofficeConfigChange(ChangeEvent event) {
+            var options = context.config().liveOptions();
             StatusReporter.info("Backoffice config changed: "
                     + event.getPath().getFileName() + " [" + event.getModuleName() + "]");
             var result = BackofficeConfigReloader
                     .reload(event.getPath().getFileName().toString(),
-                            platformContext.getAllApplicationContexts(), context.config().isBackofficeConfigReset(),
+                            platformContext.getAllApplicationContexts(), options.backofficeConfigReset(),
                             SapOwnerScope::execute);
             if (!result.disabled() && result.contexts() == 0 && result.failures() == 0) {
                 StatusReporter.info("No running backoffice holds this configuration "
@@ -339,6 +347,7 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
         }
 
         private void handleLocalizationChange(ChangeEvent event) {
+            var options = context.config().liveOptions();
             String fileName = event.getPath().getFileName().toString();
             Object appContext = platformContext.getApplicationContext();
             ClassLoader platformLoader = appContext != null
@@ -376,7 +385,7 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
                 StatusReporter.success("Type and enum names re-read from " + fileName + ".");
                 // The names on the types themselves, which Backoffice and
                 // getName() show, are rows the update writes with "Localize types".
-                if (!context.config().isAutoUpdateRunningSystem()) {
+                if (!options.autoUpdateRunningSystem()) {
                     StatusReporter.info("Names stored on the types (what Backoffice shows) change with HAC "
                             + "Update Running System and \"Localize types\", or here with autoUpdateRunningSystem=true.");
                 } else {
@@ -391,13 +400,15 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
 
         private void handleImpexChange(ChangeEvent event,
                                               ImpexAutoImporter impexImporter) {
+            var options = context.config().liveOptions();
+            if (!options.autoImpex()) return;
             if (event.getType() == ChangeEvent.Type.DELETED || !java.nio.file.Files.exists(event.getPath())) {
                 StatusReporter.detail("ImpEx file deleted: " + event.getPath().getFileName() + "; nothing to import");
                 return;
             }
             StatusReporter.info("ImpEx file changed: " + event.getPath().getFileName());
             impexImporter.importFile(event.getPath(),
-                    ((HybrisPlatformContext) platformContext).getHybrisContext());
+                    ((HybrisPlatformContext) platformContext).getHybrisContext(), options.impexAllowRemove());
         }
 
         /**

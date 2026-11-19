@@ -41,11 +41,25 @@ You do not need to edit any properties files or manage the agent JAR path.
 
 ### Project settings and managed SAP startup
 
-**Settings > Tools > Reclazz** stores agent choices per project. Changes reach the
-next IDE launch or dynamic attach. For a server started outside the IDE, use
-**Install Agent** or **Reinstall** to apply the current form and regenerate
-its managed startup block, then regenerate the server config and restart as the
-installation message describes.
+**Settings > Tools > Reclazz** stores agent choices per project. On **Apply** and
+on reconnect, the plugin synchronizes supported runtime options with the connected
+agent: AutoCompile, ImpEx import, Allow REMOVE, Backoffice configuration reset,
+Update Running System and Solr reindex. This also works when the agent's startup
+line was written by hand. The status line reports what the running agent actually
+uses, or a pending/error result; older agents require an updated agent or a restart
+with the saved startup settings.
+
+AutoCompile changes wait for an active build, manual pause or generated-output
+owner, then switch source/class watching without dropping common resource watches.
+Operations already running keep their captured options. Disabling Solr reindex
+prevents new enqueues; queued/running indexing work drains. A pending setting is
+not yet a confirmed runtime change. Watch extensions remains startup-only and is
+reported as requiring a restart; the plugin never sends it as a live change.
+
+The agent line remains the startup default; runtime changes do not rewrite it.
+To persist defaults for a server that starts without an IDE connection, use
+**Install Agent** or **Reinstall**, regenerate the server config and restart as the
+installation message describes. Other startup-only options still use that path.
 
 | Control | Default | Scope |
 |---|---|---|

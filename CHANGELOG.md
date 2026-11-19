@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- SAP runtime options synchronize from Settings on Apply/reconnect. AutoCompile
+  switches compiler/watch roots without restarting; runtime status shows effective
+  options, pending changes and conflicts. Watch extensions still requires restart.
+
 - Build tooling uses Gradle 9.9.1, IntelliJ Platform Gradle Plugin 2.20.1 and
   Kotlin 2.3.21 while preserving the IDE 2023.3 API target. Gradle plugin
   TestKit coverage selects both 8.10.2 and 9.9.1 consumer runtimes.

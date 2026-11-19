@@ -89,6 +89,22 @@ class ReclazzConfigurableApplyTest : BasePlatformTestCase() {
         }
     }
 
+    fun testLiveAgentAckAndErrorAreShownWithoutChangingSavedForm() {
+        val configurable = ReclazzConfigurable(project)
+        try {
+            val form = configurable.createComponent()
+            val manager = com.onurkat.reclazz.plugin.reload.ReloadManager.getInstance(project)
+            fun show(message: String) {
+                val action = { manager.postLocalMessage("LIVE_SETTINGS", message) }
+                if (SwingUtilities.isEventDispatchThread()) action() else SwingUtilities.invokeAndWait { action() }
+                expectTrue(descendants(form).filterIsInstance<JLabel>().any { it.text.orEmpty().contains(message) })
+            }
+            show("Running agent: ImpEx import: on")
+            show("Live settings: failed compiler unavailable")
+            expectFalse(configurable.isModified)
+        } finally { configurable.disposeUIResources() }
+    }
+
     private fun descendants(component: Component): List<Component> = listOf(component) +
         (component as? Container)?.components.orEmpty().flatMap { descendants(it) }
 }

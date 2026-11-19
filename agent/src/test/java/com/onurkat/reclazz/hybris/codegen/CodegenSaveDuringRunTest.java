@@ -23,7 +23,10 @@ class CodegenSaveDuringRunTest {
     /** A polling watcher under ant's CPU load reported the touch 4-6s late; that echo looped ant forever. */
     @Test void ownTouchReportedLateDoesNotLoop() throws Exception { exercise(false, true); }
     @Test void realEditReportedLateStillRunsAgain() throws Exception { exercise(true, true); }
-    private void exercise(boolean edit, boolean lateEcho) throws Exception {
+    @Test void runningCodegenKeepsItsSnapshot() throws Exception { exercise(false,false,1); }
+    @Test void updateRunningSystemFollowsLiveOptionBothWays() throws Exception { exercise(false,false,2); }
+    private void exercise(boolean edit, boolean lateEcho) throws Exception { exercise(edit,lateEcho,0); }
+    private void exercise(boolean edit, boolean lateEcho, int liveCase) throws Exception {
         Path root = tempDir;
         Path platform = root.resolve("bin/platform"), ext = root.resolve("bin/custom/demo");
         Files.createDirectories(platform.resolve("apache-ant/bin"));
@@ -43,10 +46,14 @@ class CodegenSaveDuringRunTest {
         if (!ant.toFile().setExecutable(true)) throw new IllegalStateException("cannot make fixture executable");
         HybrisContext context = new HybrisContext(root);
         context.getExtensions().put("demo", new ExtensionInfo("demo", ext, List.of(), true, false, true));
-        var reloader = new CodegenReloader(context);
+        var updates = new java.util.concurrent.atomic.AtomicInteger();
+        var options = com.onurkat.reclazz.config.AgentConfig.parse("autoUpdateRunningSystem="+(liveCase==1));
+        var reloader = liveCase==0 ? new CodegenReloader(context) : new CodegenReloader(context,false,()->{updates.incrementAndGet();return true;});
+        if(liveCase!=0)reloader.setLiveOptions(options::liveOptions);
         try {
             reloader.handle(new ChangeEvent(xml, ChangeEvent.Type.MODIFIED, "demo", "resources"));
             await(() -> Files.exists(platform.resolve("read.ready")));
+            if(liveCase!=0)options.publishLiveOptions(options.liveOptions().with(java.util.Map.of("autoUpdateRunningSystem",liveCase!=1)));
             long touched = (Long) field(reloader, "lastTouchedAtMs");
             if (edit) Files.writeString(xml, "<items>v2</items>\n");
             if (lateEcho) setLong(reloader, "lastTouchedAtMs", touched - 10_000L);
@@ -63,6 +70,12 @@ class CodegenSaveDuringRunTest {
             assertEquals(edit, queued);
             assertEquals(edit ? 2 : 1, runs);
             assertTrue(observed.contains(edit ? "v2" : "v1"));
+            if(liveCase!=0)assertEquals(liveCase==1?1:0,updates.get(),"running codegen keeps the policy captured before ant started");
+            if(liveCase==2){
+                Files.writeString(xml,"<items>v3</items>\n");reloader.handle(new ChangeEvent(xml,ChangeEvent.Type.MODIFIED,"demo","resources"));await(()->!(Boolean)field(reloader,"running"));assertEquals(1,updates.get());
+                options.publishLiveOptions(options.liveOptions().with(java.util.Map.of("autoUpdateRunningSystem",false)));
+                Files.writeString(xml,"<items>v4</items>\n");reloader.handle(new ChangeEvent(xml,ChangeEvent.Type.MODIFIED,"demo","resources"));await(()->!(Boolean)field(reloader,"running"));assertEquals(1,updates.get());
+            }
         } finally {
             Files.writeString(platform.resolve("release"), "");
             ((java.util.concurrent.ExecutorService) field(reloader, "executor")).shutdownNow();
