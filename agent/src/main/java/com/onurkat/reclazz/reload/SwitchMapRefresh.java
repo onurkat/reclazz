@@ -9,12 +9,14 @@ import com.onurkat.reclazz.bootstrap.FieldStore;
 import com.onurkat.reclazz.bootstrap.ReflectionBridge;
 import java.lang.reflect.Field;
 import java.util.*;
-import java.util.function.Function;
+import com.onurkat.reclazz.util.ClassLookup.LoadedClasses;
 
 /** One accepted save; table evaluation completes before its first write. */
 public final class SwitchMapRefresh {
     private SwitchMapRefresh() { }
     private static final class Save {
+        final LoadedClasses loaded;
+        Save(LoadedClasses loaded) { this.loaded=loaded; }
         final Map<Class<?>, SwitchMapPlan> plans = new LinkedHashMap<>();
         final Set<Class<?>> accepted = new LinkedHashSet<>(), successful = new LinkedHashSet<>();
         final Map<Class<?>, String> failures = new LinkedHashMap<>();
@@ -51,18 +53,18 @@ public final class SwitchMapRefresh {
         return null;
     }
     public static void begin(Map<String, byte[]> bytes, Map<String, SwitchMapPlan> plans,
-                             Function<String, Class<?>> loaded) {
+                             LoadedClasses loaded) {
         if (current.get() != null) throw new IllegalStateException("Nested switch-map save");
-        Save save = new Save(); Map<Class<?>, byte[]> candidates = new LinkedHashMap<>();
+        Save save = new Save(loaded); Map<Class<?>, byte[]> candidates = new LinkedHashMap<>();
         bytes.forEach((name, value) -> {
-            Class<?> owner = loaded.apply(name);
+            Class<?> owner = loaded.find(name);
             if (owner != null) { candidates.put(owner, value); save.accepted.add(owner); save.bytes.put(owner, value.clone()); }
         });
-        plans.forEach((name, plan) -> { Class<?> owner = loaded.apply(name); if (owner != null) save.plans.put(owner, plan); });
+        plans.forEach((name, plan) -> { Class<?> owner = loaded.find(name); if (owner != null) save.plans.put(owner, plan); });
         bytes.forEach((name, value) -> {
-            Class<?> user = loaded.apply(name);
+            Class<?> user = loaded.find(name);
             if (user != null) for (String reference : SwitchMapPlan.references(value)) {
-                Class<?> holder = loaded.apply(reference.replace('/', '.'));
+                Class<?> holder = loaded.find(reference.replace('/', '.'));
                 if (holder != null && holder != user && save.accepted.contains(holder)) {
                     save.dependents.computeIfAbsent(holder, key -> new LinkedHashSet<>()).add(user);
                     save.dependencies.computeIfAbsent(user, key -> new LinkedHashSet<>()).add(holder);
@@ -71,7 +73,7 @@ public final class SwitchMapRefresh {
         });
         save.plans.forEach((holder, plan) -> {
             for (var table : plan.tables()) {
-                Class<?> type = loaded.apply(table.enumName().replace('/', '.'));
+                Class<?> type = loaded.find(table.enumName().replace('/', '.'));
                 if (type != null && type != holder && save.accepted.contains(type)) {
                     save.dependencies.computeIfAbsent(holder, key -> new LinkedHashSet<>()).add(type);
                     save.dependents.computeIfAbsent(type, key -> new LinkedHashSet<>()).add(holder);
@@ -101,9 +103,12 @@ public final class SwitchMapRefresh {
             failed.addAll(save.dependents.getOrDefault(owner, Set.of()));
         }
         List<Write> writes = new ArrayList<>();
+        LoadedClasses live = null;
         try {
-            for (var item : save.plans.entrySet()) if (save.successful.contains(item.getKey()) && !save.failures.containsKey(item.getKey()))
-                writes.addAll(evaluate(item.getKey(), item.getValue()));
+            for (var item : save.plans.entrySet()) if (save.successful.contains(item.getKey()) && !save.failures.containsKey(item.getKey())) {
+                if (live == null) live = save.loaded.fresh();
+                writes.addAll(evaluate(item.getKey(), item.getValue(), live));
+            }
             for (Write write : writes) {
                 if (write.field() != null) EnumSurgery.writeSwitchTable(write.field(), write.table());
                 else FieldStore.putStaticExtField(write.owner(), write.name(), "[I", write.table());
@@ -128,20 +133,21 @@ public final class SwitchMapRefresh {
             }
         } finally { current.remove(); }
     }
-    public static boolean matches(Class<?> owner, SwitchMapPlan plan) {
+    public static boolean matches(Class<?> owner, SwitchMapPlan plan, LoadedClasses loaded) {
         if (owner == null) return false;
         try {
             // A currently absent case may be appended later in this same save.
             // It must not make a changed holder appear equal to the old table.
             for (var table : plan.tables()) {
-                Class<?> type = Class.forName(table.enumName().replace('/', '.'), false, owner.getClassLoader());
+                Class<?> type = loaded.find(table.enumName().replace('/', '.'), owner.getClassLoader());
+                if (type == null) return false;
                 Object[] values = type.getEnumConstants();
                 if (values == null) return false;
                 Set<String> names = new HashSet<>();
                 for (Object value : values) names.add(((Enum<?>) value).name());
                 for (var entry : table.entries()) if (!names.contains(entry.constant())) return false;
             }
-            for (Write write : evaluate(owner, plan)) {
+            for (Write write : evaluate(owner, plan, loaded)) {
                 int[] live = write.field() == null ? (int[]) FieldStore.getStaticExtField(owner, write.name(), "[I")
                         : EnumSurgery.readSwitchTable(write.field());
                 if (!Arrays.equals(live, write.table())) return false;
@@ -149,13 +155,14 @@ public final class SwitchMapRefresh {
             return true;
         } catch (Throwable unavailable) { return false; }
     }
-    private static List<Write> evaluate(Class<?> owner, SwitchMapPlan plan) throws ClassNotFoundException {
+    private static List<Write> evaluate(Class<?> owner, SwitchMapPlan plan, LoadedClasses loaded) throws ClassNotFoundException {
         Map<String, Field> physical = new HashMap<>();
         for (Field field : ReflectionBridge.physicalDeclaredFields(owner))
             if (field.getType() == int[].class && java.lang.reflect.Modifier.isStatic(field.getModifiers())) physical.put(field.getName(), field);
         List<Write> writes = new ArrayList<>();
         for (var table : plan.tables()) {
-            Class<?> enumType = Class.forName(table.enumName().replace('/', '.'), false, owner.getClassLoader());
+            Class<?> enumType = loaded.find(table.enumName().replace('/', '.'), owner.getClassLoader());
+            if (enumType == null) throw new ClassNotFoundException(table.enumName());
             Object[] constants = enumType.getEnumConstants();
             if (constants == null) throw new IllegalArgumentException("Switch target is not an enum");
             Map<String, Integer> ordinals = new HashMap<>();

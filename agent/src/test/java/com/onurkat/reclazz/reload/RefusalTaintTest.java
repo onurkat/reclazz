@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class RefusalTaintTest {
     @TempDir Path dir;
-    @AfterEach void clearLedger(){RestartLedger.clear();}
+    @BeforeEach @AfterEach void clearLedger(){RestartLedger.clear();}
     static class Loader extends ClassLoader {
         final Path root;int loads;
         Loader(Path root){this(root,null);}

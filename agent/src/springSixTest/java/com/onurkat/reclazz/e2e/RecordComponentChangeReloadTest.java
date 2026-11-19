@@ -34,6 +34,7 @@ class RecordComponentChangeReloadTest {
             String text=edit.equals("remove")?"Greeting[text=before, marker=seed]":"Greeting[text=before]";
             String json=edit.equals("remove")?"{\"text\":\"before\",\"marker\":\"seed\"}":"{\"text\":\"before\"}";
             app.awaitOrFail("SAFE|0|before|"+text+"|"+text+"|true|"+json+"|"+json,"old caller/held/fresh record and Jackson2/3 remain usable");
+            app.awaitOrFail("PENDING|go|","restart ledger reply follows the SAFE observation");
             assertTrue(app.output().stream().anyMatch(s->s.contains("PENDING|")&&s.contains("app.Greeting")),"PENDING must identify refused record");
             assertFalse(app.output().stream().anyMatch(s->s.contains("[STRC]")&&s.contains("app.Greeting")),"no structural success receipt for refused record");
         } finally { remember(app,"shape-"+edit); }
@@ -58,6 +59,7 @@ class RecordComponentChangeReloadTest {
         String request=token+":"+version;Files.writeString(dir.resolve("signal"),request);
         String json="{\"text\":\"before\"}";
         app.awaitOrFail("CHECK|"+request+"|SAFE|"+version+"|before|Greeting[text=before]|Greeting[text="+freshText+"]|"+freshText.equals("before")+"|"+json+"|"+json,"existing and new instances stay callable");
+        app.awaitOrFail("PENDING|"+request+"|","restart ledger reply follows the CHECK observation");
     }
     static void remember(WatchedApp app,String name)throws Exception {
         String destination=System.getenv("RECLAZZ_R20_TEST_OUTPUT");if(destination==null)return;Path out=Path.of(destination);Files.createDirectories(out);Files.write(out.resolve(name+".log"),app.output());

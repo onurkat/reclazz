@@ -27,6 +27,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Save preparation leaves first-time classes unloaded until instrumentation admission,
+  preserving new component and prepared-entity reload behaviour.
+
 - Record component changes are refused before record/caller publication, including
   later consumers of refused factories. Original-shape recovery keeps its restart
   note until native admission succeeds; startup catch-up preserves the save batch.

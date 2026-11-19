@@ -21,7 +21,7 @@ class AddedStaticsTest implements Opcodes {
         }.define();
     }
     private static boolean routed(Class<?> caller) {
-        return AddedStatics.generating(caller, () -> AddedStatics.contains("sample/Holder", "$SwitchMap$sample$Mode", "[I"));
+        return AddedStatics.generating(caller, com.onurkat.reclazz.util.ClassLookup.loadedClasses(new Class<?>[]{caller}), () -> AddedStatics.contains("sample/Holder", "$SwitchMap$sample$Mode", "[I"));
     }
     @Test void sameSaveSeesAddedFieldBeforePublicationAndIsolatesBothOtherLoaders() {
         Class<?> added = owner(false), physical = owner(true), unknown = owner(false);

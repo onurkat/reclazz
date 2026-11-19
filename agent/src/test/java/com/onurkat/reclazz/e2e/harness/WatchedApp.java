@@ -381,11 +381,26 @@ public final class WatchedApp implements AutoCloseable {
 
     @Override
     public void close() {
-        process.destroyForcibly();
+        boolean interrupted=false, exited=false;
         try {
-            process.waitFor(10, TimeUnit.SECONDS);
-        } catch (InterruptedException interrupted) {
-            Thread.currentThread().interrupt();
+            // Termination is asynchronous. Never let TempDir cleanup race a
+            // live child that still owns its classpath/agent jars on Windows.
+            for (int attempt=0;attempt<2 && !exited;attempt++) {
+                process.destroyForcibly();
+                long deadline=System.nanoTime()+TimeUnit.SECONDS.toNanos(10);
+                while (System.nanoTime()<deadline) {
+                    try {
+                        exited=process.waitFor(Math.max(1,deadline-System.nanoTime()),TimeUnit.NANOSECONDS);
+                        break;
+                    } catch (InterruptedException retry) { interrupted=true; }
+                }
+            }
+            if (!exited || process.isAlive()) throw new IllegalStateException("Child JVM did not exit; its files remain owned by the child");
+        } finally {
+            if (!process.isAlive()) for (var stream:List.of(process.getOutputStream(),process.getInputStream(),process.getErrorStream())) {
+                try { stream.close(); } catch (IOException alreadyClosed) { }
+            }
+            if (interrupted) Thread.currentThread().interrupt();
         }
     }
 

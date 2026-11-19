@@ -36,7 +36,7 @@ class SwitchMapRefreshTest implements Opcodes {
     }
     private static void begin(Class<?> owner, SwitchMapPlan plan) {
         SwitchMapRefresh.begin(Map.of(owner.getName(), bytes(true)), Map.of(owner.getName(), plan),
-                name -> name.equals(owner.getName()) ? owner : null);
+                com.onurkat.reclazz.util.ClassLookup.loadedClasses(new Class<?>[]{owner,Mode.class}));
     }
     @Test void physicalTableRefreshesOnlyAfterSuccessAndMissingConstantsAreSkipped() throws Exception {
         Class<?> owner = owner(true); int[] old = {1, 2, 0}; EnumSurgery.writeSwitchTable(physical(owner), old);
@@ -76,7 +76,7 @@ class SwitchMapRefreshTest implements Opcodes {
         EnumSurgery.writeSwitchTable(physical(a), originalA); EnumSurgery.writeSwitchTable(physical(b), originalB);
         var present = new SwitchMapPlan("sample/Holder$1", List.of(new SwitchMapPlan.Table(FIELD,
                 Mode.class.getName().replace('.', '/'), List.of(new SwitchMapPlan.Entry("FIRST", 1), new SwitchMapPlan.Entry("SECOND", 2)))));
-        assertTrue(SwitchMapRefresh.matches(a, present)); assertSame(originalA, EnumSurgery.readSwitchTable(physical(a)));
+        assertTrue(SwitchMapRefresh.matches(a, present, com.onurkat.reclazz.util.ClassLookup.loadedClasses(new Class<?>[]{a,Mode.class}))); assertSame(originalA, EnumSurgery.readSwitchTable(physical(a)));
         begin(a, plan(2, 1));
         try { SwitchMapRefresh.result(a, true); SwitchMapRefresh.complete(null); }
         finally { SwitchMapRefresh.end(); }
@@ -85,7 +85,7 @@ class SwitchMapRefreshTest implements Opcodes {
     }
     @Test void missingCaseMustNotLookLikeAnUnchangedTableBeforeEnumAppend() throws Exception {
         Class<?> owner = owner(true); EnumSurgery.writeSwitchTable(physical(owner), new int[]{1, 2, 0});
-        assertFalse(SwitchMapRefresh.matches(owner, plan(1, 2)), "a case absent from the live enum may be appended later in this same save");
+        assertFalse(SwitchMapRefresh.matches(owner, plan(1, 2), com.onurkat.reclazz.util.ClassLookup.loadedClasses(new Class<?>[]{owner,Mode.class})), "a case absent from the live enum may be appended later in this same save");
     }
     @Test void appliedHashIsClassScopedAndInvalidatedBeforeFailedMutation() {
         Class<?> a = owner(false), b = owner(false); byte[] original = bytes(true);
@@ -102,7 +102,7 @@ class SwitchMapRefreshTest implements Opcodes {
             enumBytes = input.readAllBytes();
         } catch (java.io.IOException failure) { throw new java.io.UncheckedIOException(failure); }
         SwitchMapRefresh.begin(Map.of(holder.getName(), bytes(true), Mode.class.getName(), enumBytes),
-                Map.of(holder.getName(), plan(1, 2)), name -> name.equals(holder.getName()) ? holder : Mode.class);
+                Map.of(holder.getName(), plan(1, 2)), com.onurkat.reclazz.util.ClassLookup.loadedClasses(new Class<?>[]{holder,Mode.class}));
         try {
             assertNull(SwitchMapRefresh.dependencyFailure(holder, null));
             SwitchMapRefresh.result(Mode.class, false);

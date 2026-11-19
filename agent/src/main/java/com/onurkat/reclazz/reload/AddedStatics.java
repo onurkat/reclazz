@@ -16,7 +16,8 @@ public final class AddedStatics {
     private AddedStatics() { }
     private static final Map<Class<?>, Set<String>> published = Collections.synchronizedMap(new WeakHashMap<>());
     private static final ThreadLocal<Map<Class<?>, Set<String>>> save = new ThreadLocal<>();
-    private static final ThreadLocal<Class<?>> generating = new ThreadLocal<>();
+    private record Generation(Class<?> caller, com.onurkat.reclazz.util.ClassLookup.LoadedClasses loaded) { }
+    private static final ThreadLocal<Generation> generating = new ThreadLocal<>();
     public static void begin(Map<Class<?>, byte[]> candidates) {
         if (save.get() != null) throw new IllegalStateException("Nested added-static save");
         Map<Class<?>, Set<String>> staged = new LinkedHashMap<>();
@@ -34,23 +35,33 @@ public final class AddedStatics {
     public static void finish(Set<Class<?>> successful) {
         try {
             Map<Class<?>, Set<String>> staged = save.get();
-            if (staged != null) staged.forEach((owner, keys) -> { if (successful.contains(owner)) published.put(owner, keys); });
+            if (staged != null) staged.forEach((owner, keys) -> {
+                if (successful.contains(owner)) {
+                    if (keys.isEmpty()) published.remove(owner);
+                    else published.put(owner, keys);
+                }
+            });
         } finally { save.remove(); }
     }
-    public static <T> T generating(Class<?> owner, Supplier<T> action) {
-        Class<?> previous = generating.get(); generating.set(owner);
+    public static <T> T generating(Class<?> owner, com.onurkat.reclazz.util.ClassLookup.LoadedClasses loaded, Supplier<T> action) {
+        Generation previous = generating.get(); generating.set(new Generation(owner,loaded));
         try { return action.get(); }
         finally { if (previous == null) generating.remove(); else generating.set(previous); }
     }
     public static boolean contains(String internalOwner, String name, String descriptor) {
-        Class<?> caller = generating.get();
+        Generation generation = generating.get();
+        Class<?> caller = generation == null ? null : generation.caller();
         if (caller == null) return false;
-        try {
-            Class<?> owner = Class.forName(internalOwner.replace('/', '.'), false, caller.getClassLoader());
+        Map<Class<?>, Set<String>> staged = save.get();
+        // A save may carry owners with empty sets so successful removals can
+        // retire old publication. Those tombstones do not require a census.
+        if ((staged == null || staged.values().stream().allMatch(Set::isEmpty)) && published.isEmpty()) return false;
+        {
+            Class<?> owner = generation.loaded().find(internalOwner.replace('/', '.'), caller.getClassLoader());
+            if (owner == null) return false;
             String key = name + ":" + descriptor;
-            Map<Class<?>, Set<String>> staged = save.get();
             return (staged != null && staged.getOrDefault(owner, Set.of()).contains(key))
                     || published.getOrDefault(owner, Set.of()).contains(key);
-        } catch (ClassNotFoundException absent) { return false; }
+        }
     }
 }

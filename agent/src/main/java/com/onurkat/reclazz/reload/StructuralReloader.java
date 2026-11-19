@@ -1053,7 +1053,7 @@ public class StructuralReloader {
             if(loadedClass!=null)for(var constructor:ReflectionBridge.physicalDeclaredConstructors(loadedClass))
                 physicalConstructors.add(org.objectweb.asm.Type.getConstructorDescriptor(constructor));
             for(var method:constructorShape.methods)if(method.name.equals("<init>") && !physicalConstructors.contains(method.desc))reflectionConstructors.add(method.desc);
-            CompanionGenerator.CompanionResult companion = AddedStatics.generating(loadedClass, () -> CompanionGenerator.generate(
+            CompanionGenerator.CompanionResult companion = AddedStatics.generating(loadedClass, com.onurkat.reclazz.util.ClassLookup.loadedClasses(instrumentation), () -> CompanionGenerator.generate(
                     internalName, newBytecode, diff, version, staticsNeedingValue,
                     pinnedMethods.keySet(), context,reflectionConstructors));
 
