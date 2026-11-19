@@ -1324,11 +1324,17 @@ public class FileWatcher {
         StatusReporter.info(Plural.of(startupChangedClasses.size(), "class file")
                 + " changed while the JVM"
                 + " was starting, reloading them so the running code matches disk");
+        // Catch-up is one save, just like a settled watch burst. Delivering
+        // each file separately can publish a caller before the record shape
+        // refusal (and its dependency closure) is known.
+        List<ChangeEvent> events = new ArrayList<>();
         for (var entry : startupChangedClasses.entrySet()) {
             WatchedDirectory dir = entry.getValue();
-            dispatchEvent(new PendingEvent(System.currentTimeMillis(), entry.getKey(),
+            ChangeEvent event = toChangeEvent(new PendingEvent(System.currentTimeMillis(), entry.getKey(),
                     ChangeEvent.Type.MODIFIED, dir.moduleName(), dir.sourceRoot()));
+            if (event != null) events.add(event);
         }
+        deliver(events);
         startupChangedClasses.clear();
     }
 

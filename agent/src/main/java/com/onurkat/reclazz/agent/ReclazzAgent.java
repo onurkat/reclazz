@@ -136,6 +136,7 @@ public class ReclazzAgent {
     private static volatile ReloadVerification verification;
     private static volatile JvmCapabilityProbe.ProbeResult probeResult;
     private static volatile TransformContext transformContext;
+    private static final com.onurkat.reclazz.reload.RefusalTaint recordRefusals = new com.onurkat.reclazz.reload.RefusalTaint();
     private static volatile StructuralReloader structuralReloader;
     private static final TemplateReloader templateReloader =
             new TemplateReloader();
@@ -1003,6 +1004,13 @@ public class ReclazzAgent {
         }
     }
 
+    private static void refuseRecord(String name, String reason, String source) {
+        recordOutcome(name, false, reason, source);
+        StatusReporter.error("Reload refused for " + name + ": " + reason);
+        ReloadEvents.failed(name, reason, source);
+        SessionReport.failed();
+    }
+
     private static void refuseSwitchMap(String name, String reason, String source) {
         String why = "switch table could not be refreshed; restart to apply: " + reason;
         recordOutcome(name, false, why, source);
@@ -1095,6 +1103,20 @@ public class ReclazzAgent {
     }
 
     private static ReloadQueue.SavePlan prepareSwitchMaps(java.util.List<ChangeEvent> captured) {
+        Map<String, byte[]> recordBytes = new java.util.LinkedHashMap<>();
+        Map<String, Path> recordPaths = new java.util.LinkedHashMap<>();
+        for (ChangeEvent event : captured) {
+            String name = new org.objectweb.asm.ClassReader(event.getBytes()).getClassName().replace('/', '.');
+            recordBytes.put(name, event.getBytes()); recordPaths.put(name, event.getPath());
+        }
+        Map<String, String> recordRejected = recordRefusals.preflight(recordBytes, recordPaths,
+                instrumentation == null ? new Class<?>[0] : instrumentation.getAllLoadedClasses());
+        Map<ChangeEvent, String> recordEvents = new java.util.LinkedHashMap<>();
+        for (ChangeEvent event : captured) {
+            String name = new org.objectweb.asm.ClassReader(event.getBytes()).getClassName().replace('/', '.');
+            if (recordRejected.containsKey(name)) recordEvents.put(event, recordRejected.get(name));
+        }
+        captured = captured.stream().filter(event -> !recordEvents.containsKey(event)).toList();
         java.util.Map<Path, ChangeEvent> events = new java.util.LinkedHashMap<>();
         for (ChangeEvent event : captured) {
             Class<?> owner = findLoadedClass(new org.objectweb.asm.ClassReader(event.getBytes()).getClassName().replace('/', '.'));
@@ -1102,12 +1124,13 @@ public class ReclazzAgent {
             try { sameOutput = owner != null && classOutputRoot(owner).equals(switchOutputRoot(event.getPath(), owner.getName().replace('.', '/')).toRealPath()); }
             catch (Exception unavailable) { /* Unproven origins never suppress an event. */ }
             if (sameOutput && SwitchMapRefresh.alreadyApplied(owner, event.getBytes())) {
+                recordRefusals.accepted(owner, event.getBytes());
                 StatusReporter.detail("Unchanged applied class skipped: " + owner.getName());
                 continue;
             }
             events.put(event.getPath().toAbsolutePath().normalize(), event);
         }
-        java.util.Map<ChangeEvent, String> refused = new java.util.LinkedHashMap<>();
+        java.util.Map<ChangeEvent, String> refused = new java.util.LinkedHashMap<>(recordEvents);
         for (ChangeEvent outer : java.util.List.copyOf(events.values())) {
             byte[] bytes = outer.getBytes();
             for (String reference : SwitchMapPlan.references(bytes)) {
@@ -1151,15 +1174,33 @@ public class ReclazzAgent {
             if (reason != null) refused.put(event, reason);
             if (!refused.containsKey(event)) { apply.add(event); accepted.put(name, event.getBytes()); }
         }
-        refused.forEach((event, reason) -> refuseSwitchMap(
-                new org.objectweb.asm.ClassReader(event.getBytes()).getClassName().replace('/', '.'), reason, event.getPath().toString()));
+        refused.forEach((event, reason) -> {
+            String name = new org.objectweb.asm.ClassReader(event.getBytes()).getClassName().replace('/', '.');
+            if (recordRejected.containsKey(name)) refuseRecord(name, reason, event.getPath().toString());
+            else refuseSwitchMap(name, reason, event.getPath().toString());
+        });
         SwitchMapRefresh.begin(accepted, preflight.plans(), ReclazzAgent::findLoadedClass);
         return new ReloadQueue.SavePlan(com.onurkat.reclazz.reload.BatchOrder.calleesFirst(apply), refused);
     }
 
-    private static Map<String, byte[]> prepareCompiledSwitchMaps(Map<String, byte[]> compiled, Map<String, String> sources) {
+    private static Map<String, byte[]> prepareCompiledSwitchMaps(Map<String, byte[]> candidates, Map<String, String> sources) {
+        Map<String, Path> recordPaths = new java.util.LinkedHashMap<>();
+        if (platformContext != null) for (String name : candidates.keySet()) {
+            List<Path> matches = new java.util.ArrayList<>();
+            for (var directories : platformContext.getClassOutputDirs().values()) for (Path root : directories) {
+                Path file = root.resolve(name.replace('.', '/') + ".class");
+                try { if (Files.isRegularFile(file) && java.util.Arrays.equals(Files.readAllBytes(file), candidates.get(name))) matches.add(file); }
+                catch (IOException unavailable) { /* Missing origin stays unknown, never guessed. */ }
+            }
+            if (matches.size() == 1) recordPaths.put(name, matches.get(0));
+        }
+        Map<String, String> recordRejected = recordRefusals.preflight(candidates, recordPaths,
+                instrumentation == null ? new Class<?>[0] : instrumentation.getAllLoadedClasses());
+        Map<String, byte[]> compiled = new java.util.LinkedHashMap<>(candidates);
+        recordRejected.keySet().forEach(compiled::remove);
         var preflight = SwitchMapPreflight.check(compiled);
         Map<String, String> refused = new java.util.LinkedHashMap<>(preflight.refused());
+        refused.putAll(recordRejected);
         compiled.forEach((name, value) -> {
             for (String reference : SwitchMapPlan.references(value)) {
                 if (compiled.containsKey(reference.replace('/', '.'))) continue;
@@ -1188,7 +1229,9 @@ public class ReclazzAgent {
         }
         capturePendingEnums(accepted, paths, preflight.plans(), refused);
         refused.forEach((name, reason) -> {
-            accepted.remove(name); refuseSwitchMap(name, reason, sources.get(name));
+            accepted.remove(name);
+            if (recordRejected.containsKey(name)) refuseRecord(name, reason, sources.get(name));
+            else refuseSwitchMap(name, reason, sources.get(name));
         });
         java.util.List<ChangeEvent> events = new java.util.ArrayList<>();
         accepted.forEach((name, value) -> events.add(new ChangeEvent(
@@ -1243,6 +1286,10 @@ public class ReclazzAgent {
         // a reload that never happened from one that landed and then had
         // its framework refresh die; both leave a trail, different ones.
         ClassReloader.ReloadResult reloadResult = null;
+        // A single-file record recovery must wait for the native terminal
+        // result too; companion publication alone cannot clear its restart note.
+        boolean recordRecovery = frameworkBatchDepth == 0 && recordRefusals.recovering(className);
+        if (recordRecovery) beginReloadBatch(springOrchestrator);
         try {
             String internalName = className.replace('.', '/');
 
@@ -1318,6 +1365,8 @@ public class ReclazzAgent {
                 recordOutcome(className, true, kindOf(reloadResult)
                         + "; the framework refresh after it did not finish: " + why, source);
             }
+        } finally {
+            if (recordRecovery) endReloadBatch(springOrchestrator);
         }
     }
 
@@ -1601,9 +1650,10 @@ public class ReclazzAgent {
                 return;
             }
             if (!deferred) com.onurkat.reclazz.transform.KeepBaseline.advance(type, work.bytes);
-            if (structural == null || structural.nativeOutcome(type) == StructuralReloader.NativeOutcome.APPLIED)
+            if (structural == null || structural.nativeOutcome(type) == StructuralReloader.NativeOutcome.APPLIED) {
                 com.onurkat.reclazz.transform.AdmittedBytes.admitted(type, work.bytes);
-            else com.onurkat.reclazz.transform.AdmittedBytes.invalidate(type);
+                recordRefusals.accepted(type, work.bytes);
+            } else com.onurkat.reclazz.transform.AdmittedBytes.invalidate(type);
             if (work.wasLoaded) JpaMappingRefresh.retryPendingEntity(work.className, work.bytes);
             var interceptor = work.result.isInterceptor() && work.modules != null
                     && platformContext.getPlatformId() == PlatformContext.Platform.HYBRIS

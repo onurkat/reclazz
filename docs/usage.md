@@ -1237,11 +1237,27 @@ added field and setter complete a POST/GET round-trip in the same JVM; a second
 setter body edit also takes effect without restarting. The existing retained
 object remains usable after the shape changes.
 
-New constructor/record creators and annotations relocated to
-`tools.jackson.databind.annotation` remain unverified. Added record components
-are outside this field/setter acceptance: the measured added-constructor failure
-occurs before Jackson runs. Other unlisted Jackson versions and accessor-generating
-extensions such as Afterburner remain unverified.
+New constructor creators and annotations relocated to
+`tools.jackson.databind.annotation` remain unverified. Other unlisted Jackson
+versions and accessor-generating extensions such as Afterburner remain unverified.
+
+Changing a record's component count, names, types or order requires a restart,
+as does changing between a record and an ordinary class. The
+[JVM redefinition limit](https://docs.oracle.com/en/java/javase/17/docs/specs/jvmti.html)
+prevents replacing its Record attribute. Reclazz refuses these saves before
+publishing the record or callers that need unavailable members, including
+constructor references and consumers of refused factories. Existing objects,
+record metadata and old callers keep their previous behaviour. A component list
+that stays unchanged still follows the ordinary body/method reload checks.
+
+The refusal is tracked by defining loader across later saves. Restoring and
+successfully admitting the original component shape clears the record's PENDING
+restart note; stale callers and refused factories still have to reference members
+that exist in the live classes. Ambiguous owners across loaders are refused.
+A class literal combined with reflective constructor/member/record-component
+lookup is conservatively refused for a tainted owner. Reflection using class
+names or values supplied elsewhere is outside this bytecode check; such new
+code can still fail at use and needs a restart.
 
 ## Spring service methods, scheduling and events
 

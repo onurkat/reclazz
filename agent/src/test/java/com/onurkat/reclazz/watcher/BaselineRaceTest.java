@@ -173,4 +173,18 @@ class BaselineRaceTest {
         assertEquals(1, dispatched.size(), "a real post-attach content edit still reloads");
     }
 
+    @Test void startupCatchUpPreservesOneSaveForDependencyPreflight() throws Exception {
+        List<List<ChangeEvent>> batches = new CopyOnWriteArrayList<>();
+        watcher.onFileChanges(events -> batches.add(List.copyOf(events)));
+        Files.write(tempDir.resolve("Caller.class"), new byte[]{1});
+        Files.write(tempDir.resolve("Greeting.class"), new byte[]{2});
+        watcher.prepopulateContentHashes(tempDir,
+                new FileWatcher.WatchedDirectory(tempDir, "m", "classes"));
+        watcher.dispatchClassesChangedDuringStartup();
+        assertEquals(1, batches.size(), "caller and record must reach preflight together");
+        assertEquals(2, batches.get(0).size());
+        watcher.dispatchClassesChangedDuringStartup();
+        assertEquals(1, batches.size(), "startup save is delivered once");
+    }
+
 }
