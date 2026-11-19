@@ -43,8 +43,7 @@ public final class JacksonAccessorTransformer implements ClassFileTransformer {
                                                               String descriptor, boolean isInterface) {
                             String replacement = null;
                             if (opcode == Opcodes.INVOKEVIRTUAL
-                                    && (reader.getClassName().equals("tools/jackson/databind/ser/BeanPropertyWriter$GetterHolder")
-                                    || reader.getClassName().equals("tools/jackson/databind/introspect/AnnotatedMethod$MethodHolder"))
+                                    && reader.getClassName().startsWith("tools/jackson/databind/")
                                     && owner.equals("java/lang/invoke/MethodHandles$Lookup") && method.equals("unreflect")
                                     && descriptor.equals("(Ljava/lang/reflect/Method;)Ljava/lang/invoke/MethodHandle;"))
                                 replacement = "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/reflect/Method;)Ljava/lang/invoke/MethodHandle;";

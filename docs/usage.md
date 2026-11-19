@@ -1217,7 +1217,7 @@ normal loaders; setter/field input-output runs on normal and child loaders.
 Mix-ins, mapper access restrictions, final-write refusal and retained-writer
 behavior have separately labelled component-only observations.
 
-Jackson 3.1.7 getter output is separately covered on stock JDK 17/21, both with
+Jackson 3.1.8, 3.2.4 and 3.3.0 getter output is separately covered on stock JDK 17/21, both with
 Jackson 2 hidden and with both namespaces present: getter addition, body changes,
 annotation rename/ignore, removal/restoration, naming and generic values, access
 restrictions and exception propagation. A Spring-free process and the Boot 4.1.2

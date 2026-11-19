@@ -36,6 +36,8 @@ class JacksonThreeAddedGetterTest {
     @BeforeEach void isolate() throws Exception {
         try { Class.forName("tools.jackson.databind.json.JsonMapper"); }
         catch (ClassNotFoundException absent) { assumeTrue(false,"Jackson3 belongs to the Seven graph"); }
+        String expected=System.getProperty("reclazz.jackson3.expectedVersion");
+        if(expected!=null) assertEquals(expected,Class.forName("tools.jackson.databind.cfg.PackageVersion").getField("VERSION").get(null).toString(),"isolated Jackson runtime");
         previous=new ArrayList<>(registry()); registry().clear(); ApplicationContextHolder.clear();
     }
     @AfterEach void restore() throws Exception {

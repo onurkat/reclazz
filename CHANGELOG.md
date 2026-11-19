@@ -19,6 +19,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Added getter serialization works with Jackson 3.3.
+
 - IDE-managed Java test runs skip agent injection by default, with an explicit
   opt-in in Settings. Server run configurations retain their existing behaviour.
 - Dynamic attach takes current class files as its baseline without replaying

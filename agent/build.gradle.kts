@@ -383,7 +383,7 @@ dependencies {
     // Legacy Jackson 2 fixture sidecar; this does not exercise Jackson 3 defaults.
     add(springSevenTests.implementationConfigurationName, "com.fasterxml.jackson.core:jackson-databind:2.23.0")
     // Real Jackson 3 reload coverage; isolated test graph only.
-    add(springSevenTests.implementationConfigurationName, "tools.jackson.core:jackson-databind:3.1.7")
+    add(springSevenTests.implementationConfigurationName, "tools.jackson.core:jackson-databind:3.3.0")
     add(springSevenTests.implementationConfigurationName, "org.hibernate.validator:hibernate-validator:9.1.5.Final")
     add(springSevenTests.implementationConfigurationName, "org.glassfish.expressly:expressly:6.0.0")
     // Native modern method authorization; isolated from Spring 5 and never packaged.
@@ -404,6 +404,7 @@ dependencies {
     add(springSevenTests.runtimeOnlyConfigurationName, "org.junit.platform:junit-platform-launcher:6.1.3")
 }
 val springSevenTest by tasks.registering(Test::class) {
+    systemProperty("reclazz.jackson3.expectedVersion", "3.3.0")
     group = "verification"
     description = "Focused Spring 7 / Jakarta lifecycle regressions on an isolated dependency graph"
     useJUnitPlatform()
@@ -416,6 +417,37 @@ val springSevenTest by tasks.registering(Test::class) {
     inputs.file(tasks.named<org.gradle.jvm.tasks.Jar>("shadowJar").get().archiveFile).withPropertyName("agentJar")
     jvmArgs("-Djdk.attach.allowAttachSelf=true")
     testLogging { events("passed", "failed", "skipped") }
+}
+
+// Each Jackson 3 compatibility gate resolves and verifies its own runtime.
+for ((line, jacksonVersion) in listOf("3_1" to "3.1.8", "3_2" to "3.2.4", "3_3" to "3.3.0")) {
+    val matrix = sourceSets.create("jackson3Matrix_$line") {
+        java.setSrcDirs(listOf("src/springSixTest/java"))
+        java.include("**/JacksonThreeAddedGetterTest.java", "**/JacksonThreeGetterReloadTest.java")
+        compileClasspath += premium.output + sourceSets.main.get().output + sourceSets.test.get().output + sourceSets.main.get().compileClasspath
+        runtimeClasspath += premium.output + sourceSets.main.get().runtimeClasspath + sourceSets.test.get().output
+    }
+    configurations[matrix.implementationConfigurationName].extendsFrom(configurations[springSevenTests.implementationConfigurationName])
+    configurations[matrix.runtimeOnlyConfigurationName].extendsFrom(configurations[springSevenTests.runtimeOnlyConfigurationName])
+    for (configuration in listOf(matrix.compileClasspathConfigurationName, matrix.runtimeClasspathConfigurationName)) {
+        configurations[configuration].resolutionStrategy.eachDependency {
+            if (requested.group == "tools.jackson.core" && requested.name == "jackson-databind") useVersion(jacksonVersion)
+        }
+    }
+    val matrixTask = tasks.register<Test>("jackson3Matrix_$line") {
+        group = "verification"
+        description = "Jackson $jacksonVersion added-getter compatibility"
+        useJUnitPlatform()
+        testClassesDirs = matrix.output.classesDirs
+        classpath = matrix.runtimeClasspath
+        include("**/JacksonThreeAddedGetterTest*", "**/JacksonThreeGetterReloadTest*")
+        dependsOn(tasks.named("shadowJar"))
+        systemProperty("reclazz.agent.jar", tasks.named<org.gradle.jvm.tasks.Jar>("shadowJar").get().archiveFile.get().asFile.absolutePath)
+        systemProperty("reclazz.jackson3.expectedVersion", jacksonVersion)
+        jvmArgs("-Djdk.attach.allowAttachSelf=true")
+        testLogging { events("passed", "failed", "skipped") }
+    }
+    tasks.named<Test>("test") { dependsOn(matrixTask) }
 }
 
 // Native Spring 6 messaging regressions on an independent, test-only graph.

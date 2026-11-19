@@ -28,6 +28,8 @@ class JacksonThreeGetterReloadTest {
         assumeTrue(jackson.contains("jackson-databind-3."),"Jackson3 is isolated to Seven");
         try(var app=WatchedApp.in(tmp).classpath(jackson).agentArgs("startupDelaySec=1,debounceMs=100,verbose=true")
                 .with("App",APP).with("Dto",dto(null)).start()) {
+            String expected=System.getProperty("reclazz.jackson3.expectedVersion");
+            if(expected!=null) app.awaitOrFail("JACKSON_VERSION="+expected,"child JVM Jackson version");
             app.awaitOrFail("PORT=","HTTP server did not start");app.awaitOrFail("] Watching ","watcher did not start");
             int port=Integer.parseInt(app.latest("PORT=").substring(5));var client=HttpClient.newHttpClient();
             String initial=get(client,port);long pid=new com.fasterxml.jackson.databind.ObjectMapper().readTree(initial).path("pid").asLong();
@@ -61,6 +63,7 @@ class JacksonThreeGetterReloadTest {
             public static void main(String[] args) throws Exception {
                 try { Class.forName("com.fasterxml.jackson.databind.ObjectMapper"); throw new AssertionError("Jackson2 must be absent"); }
                 catch(ClassNotFoundException expected) { }
+                System.out.println("JACKSON_VERSION="+tools.jackson.databind.cfg.PackageVersion.VERSION);
                 var mapper=new tools.jackson.databind.json.JsonMapper();var dto=new Dto();
                 var server=com.sun.net.httpserver.HttpServer.create(new java.net.InetSocketAddress("127.0.0.1",0),0);
                 server.createContext("/",exchange->{
