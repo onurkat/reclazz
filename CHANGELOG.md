@@ -19,6 +19,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- SAP Commerce settings and Install Agent use the resolved installation, including
+  nested layouts and module content roots when configuration files are kept elsewhere.
+
 - Added getter serialization works with Jackson 3.3.
 - SAP Commerce compilation keeps bootstrap-generated DTO/model classes out of extension output
   and removes proven stale copies before codegen so combined XML and Java saves compile.

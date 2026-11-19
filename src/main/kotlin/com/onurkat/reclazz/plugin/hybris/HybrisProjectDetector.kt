@@ -4,7 +4,11 @@
  */
 package com.onurkat.reclazz.plugin.hybris
 
+import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.module.ModuleManager
+import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.project.Project
+import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.concurrent.ConcurrentHashMap
@@ -15,19 +19,9 @@ object HybrisProjectDetector {
 
     private const val CACHE_TTL_NS = 60_000_000_000L // 1 minute in nanos
 
-    private val cache = ConcurrentHashMap<String, CachedValue<Boolean>>()
     private val hybrisHomeCache = ConcurrentHashMap<String, CachedValue<Path?>>()
 
-    fun isHybrisProject(project: Project): Boolean {
-        val basePath = project.basePath ?: return false
-        val cached = cache[basePath]
-        if (cached != null && System.nanoTime() - cached.nanoTimestamp < CACHE_TTL_NS) {
-            return cached.value
-        }
-        val result = detectHybris(basePath)
-        cache[basePath] = CachedValue(result, System.nanoTime())
-        return result
-    }
+    fun isHybrisProject(project: Project): Boolean = findHybrisHome(project) != null
 
     fun findHybrisHome(project: Project): Path? {
         val basePath = project.basePath ?: return null
@@ -35,25 +29,14 @@ object HybrisProjectDetector {
         if (cached != null && System.nanoTime() - cached.nanoTimestamp < CACHE_TTL_NS) {
             return cached.value
         }
-        val result = resolveHybrisHome(basePath)
+        val result = resolveHybrisHome(basePath) ?: runReadAction {
+            ModuleManager.getInstance(project).modules.asSequence()
+                .flatMap { ModuleRootManager.getInstance(it).contentRoots.asSequence() }
+                .mapNotNull { resolveHybrisHome(it.path) }
+                .firstOrNull()
+        }
         hybrisHomeCache[basePath] = CachedValue(result, System.nanoTime())
         return result
-    }
-
-    private fun detectHybris(basePath: String): Boolean {
-        val base = Paths.get(basePath)
-
-        // Direct layouts (basePath IS the hybris home or its parent)
-        val markers = listOf(
-            base.resolve("config/localextensions.xml"),
-            base.resolve("hybris/config/localextensions.xml"),
-            base.resolve("bin/platform/build.xml"),
-            // SAP Commerce Cloud project layout, hybris nested at core-customize/hybris
-            base.resolve("core-customize/hybris/config/localextensions.xml"),
-            base.resolve("core-customize/hybris/bin/platform/build.xml")
-        )
-
-        return markers.any { it.toFile().exists() }
     }
 
     private fun resolveHybrisHome(basePath: String): Path? {
@@ -71,7 +54,7 @@ object HybrisProjectDetector {
             base.resolve("ccv2").resolve("hybris")
         )
         for (candidate in downwardCandidates) {
-            if (candidate.resolve("bin").resolve("platform").toFile().exists()) {
+            if (Files.isRegularFile(candidate.resolve("bin/platform/build.xml"))) {
                 return candidate
             }
         }
@@ -80,12 +63,11 @@ object HybrisProjectDetector {
         var candidate: Path? = base
         var i = 0
         while (candidate != null && i < 5) {
-            val platform = candidate.resolve("bin").resolve("platform")
-            if (platform.toFile().exists()) {
+            if (Files.isRegularFile(candidate.resolve("bin/platform/build.xml"))) {
                 return candidate
             }
             val hybrisSub = candidate.resolve("hybris")
-            if (hybrisSub.resolve("bin").resolve("platform").toFile().exists()) {
+            if (Files.isRegularFile(hybrisSub.resolve("bin/platform/build.xml"))) {
                 return hybrisSub
             }
             candidate = candidate.parent

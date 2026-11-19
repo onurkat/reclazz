@@ -23,6 +23,7 @@ class SyntheticProject(delegate: Project, sap: Boolean) : AutoCloseable {
     init {
         if (sap) {
             Files.createDirectories(home.resolve("bin/platform"))
+            Files.writeString(home.resolve("bin/platform/build.xml"), "<project/>")
             Files.createDirectories(home.resolve("config"))
             Files.writeString(home.resolve("config/localextensions.xml"), "<hybrisconfig><extensions/></hybrisconfig>")
             Files.writeString(home.resolve("config/local.properties"), "")
