@@ -80,20 +80,16 @@ class AddedFieldInitialisationTest {
                 "methods that were always there must survive");
     }
 
-    /**
-     * Constructors are the entire reason the payload exists. Dropping one,
-     * even if a diff somehow named it, would take the new field initialisation
-     * with it.
-     */
     @Test
-    void constructorsAreNeverStripped() throws IOException {
-        byte[] stripped = AddedMemberStripper.strip(
-                bytecodeOf(Sample.class),
-                Set.of(),
+    void onlyLogicalConstructorOverloadsAreStripped() throws IOException {
+        byte[] original = bytecodeOf(Sample.class);
+        byte[] kept = AddedMemberStripper.strip(original, Set.of(), Set.of("<clinit>:()V"));
+        assertTrue(methodNames(kept).contains("<init>"),
+                "the physical constructor keeps its new initialiser body");
+        byte[] stripped = AddedMemberStripper.strip(original, Set.of(),
                 Set.of("<init>:()V", "<clinit>:()V"));
-
-        assertTrue(methodNames(stripped).contains("<init>"),
-                "the constructor carries the new field's initialiser to the loaded class");
+        assertFalse(methodNames(stripped).contains("<init>"),
+                "an explicitly logical-only constructor is a companion factory, absent from redefine");
     }
 
     @Test

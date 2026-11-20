@@ -65,7 +65,7 @@ class ConstructorBodyRedefineTest extends TransformTestBase {
         TransformContext context = new TransformContext();
         context.addWatched("CtorClass");
         ReclazzTransformer transformer = new ReclazzTransformer(context, AgentConfig.parse(null));
-        Class<?> cls = loadThrough(transformer, "CtorClass", V1);
+        Class<?> cls = loadThrough(transformer, context, "CtorClass", V1);
 
         Object oldInstance = cls.getDeclaredConstructor().newInstance();
         Method tag = cls.getDeclaredMethod("tag");
@@ -99,7 +99,7 @@ class ConstructorBodyRedefineTest extends TransformTestBase {
         TransformContext context = new TransformContext();
         context.addWatched("CtorClass2");
         ReclazzTransformer transformer = new ReclazzTransformer(context, AgentConfig.parse(null));
-        Class<?> cls = loadThrough(transformer, "CtorClass2",
+        Class<?> cls = loadThrough(transformer, context, "CtorClass2",
                 V1.replace("CtorClass", "CtorClass2"));
         Method tag = cls.getDeclaredMethod("tag");
         assertEquals("old-ctor", tag.invoke(cls.getDeclaredConstructor().newInstance()));
@@ -126,7 +126,7 @@ class ConstructorBodyRedefineTest extends TransformTestBase {
      * idempotent it passes its own output through without recording, so
      * rebuilding the context from already-transformed bytes records nothing.
      */
-    private static Class<?> loadThrough(ReclazzTransformer transformer,
+    private static Class<?> loadThrough(ReclazzTransformer transformer, TransformContext context,
                                         String name, String source) throws Exception {
         byte[] raw = compile(new SourceFile(name, source)).get(name);
         byte[] transformed = transformer.transform(
@@ -134,6 +134,8 @@ class ConstructorBodyRedefineTest extends TransformTestBase {
         assertNotNull(transformed, "the load-time transform must produce output");
         Map<String, byte[]> loadMap = new java.util.LinkedHashMap<>();
         loadMap.put(name, transformed);
-        return defineAndLoad(loadMap, name);
+        Class<?> cls = defineAndLoad(loadMap, name);
+        context.markTransformed(cls.getClassLoader(), name);
+        return cls;
     }
 }

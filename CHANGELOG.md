@@ -28,6 +28,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   structural changes to them are refused before redefinition, using one passive VM
   shape capture when no accepted schema exists.
 
+### Fixed
+
+- Constructor bodies continue updating after constructor overloads are added;
+  added overloads keep following later body edits. Inherited added instance and
+  static fields resolve through subclass references while preserving field shadowing.
+
 ## [1.8.0] - 2026-11-20
 
 ### Changed

@@ -54,7 +54,9 @@ class BatchedRedefinitionTest extends TransformTestBase {
                 compile(new SourceFile(name, source(name, "v1"))).get(name));
         Map<String, byte[]> loadMap = new LinkedHashMap<>();
         loadMap.put(name, transformed);
-        return new Loaded(defineAndLoad(loadMap, name), context, transformer);
+        Class<?> cls = defineAndLoad(loadMap, name);
+        context.markTransformed(cls.getClassLoader(), name);
+        return new Loaded(cls, context, transformer);
     }
 
     private static String born(Class<?> cls) throws Exception {

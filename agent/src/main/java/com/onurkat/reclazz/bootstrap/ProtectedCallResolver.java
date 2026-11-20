@@ -75,8 +75,8 @@ public final class ProtectedCallResolver {
      * directly read that parent's cross-package protected fields.
      *
      * <p>Keep the symbolic owner and let Lookup resolve inheritance, including
-     * its protected receiver restriction. Added and watched external fields
-     * are dispatched before this route; a missing physical field is an error.
+     * its protected receiver restriction. Resolve logical declarations too:
+     * javac may name the subclass when the added field belongs to its parent.
      */
     public static CallSite physicalField(MethodHandles.Lookup caller, String name,
                                          MethodType type, String ownerInternal,
@@ -88,14 +88,45 @@ public final class ProtectedCallResolver {
             throw new IllegalAccessException("No captured host lookup for " + target.getName());
         }
         Class<?> owner = Class.forName(ownerInternal.replace('/', '.'), false, loader);
-        MethodHandle field = switch (kind) {
-            case FIELD_GET -> lookup.findGetter(owner, name, type.returnType());
-            case FIELD_SET -> lookup.findSetter(owner, name, type.parameterType(1));
-            case FIELD_GET_STATIC -> lookup.findStaticGetter(owner, name, type.returnType());
-            case FIELD_SET_STATIC -> lookup.findStaticSetter(owner, name, type.parameterType(0));
+        Class<?> fieldType = switch (kind) {
+            case FIELD_GET, FIELD_GET_STATIC -> type.returnType();
+            case FIELD_SET -> type.parameterType(1);
+            case FIELD_SET_STATIC -> type.parameterType(0);
             default -> throw new IllegalArgumentException("Unsupported physical field kind: " + kind);
         };
+        MethodHandle field = resolveField(lookup, owner, name, fieldType,
+                kind == FIELD_GET_STATIC || kind == FIELD_SET_STATIC,
+                kind == FIELD_SET || kind == FIELD_SET_STATIC);
+
         return new ConstantCallSite(field.asType(type));
+    }
+
+    /** JVMS 5.4.3.2: declaration, direct superinterfaces, then superclass. */
+    private static Field fieldDeclaration(Class<?> owner, String name, Class<?> type)
+            throws NoSuchFieldException {
+        for (Field field : ReflectionBridge.getDeclaredFields(owner))
+            if (field.getName().equals(name) && field.getType() == type) return field;
+        for (Class<?> iface : owner.getInterfaces()) {
+            try { return fieldDeclaration(iface, name, type); }
+            catch (NoSuchFieldException absent) { /* Try the next direct interface. */ }
+        }
+        if (owner.getSuperclass() != null) return fieldDeclaration(owner.getSuperclass(), name, type);
+        throw new NoSuchFieldException(owner.getName() + "." + name + ":" + type.getName());
+    }
+
+    /** Resolve added fields with the same declaration and access rules as physical fields. */
+    public static MethodHandle resolveField(MethodHandles.Lookup lookup, Class<?> owner,
+                                            String name, Class<?> type,
+                                            boolean isStatic, boolean setter) throws IllegalAccessException, NoSuchFieldException {
+        Field field = fieldDeclaration(owner, name, type);
+        if (java.lang.reflect.Modifier.isStatic(field.getModifiers()) != isStatic)
+            throw new IncompatibleClassChangeError("Static/instance field mismatch: " + field);
+        MethodHandle logical = MemberForge.unreflectField(lookup, field, setter);
+        if (logical != null) return logical;
+        Class<?> declaration = field.getDeclaringClass();
+        if (isStatic) return setter ? lookup.findStaticSetter(declaration, name, type)
+                : lookup.findStaticGetter(declaration, name, type);
+        return setter ? lookup.findSetter(declaration, name, type) : lookup.findGetter(declaration, name, type);
     }
 
 

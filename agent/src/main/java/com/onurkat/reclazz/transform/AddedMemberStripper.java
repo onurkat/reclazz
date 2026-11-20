@@ -147,10 +147,9 @@ public final class AddedMemberStripper {
         @Override
         public MethodVisitor visitMethod(int access, String name, String descriptor,
                                          String signature, String[] exceptions) {
-            // Constructors are the reason this class exists: they must survive
-            // so their new bodies reach the loaded class. Only members the
-            // reload introduced are dropped.
-            if (!"<init>".equals(name) && !"<clinit>".equals(name)
+            // Physical constructors keep their fresh bodies. Logical-only
+            // overloads are companion factories and cannot enter a redefine.
+            if (!"<clinit>".equals(name)
                     && methods.contains(name + ":" + descriptor)) {
                 return null;
             }

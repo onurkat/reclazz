@@ -70,6 +70,7 @@ class RemovalThenAddFieldTest extends TransformTestBase {
         Map<String, byte[]> loadMap = new LinkedHashMap<>();
         loadMap.put(name, transformed);
         Class<?> cls = defineAndLoad(loadMap, name);
+        context.markTransformed(cls.getClassLoader(), name);
 
         StructuralReloader reloader = new StructuralReloader(
                 instrumentation, context, AgentConfig.parse(null), null);
@@ -136,6 +137,7 @@ class RemovalThenAddFieldTest extends TransformTestBase {
         Map<String, byte[]> loadMap = new LinkedHashMap<>();
         loadMap.put(name, transformed);
         Class<?> cls = defineAndLoad(loadMap, name);
+        context.markTransformed(cls.getClassLoader(), name);
 
         StructuralReloader reloader = new StructuralReloader(
                 instrumentation, context, AgentConfig.parse(null), null);
@@ -215,6 +217,7 @@ class RemovalThenAddFieldTest extends TransformTestBase {
         Map<String, byte[]> loadMap = new LinkedHashMap<>();
         loadMap.put(name, transformed);
         Class<?> cls = defineAndLoad(loadMap, name);
+        context.markTransformed(cls.getClassLoader(), name);
         assertNotNull(com.onurkat.reclazz.bootstrap.ReflectionBridge
                 .getDeclaredMethod(cls, "comesBack"));
 

@@ -281,7 +281,7 @@ public final class ReclazzBootstrap {
             ownerClass = Class.forName(targetClass.replace('/', '.'), false,
                     lookup.lookupClass().getClassLoader());
             MethodHandles.Lookup ownerLookup = MethodHandles.privateLookupIn(ownerClass, lookup);
-            initialTarget = ownerLookup.findGetter(ownerClass, name, type.returnType());
+            initialTarget = ProtectedCallResolver.resolveField(ownerLookup, ownerClass, name, type.returnType(), false, false).asType(type);
         } catch (Exception e) {
             initialTarget = companionGetter(targetClass, name, type.returnType(), type);
         }
@@ -306,7 +306,7 @@ public final class ReclazzBootstrap {
             ownerClass = Class.forName(targetClass.replace('/', '.'), false,
                     lookup.lookupClass().getClassLoader());
             MethodHandles.Lookup ownerLookup = MethodHandles.privateLookupIn(ownerClass, lookup);
-            initialTarget = ownerLookup.findStaticGetter(ownerClass, name, type.returnType());
+            initialTarget = ProtectedCallResolver.resolveField(ownerLookup, ownerClass, name, type.returnType(), true, false).asType(type);
         } catch (Exception e) {
             initialTarget = MethodHandles.throwException(type.returnType(),
                     UnsupportedOperationException.class)
@@ -339,7 +339,7 @@ public final class ReclazzBootstrap {
             MethodHandles.Lookup ownerLookup = MethodHandles.privateLookupIn(ownerClass, lookup);
             // type is (Owner, FieldType)void for instance fields
             Class<?> fieldType = type.parameterType(type.parameterCount() - 1);
-            initialTarget = ownerLookup.findSetter(ownerClass, name, fieldType);
+            initialTarget = ProtectedCallResolver.resolveField(ownerLookup, ownerClass, name, fieldType, false, true).asType(type);
         } catch (Exception e) {
             Class<?> fieldType = type.parameterType(type.parameterCount() - 1);
             initialTarget = companionSetter(targetClass, name, fieldType, type);
@@ -366,7 +366,7 @@ public final class ReclazzBootstrap {
                     lookup.lookupClass().getClassLoader());
             MethodHandles.Lookup ownerLookup = MethodHandles.privateLookupIn(ownerClass, lookup);
             Class<?> fieldType = type.parameterType(type.parameterCount() - 1);
-            initialTarget = ownerLookup.findStaticSetter(ownerClass, name, fieldType);
+            initialTarget = ProtectedCallResolver.resolveField(ownerLookup, ownerClass, name, fieldType, true, true).asType(type);
         } catch (Exception e) {
             initialTarget = MethodHandles.empty(type);
         }

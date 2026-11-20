@@ -410,9 +410,7 @@ public class StructuralReloader {
                     "no last-known-good bytecode is cached for this class");
         }
         try {
-            byte[] stripped = AddedMemberStripper.reshape(
-                    revertedBytecode, diff.getAddedFields(), diff.getAddedMethods(),
-                    diff.getRemovedMethodSigs(), diff.getRemovedFieldSigs());
+            byte[] stripped = reshapeForRedefinition(revertedBytecode, diff, loadedClass);
             // doTransform records metadata as a side effect, and the stripped
             // payload is not the class this reload installs. The record from
             // before is put back right after: the reload writes the real new
@@ -484,9 +482,7 @@ public class StructuralReloader {
                     "no last-known-good bytecode is cached for this class", null);
         }
         try {
-            byte[] stripped = AddedMemberStripper.reshape(
-                    newBytecode, diff.getAddedFields(), diff.getAddedMethods(),
-                    diff.getRemovedMethodSigs(), diff.getRemovedFieldSigs());
+            byte[] stripped = reshapeForRedefinition(newBytecode, diff, loadedClass);
             // doTransform records metadata as a side effect and this payload
             // is not the class the reload installs, so the record from before
             // is put back: a refusal below must leave no trace.
@@ -1502,11 +1498,7 @@ public class StructuralReloader {
                 // (see ConstructorBodyRedefineTest).
                 byte[] redefinePayload = pinnedRedefinePayload != null
                         ? pinnedRedefinePayload
-                        : diff.isStructural()
-                                ? AddedMemberStripper.reshape(
-                                        newBytecode, diff.getAddedFields(), diff.getAddedMethods(),
-                                        diff.getRemovedMethodSigs(), diff.getRemovedFieldSigs())
-                                : newBytecode;
+                        : reshapeForRedefinition(newBytecode, diff, targetClass);
 
                 // The reshape above re-adds the member the JVM will not let us
                 // delete and gives it a throwing stub. This puts the previous
@@ -1544,45 +1536,13 @@ public class StructuralReloader {
                             context.putMetadata(internalName, keptPrep.schema());
                         }
                     } else if (outcome.refused()) {
-                        // Once a class has gained members they live in a companion,
-                        // not in the loaded class, so the bytecode handed back here
-                        // no longer matches what the JVM will accept redefining.
-                        // The JVM says "attempted to add a method" and refuses.
-                        //
-                        // That is the companion engine working as designed, and the
-                        // reload itself succeeds. Reporting it as a warning with the
-                        // raw exception attached told users their edit had failed,
-                        // on the one surface they watch, every time they touched a
-                        // class they had previously added a method to.
-                        //
-                        // Silence has a cost of its own, and the live suite is where
-                        // it was paid: a field added to a class that had already
-                        // gained a member read 0 on an object built after the
-                        // reload, which is exactly the thing this refresh exists to
-                        // prevent, with nothing anywhere saying why. So the case
-                        // where the developer is about to see a wrong value is said
-                        // out loud, and the rest goes to the ledger, where it can be
-                        // asked for instead of scrolling past.
-                    java.util.List<String> addedFieldNames = new ArrayList<>();
-                    for (String key : diff.getAddedFields()) {
-                        addedFieldNames.add(key.substring(0, key.indexOf(':')));
-                    }
-                    if (!addedFieldNames.isEmpty()) {
-                        StatusReporter.warn(Plural.word(addedFieldNames.size(), "Added field ", "Added fields ")
-                                + addedFieldNames + " in " + className
-                                + " read their default even on objects created after this reload: "
-                                + "the class carries members added since startup, so the JVM "
-                                + "refuses the redefinition that would install the new "
-                                + "constructor. Everything else in this save reloaded. A restart "
-                                + "runs the initialiser.");
-                    } else if (config.isVerbose()) {
-                        StatusReporter.info("Constructor bodies not refreshed for " + className
-                                + ": the class carries members added after startup. "
-                                + "Everything else reloaded.");
-                    }
-                    RestartLedger.note(className,
-                            "a constructor the JVM would not redefine, because the class "
-                                    + "carries members added since startup");
+                        if (config.isVerbose()) StatusReporter.info("Constructor redefine refusal for "
+                                + className + ": " + outcome.failure());
+                        StatusReporter.warn("Constructor bodies not refreshed for " + className
+                                + ": new objects are still built by the previous constructor. "
+                                + "Other method bodies reloaded; restart to apply the constructor edit.");
+                        RestartLedger.note(className,
+                                "a constructor the JVM would not redefine: " + outcome.failure());
                     } else {
                         StatusReporter.warn("Constructor-body refresh skipped for " + className + ": " + outcome.failure());
                     }
@@ -1678,6 +1638,35 @@ public class StructuralReloader {
         }
     }
 
+    /** Strip every logical-only member, including constructors from earlier saves. */
+    private static byte[] reshapeForRedefinition(byte[] bytecode,
+                                                  StructuralAnalyzer.StructuralDiff diff,
+                                                  Class<?> loaded) {
+        if (loaded == null) return AddedMemberStripper.reshape(bytecode,
+                diff.getAddedFields(), diff.getAddedMethods(),
+                diff.getRemovedMethodSigs(), diff.getRemovedFieldSigs());
+        Set<String> methods = new HashSet<>(), fields = new HashSet<>();
+        for (var method : ReflectionBridge.physicalDeclaredMethods(loaded))
+            methods.add(method.getName() + ":" + org.objectweb.asm.Type.getMethodDescriptor(method));
+        for (var constructor : ReflectionBridge.physicalDeclaredConstructors(loaded))
+            methods.add("<init>:" + org.objectweb.asm.Type.getConstructorDescriptor(constructor));
+        for (var field : ReflectionBridge.physicalDeclaredFields(loaded))
+            fields.add(field.getName() + ":" + field.getType().descriptorString());
+        var source = new org.objectweb.asm.tree.ClassNode();
+        new org.objectweb.asm.ClassReader(bytecode).accept(source, org.objectweb.asm.ClassReader.SKIP_CODE);
+        Set<String> addedMethods = new HashSet<>(), addedFields = new HashSet<>();
+        for (var method : source.methods) {
+            String key = method.name + ":" + method.desc;
+            if (!method.name.equals("<clinit>") && !methods.contains(key)) addedMethods.add(key);
+        }
+        for (var field : source.fields) {
+            String key = field.name + ":" + field.desc;
+            if (!fields.contains(key)) addedFields.add(key);
+        }
+        return AddedMemberStripper.reshape(bytecode, addedFields, addedMethods,
+                diff.getRemovedMethodSigs(), diff.getRemovedFieldSigs());
+    }
+
     /** What one class's redefinition came to, for that class's own follow-up. */
     record RedefineOutcome(boolean applied, boolean refused, Throwable failure) {
         interface Handler {
@@ -1688,8 +1677,8 @@ public class StructuralReloader {
             return new RedefineOutcome(true, false, null);
         }
 
-        static RedefineOutcome refusedByTheJvm() {
-            return new RedefineOutcome(false, true, null);
+        static RedefineOutcome refusedByTheJvm(UnsupportedOperationException failure) {
+            return new RedefineOutcome(false, true, failure);
         }
 
         static RedefineOutcome failed(Throwable t) {
@@ -1762,7 +1751,7 @@ public class StructuralReloader {
             instrumentation.redefineClasses(new java.lang.instrument.ClassDefinition(target, payload));
             return RedefineOutcome.ok();
         } catch (UnsupportedOperationException refused) {
-            return RedefineOutcome.refusedByTheJvm();
+            return RedefineOutcome.refusedByTheJvm(refused);
         } catch (Throwable t) {
             return RedefineOutcome.failed(t);
         }
@@ -1794,7 +1783,7 @@ public class StructuralReloader {
             } catch (Throwable oneOfThemWasRefused) {
                 if (config.isVerbose()) {
                     StatusReporter.info("Redefining " + pending.size() + " classes in one call was refused ("
-                            + oneOfThemWasRefused.getClass().getSimpleName() + "); redefining them one by one");
+                            + oneOfThemWasRefused + "); redefining them one by one");
                 }
             }
         }
