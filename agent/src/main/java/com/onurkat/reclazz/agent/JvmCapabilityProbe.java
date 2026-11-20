@@ -276,6 +276,62 @@ public class JvmCapabilityProbe {
         mv.visitEnd();
     }
 
+    public record RecordCapability(boolean nativeSchema,String reason) { }
+
+    /** Actual Record-attribute/constructor/accessor proof; VM identity and flags are not evidence here. */
+    public static RecordCapability probeRecordSchema(Instrumentation instrumentation) {
+        if(instrumentation==null || !instrumentation.isRedefineClassesSupported())
+            return new RecordCapability(false,"record redefinition is unavailable");
+        String name="com/onurkat/reclazz/agent/RecordProbe$$Reclazz$$"+System.nanoTime();
+        List<List<String>> shapes=List.of(List.of("a:I","b:Ljava/lang/String;"),
+                List.of("a:I","b:Ljava/lang/String;","c:I"),List.of("b:Ljava/lang/String;","c:I"),
+                List.of("b:I","c:I"),List.of("c:I","b:I"));
+        try {
+            Class<?> owner=ProbeLoader.define(name,recordProbeClass(name,shapes.get(0)));
+            if(!instrumentation.isModifiableClass(owner))return new RecordCapability(false,"private record probe is not modifiable");
+            verifyRecordProbe(owner,shapes.get(0));
+            for(int i=1;i<shapes.size();i++) {
+                instrumentation.redefineClasses(new ClassDefinition(owner,recordProbeClass(name,shapes.get(i))));
+                verifyRecordProbe(owner,shapes.get(i));
+            }
+            return new RecordCapability(true,"record add/remove/retype/reorder read back through components, constructors and accessors");
+        }catch(Exception|LinkageError failure){return new RecordCapability(false,Failures.describe(failure));}
+    }
+    private static void verifyRecordProbe(Class<?> owner,List<String> shape)throws ReflectiveOperationException {
+        var components=owner.getRecordComponents();
+        if(components==null || components.length!=shape.size())throw new IllegalStateException("record component count did not change");
+        Class<?>[] types=new Class<?>[components.length];Object[] values=new Object[components.length];
+        for(int i=0;i<components.length;i++) {
+            var c=components[i];String expected=shape.get(i);
+            if(!expected.equals(c.getName()+":"+org.objectweb.asm.Type.getDescriptor(c.getType())))
+                throw new IllegalStateException("record components did not change in order");
+            types[i]=c.getType();values[i]=types[i]==int.class?(Object)(101+i):"value"+i;
+        }
+        Object value=owner.getDeclaredConstructor(types).newInstance(values);
+        for(int i=0;i<components.length;i++)if(!values[i].equals(components[i].getAccessor().invoke(value)))
+            throw new IllegalStateException("record accessor did not follow the admitted canonical constructor");
+    }
+    private static byte[] recordProbeClass(String name,List<String> shape) {
+        var w=new ClassWriter(ClassWriter.COMPUTE_MAXS);
+        w.visit(Opcodes.V17,Opcodes.ACC_PUBLIC|Opcodes.ACC_FINAL|Opcodes.ACC_RECORD,name,null,"java/lang/Record",null);
+        StringBuilder descriptor=new StringBuilder("(");
+        for(String component:shape) {
+            int split=component.indexOf(':');String field=component.substring(0,split),type=component.substring(split+1);descriptor.append(type);
+            w.visitRecordComponent(field,type,null).visitEnd();w.visitField(Opcodes.ACC_PRIVATE|Opcodes.ACC_FINAL,field,type,null,null).visitEnd();
+            var getter=w.visitMethod(Opcodes.ACC_PUBLIC,field,"()"+type,null,null);getter.visitCode();getter.visitVarInsn(Opcodes.ALOAD,0);
+            getter.visitFieldInsn(Opcodes.GETFIELD,name,field,type);getter.visitInsn(type.equals("I")?Opcodes.IRETURN:Opcodes.ARETURN);getter.visitMaxs(0,0);getter.visitEnd();
+        }
+        var ctor=w.visitMethod(Opcodes.ACC_PUBLIC,"<init>",descriptor.append(")V").toString(),null,null);ctor.visitCode();
+        ctor.visitVarInsn(Opcodes.ALOAD,0);ctor.visitMethodInsn(Opcodes.INVOKESPECIAL,"java/lang/Record","<init>","()V",false);
+        int index=1;
+        for(String component:shape) {
+            int split=component.indexOf(':');String field=component.substring(0,split),type=component.substring(split+1);
+            ctor.visitVarInsn(Opcodes.ALOAD,0);ctor.visitVarInsn(type.equals("I")?Opcodes.ILOAD:Opcodes.ALOAD,index++);
+            ctor.visitFieldInsn(Opcodes.PUTFIELD,name,field,type);
+        }
+        ctor.visitInsn(Opcodes.RETURN);ctor.visitMaxs(0,0);ctor.visitEnd();w.visitEnd();return w.toByteArray();
+    }
+
     /** Defines the probe class without asking anyone else to. */
     private static final class ProbeLoader extends ClassLoader {
 

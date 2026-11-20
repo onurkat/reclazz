@@ -33,6 +33,10 @@ public final class ReflectionBridge {
         finally { physicalScan.set(previous); }
     }
 
+    public static java.lang.reflect.RecordComponent[] physicalRecordComponents(Class<?> owner) {
+        boolean previous=physicalScan.get();physicalScan.set(true);
+        try{return owner.getRecordComponents();}finally{physicalScan.set(previous);}
+    }
     public static Field[] physicalDeclaredFields(Class<?> owner) {
         boolean previous=physicalScan.get();physicalScan.set(true);
         try{return owner.getDeclaredFields();}finally{physicalScan.set(previous);}

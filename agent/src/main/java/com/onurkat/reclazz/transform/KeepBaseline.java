@@ -27,6 +27,7 @@ public final class KeepBaseline {
         Fingerprint fingerprint;
         Map<String,Long> physicalConstructors;
         Map<String,Long> physicalInitializers;
+        Map<String,Long> logicalRecordConstructors;
         long reloads;
         Entry(Fingerprint fingerprint) {
             this.fingerprint=fingerprint;
@@ -116,6 +117,48 @@ public final class KeepBaseline {
             }
             entry.physicalInitializers=admitted.initializers();
         } catch(RuntimeException | LinkageError unavailable) {entry.physicalConstructors=null;entry.physicalInitializers=null;}
+    }
+
+    /** Full record schema proof, called only after the native cohort has actually committed. */
+    public static synchronized boolean recordNativeSchemaApplied(Class<?> type,byte[] raw) {
+        if(type==null || !type.isRecord())return false;
+        Entry entry=owners(type.getClassLoader(),false).get(type.getName().replace('.','/'));
+        if(entry==null)return false;
+        try {
+            ClassNode node=read(raw);
+            if((node.access&Opcodes.ACC_RECORD)==0 || !node.name.equals(type.getName().replace('.','/')))return false;
+            List<String> incoming=node.recordComponents==null?List.of():node.recordComponents.stream().map(c->c.name+":"+c.descriptor).toList();
+            List<String> physical=Arrays.stream(com.onurkat.reclazz.bootstrap.ReflectionBridge.physicalRecordComponents(type))
+                    .map(c->c.getName()+":"+Type.getDescriptor(c.getType())).toList();
+            if(!incoming.equals(physical))return false;
+            Fingerprint admitted=fingerprint(raw);
+            entry.physicalConstructors=admitted.constructors();entry.physicalInitializers=admitted.initializers();
+            entry.logicalRecordConstructors=null;return true;
+        }catch(RuntimeException|LinkageError unavailable){return false;}
+    }
+
+    /** Virtual constructor admission is independent of the VM's unchanged startup constructor proof. */
+    public static synchronized boolean recordVirtualSchemaApplied(Class<?> type,byte[] raw) {
+        if(type==null || !type.isRecord())return false;
+        Entry entry=owners(type.getClassLoader(),false).get(type.getName().replace('.','/'));
+        if(entry==null)return false;
+        try {
+            ClassNode node=read(raw);
+            if((node.access&Opcodes.ACC_RECORD)==0 || !node.name.equals(type.getName().replace('.','/')))return false;
+            Fingerprint admitted=fingerprint(raw);
+            String canonical="("+(node.recordComponents==null?"":node.recordComponents.stream().map(c->c.descriptor).collect(java.util.stream.Collectors.joining()))+")V";
+            if(!admitted.constructors().containsKey(canonical))return false;
+            entry.logicalRecordConstructors=admitted.constructors();return true;
+        }catch(RuntimeException|LinkageError unavailable){return false;}
+    }
+
+    /** Consult only a committed virtual record receipt; ordinary physical checks keep their old semantics. */
+    public static synchronized boolean recordLogicalConstructorBodiesUnchanged(Class<?> type,byte[] raw) {
+        if(type==null)return false;
+        Entry entry=owners(type.getClassLoader(),false).get(type.getName().replace('.','/'));
+        if(entry==null || entry.logicalRecordConstructors==null)return false;
+        try{return entry.logicalRecordConstructors.equals(fingerprint(raw).constructors());}
+        catch(RuntimeException|LinkageError unavailable){return false;}
     }
 
     /** A fingerprint that cannot be read drops the old one: a stale baseline must not decide the next reload. */

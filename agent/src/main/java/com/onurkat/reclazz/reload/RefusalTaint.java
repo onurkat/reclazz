@@ -35,7 +35,8 @@ public final class RefusalTaint {
                 refused.put(name,"ambiguous record owner "+name+" across class loaders; restart to apply");
                 matches.forEach(type->taint(type,true));return;
             }
-            if(origin.type!=null && RecordShapeCheck.changed(origin.type,raw)) {
+            if(origin.type!=null && RecordShapeCheck.changed(origin.type,raw)
+                    && !RecordReloadPlan.canAdmitShape(origin.type,raw)) {
                 refused.put(name,"record components of "+name+" changed (a JVM limit): restart to apply");taint(origin.type,true);
             } else if(matches.size()>1 && (RecordShapeCheck.incoming(raw).record()||matches.stream().anyMatch(Class::isRecord))) {
                 // The downstream legacy reload path still resolves a target by name.
