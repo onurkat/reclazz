@@ -295,6 +295,10 @@ public class FileWatcher {
      * callback rather than a call into the agent, so the watcher does not
      * know the class that assembles it.
      */
+    private com.onurkat.reclazz.platform.PropertyFileSnapshots propertySnapshots;
+    public void onPropertySnapshots(com.onurkat.reclazz.platform.PropertyFileSnapshots snapshots) {
+        propertySnapshots=Objects.requireNonNull(snapshots);
+    }
     private volatile Consumer<Path> propertyFileBaseline = file -> { };
 
     public void onPropertyFileFound(Consumer<Path> baseline) {
@@ -371,22 +375,30 @@ public class FileWatcher {
         } catch (IOException ignored) {}
     }
 
-    private record Reconfiguration(AgentConfig.LiveOptions target,
-            java.util.function.Predicate<Runnable> guard, Runnable publish,
+    private record Reconfiguration(PlatformContext view,AgentConfig.LiveOptions target,
+            java.util.function.Predicate<Runnable> guard, Runnable beforeInstall,java.util.function.Consumer<Runnable> publish,
             java.util.concurrent.CompletableFuture<Boolean> result) { }
     private final java.util.Queue<Reconfiguration> reconfigurations = new java.util.concurrent.ConcurrentLinkedQueue<>();
 
     /** Staging and event draining run on the watcher thread; the caller never swaps live maps. */
     public java.util.concurrent.CompletionStage<Boolean> requestReconfigure(AgentConfig.LiveOptions target,
             java.util.function.Predicate<Runnable> guard, Runnable publish) {
+        return requestReconfigure(platformContext,target,guard,()->{},publish);
+    }
+    public java.util.concurrent.CompletionStage<Boolean> requestReconfigure(PlatformContext view,AgentConfig.LiveOptions target,
+            java.util.function.Predicate<Runnable> guard,Runnable beforeInstall,Runnable publish) {
+        return requestReconfigure(view,target,guard,beforeInstall,install->{publish.run();install.run();});
+    }
+    public java.util.concurrent.CompletionStage<Boolean> requestReconfigure(PlatformContext view,AgentConfig.LiveOptions target,
+            java.util.function.Predicate<Runnable> guard,Runnable beforeInstall,java.util.function.Consumer<Runnable> publish) {
         var result = new java.util.concurrent.CompletableFuture<Boolean>();
         if ("stopped".equals(watchState)) result.completeExceptionally(new IllegalStateException("Watcher is stopped"));
-        else reconfigurations.add(new Reconfiguration(target, guard, publish, result));
+        else reconfigurations.add(new Reconfiguration(view,target, guard,beforeInstall,publish, result));
         return result;
     }
     private void processReconfigurations(Map<Path, PendingEvent> pending) {
         for (var request = reconfigurations.poll(); request != null; request = reconfigurations.poll()) {
-            try { request.result.complete(reconfigureNow(request.target, request.guard, request.publish, pending)); }
+            try { request.result.complete(reconfigureNow(request.view,request.target, request.guard,request.beforeInstall,request.publish, pending)); }
             catch (Throwable failure) { request.result.completeExceptionally(failure); }
         }
     }
@@ -394,10 +406,10 @@ public class FileWatcher {
         for (var request = reconfigurations.poll(); request != null; request = reconfigurations.poll())
             request.result.completeExceptionally(new IllegalStateException("Watcher stopped before configuration commit"));
     }
-    private void inventoryRoots(Map<Path, WatchedDirectory> target, Map<String, List<Path>> roots,
+    private void inventoryRoots(PlatformContext view,Map<Path, WatchedDirectory> target, Map<String, List<Path>> roots,
                                 String sourceRoot, long baseline) throws IOException {
         for (var entry : roots.entrySet()) {
-            if (!platformContext.shouldWatch(entry.getKey())) continue;
+            if (!view.shouldWatch(entry.getKey())) continue;
             for (Path path : entry.getValue()) {
                 // Discovery retains roots across a clean build. Match startup:
                 // an output/source root absent now is not a failed transition.
@@ -434,12 +446,15 @@ public class FileWatcher {
         }
     }
     Map<Path, WatchedDirectory> inventory(AgentConfig.LiveOptions options) throws IOException {
+        return inventory(platformContext,options);
+    }
+    Map<Path, WatchedDirectory> inventory(PlatformContext view,AgentConfig.LiveOptions options) throws IOException {
         Map<Path, WatchedDirectory> target = new LinkedHashMap<>(); long baseline = System.currentTimeMillis();
         if (options.autoCompile()) {
-            inventoryRoots(target, platformContext.getSourceDirs(), "src", baseline);
-            inventoryRoots(target, platformContext.getGeneratedClassDirs(), "classes", baseline);
-        } else inventoryRoots(target, platformContext.getClassOutputDirs(), "classes", baseline);
-        inventoryRoots(target, platformContext.getResourceDirs(), "resources", baseline);
+            inventoryRoots(view,target, view.getSourceDirs(), "src", baseline);
+            inventoryRoots(view,target, view.getGeneratedClassDirs(), "classes", baseline);
+        } else inventoryRoots(view,target, view.getClassOutputDirs(), "classes", baseline);
+        inventoryRoots(view,target, view.getResourceDirs(), "resources", baseline);
         return target;
     }
     /** Kept separate so the failure/alias tests use actual WatchKeys without replacing the watch service. */
@@ -481,8 +496,20 @@ public class FileWatcher {
     }
     boolean reconfigureNow(AgentConfig.LiveOptions options, java.util.function.Predicate<Runnable> guard,
                            Runnable publish, Map<Path, PendingEvent> pending) throws IOException {
+        return reconfigureNow(platformContext,options,guard,()->{},publish,pending);
+    }
+    boolean reconfigureNow(PlatformContext view,AgentConfig.LiveOptions options,java.util.function.Predicate<Runnable> guard,
+                           Runnable beforeInstall,Runnable publish,Map<Path,PendingEvent> pending)throws IOException {
+        return reconfigureNow(view,options,guard,beforeInstall,install->{publish.run();install.run();},pending);
+    }
+    boolean reconfigureNow(PlatformContext view,AgentConfig.LiveOptions options,java.util.function.Predicate<Runnable> guard,
+                           Runnable beforeInstall,java.util.function.Consumer<Runnable> publish,Map<Path,PendingEvent> pending)throws IOException {
+        return reconfigureStaged(view,options,guard,beforeInstall,publish,pending,inventory(view,options));
+    }
+    private boolean reconfigureStaged(PlatformContext view,AgentConfig.LiveOptions options,java.util.function.Predicate<Runnable> guard,
+                           Runnable beforeInstall,java.util.function.Consumer<Runnable> publish,Map<Path,PendingEvent> pending,Map<Path,WatchedDirectory> target)throws IOException {
         int refusedBefore = unwatchableCount();
-        var target = inventory(options);
+        var subscriptions=stageSubscriptions(view,options,target.values());
         Map<Path, WatchKey> current = new HashMap<>();
         for (var entry : watchKeyMap.entrySet()) {
             try { current.put(entry.getValue().directory().toRealPath(), entry.getKey()); }
@@ -524,12 +551,21 @@ public class FileWatcher {
             Set<WatchKey> retained = identityKeys(desired.keySet());
             Set<Path> removed = new HashSet<>();
             for (var entry : watchKeyMap.entrySet()) if (!retained.contains(entry.getKey())) removed.add(entry.getValue().directory());
-            committed = guard.test(() -> {
-                for (var entry : watchKeyMap.entrySet()) if (!retained.contains(entry.getKey())) scanRemoved(entry.getValue(), pending);
-                for (var entry : new ArrayList<>(watchKeyMap.entrySet())) if (!retained.contains(entry.getKey())) {
+            committed = guard.test(() -> publish.accept(() -> {
+                // Publication validates its revision before invoking this installer. Run
+                // fallible legacy baseline callbacks before touching native subscriptions.
+                for (var entry : watchKeyMap.entrySet()) if (!retained.contains(entry.getKey())) {
+                    scanRemoved(entry.getValue(), pending);
                     drainRemoved(entry.getKey(), entry.getValue(), pending);
+                }
+                subscriptions.prepare().run();
+                for (var entry : new ArrayList<>(watchKeyMap.entrySet())) if (!retained.contains(entry.getKey())) {
                     watchKeyMap.remove(entry.getKey()); entry.getKey().cancel();
                 }
+                // Internal cleanup is best-effort/non-throwing (prepareCompiler); no
+                // external publication or baseline callback remains after cancellation.
+                beforeInstall.run();
+                newBaselines.keySet().removeIf(file->!regularFile(file));
                 hotFiles.keySet().removeIf(file -> removed.contains(file.getParent()));
                 fileStates.keySet().removeIf(file -> removed.contains(file.getParent()));
                 lastModifiedMap.keySet().removeIf(file -> removed.contains(file.getParent()));
@@ -541,8 +577,8 @@ public class FileWatcher {
                     return owner == null ? hot : new WatchedFile(hot.modifiedAt(), hot.lastChangedAt(), owner.moduleName(), owner.sourceRoot());
                 });
                 fileStates.putAll(newBaselines); watchKeyMap.putAll(desired);
-                publish.run();
-            });
+                subscriptions.install().run();
+            }));
             if (committed && unwatchableCount() > refusedBefore) reportUnwatchable();
             return committed;
         } finally {
@@ -1238,6 +1274,73 @@ public class FileWatcher {
         return found;
     }
 
+    private static Path identity(Path path) {
+        try{return path.toRealPath();}catch(IOException missing){return path.toAbsolutePath().normalize();}
+    }
+    private record StagedSubscriptions(Runnable prepare, Runnable install) { }
+    private static boolean regularFile(Path file) {
+        try { return Files.isRegularFile(file); } catch (SecurityException unreadable) { return false; }
+    }
+    private StagedSubscriptions stageSubscriptions(PlatformContext view,AgentConfig.LiveOptions options,
+                                         Collection<WatchedDirectory> target)throws IOException {
+        Map<Path,Long> configTimes=new HashMap<>(),xmlTimes=new HashMap<>();
+        Map<Path,com.onurkat.reclazz.platform.PropertyFileSnapshots.Candidate> properties=new HashMap<>();
+        Set<Path> newProperties=new HashSet<>(),oldProperties=new HashSet<>(configurationMtimes.keySet());
+        Map<Path,Path> aliases=new HashMap<>();configurationMtimes.keySet().forEach(file->aliases.put(identity(file),file));
+        for(var entry:view.getConfigurationFiles().entrySet())if(view.shouldWatch(entry.getKey()))for(Path file:entry.getValue()) {
+            if(config.isExcluded(file.getFileName().toString()) || configTimes.containsKey(file))continue;
+            Path old=aliases.get(identity(file));
+            if(old!=null) {
+                configTimes.put(file,configurationMtimes.get(old));
+                if(propertySnapshots!=null && !file.equals(old) && propertySnapshots.current(old)!=null)
+                    properties.put(file,new com.onurkat.reclazz.platform.PropertyFileSnapshots.Candidate(file,propertySnapshots.current(old),Map.of()));
+            } else {
+                long before=modifiedAt(file);configTimes.put(file,before);newProperties.add(file);
+                if(propertySnapshots!=null && Files.isRegularFile(file)) {
+                    var candidate=propertySnapshots.pending(file);
+                    if(candidate==null || before!=modifiedAt(file))throw new IOException("Configuration changed or unreadable while staging: "+file.getFileName());
+                    properties.put(file,candidate);
+                }
+            }
+        }
+        Set<Path> directories=new HashSet<>();target.forEach(owner->{directories.add(owner.directory().toAbsolutePath().normalize());directories.add(identity(owner.directory()));});
+        for(Path file:loadedXmlFiles(view,directories))xmlTimes.put(file,loadedXmlMtimes.getOrDefault(file,modifiedAt(file)));
+        Set<Path> constants=new HashSet<>();Map<Path,FileState> constantStates=new HashMap<>();
+        if(options.autoCompile() && view instanceof HybrisPlatformContext hybris)
+            for(var extension:hybris.getHybrisContext().getExtensions().values())if(view.shouldWatch(extension.getName()))extension.constantsSource().ifPresent(file->{
+                constants.add(file);if(constantsSources.contains(file))return;
+                var state=new FileState();long before=lastModifiedMillis(file),hash=computeContentHash(file),after=lastModifiedMillis(file);
+                if(before>0 && before==after && hash!=-1){state.contentHash=hash;state.baselineMtime=before;state.deliveredSourceMtime=before;state.seenMtime=before;}
+                constantStates.put(file,state);
+            });
+        Runnable prepare=()->{
+            if(propertySnapshots==null)newProperties.forEach(file->{if(regularFile(file))propertyFileBaseline.accept(file);});
+        };
+        return new StagedSubscriptions(prepare,()->{
+            configurationMtimes.clear();configurationMtimes.putAll(configTimes);
+            loadedXmlMtimes.clear();loadedXmlMtimes.putAll(xmlTimes);
+            constantsSources.clear();constantsSources.addAll(constants);
+            constantStates.forEach((file,state)->{if(regularFile(file))fileStates.put(file,state);});
+            if(propertySnapshots!=null) {
+                oldProperties.removeAll(configTimes.keySet());oldProperties.forEach(propertySnapshots::forget);
+                for(Path file:newProperties)if(!properties.containsKey(file))propertySnapshots.forget(file);
+                properties.forEach((file,candidate)->{if(regularFile(file))propertySnapshots.accept(candidate);else propertySnapshots.forget(file);});
+            }
+        });
+    }
+    private Set<Path> loadedXmlFiles(PlatformContext view,Set<Path> watched) {
+        Set<Path> live=com.onurkat.reclazz.platform.SpringXmlResources.loadedFiles();
+        live.addAll(com.onurkat.reclazz.platform.SapProcessResources.registeredFiles());
+        Set<String> modules=view.getResourceDirs().keySet();
+        live.removeIf(file->{
+            ChangeKind named=ChangeKind.of(file.getFileName().toString());String module=view.resolveModuleName(file);
+            return (named!=ChangeKind.UNKNOWN&&named!=ChangeKind.SPRING_XML) || watched.contains(file.getParent())
+                    || !view.shouldWatch(module)||config.isExcluded(file.getFileName().toString())
+                    || (view.getPlatformId()==PlatformContext.Platform.HYBRIS&&!modules.contains(module));
+        });
+        return live;
+    }
+
     private final Map<Path, Long> configurationMtimes = new HashMap<>();
 
     /** Poll exact files only; never register or traverse their extension-root neighbours. */
@@ -1275,7 +1378,7 @@ public class FileWatcher {
         Set<Path> live = com.onurkat.reclazz.platform.SpringXmlResources.loadedFiles();
         Set<Path> processes = com.onurkat.reclazz.platform.SapProcessResources.registeredFiles();
         live.addAll(processes);
-        loadedXmlMtimes.keySet().retainAll(live);
+        loadedXmlMtimes.keySet().removeIf(file->!live.contains(file)||!platformContext.shouldWatch(platformContext.resolveModuleName(file)));
         Set<Path> watched = new HashSet<>();
         // A file is recorded by the path its classloader found, which is the
         // target of a symlinked root the watcher holds under its link.
@@ -1376,6 +1479,7 @@ public class FileWatcher {
 
     /** The event a due file becomes, or null when it is a repeat or its bytes did not change. */
     private ChangeEvent toChangeEvent(PendingEvent pending) {
+        if(!platformContext.shouldWatch(pending.moduleName()))return null;
         ChangeKind kind = ChangeKind.of(pending.path.getFileName().toString());
         boolean versionedSource = kind == ChangeKind.JAVA_SOURCE || kind == ChangeKind.BACKOFFICE_CONFIG;
         Long lastMod = lastModifiedMap.get(pending.path);

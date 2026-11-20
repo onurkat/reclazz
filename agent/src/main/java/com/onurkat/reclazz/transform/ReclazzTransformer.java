@@ -46,10 +46,21 @@ public class ReclazzTransformer implements ClassFileTransformer {
                             ProtectionDomain protectionDomain,
                             byte[] classfileBuffer) throws IllegalClassFormatException {
         if (className == null) return null;
+        if (VmClassShape.capturing(classBeingRedefined)) return null;
+        try(var captured=context.snapshot()) {
+            return transformSnapshot(loader,className,classBeingRedefined,protectionDomain,classfileBuffer);
+        }catch(RuntimeException failure){throw failure;}
+        catch(Exception impossible){throw new IllegalStateException(impossible);}
+    }
+    private byte[] transformSnapshot(ClassLoader loader,String className,Class<?> classBeingRedefined,
+                                     ProtectionDomain protectionDomain,byte[] classfileBuffer) {
         boolean owned = BackofficePreparedOwners.contains(className);
         boolean widgetLoader = loader != null && loader.getClass().getName().equals(
                 "com.hybris.cockpitng.core.persistence.packaging.WidgetClassLoader");
-        if (!owned && !widgetLoader && !context.isWatched(className)) return null;
+        if(classBeingRedefined==null && (widgetLoader || context.isWatched(className) || context.knownOutput(protectionDomain)))
+            context.markRaw(loader,className);
+        if (!owned && !widgetLoader && !context.isWatched(className)
+                && !context.admitOutput(className,protectionDomain)) return null;
         if (owned || context.isBackofficeClass(className)) {
             // Serialize initial admissions before any name-keyed metadata/cache writes.
             synchronized (BackofficePreparedOwners.class) {
@@ -86,7 +97,9 @@ public class ReclazzTransformer implements ClassFileTransformer {
         // Whether we transformed it is our own record, not something to ask the
         // class: the injected members are hidden from reflection on purpose,
         // so asking the class says no even when the answer is yes.
-        if (classBeingRedefined != null && context.getMetadata(className) == null) {
+        if (classBeingRedefined != null && (context.getMetadata(className) == null
+                || (!context.isTransformed(classBeingRedefined)
+                    && com.onurkat.reclazz.bootstrap.LookupCapture.get(classBeingRedefined) == null))) {
             return null;
         }
 
@@ -101,6 +114,7 @@ public class ReclazzTransformer implements ClassFileTransformer {
         // pass-through is also recorded as the latest emitted bytecode,
         // because from the JVM's point of view it is.
         if (isAlreadyTransformed(classfileBuffer)) {
+            context.markTransformed(loader,className);
             byte[] stable = StaticFieldPreparation.stableSchema(loader, className, classfileBuffer);
             TransformedClassCache.put(className, stable);
             return stable == classfileBuffer ? null : stable;
@@ -109,7 +123,7 @@ public class ReclazzTransformer implements ClassFileTransformer {
         // Recorded whatever happens below, including the paths that decline to
         // instrument: what matters later is that this class is in the JVM, and
         // separately whether it came out with the transform's members.
-        context.markSeen(className);
+        // Initial raw/pending ownership was recorded with its defining loader above.
 
         // Asked for by name: the way out when instrumentation itself is the
         // problem. Marked as seen first and deliberately, so that a super call
@@ -184,7 +198,7 @@ public class ReclazzTransformer implements ClassFileTransformer {
             // Recorded separately from the cache, which is an LRU and forgets:
             // a call site generated later has to know whether this class really
             // carries the renamed bodies, and "it did once" is not an answer.
-            context.markTransformed(className);
+            context.markTransformed(loader, className);
 
             if (classBeingRedefined == null) {
                 StaticFieldPreparation.recordDefinition(loader, className, classfileBuffer, config.isResetStatics());

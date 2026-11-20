@@ -413,6 +413,7 @@ public class ReclazzAgent {
             if (!enableStructural) {
                 transformContext = new TransformContext();
                 transformContext.populateFromPlatformContext(platformContext);
+                transformContext.bindRuntime(config,platformContext);
                 com.onurkat.reclazz.transform.KeepBaseline.setWatchedPredicate(transformContext::isWatched);
                 instrumentation.addTransformer(new java.lang.instrument.ClassFileTransformer() {
                     @Override public byte[] transform(ClassLoader loader, String name, Class<?> redefining,
@@ -431,6 +432,7 @@ public class ReclazzAgent {
             if (enableStructural) {
                 transformContext = new TransformContext();
                 transformContext.populateFromPlatformContext(platformContext);
+                transformContext.bindRuntime(config,platformContext);
                 com.onurkat.reclazz.transform.KeepBaseline.setWatchedPredicate(transformContext::isWatched);
                 if (config.isVerbose()) StatusReporter.info("Structural reload: watching " + transformContext.getWatchedClassCount() + " class directories");
 
@@ -482,8 +484,8 @@ public class ReclazzAgent {
                 // they are in the JVM without the transform's members.
                 for (Class<?> alreadyLoaded : instrumentation.getAllLoadedClasses()) {
                     String internal = alreadyLoaded.getName().replace('.', '/');
-                    if (transformContext.isWatched(internal)) {
-                        transformContext.markSeen(internal);
+                    if (transformContext.isWatched(internal) && !transformContext.isTransformed(alreadyLoaded)) {
+                        transformContext.markRaw(alreadyLoaded.getClassLoader(),internal);
                     }
                 }
 
@@ -569,6 +571,7 @@ public class ReclazzAgent {
             FileWatcher watcher = new FileWatcher(platformContext, config, attached);
             watcher.onPlatformChange(modules);
             watcher.onPropertyFileFound(ReclazzAgent::baselinePropertyFile);
+            watcher.onPropertySnapshots(propertySnapshots);
 
             // Here rather than beside the diagnoser above, because the numbers
             // that separate "nothing reloads" from "nothing I changed was being
@@ -627,10 +630,10 @@ public class ReclazzAgent {
                 if (config.liveOptions().autoCompile() && compiler != null)
                     handleJavaBatch(compiler, reloader, springOrchestrator, modules);
             });
-            var compilerLifecycle = new CompilerLifecycle(reloadQueue, watcher, compilerHolder,
-                    () -> prepareCompiler(platformContext), () -> createCompiler(platformContext),
-                    () -> { var retry=heldSourceRetry; if(retry!=null)retry.run(); });
-            if (statusServer != null) statusServer.setLiveConfig(new LiveConfigController(config, isHybris, compilerLifecycle::transition));
+            var compilerLifecycle = new CompilerLifecycle(reloadQueue, watcher, compilerHolder,config,platformContext,
+                    transformContext,instrumentation::getAllLoadedClasses,ReclazzAgent::createCompiler,ReclazzAgent::prepareCompiler,
+                    () -> { var retry=heldSourceRetry; if(retry!=null)retry.run(); }, scopeFence);
+            if (statusServer != null) statusServer.setLiveConfig(new LiveConfigController(config,platformContext,compilerLifecycle::transitionRuntime));
             final ReloadQueue repairQueue=reloadQueue;
             final StatusServer repairTimer=statusServer;
             springOrchestrator.setOperationScheduler(repairTimer==null?null:repairTimer::scheduleOperationRepair,
@@ -861,6 +864,8 @@ public class ReclazzAgent {
     }
 
     /** One fixed optional entry point, isolated by the registry's Throwable boundary. */
+    private static final com.onurkat.reclazz.config.ScopeFence scopeFence = new com.onurkat.reclazz.config.ScopeFence();
+
     private static void registerPremiumAutomation(PremiumModules modules, AgentConfig config, PlatformContext platform) {
         modules.register(() -> {
             try {
@@ -868,6 +873,7 @@ public class ReclazzAgent {
                         "com.onurkat.reclazz.hybris.SapPremiumModuleFactory", true,
                         ReclazzAgent.class.getClassLoader()).getDeclaredConstructor().newInstance();
                 return factory.create(new PremiumContext() {
+                    @Override public com.onurkat.reclazz.config.ScopeFence scopeFence() { return scopeFence; }
                     @Override public PlatformContext platform() { return platform; }
                     @Override public AgentConfig config() { return config; }
                     @Override public PropertyFileSnapshots propertySnapshots() { return propertySnapshots; }
@@ -955,6 +961,8 @@ public class ReclazzAgent {
                                      java.util.function.BiFunction<Capability, ChangeEvent, PlatformChangeHandler.Outcome> platformChanges,
                                      AgentConfig config) {
         try {
+            // The queue may still contain an event admitted before scope removal.
+            if(platformContext!=null&&!platformContext.shouldWatch(event.getModuleName()))return;
             String fileName = event.getPath().getFileName().toString();
 
             // What the file is, decided in one testable place; whether we act

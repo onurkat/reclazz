@@ -106,6 +106,8 @@ class SwitchMapCensusTest extends TransformTestBase implements Opcodes {
         AgentConfig config = AgentConfig.parse(null);
         ReclazzTransformer transformer = new ReclazzTransformer(context, config);
         Class<?> owner = defineAndLoad(Map.of(name, transformer.transform(getClass().getClassLoader(), name, null, null, first)), name);
+        // Offline transform metadata must follow the loader that actually defines the bytes.
+        context.markTransformed(owner.getClassLoader(),name);
         Object held = owner.getConstructor().newInstance(); assertEquals(7, owner.getMethod("read").invoke(held));
         Instrumentation real = ByteBuddyAgent.install(); AtomicInteger calls = new AtomicInteger();
         Instrumentation counted = (Instrumentation) Proxy.newProxyInstance(getClass().getClassLoader(), new Class<?>[]{Instrumentation.class},

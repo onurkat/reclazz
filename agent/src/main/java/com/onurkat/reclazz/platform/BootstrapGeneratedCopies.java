@@ -48,21 +48,23 @@ public final class BootstrapGeneratedCopies {
         int removed = 0;
         for (ExtensionInfo extension : extensions) {
             Path classes = extension.getPath().resolve("classes");
-            if (Files.isSymbolicLink(classes) || !Files.isDirectory(classes)) continue;
-            try (var walk = Files.walk(classes)) {
-                for (Path file : walk.filter(p -> p.toString().endsWith(".class") && !Files.isSymbolicLink(p)
-                        && Files.isRegularFile(p)).toList()) {
-                    try {
-                        byte[] before = Files.readAllBytes(file);
-                        ClassNode node = metadata(before);
-                        if (!classes.relativize(file).equals(Path.of(node.name + ".class"))
-                                || !isPlatformGenerated(before, platform, extension.getPath())) continue;
-                        // Preserve replacements observed while proving ownership.
-                        if (!java.util.Arrays.equals(before, Files.readAllBytes(file))) continue;
-                        Files.delete(file);
-                        removed++;
-                        StatusReporter.detail("Removed bootstrap-generated extension copy: " + file);
-                    } catch (Exception | LinkageError unknown) { /* Ownership must be proven per file. */ }
+            try {
+                if (Files.isSymbolicLink(classes) || !Files.isDirectory(classes)) continue;
+                try (var walk = Files.walk(classes)) {
+                    for (Path file : walk.filter(p -> p.toString().endsWith(".class") && !Files.isSymbolicLink(p)
+                            && Files.isRegularFile(p)).toList()) {
+                        try {
+                            byte[] before = Files.readAllBytes(file);
+                            ClassNode node = metadata(before);
+                            if (!classes.relativize(file).equals(Path.of(node.name + ".class"))
+                                    || !isPlatformGenerated(before, platform, extension.getPath())) continue;
+                            // Preserve replacements observed while proving ownership.
+                            if (!java.util.Arrays.equals(before, Files.readAllBytes(file))) continue;
+                            Files.delete(file);
+                            removed++;
+                            StatusReporter.detail("Removed bootstrap-generated extension copy: " + file);
+                        } catch (Exception | LinkageError unknown) { /* Ownership must be proven per file. */ }
+                    }
                 }
             } catch (Exception unknown) { /* An unreadable tree grants no cleanup authority. */ }
         }

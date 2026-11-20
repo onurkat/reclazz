@@ -346,4 +346,53 @@ class CodegenReloaderTest {
         }
         throw new NoSuchFieldException(fieldName);
     }
+    @Test void scopeFenceCoversAdmissionBeforeTheNativeOutputHold()throws Exception {
+        Path dir=tempDir.resolve("bin/custom/fenced");Files.createDirectories(dir.resolve("resources"));
+        Path xml=dir.resolve("resources/fenced-beans.xml");Files.writeString(xml,"<beans/>");
+        registerExtensions(new ExtensionInfo("fenced",dir,List.of(),true,false,true));
+        var entered=new java.util.concurrent.CountDownLatch(1);var release=new java.util.concurrent.CountDownLatch(1);
+        var woke=new java.util.concurrent.CountDownLatch(1);var fence=new com.onurkat.reclazz.config.ScopeFence();
+        var candidate=new CodegenReloader(hybrisContext,false,null,()->{},()->{
+            entered.countDown();
+            try {assertTrue(release.await(10,java.util.concurrent.TimeUnit.SECONDS));}
+            catch(InterruptedException failure){Thread.currentThread().interrupt();throw new RuntimeException(failure);}
+            return new com.onurkat.reclazz.ext.PremiumContext.GeneratedOutput(){
+                public java.util.concurrent.CompletionStage<Void> compiled(Runnable expose){expose.run();return java.util.concurrent.CompletableFuture.completedFuture(null);}
+                public void failed(){}
+            };
+        },()->{}){@Override boolean runAnt(ExtensionInfo ext){return true;}};
+        candidate.setScopeFence(fence);
+        try {
+            candidate.handle(new com.onurkat.reclazz.watcher.ChangeEvent(xml,com.onurkat.reclazz.watcher.ChangeEvent.Type.MODIFIED,"fenced","resources"));
+            assertTrue(entered.await(10,java.util.concurrent.TimeUnit.SECONDS));
+            org.junit.jupiter.api.Assertions.assertFalse(fence.tryCloseOrRegister(()->{
+                org.junit.jupiter.api.Assertions.assertFalse(Thread.holdsLock(fence));woke.countDown();
+            }));
+            assertEquals(1,woke.getCount());release.countDown();
+            assertTrue(woke.await(10,java.util.concurrent.TimeUnit.SECONDS));
+            assertTrue(fence.tryCloseOrRegister(()->org.junit.jupiter.api.Assertions.fail("permit already released")));
+            fence.reopen();scopeWorker(candidate).submit(()->{}).get(10,java.util.concurrent.TimeUnit.SECONDS);
+        } finally {release.countDown();fence.reopen();scopeWorker(candidate).shutdownNow();}
+    }
+    @Test void deferredCodegenChecksTheNewScopeAndRunsOnceAfterReopen()throws Exception {
+        Path dir=tempDir.resolve("bin/custom/deferred");Files.createDirectories(dir.resolve("resources"));
+        Path xml=dir.resolve("resources/deferred-beans.xml");Files.writeString(xml,"<beans/>");
+        registerExtensions(new ExtensionInfo("deferred",dir,List.of(),true,false,true));
+        var runs=new java.util.concurrent.atomic.AtomicInteger();var selected=new java.util.concurrent.atomic.AtomicBoolean(true);
+        var candidate=new CodegenReloader(hybrisContext){@Override boolean runAnt(ExtensionInfo ext){runs.incrementAndGet();return true;}};
+        var fence=new com.onurkat.reclazz.config.ScopeFence();candidate.setScopeFence(fence);candidate.setWatchedExtensions(name->selected.get());
+        var event=new com.onurkat.reclazz.watcher.ChangeEvent(xml,com.onurkat.reclazz.watcher.ChangeEvent.Type.MODIFIED,"deferred","resources");
+        try {
+            assertTrue(fence.tryCloseOrRegister(()->{}));candidate.handle(event);assertEquals(0,runs.get());
+            selected.set(false);fence.reopen();scopeWorker(candidate).submit(()->{}).get(10,java.util.concurrent.TimeUnit.SECONDS);assertEquals(0,runs.get());
+            selected.set(true);assertTrue(fence.tryCloseOrRegister(()->{}));candidate.handle(event);candidate.handle(event);assertEquals(0,runs.get());
+            fence.reopen();scopeWorker(candidate).submit(()->{}).get(10,java.util.concurrent.TimeUnit.SECONDS);assertEquals(1,runs.get());
+            assertTrue(fence.tryCloseOrRegister(()->org.junit.jupiter.api.Assertions.fail("worker permit leaked")));fence.reopen();
+        } finally {fence.reopen();scopeWorker(candidate).shutdownNow();}
+    }
+    private static java.util.concurrent.ExecutorService scopeWorker(CodegenReloader candidate)throws Exception {
+        Field field=CodegenReloader.class.getDeclaredField("executor");field.setAccessible(true);
+        return (java.util.concurrent.ExecutorService)field.get(candidate);
+    }
+
 }

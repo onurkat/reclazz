@@ -27,13 +27,25 @@ public class HybrisPlatformContext implements PlatformContext {
     private final String homeSource;
     private HybrisContext hybrisContext;
     private ClasspathResolver classpathResolver;
+    private final AgentConfig.WatchScope fixedScope;
 
     public HybrisPlatformContext(Path hybrisHome, AgentConfig config) {
         this(hybrisHome,config,config.getHybrisHome()!=null?"hybrisHome=":"provided context");
     }
     HybrisPlatformContext(Path hybrisHome,AgentConfig config,String homeSource) {
         this.hybrisHome=hybrisHome;this.config=config;this.homeSource=homeSource;
+        this.fixedScope = null;
     }
+
+    HybrisPlatformContext(HybrisPlatformContext source, AgentConfig.WatchScope target) {
+        this.hybrisHome = source.hybrisHome; this.config = source.config; this.homeSource = source.homeSource;
+        this.hybrisContext = source.hybrisContext; this.classpathResolver = source.classpathResolver;
+        this.fixedScope = Objects.requireNonNull(target);
+    }
+
+    private AgentConfig.WatchScope scope() { return fixedScope == null ? config.runtime().scope() : fixedScope; }
+
+    public AgentConfig.WatchScope watchScope() { return scope(); }
 
     @Override
     public Platform getPlatformId() {
@@ -81,10 +93,11 @@ public class HybrisPlatformContext implements PlatformContext {
 
     @Override
     public Map<String, List<Path>> getClassOutputDirs() {
+        var scope = scope();
         Map<String, List<Path>> result = new LinkedHashMap<>();
         for (ExtensionInfo ext : hybrisContext.getExtensions().values()) {
-            if (!config.shouldWatchExtension(ext.getName())) continue;
-            if (config.isWatchAllExtensions() && !ext.isCustom()) continue;
+            if (!scope.includes(ext.getName())) continue;
+            if (scope.all() && !ext.isCustom()) continue;
 
             List<Path> dirs = new ArrayList<>();
             Path classesDir = ext.getPath().resolve("classes");
@@ -137,10 +150,11 @@ public class HybrisPlatformContext implements PlatformContext {
 
     /** Selected explicit Backoffice modules; shared by admission and compilation. */
     public Map<String, Path> getBackofficeClassDirs() {
+        var scope = scope();
         Map<String, Path> result = new LinkedHashMap<>();
         for (ExtensionInfo ext : hybrisContext.getExtensions().values()) {
-            if (!ext.hasBackofficeModule() || !config.shouldWatchExtension(ext.getName())) continue;
-            if (config.isWatchAllExtensions() && !ext.isCustom()) continue;
+            if (!ext.hasBackofficeModule() || !scope.includes(ext.getName())) continue;
+            if (scope.all() && !ext.isCustom()) continue;
             result.put(ext.getName(), ext.getPath().resolve("backoffice/classes"));
         }
         return result;
@@ -148,10 +162,11 @@ public class HybrisPlatformContext implements PlatformContext {
 
     @Override
     public Map<String, List<Path>> getSourceDirs() {
+        var scope = scope();
         Map<String, List<Path>> result = new LinkedHashMap<>();
         for (ExtensionInfo ext : hybrisContext.getExtensions().values()) {
-            if (!config.shouldWatchExtension(ext.getName())) continue;
-            if (config.isWatchAllExtensions() && !ext.isCustom()) continue;
+            if (!scope.includes(ext.getName())) continue;
+            if (scope.all() && !ext.isCustom()) continue;
 
             List<Path> dirs = new ArrayList<>();
             Path srcDir = ext.getPath().resolve("src");
@@ -176,10 +191,11 @@ public class HybrisPlatformContext implements PlatformContext {
 
     @Override
     public Map<String, List<Path>> getResourceDirs() {
+        var scope = scope();
         Map<String, List<Path>> result = new LinkedHashMap<>();
         for (ExtensionInfo ext : hybrisContext.getExtensions().values()) {
-            if (!config.shouldWatchExtension(ext.getName())) continue;
-            if (config.isWatchAllExtensions() && !ext.isCustom()) continue;
+            if (!scope.includes(ext.getName())) continue;
+            if (scope.all() && !ext.isCustom()) continue;
 
             Path resourcesDir = ext.getPath().resolve("resources");
             if (Files.isDirectory(resourcesDir)) {
@@ -202,10 +218,11 @@ public class HybrisPlatformContext implements PlatformContext {
 
     @Override
     public Map<String, List<Path>> getConfigurationFiles() {
+        var scope = scope();
         Map<String, List<Path>> result = new LinkedHashMap<>();
         for (ExtensionInfo ext : hybrisContext.getExtensions().values()) {
-            if (!config.shouldWatchExtension(ext.getName())) continue;
-            if (config.isWatchAllExtensions() && !ext.isCustom()) continue;
+            if (!scope.includes(ext.getName())) continue;
+            if (scope.all() && !ext.isCustom()) continue;
             result.put(ext.getName(), List.of(ext.getPath().resolve("project.properties")));
         }
         return result;
@@ -370,7 +387,7 @@ public class HybrisPlatformContext implements PlatformContext {
 
     @Override
     public boolean shouldWatch(String moduleName) {
-        return config.shouldWatchExtension(moduleName);
+        return scope().includes(moduleName);
     }
 
     /**

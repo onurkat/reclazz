@@ -179,4 +179,21 @@ class ProtocolContractTest {
         String text=doc();for(String part:List.of("CONFIG GET <id>","CONFIG SET <id> base=<rev>","live=<keys>","watchExtensions.sha256","same request id","PENDING","requester-only"))assertTrue(text.contains(part),part);
     }
 
+    @Test void namedScopeEvidenceAndLimitsAreDocumented()throws Exception {
+        String text=doc();for(String part:List.of("watchExtensions=a;b","loadedUninstrumented","unwatchable","unknown_extension","4096 for CONFIG","3500 characters","capture-only retransform","codegen fence"))assertTrue(text.contains(part),part);
+    }
+    @Test void configSocketAcceptsBoundedNamedListsOver512Characters()throws Exception {
+        var config=com.onurkat.reclazz.config.AgentConfig.parse("watchExtensions=a");
+        var names=new java.util.TreeSet<String>();for(int i=0;i<80;i++)names.add("syntheticExtension"+i);names.add("a");
+        try(var controller=new LiveConfigController(config,names,(key,target,publish)->{publish.accept(target);return java.util.concurrent.CompletableFuture.completedFuture(null);})){
+            var port=java.nio.file.Files.createTempFile("scope-socket","port");var server=new StatusServer(0,port);server.setLiveConfig(controller);server.start();
+            try(var socket=new java.net.Socket("127.0.0.1",Integer.parseInt(java.nio.file.Files.readString(port).strip()))){
+                socket.setSoTimeout(3000);var reader=new java.io.BufferedReader(StatusServer.readerFor(socket.getInputStream()));assertTrue(reader.readLine().contains("CONNECTED"));
+                String command="CONFIG SET named base=0 watchExtensions="+String.join(";",names);assertTrue(command.length()>512&&command.length()<4096);
+                socket.getOutputStream().write((command+"\n").getBytes(java.nio.charset.StandardCharsets.UTF_8));socket.getOutputStream().flush();
+                assertTrue(reader.readLine().contains("CONFIG named OK rev=1"));assertEquals(names,config.getWatchExtensions());
+            }finally{server.stop();java.nio.file.Files.deleteIfExists(port);}
+        }
+    }
+
 }

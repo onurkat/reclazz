@@ -54,7 +54,7 @@ a client that stops reading rather than blocking a reload on it.
 
 ## Commands
 
-A client may send one line at a time, at most 512 characters; anything not
+A client may send one line at a time, at most 512 characters (4096 for CONFIG); anything not
 listed here is ignored without an answer, and a line that never ends closes
 the connection. Every answer arrives as ordinary `INFO` lines on the stream,
 to every client, except requested BUILD receipts, RELOAD state, DOCTOR observations, SCAN results and VERIFY results, which go only to the requesting connection.
@@ -371,50 +371,74 @@ build ownership are unaffected. See [MCP batch and cancellation](mcp-server.md#b
 
 `CONFIG GET <id>` returns an INFO message beginning `CONFIG <id> OK rev=<n>`,
 followed by all six effective booleans, `live=<keys>`, `watchExtensions.count=<n>`
-and `watchExtensions.sha256=<hash>`. The id is 1–64 ASCII letters, digits,
+and `watchExtensions.sha256=<hash>`, `loadedUninstrumented=<n>` and `unwatchable=<n>`. The id is 1–64 ASCII letters, digits,
 underscores or hyphens. Keys in `live` are the only options the peer may SET:
 
 | Key | Runtime scope |
 |---|---|
 | `autoCompile` | internal Java compiler and source/class watcher transition |
+| `watchExtensions` | discovered named SAP Commerce extensions, separated by semicolons; no watch-all transition |
 | `autoImpex` | ImpEx import on a save whose action starts after the change |
 | `impexAllowRemove` | REMOVE permission captured with the import decision |
 | `backofficeConfigReset` | Backoffice reset on the next configuration dispatch |
 | `autoUpdateRunningSystem` | update policy captured at codegen/localization operation start |
 | `autoSolrReindex` | new indexing enqueues; queued/running work drains when disabled |
 
-A SAP agent advertises all six; a non-SAP agent advertises only `autoCompile`.
+A SAP agent advertises all six booleans and, in named mode, `watchExtensions`; a non-SAP agent advertises only `autoCompile`.
 The watch filter hash is SHA-256 of sorted, distinct nonblank configured names
 joined by semicolons (UTF-8); `*` represents watch-all. Count/hash are display
-and comparison evidence, never SET inputs. They describe the startup filter,
+and comparison evidence, never SET inputs. They describe the effective filter,
 not the actual registered-directory count. DOCTOR's `options` object, when the
-runtime controller is wired, includes the revision, six booleans and a watch
+runtime controller is wired, includes the revision, six booleans, `loadedUninstrumented`, `unwatchable` and a watch
 filter count/hash plus at most five names, each bounded to 40 characters, with
 an explicit `truncated` flag. Its existing 3900-character budget still applies.
 
-`CONFIG SET <id> base=<rev> <key>=<value>...` accepts one to six live boolean
-changes. Values are exactly `true` or `false`; keys are unique. The full batch
-is validated before publication. Unknown keys, duplicates, malformed revisions
-and unsupported platform keys make no option change. Attempting
-`watchExtensions` (alone or in a batch) returns `ERROR restart_required`;
-watch ownership remains a startup-only setting.
+`CONFIG SET <id> base=<rev> <key>=<value>...` accepts one to seven changes:
+six booleans (exactly `true` or `false`) and `watchExtensions=a;b` on SAP Commerce.
+Keys are unique. The named list is sorted/deduplicated, bounded to 3500 characters,
+and every name must already be discovered; otherwise `ERROR unknown_extension`
+leaves the entire batch unchanged. Empty lists select no named extensions. A
+transition from or to `*` returns `ERROR restart_required`; the plugin preserves
+its existing blank-list meaning of watch-all. Unknown keys, duplicates, malformed
+revisions and unsupported platform keys make no option change.
+
+Scope, booleans, admission inventory and receipt statistics publish as one Runtime
+revision. Removing an extension stops its file subscriptions and drops queued
+unadmitted events; it does not unload classes or undo previously applied effects.
+Previously admitted class names retain transform ownership. Newly selected classes
+that were already loaded without instrumentation support body edits only until
+restart. A first raw reload may perform one capture-only retransform of that exact
+Class to compare its VM schema; it never runs in save preparation and never seeds
+an admitted-byte baseline. Known structural changes are refused before native
+redefine or companion publication. Classes first loaded from newly selected output
+roots can receive normal instrumentation. `loadedUninstrumented` counts raw loaded
+definitions in newly added extensions, not failed reload attempts. `unwatchable`
+reports skipped directory evidence, so OK does not promise every directory is watched.
 
 One serial settings executor compares `base` with the current revision when the
 transaction executes. A matching revision publishes the entire options snapshot
 and increments the revision once; a stale one returns
 `CONFIG <id> CONFLICT rev=<current> ...` with the effective fields. Other replies
 are `CONFIG <id> ERROR <code> <reason>`, with `bad_request`, `unknown_key`,
-`restart_required`, `unavailable` or `failed`. Reasons are bounded. Before runtime
+`unknown_extension`, `restart_required`, `unavailable` or `failed`. Reasons are bounded. Before runtime
 wiring, GET returns `ERROR unavailable`; this is distinct from an older agent
 that ignores CONFIG entirely.
 
 AutoCompile preparation runs on the reload executor. It waits for BUILD ownership,
 manual pause and native generated-output admission without releasing their holds.
 Generation checks and protected cleanup/commit steps share the queue lock. A new
-hold invalidates the staged transition and requeues it. Registration failure leaves
-old roots/options intact; startup-equivalent admitted-byte/generated-copy cleanup
-is idempotent and is not rolled back if subsequent compiler construction fails.
-The compiler is retained idle when disabled and reused on enable.
+hold invalidates the staged transition and requeues it. Fatal staging failure leaves
+old roots/options, compiler, admission and baselines intact. The codegen fence
+admits no transition while a native run owns a permit, including the interval
+before its generated-output hold; its final release queues one retry. Compiler,
+watch inventory and new subscription baselines stage before any destructive
+cleanup. After the guarded departing-key scan/drain/cancel, enabling compilation
+cleans generated copies, then installs and publishes the prepared revision.
+Cleanup itself is not rollbackable; individual I/O failures are reported/skipped.
+The compiler is retained idle when disabled and reused only for its bound scope;
+a scope change while disabled rebuilds it on the next enable. Exact properties
+and loaded external XML are baselined on subscription; re-adding a removed module
+does not replay edits made while it was removed.
 
 After ten seconds a slow/held SET reports `CONFIG <id> PENDING rev=<current>`.
 It keeps the same request id until a terminal OK, CONFLICT or ERROR reply follows.

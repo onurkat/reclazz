@@ -201,6 +201,8 @@ class HotSwapReloadTest extends TransformTestBase {
         Map<String, byte[]> loadMap = new LinkedHashMap<>();
         loadMap.put("EndToEndFirstTouch", v1Transformed);
         Class<?> cls = defineAndLoad(loadMap, "EndToEndFirstTouch");
+        // Offline transformation and definition use different loaders; record the actual owner.
+        ctx.markTransformed(cls.getClassLoader(), "EndToEndFirstTouch");
         Object instance = cls.getDeclaredConstructor().newInstance();
 
         // Raw v2, StructuralReloader.reload takes untransformed new bytes
@@ -252,6 +254,8 @@ class HotSwapReloadTest extends TransformTestBase {
         Map<String, byte[]> loadMap = new LinkedHashMap<>();
         loadMap.put("EndToEndWarm", v1Transformed);
         Class<?> cls = defineAndLoad(loadMap, "EndToEndWarm");
+        // Offline transformation and definition use different loaders; record the actual owner.
+        ctx.markTransformed(cls.getClassLoader(), "EndToEndWarm");
         Object instance = cls.getDeclaredConstructor().newInstance();
 
         // Warm up the call site with a v1 invocation
@@ -339,6 +343,8 @@ class HotSwapReloadTest extends TransformTestBase {
 
         SharedLoader loader = sharedLoader(loadMap);
         Class<?> childCls = loader.load("com.reclazz.probe.child.ProtectedAccessChild");
+        // Offline transformation and definition use different loaders; record the actual owner.
+        ctx.markTransformed(childCls.getClassLoader(), "com/reclazz/probe/child/ProtectedAccessChild");
         Object instance = childCls.getDeclaredConstructor().newInstance();
 
         // v1 sanity check, baseline call works.

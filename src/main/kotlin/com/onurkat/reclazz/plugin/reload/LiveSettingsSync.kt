@@ -21,6 +21,9 @@ internal class LiveSettingsSync(
     private var effective = emptyMap<String, Boolean>()
     private var supported = emptySet<String>()
     private var watchHash = ""
+    private var watchSupported = false
+    private var loadedUninstrumented = 0
+    private var unwatchable = 0
     private var conflictRetries = 0
     private var pendingRevision: Long? = null
     private var pendingEpoch = -1L
@@ -28,6 +31,7 @@ internal class LiveSettingsSync(
 
     @Synchronized fun connected(connection: Long) {
         generation = connection; epoch++; awaited = null; revision = null
+        watchSupported=false; watchHash=""; loadedUninstrumented=0; unwatchable=0
         effective = emptyMap(); supported = emptySet(); pendingRevision = null; pendingRequest = null; conflictRetries = 0
         get()
     }
@@ -48,8 +52,10 @@ internal class LiveSettingsSync(
     private fun get(kind: Kind = Kind.GET) = request(kind, null) { "CONFIG GET $it" }
     private fun request(kind: Kind, base: Long?, command: (String) -> String) {
         val current = Request("cfg-${generation}-${++serial}", kind, epoch, base)
+        val text=command(current.id)
+        if(text.length>4096) { report("Live settings command is too long (maximum 4096 characters)."); return }
         awaited = current
-        if (!send(generation, command(current.id))) {
+        if (!send(generation, text)) {
             awaited = null
             report("No running agent connected; saved settings will be sent on reconnect.")
             return
@@ -122,7 +128,10 @@ internal class LiveSettingsSync(
                     report("The running agent did not report its effective settings; restart to apply.")
                     return true
                 }
+                watchSupported = "watchExtensions" in fields.getValue("live").split(',')
                 watchHash = fields["watchExtensions.sha256"].orEmpty()
+                loadedUninstrumented = fields["loadedUninstrumented"]?.toIntOrNull()?.coerceAtLeast(0) ?: 0
+                unwatchable = fields["unwatchable"]?.toIntOrNull()?.coerceAtLeast(0) ?: 0
                 if (current.kind == Kind.SET) showEffective()
                 else if (pendingRequest != null) { showEffective(" Settings change is still pending."); poll() }
                 else if (pendingRevision?.let { value < it } == true) {
@@ -140,22 +149,36 @@ internal class LiveSettingsSync(
         val base = revision ?: return get()
         val target = desired()
         val changes = target.options.filter { (key, value) -> key in supported && effective[key] != value }
-        if (changes.isEmpty()) showEffective()
-        else request(Kind.SET, base) { id ->
-            "CONFIG SET $id base=$base " + KEYS.filter { it in changes }.joinToString(" ") { "$it=${changes[it]}" }
-        }
+        val names=extensionNames(target.watchExtensions)
+        val named=watchSupported && "*" !in names && validNames(names) && names.joinToString(";").length<=3500
+        val changeWatch=named && watchHash.isNotEmpty() && watchHash!=extensionHash(target.watchExtensions)
+        val fields=KEYS.filter { it in changes }.map { "$it=${changes[it]}" }.toMutableList()
+        if(changeWatch)fields += "watchExtensions=${names.joinToString(";")}"
+        if (fields.isEmpty()) showEffective()
+        else request(Kind.SET, base) { id -> "CONFIG SET $id base=$base " + fields.joinToString(" ") }
     }
     private fun showEffective(suffix: String = "") {
         val mismatch = watchHash.isNotEmpty() && watchHash != extensionHash(desired().watchExtensions)
         val labels = mapOf("autoCompile" to "Internal compilation", "autoImpex" to "ImpEx import", "impexAllowRemove" to "REMOVE",
             "autoUpdateRunningSystem" to "Update Running System", "autoSolrReindex" to "Solr update", "backofficeConfigReset" to "Backoffice reset")
         val state = KEYS.filter { it in effective && it in supported }.joinToString(", ") { "${labels[it]}: ${if (effective[it] == true) "on" else "off"}" }
-        report("Running agent: $state" + (if (mismatch) "; Watch extensions requires a restart." else "") + suffix)
+        val names=extensionNames(desired().watchExtensions)
+        val watchNote=when {
+            mismatch && (!validNames(names) || names.joinToString(";").length>3500) -> "; Watch extensions list is invalid or exceeds 3500 characters."
+            mismatch && (!watchSupported || "*" in names) -> "; Watch extensions requires a restart."
+            mismatch -> "; Watch extensions differ from saved settings."
+            else -> ""
+        }
+        val rawNote=if(loadedUninstrumented>0) "; $loadedUninstrumented already loaded classes support body edits only until restart." else ""
+        val skippedNote=if(unwatchable>0) "; $unwatchable directories could not be watched." else ""
+        report("Running agent: $state" + watchNote + rawNote + skippedNote + suffix)
     }
     companion object {
         val KEYS = listOf("autoCompile", "autoImpex", "impexAllowRemove", "autoUpdateRunningSystem", "autoSolrReindex", "backofficeConfigReset")
+        private fun extensionNames(value:String)=value.split(';').map { it.trim() }.filter { it.isNotEmpty() }.distinct().sorted().ifEmpty { listOf("*") }
+        private fun validNames(names:List<String>)=names.none { name -> name.any { it.isWhitespace() || it=='=' || it.isISOControl() } }
         fun extensionHash(value: String): String {
-            val names = value.split(';').map { it.trim() }.filter { it.isNotEmpty() }.distinct().sorted().ifEmpty { listOf("*") }
+            val names = extensionNames(value)
             return MessageDigest.getInstance("SHA-256").digest(names.joinToString(";").toByteArray(Charsets.UTF_8))
                 .joinToString("") { "%02x".format(it.toInt() and 255) }
         }

@@ -96,4 +96,29 @@ class LiveSettingsSyncTest {
         val f=Fixture();f.sync.connected(1);f.reply(live=listOf("autoCompile"));assertTrue(f.messages.last().contains("Internal compilation: off"));assertFalse(f.messages.last().contains("Backoffice"))
     }
 
+    @Test fun namedScopeAndBooleansUseOneSetWhenSupported() {
+        val f=Fixture();f.wanted=f.wanted.copy(watchExtensions="b;a;b");f.desire("autoCompile",true);f.sync.connected(1)
+        f.reply(watch="a",live=LiveSettingsSync.KEYS+"watchExtensions")
+        assertEquals(1,f.sets().size);assertTrue(f.sets().single().endsWith("base=0 autoCompile=true watchExtensions=a;b"))
+        f.sync.receive(1,"CONFIG ${f.id()} OK rev=1 autoCompile=true live=autoCompile,watchExtensions watchExtensions.sha256=${LiveSettingsSync.extensionHash("a;b")} loadedUninstrumented=2 unwatchable=1")
+        assertEquals(1,f.sets().size);assertTrue(f.messages.last().contains("2 already loaded classes support body edits only"));assertTrue(f.messages.last().contains("1 directories could not be watched"))
+        assertFalse(f.messages.last().contains("requires a restart"))
+    }
+    @Test fun scopeOnlyChangeIsSentAndMatchingScopeDoesNotEcho() {
+        val f=Fixture();f.wanted=f.wanted.copy(watchExtensions="b");f.sync.connected(1);f.reply(watch="a",live=LiveSettingsSync.KEYS+"watchExtensions")
+        assertTrue(f.sets().single().endsWith("base=0 watchExtensions=b"));f.reply(rev=1,watch="b",live=LiveSettingsSync.KEYS+"watchExtensions");assertEquals(1,f.sets().size)
+        f.sync.apply();assertEquals(1,f.sets().size)
+    }
+    @Test fun blankOrStarDesiredScopeKeepsRestartBoundaryWithoutBlockingBooleans() {
+        for(watch in listOf("","*","a;*")) {
+            val f=Fixture();f.wanted=f.wanted.copy(watchExtensions=watch);f.desire("autoCompile",true);f.sync.connected(1)
+            f.reply(watch="a",live=LiveSettingsSync.KEYS+"watchExtensions");assertTrue(f.sets().single().endsWith("autoCompile=true"));assertFalse(f.sets().single().contains("watchExtensions="))
+            f.reply(rev=1,watch="a",options=f.wanted.options,live=LiveSettingsSync.KEYS+"watchExtensions");assertTrue(f.messages.last().contains("requires a restart"))
+        }
+    }
+    @Test fun invalidScopeCannotInjectAnotherCommand() {
+        val f=Fixture();f.wanted=f.wanted.copy(watchExtensions="a\nCONFIG GET injected");f.sync.connected(1);f.reply(watch="a",live=LiveSettingsSync.KEYS+"watchExtensions")
+        assertTrue(f.sets().isEmpty());assertTrue(f.messages.last().contains("invalid"))
+    }
+
 }

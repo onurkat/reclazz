@@ -79,13 +79,55 @@ public class AgentConfig {
                     values.get("autoUpdateRunningSystem"), values.get("autoSolrReindex"), values.get("backofficeConfigReset"));
         }
     }
-    private final java.util.concurrent.atomic.AtomicReference<LiveOptions> liveOptions =
-            new java.util.concurrent.atomic.AtomicReference<>(new LiveOptions(false, false, false, false, false, true));
-    public LiveOptions liveOptions() { return liveOptions.get(); }
-    public void publishLiveOptions(LiveOptions options) { liveOptions.set(Objects.requireNonNull(options)); }
+    public record WatchScope(boolean all, Set<String> names) {
+        public WatchScope {
+            names = Collections.unmodifiableSet(new TreeSet<>(Objects.requireNonNull(names)));
+        }
+        public boolean includes(String name) { return all || names.contains(name); }
+    }
+    public record ScopeStats(int loadedUninstrumented, int unwatchable) {
+        public static final ScopeStats EMPTY=new ScopeStats(0,0);
+        public ScopeStats {if(loadedUninstrumented<0 || unwatchable<0)throw new IllegalArgumentException("Negative scope evidence");}
+    }
+    public record Runtime(long revision, LiveOptions options, WatchScope scope, ScopeStats stats, WatchInventory inventory) {
+        public Runtime(long revision,LiveOptions options,WatchScope scope,ScopeStats stats){this(revision,options,scope,stats,null);}
+        public Runtime(long revision,LiveOptions options,WatchScope scope){this(revision,options,scope,ScopeStats.EMPTY);}
+        public Runtime {
+            if (revision < 0) throw new IllegalArgumentException("Negative runtime revision");
+            Objects.requireNonNull(options); Objects.requireNonNull(scope);Objects.requireNonNull(stats);
+        }
+    }
+    private final java.util.concurrent.atomic.AtomicReference<Runtime> runtime =
+            new java.util.concurrent.atomic.AtomicReference<>(new Runtime(0,
+                    new LiveOptions(false, false, false, false, false, true), new WatchScope(true, Set.of())));
+    /** Validation precedes installation; the Runtime becomes visible only after installation. */
+    @FunctionalInterface public interface Publication extends java.util.function.Consumer<Runtime> {
+        void commit(Runtime next, Runnable install);
+        @Override default void accept(Runtime next) { commit(next, () -> {}); }
+    }
+    private final Object publicationLock = new Object();
+    public void publishRuntime(Runtime expected, Runtime next, Runnable install) {
+        Objects.requireNonNull(expected); Objects.requireNonNull(next); Objects.requireNonNull(install);
+        synchronized (publicationLock) {
+            if (runtime.get() != expected) throw new IllegalStateException("Runtime revision changed during transition");
+            install.run();
+            runtime.set(next);
+        }
+    }
+    public Runtime runtime() { return runtime.get(); }
+    public LiveOptions liveOptions() { return runtime().options(); }
+    public boolean compareAndSetRuntime(Runtime expected, Runtime target) {
+        synchronized (publicationLock) { return runtime.compareAndSet(Objects.requireNonNull(expected), Objects.requireNonNull(target)); }
+    }
+    /** Compatibility for startup/test callers; CONFIG publishes the whole Runtime with CAS. */
+    public void publishLiveOptions(LiveOptions options) {
+        Objects.requireNonNull(options);
+        synchronized (publicationLock) { runtime.updateAndGet(previous -> new Runtime(previous.revision(), options, previous.scope(), previous.stats(), previous.inventory())); }
+    }
     private void initializeLiveOptions() {
-        publishLiveOptions(new LiveOptions(autoCompile, autoImpex, impexAllowRemove,
-                autoUpdateRunningSystem, autoSolrReindex, backofficeConfigReset));
+        runtime.set(new Runtime(0, new LiveOptions(autoCompile, autoImpex, impexAllowRemove,
+                autoUpdateRunningSystem, autoSolrReindex, backofficeConfigReset),
+                new WatchScope(watchAllExtensions, watchExtensions)));
     }
 
     private long debounceMs = 500;
@@ -421,8 +463,8 @@ public class AgentConfig {
     private java.util.List<String> unknownKeys = java.util.List.of();
 
     public Path getHybrisHome() { return hybrisHome; }
-    public boolean isWatchAllExtensions() { return watchAllExtensions; }
-    public Set<String> getWatchExtensions() { return Collections.unmodifiableSet(watchExtensions); }
+    public boolean isWatchAllExtensions() { return runtime().scope().all(); }
+    public Set<String> getWatchExtensions() { return runtime().scope().names(); }
     public boolean isAutoImpex() { return liveOptions().autoImpex(); }
     public boolean isImpexAllowRemove() { return liveOptions().impexAllowRemove(); }
     public boolean isAutoUpdateRunningSystem() { return liveOptions().autoUpdateRunningSystem(); }
@@ -452,7 +494,7 @@ public class AgentConfig {
     }
 
     public boolean shouldWatchExtension(String extensionName) {
-        return watchAllExtensions || watchExtensions.contains(extensionName);
+        return runtime().scope().includes(extensionName);
     }
 
     /**

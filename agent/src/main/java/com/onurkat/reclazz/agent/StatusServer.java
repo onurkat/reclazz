@@ -205,7 +205,7 @@ public class StatusServer implements StatusReporter.StatusListener {
     void handleCommand(String line, java.util.function.Consumer<String> reply) {
         if (line == null) return;
         String trimmed = line.strip();
-        if (trimmed.length() > MAX_COMMAND_LENGTH) return;
+        if (trimmed.length() > (trimmed.startsWith(CONFIG+" ")?MAX_CONFIG_COMMAND_LENGTH:MAX_COMMAND_LENGTH)) return;
 
         try {
             if (trimmed.startsWith(CONFIG + " ")) {
@@ -523,6 +523,7 @@ public class StatusServer implements StatusReporter.StatusListener {
 
     private static final int MAX_MESSAGE_LENGTH = 4096;
     private static final int MAX_COMMAND_LENGTH = 512;
+    private static final int MAX_CONFIG_COMMAND_LENGTH = 4096;
     private static final String DIAGNOSE = "DIAGNOSE";
     private static final String PENDING = "PENDING";
     private static final String HEALTH = "HEALTH";
@@ -661,7 +662,8 @@ public class StatusServer implements StatusReporter.StatusListener {
             while ((c = reader.read()) != -1) {
                 if (c == '\n') return line.toString();
                 if (c == '\r') continue;
-                if (line.length() >= MAX_COMMAND_LENGTH) return null;
+                if (line.length() >= MAX_CONFIG_COMMAND_LENGTH) return null;
+                if (line.length() >= MAX_COMMAND_LENGTH && !line.toString().stripLeading().startsWith(CONFIG+" ")) return null;
                 line.append((char) c);
             }
             return line.length() == 0 ? null : line.toString();

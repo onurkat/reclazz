@@ -82,6 +82,8 @@ public final class SwitchMapRefresh {
         });
         AddedStatics.begin(candidates); current.set(save);
     }
+    /** The preparation census is reused for defining-loader proof, never recounted per reload. */
+    public static LoadedClasses loadedClasses() { Save save=current.get(); return save==null?null:save.loaded; }
     public static void result(Class<?> owner, boolean successful) {
         Save save = current.get();
         if (save != null && owner != null) {

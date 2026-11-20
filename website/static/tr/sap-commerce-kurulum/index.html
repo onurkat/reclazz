@@ -70,7 +70,7 @@
             <li>Ekranda "Agent installed in the server startup properties" yazmalı.</li>
             <li>Yazılan dosyada <code>tomcat.debugjavaoptions</code> satırını kontrol edin: debug bayraklarınız (<code>-Xdebug</code>, <code>-Xrunjdwp:...</code>) durmalı ve satırda tek bir <code>-javaagent:...reclazz-agent.jar</code> olmalı. Gerekirse elle düzeltin.</li>
         </ol>
-        <p>Çalışan ajana bağlıyken AutoCompile, ImpEx import, Allow REMOVE, Backoffice reset, Update Running System ve Solr reindex seçenekleri <strong>Apply</strong> ile ve yeniden bağlanınca canlı uygulanır. Ayarlardaki durum satırı ajanın gerçekte kullandığı değerleri ya da bekleme/hata sonucunu gösterir. Watch extensions canlı değişmez; onun ve diğer başlangıç ayarlarının değişikliği için <strong>Reinstall</strong> düğmesine basıp 3. adımı tekrarlayın.</p>
+        <p>Çalışan ajana bağlıyken AutoCompile, ImpEx import, Allow REMOVE, Backoffice reset, Update Running System ve Solr reindex seçenekleri <strong>Apply</strong> ile ve yeniden bağlanınca canlı uygulanır. Ayarlardaki durum satırı ajanın gerçekte kullandığı değerleri ya da bekleme/hata sonucunu gösterir. Watch extensions içindeki keşfedilmiş eklentiler adlarıyla canlı eklenip çıkarılabilir. Önceden yüklenmiş ve enstrümante edilmemiş sınıflarda yeniden başlatmaya kadar yalnız gövde değişir; sonradan yüklenen sınıflar yapısal reload desteği alabilir. <code>*</code> veya boş listeyle tümünü izlemeye geçiş ve diğer başlangıç ayarları için <strong>Reinstall</strong> düğmesine basıp 3. adımı tekrarlayın.</p>
         <p>Yazılan blok makineye özel bir yol içerir; dosya git'te tutuluyorsa commit etmeyin.</p>
 
         <h2 id="manuel-yol">2B. Manuel yol</h2>

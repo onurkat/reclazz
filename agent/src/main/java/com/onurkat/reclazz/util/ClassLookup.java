@@ -43,6 +43,7 @@ public final class ClassLookup {
             return value;
         }
         public Class<?>[] all() { return snapshot().classes().clone(); }
+        public List<Class<?>> definitions(String name) { return List.copyOf(snapshot().names().getOrDefault(name,List.of())); }
         /** Admission may legitimately define classes after preparation took its census. */
         public LoadedClasses fresh() { return instrumentation == null ? this : loadedClasses(instrumentation); }
         public Class<?> find(String name) {

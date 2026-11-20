@@ -53,8 +53,14 @@ AutoCompile changes wait for an active build, manual pause or generated-output
 owner, then switch source/class watching without dropping common resource watches.
 Operations already running keep their captured options. Disabling Solr reindex
 prevents new enqueues; queued/running indexing work drains. A pending setting is
-not yet a confirmed runtime change. Watch extensions remains startup-only and is
-reported as requiring a restart; the plugin never sends it as a live change.
+not yet a confirmed runtime change. Named Watch extensions lists also apply live
+on SAP Commerce: add/remove already discovered extensions without restarting.
+Changing from or to watch-all (`*`, including a blank plugin list) still requires
+a restart. Newly selected classes that were already loaded without instrumentation
+support body edits only until restart; classes first loaded after selection can
+receive structural reload support. Removing an extension stops watching its files,
+without unloading its classes or undoing applied changes. Status reports loaded
+raw classes and directories that could not be watched.
 
 The agent line remains the startup default; runtime changes do not rewrite it.
 To persist defaults for a server that starts without an IDE connection, use
@@ -297,8 +303,8 @@ Arguments are passed as a comma-separated string after the `=` sign:
 
 | Argument | Default | Description |
 |---|---|---|
-| `hybrisHome` | auto-detect | Optional explicit installation override; SAP startup supplies `HYBRIS_BIN_DIR`; conflicting explicit override wins with a warning |
-| `watchExtensions` | all custom | Semicolon-separated extension names to watch (empty = all) |
+| `hybrisHome` | auto-detect | Optional explicit installation override; SAP Commerce startup supplies `HYBRIS_BIN_DIR`; conflicting explicit override wins with a warning |
+| `watchExtensions` | all custom | Semicolon-separated extension names to watch; named lists apply live on SAP Commerce, watch-all transitions require restart (empty = all at startup) |
 | `excludePatterns` | (none) | Semicolon-separated glob patterns to exclude (e.g., `*Test.class;*Mock*`) |
 | `autoCompile` | `false` | Compile `.java` files internally instead of watching `.class` files |
 | `autoImpex` | `false` | Auto-import changed `.impex` files |

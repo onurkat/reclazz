@@ -22,6 +22,7 @@ public interface PremiumContext {
     }
     /** A final codegen run has admitted bytecode and completed its persistence step. */
     default void generatedOutputAccepted() { }
+    default com.onurkat.reclazz.config.ScopeFence scopeFence() { return null; }
     PlatformContext platform();
     AgentConfig config();
     PropertyFileSnapshots propertySnapshots();

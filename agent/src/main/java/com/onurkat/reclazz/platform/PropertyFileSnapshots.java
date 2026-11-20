@@ -102,6 +102,9 @@ public final class PropertyFileSnapshots {
         });
     }
 
+    /** A removed subscription must not replay edits made while it was disabled. */
+    public void forget(Path file) { lastSeen.remove(file); }
+
     /** The version currently recorded, or null when the file is unknown. */
     public Map<String, String> current(Path file) {
         return lastSeen.get(file);

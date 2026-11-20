@@ -157,19 +157,40 @@ public class StructuralReloader {
         }
 
         try {
-            // Refuse before name-keyed metadata or companion caches can change.
-            if (com.onurkat.reclazz.util.BackofficePreparedOwners.contains(internalName)) {
-                findLoadedClass(className);
-            }
+            var census=SwitchMapRefresh.loadedClasses();
+            // Preserve the existing owner choice (including prepared Backoffice owners).
+            // Only a raw definition without such proof needs D4's ambiguity refusal.
+            Class<?> definingClass=census==null?findLoadedClass(className):census.find(className);
             TransformContext.ClassMetadata oldMetadata = context.getMetadata(internalName);
+            boolean instrumented=instrumentedIdentity(definingClass);
 
-            if (oldMetadata == null) {
+            if (oldMetadata == null || !instrumented) {
+                boolean preparedOwner=definingClass!=null
+                        && com.onurkat.reclazz.util.BackofficePreparedOwners.contains(internalName)
+                        && com.onurkat.reclazz.util.BackofficePreparedOwners.matches(internalName,definingClass.getClassLoader());
+                if(!preparedOwner && census!=null && census.definitions(className).size()>1) {
+                    RestartLedger.note(className,"multiple defining class loaders; restart to apply");
+                    return ClassReloader.ReloadResult.failure(className+" has multiple defining class loaders; restart to apply",false);
+                }
                 // Watched, but never instrumented: there is no companion to
                 // dispatch to, so the structural path has nothing to work with
                 // and this used to fall straight through to a redefine the JVM
                 // rejects. Adding a field to a JPA entity ended exactly there,
                 // losing the method bodies with it, and nothing said why.
-                reportUninstrumented(className, findLoadedClass(className));
+                Class<?> loaded=definingClass;
+                reportUninstrumented(className, loaded);
+                if(loaded!=null){
+                    var next=com.onurkat.reclazz.transform.RawClassSchema.read(newBytecode);
+                    com.onurkat.reclazz.transform.RawClassSchema old=null;
+                    try {old=com.onurkat.reclazz.transform.VmClassShape.read(loaded,instrumentation);}
+                    catch(Exception|LinkageError unavailable){
+                        if(next.knownChangeFrom(loaded))return ClassReloader.ReloadResult.failure(
+                                className+" was loaded before Reclazz could instrument it; class members changed; restart to apply",false);
+                        StatusReporter.detail("Loaded schema preflight unavailable; the JVM will check this edit atomically: "+className);
+                    }
+                    if(old!=null && !old.equals(next))return ClassReloader.ReloadResult.failure(
+                            className+" was loaded before Reclazz could instrument it; class schema changed; restart to apply",false);
+                }
                 return standardReload(className, newBytecode);
             }
 
@@ -1795,6 +1816,11 @@ public class StructuralReloader {
             StatusReporter.warn("A reload's follow-up after redefinition failed: "
                     + Failures.describe(t));
         }
+    }
+
+    private boolean instrumentedIdentity(Class<?> type) {
+        // Neither record lookup initializes a loaded-but-uninitialized application class.
+        return type!=null && (context.isTransformed(type) || LookupCapture.get(type)!=null);
     }
 
     private Class<?> findLoadedClass(String className) {

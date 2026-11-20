@@ -13,6 +13,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   Detection logs its source, warns when an explicit override conflicts with SAP Commerce's
   startup home, and resolves platform.home/bootstrap fallback paths correctly.
 
+- Named SAP Commerce watch extensions now apply from Settings on Apply/reconnect,
+  together with the runtime options: scope, compiler/watch roots and admission
+  change in one revision, and status reports pending or conflicting changes, already
+  loaded uninstrumented classes and skipped directories. Watch-all transitions still
+  require a restart. Classes loaded before they were watched accept body edits;
+  structural changes to them are refused before redefinition, using one passive VM
+  shape capture when no accepted schema exists.
+
 ## [1.8.0] - 2026-11-20
 
 ### Changed

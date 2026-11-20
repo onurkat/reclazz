@@ -106,6 +106,18 @@ public class CodegenReloader {
     private final ScheduledExecutorService executor;
     private final Object lock = new Object();
     private volatile boolean running = false;
+    private com.onurkat.reclazz.config.ScopeFence scopeFence = new com.onurkat.reclazz.config.ScopeFence();
+    private final java.util.Map<Path, ChangeEvent> deferredChanges = new java.util.LinkedHashMap<>();
+    private final Runnable retryDeferred = this::retryDeferredChanges;
+    public void setScopeFence(com.onurkat.reclazz.config.ScopeFence fence) {
+        scopeFence = java.util.Objects.requireNonNull(fence);
+    }
+    private void retryDeferredChanges() {
+        java.util.List<ChangeEvent> changes;
+        synchronized (lock) { changes = java.util.List.copyOf(deferredChanges.values()); deferredChanges.clear(); }
+        for (ChangeEvent change : changes) handle(change);
+    }
+
     private volatile boolean rerunPending = false;
     private volatile String pendingExtName = null;
     private volatile Path pendingFile = null;
@@ -187,6 +199,8 @@ public class CodegenReloader {
             return;
         }
 
+        if (!watchedExtensions.test(ext.getName())) return;
+        com.onurkat.reclazz.config.ScopeFence.Permit permit = null;
         synchronized (lock) {
             // Matched by content, not by time: a polling watcher under ant's CPU load
             // reported our touch 4-6 seconds late, past the old 3-second window, and
@@ -196,6 +210,10 @@ public class CodegenReloader {
                     && file.toAbsolutePath().normalize().equals(lastTouchedFile)
                     && lastTouchedDigest != null
                     && java.util.Arrays.equals(lastTouchedDigest, digest(file))) return;
+            if (!running) {
+                permit = scopeFence.tryEnterRun(retryDeferred);
+                if (permit == null) { deferredChanges.put(file, event); return; }
+            }
             pendingKinds.add(kind);
             if (running) {
                 rerunPending = true;
@@ -214,10 +232,16 @@ public class CodegenReloader {
                 + " via platform `ant build` (runs in background, usually 15-30s)");
 
         final Path targetFile = file;
-        executor.submit(() -> runLoop(ext, targetFile));
+        final var admitted = java.util.Objects.requireNonNull(permit);
+        try { executor.submit(() -> runLoop(ext, targetFile, admitted)); }
+        catch (java.util.concurrent.RejectedExecutionException stopped) {
+            synchronized (lock) { running = false; }
+            admitted.close();
+            throw stopped;
+        }
     }
 
-    private void runLoop(ExtensionInfo firstExt, Path firstFile) {
+    private void runLoop(ExtensionInfo firstExt, Path firstFile, com.onurkat.reclazz.config.ScopeFence.Permit permit) {
         boolean released = false;
         try {
             ExtensionInfo ext = firstExt;
@@ -290,6 +314,7 @@ public class CodegenReloader {
             StatusReporter.error("Codegen output failed: " + Failures.describe(failure));
         } finally {
             synchronized (lock) { currentOutput=null; if (!released) running = false; }
+            permit.close();
         }
     }
 

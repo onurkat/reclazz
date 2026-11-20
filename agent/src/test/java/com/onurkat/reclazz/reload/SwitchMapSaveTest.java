@@ -55,15 +55,6 @@ class SwitchMapSaveTest extends TransformTestBase {
         final Object previousInstrumentation;
         Fixture() throws Exception { this(false); }
         Fixture(boolean foreignEnum) throws Exception {
-            Map<String, byte[]> transformed = new LinkedHashMap<>();
-            baseline.keySet().forEach(context::addWatched);
-            for (var entry : baseline.entrySet()) {
-                byte[] result = transformer.transform(getClass().getClassLoader(), entry.getKey(), null, null, entry.getValue());
-                transformed.put(entry.getKey(), result == null ? entry.getValue() : result);
-            }
-            for (var entry : transformed.entrySet()) {
-                Path file = tmp.resolve(entry.getKey() + ".class"); Files.createDirectories(file.getParent()); Files.write(file, entry.getValue());
-            }
             ClassLoader parent = getClass().getClassLoader();
             foreignEnumLoader = foreignEnum ? new java.net.URLClassLoader(new java.net.URL[]{tmp.toUri().toURL()}, parent) : null;
             if (foreignEnum) parent = new ClassLoader(parent) {
@@ -72,6 +63,15 @@ class SwitchMapSaveTest extends TransformTestBase {
                 }
             };
             loader = new java.net.URLClassLoader(new java.net.URL[]{tmp.toUri().toURL()}, parent);
+            Map<String, byte[]> transformed = new LinkedHashMap<>();
+            baseline.keySet().forEach(context::addWatched);
+            for (var entry : baseline.entrySet()) {
+                byte[] result = transformer.transform(loader, entry.getKey(), null, null, entry.getValue());
+                transformed.put(entry.getKey(), result == null ? entry.getValue() : result);
+            }
+            for (var entry : transformed.entrySet()) {
+                Path file = tmp.resolve(entry.getKey() + ".class"); Files.createDirectories(file.getParent()); Files.write(file, entry.getValue());
+            }
             outer = Class.forName(pkg + ".Svc", true, loader); bean = outer.getConstructor().newInstance();
             assertEquals("bank-v1|card-v1|other-v1", all()); holder = Class.forName(pkg + ".Svc$1", true, loader);
             Instrumentation counted = (Instrumentation) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{Instrumentation.class},

@@ -79,7 +79,7 @@ public class CallSiteAdapter extends MethodVisitor implements Opcodes {
             }
 
             boolean hasRenamedCopy = (target.equals(currentClass)
-                        || (context.isWatched(target) && !context.isLoadedUninstrumented(target)))
+                        || (context.isWatched(target) && !context.isLoadedUninstrumented(loader,target)))
                     && !TransformExclusions.shouldSkipCallTarget(target);
 
             if (hasRenamedCopy) {

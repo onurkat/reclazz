@@ -151,4 +151,17 @@ class BackofficeModuleReloadTest extends TransformTestBase {
             assertThrows(NoSuchMethodException.class,()->other.getMethod("added"));
         } finally { Thread.currentThread().setContextClassLoader(old);inst.removeTransformer(transformer); }
     }
+    @Test void duplicateCensusStillReloadsProvenBackofficeOwner()throws Exception {
+        byte[] initial=bytes("before",false);var context=context(initial,false);var transformer=new ReclazzTransformer(context,AgentConfig.parse(null));
+        var ownerLoader=new WidgetClassLoader(getClass().getClassLoader());byte[] enhanced=transformer.transform(ownerLoader,internal(),null,null,initial);assertNotNull(enhanced);
+        Class<?> owner=ownerLoader.define(name,enhanced);Object held=owner.getConstructor().newInstance();assertEquals("before",owner.getMethod("run").invoke(held));
+        Class<?> duplicate=new ClassLoader(getClass().getClassLoader()){Class<?> define(){return defineClass(name,initial,0,initial.length);}}.define();byte[] next=bytes("after",true);
+        var previous=Thread.currentThread().getContextClassLoader();Thread.currentThread().setContextClassLoader(duplicate.getClassLoader());
+        SwitchMapRefresh.begin(java.util.Map.of(name,next),java.util.Map.of(),ClassLookup.loadedClasses(new Class<?>[]{duplicate,owner}));
+        try {var reloader=new StructuralReloader(ByteBuddyAgent.install(),context,AgentConfig.parse(null),null);reloader.setTransformer(transformer);
+            var result=reloader.reload(name,next);assertTrue(result.isSuccess(),result.getError());assertEquals("newafter",owner.getMethod("run").invoke(held));
+            assertEquals("before",duplicate.getMethod("run").invoke(duplicate.getConstructor().newInstance()));
+        }finally{SwitchMapRefresh.end();Thread.currentThread().setContextClassLoader(previous);com.onurkat.reclazz.ui.RestartLedger.clear();}
+    }
+
 }

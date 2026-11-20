@@ -84,4 +84,10 @@ class FileWatcherReconfigureTest {
         assertTrue(keys().values().stream().noneMatch(owner->owner.directory().equals(source)));editAndSee(source.getParent().resolve("Other.java"));editAndSee(resources.resolve("still.impex"));
     }
 
+    @Test void throwingPublisherLeavesOldWatchKeysAndDeliveryIntact()throws Exception {
+        setup(false,false);var old=new HashMap<>(keys());var target=config.liveOptions().with(Map.of("autoCompile",true));
+        assertThrows(IllegalStateException.class,()->watcher.reconfigureNow(target,mutation->{mutation.run();return true;},()->{throw new IllegalStateException("forced publish failure");},new LinkedHashMap<>()));
+        assertEquals(old,keys());assertTrue(old.keySet().stream().allMatch(WatchKey::isValid));assertFalse(config.isAutoCompile());editAndSee(classes.resolve("AfterRejectedPublish.class"));
+    }
+
 }
