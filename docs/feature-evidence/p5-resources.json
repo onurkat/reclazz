@@ -5020,7 +5020,7 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringPropertyFilesTest#fileReplacementPreservesPrecedenceAndEmptyFileOwnership",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringPropertyFilesTest.java",
-          "source_sha256": "8402187aeec515d16a488ef444b759f751cf807ec35accf568dda517f964fea5",
+          "source_sha256": "d06c8070aa86fc1d8523456f4069db5b03a53d6ea57437ea91ebbaf0c68198f5",
           "kind": "component",
           "assertions": "CommandLine99 masks20/empty; after remove ->30; empty ->lower7; exactly one fixture source."
         }
@@ -5060,7 +5060,7 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringPropertyFilesTest#activeProfileDocumentsKeepTheirOrderAndTopologyChangesAreHeld",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringPropertyFilesTest.java",
-          "source_sha256": "8402187aeec515d16a488ef444b759f751cf807ec35accf568dda517f964fea5",
+          "source_sha256": "d06c8070aa86fc1d8523456f4069db5b03a53d6ea57437ea91ebbaf0c68198f5",
           "kind": "component",
           "assertions": "dev21 accepted despite inactive invalid; changedselector UNCHECKABLE retains21; fix23."
         }
@@ -5100,7 +5100,7 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringPropertyFilesTest#rejectionInOneContextHoldsAllContextsAndFixRetries",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringPropertyFilesTest.java",
-          "source_sha256": "8402187aeec515d16a488ef444b759f751cf807ec35accf568dda517f964fea5",
+          "source_sha256": "d06c8070aa86fc1d8523456f4069db5b03a53d6ea57437ea91ebbaf0c68198f5",
           "kind": "component",
           "assertions": "Profiles other/dev retain10/20 onbad; correction12/22."
         }
@@ -5140,7 +5140,7 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringPropertyFilesTest#boundaryUsesOneReadAndANonRunningBoundaryDoesNotAccept",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringPropertyFilesTest.java",
-          "source_sha256": "8402187aeec515d16a488ef444b759f751cf807ec35accf568dda517f964fea5",
+          "source_sha256": "d06c8070aa86fc1d8523456f4069db5b03a53d6ea57437ea91ebbaf0c68198f5",
           "kind": "component",
           "assertions": "NOT_RUN keeps10; laterwrite30 while captured20 queued applies20 then30 onnext."
         }
@@ -5180,7 +5180,7 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringPropertyFilesTest#partialSetterFailureRemainsPendingOnAnIdenticalSave",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringPropertyFilesTest.java",
-          "source_sha256": "8402187aeec515d16a488ef444b759f751cf807ec35accf568dda517f964fea5",
+          "source_sha256": "d06c8070aa86fc1d8523456f4069db5b03a53d6ea57437ea91ebbaf0c68198f5",
           "kind": "component",
           "assertions": "Settings10 but Environment20 afterthrow; identicalretry20, samebean."
         }
@@ -5220,7 +5220,7 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringPropertyFilesTest#inactiveOrUnownedFilesNeverBecomeAnOverride",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringPropertyFilesTest.java",
-          "source_sha256": "8402187aeec515d16a488ef444b759f751cf807ec35accf568dda517f964fea5",
+          "source_sha256": "d06c8070aa86fc1d8523456f4069db5b03a53d6ea57437ea91ebbaf0c68198f5",
           "kind": "component",
           "assertions": "UNCHECKABLE retains10 for application-prod.properties."
         }
@@ -5260,7 +5260,7 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringPropertyFilesTest#externalSourceReplacementIsNotOverwritten",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringPropertyFilesTest.java",
-          "source_sha256": "8402187aeec515d16a488ef444b759f751cf807ec35accf568dda517f964fea5",
+          "source_sha256": "d06c8070aa86fc1d8523456f4069db5b03a53d6ea57437ea91ebbaf0c68198f5",
           "kind": "component",
           "assertions": "External88 retained, reload UNCHECKABLE."
         }
@@ -5300,7 +5300,7 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringPropertyFilesTest#malformedYamlAndImportsDoNotChangeLiveSources",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringPropertyFilesTest.java",
-          "source_sha256": "8402187aeec515d16a488ef444b759f751cf807ec35accf568dda517f964fea5",
+          "source_sha256": "d06c8070aa86fc1d8523456f4069db5b03a53d6ea57437ea91ebbaf0c68198f5",
           "kind": "component",
           "assertions": "Each UNCHeCKABLE retains10; fixed30 applies."
         }
@@ -5340,7 +5340,7 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringPropertyFilesTest#readOnlyCollectionRemovalIsHeldInsteadOfReportingStaleStateAsApplied",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringPropertyFilesTest.java",
-          "source_sha256": "8402187aeec515d16a488ef444b759f751cf807ec35accf568dda517f964fea5",
+          "source_sha256": "d06c8070aa86fc1d8523456f4069db5b03a53d6ea57437ea91ebbaf0c68198f5",
           "kind": "component",
           "assertions": "UNCHECKABLE, items[a], Environment itema."
         }
@@ -5380,7 +5380,7 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringPropertyFilesTest#aSourceWithMixedResourceOriginsCannotOwnAFile",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringPropertyFilesTest.java",
-          "source_sha256": "8402187aeec515d16a488ef444b759f751cf807ec35accf568dda517f964fea5",
+          "source_sha256": "d06c8070aa86fc1d8523456f4069db5b03a53d6ea57437ea91ebbaf0c68198f5",
           "kind": "component",
           "assertions": "UNCHECKABLE,10 and separate other=value retained."
         }
