@@ -200,6 +200,9 @@ class AgenticEndToEndTest {
         for (String key : List.of("sessionId", "subscriptionId")) a.add(key, cp.get(key));
         a.add("afterCursor", cp.get("cursor")); a.addProperty("filePath", source.resolve("Service.java").toAbsolutePath().toString());
         a.addProperty("ownerClassName", "consumer.Service");
+        // The default 5 s total deadline is for an interactive agent; a Windows CI
+        // runner compiling through the agent can take longer.
+        a.addProperty("timeoutMs", "30000");
         JsonObject result = text(tool(mcp, "reclazz_await_reload", a));
         assertEquals(expected, result.get("status").getAsString(), result.toString());
         assertEquals(cp.get("sessionId"), result.get("sessionId"));

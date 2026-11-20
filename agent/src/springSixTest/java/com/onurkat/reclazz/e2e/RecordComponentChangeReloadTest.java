@@ -127,6 +127,9 @@ class RecordComponentChangeReloadTest {
     static String caller(int version,String args){return "package app;public class Caller {public static int version(){return "+version+";}public static Object make(){return new Greeting("+args+");}}";}
     static String jacksonClasspath() throws Exception {
         var entries=new LinkedHashSet<String>();
+        // Jackson 3 is only on the Spring 7 suite; the Spring 6 run of this shared source skips.
+        try { Class.forName("tools.jackson.databind.json.JsonMapper"); }
+        catch (ClassNotFoundException absent) { org.junit.jupiter.api.Assumptions.abort("Jackson 3 is isolated to the Spring 7 suite"); }
         for(String name:List.of("com.fasterxml.jackson.databind.ObjectMapper","com.fasterxml.jackson.core.JsonFactory","com.fasterxml.jackson.annotation.JsonProperty","tools.jackson.databind.json.JsonMapper","tools.jackson.core.json.JsonFactory"))
             entries.add(Path.of(Class.forName(name).getProtectionDomain().getCodeSource().getLocation().toURI()).toString());
         return String.join(File.pathSeparator,entries);
