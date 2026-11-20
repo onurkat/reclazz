@@ -99,7 +99,7 @@ class SuperclassSalvageReloadTest extends TransformTestBase {
             loadMap.put(entry.getKey(), transformed != null ? transformed : entry.getValue());
         }
 
-        SharedLoader loader = sharedLoader(loadMap);
+        SharedLoader loader = sharedLoader(loadMap, context);
         loader.load(prefix + "Base1");
         loader.load(prefix + "Base2");
         Class<?> serviceClass = loader.load(prefix + "Service");

@@ -35,22 +35,41 @@ import static org.junit.jupiter.api.Assertions.*;
  * <p>The distinguishing question is whether the JVM actually has the class, so
  * that is the question now asked before the sentence is said.
  */
-class UninstrumentedReportTest {
+class UninstrumentedReportTest extends com.onurkat.reclazz.transform.TransformTestBase {
 
-    /**
-     * Asserted on the compiled reloader rather than by running a reload,
-     * because the failure is a message that should not appear and no
-     * behavioural assertion notices an absent warning.
-     */
+    /** Observe both branches instead of matching a particular local-variable spelling. */
     @Test
-    void theWarningIsGuardedByWhetherTheClassIsActuallyLoaded() throws IOException {
-        String source = java.nio.file.Files.readString(java.nio.file.Path.of(
-                "src/main/java/com/onurkat/reclazz/reload/StructuralReloader.java"));
-
-        assertTrue(source.contains("reportUninstrumented(className, findLoadedClass(className))"),
-                "the reporter has to be told whether the JVM has this class");
-        assertTrue(source.contains("if (loaded == null) return;"),
-                "a class the JVM never loaded is a new file, and there is nothing to say");
+    void theWarningIsGuardedByWhetherTheClassIsActuallyLoaded() throws Exception {
+        String freshName = "ReportNotYetLoaded";
+        String loadedName = "ReportActuallyLoaded";
+        String body = "public class %s { public String value(){return \"%s\";} }";
+        byte[] fresh = compile(new SourceFile(freshName, body.formatted(freshName, "new"))).get(freshName);
+        var raw = compile(new SourceFile(loadedName, body.formatted(loadedName, "before")));
+        Class<?> loaded = defineAndLoad(raw, loadedName);
+        Object held = loaded.getConstructor().newInstance();
+        var instrumentation = net.bytebuddy.agent.ByteBuddyAgent.install();
+        var context = new com.onurkat.reclazz.transform.TransformContext();
+        var reloader = new StructuralReloader(instrumentation, context,
+                com.onurkat.reclazz.config.AgentConfig.parse(null), null);
+        List<String> warnings = new ArrayList<>();
+        com.onurkat.reclazz.ui.StatusReporter.StatusListener listener = (level, message) -> {
+            if (level.equals("WARN")) warnings.add(message);
+        };
+        com.onurkat.reclazz.ui.StatusReporter.addListener(listener);
+        try {
+            var newFile = reloader.reload(freshName, fresh);
+            assertTrue(newFile.isSuccess(), newFile.getError());
+            assertTrue(warnings.isEmpty(), "an unloaded new class must not produce a pre-attach warning: " + warnings);
+            var edit = compile(new SourceFile(loadedName, body.formatted(loadedName, "after"))).get(loadedName);
+            var result = reloader.reload(loadedName, edit);
+            assertTrue(result.isSuccess(), result.getError());
+            assertEquals("after", loaded.getMethod("value").invoke(held));
+            assertEquals(1, warnings.size(), warnings.toString());
+            assertTrue(warnings.get(0).contains(loadedName)
+                    && warnings.get(0).contains("loaded before Reclazz could instrument it"), warnings.toString());
+        } finally {
+            com.onurkat.reclazz.ui.StatusReporter.removeListener(listener);
+        }
     }
 
     /** The sentence itself is still the right one for the case it belongs to. */

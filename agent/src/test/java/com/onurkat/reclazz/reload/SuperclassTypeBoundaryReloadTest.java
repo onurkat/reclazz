@@ -93,7 +93,7 @@ class SuperclassTypeBoundaryReloadTest extends TransformTestBase {
             bytes.put(entry.getKey(), transformed == null ? entry.getValue() : transformed);
         }
         // Existing harness loader isolates fixture names; no product loader is introduced.
-        SharedLoader loader = sharedLoader(bytes);
+        SharedLoader loader = sharedLoader(bytes, context);
         loader.load(prefix + "OldBase");
         loader.load(prefix + "NewBase");
         Class<?> service = loader.load(prefix + "Service");

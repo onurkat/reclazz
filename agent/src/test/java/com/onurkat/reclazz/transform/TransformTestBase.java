@@ -142,6 +142,29 @@ public abstract class TransformTestBase {
                 TransformTestBase.class.getClassLoader()));
     }
 
+    /** Manual transform fixtures must record the loader that actually defines their bytes. */
+    protected static Class<?> defineAndLoad(Map<String, byte[]> classes, String binaryName,
+                                            TransformContext context) {
+        Class<?> type = defineAndLoad(classes, binaryName);
+        recordTransformOwnership(classes, type.getClassLoader(), context);
+        return type;
+    }
+
+    protected static SharedLoader sharedLoader(Map<String, byte[]> classes, TransformContext context) {
+        SharedLoader loader = sharedLoader(classes);
+        recordTransformOwnership(classes, loader.loader(), context);
+        return loader;
+    }
+
+    private static void recordTransformOwnership(Map<String, byte[]> classes, ClassLoader loader,
+                                                  TransformContext context) {
+        classes.forEach((name, bytes) -> {
+            // Mixed fixtures contain untouched callers/interfaces too. Those
+            // remain raw, just as in the production transformer callback.
+            if (ReclazzTransformer.isAlreadyTransformed(bytes)) context.markTransformed(loader, name);
+        });
+    }
+
     public static final class SharedLoader {
         private final ClassLoader loader;
         SharedLoader(ClassLoader loader) { this.loader = loader; }

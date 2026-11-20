@@ -83,7 +83,7 @@ class CompanionNestedCtorCallTest extends TransformTestBase {
             loadMap.put(e.getKey(), transformed != null ? transformed : e.getValue());
         }
 
-        Class<?> cls = defineAndLoad(loadMap, "OuterNews");
+        Class<?> cls = defineAndLoad(loadMap, "OuterNews", ctx);
         Object instance = cls.getDeclaredConstructor().newInstance();
         Method fire = cls.getDeclaredMethod("fire");
         assertEquals("v1:x", fire.invoke(instance));

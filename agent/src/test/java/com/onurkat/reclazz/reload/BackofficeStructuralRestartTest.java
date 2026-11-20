@@ -26,7 +26,7 @@ class BackofficeStructuralRestartTest extends TransformTestBase {
         var original=compile(new SourceFile(name,source(name,"before","")),annotation());
         byte[] transformed=transformer.transform(getClass().getClassLoader(),name,null,null,original.get(name));
         original.put(name,transformed);
-        Class<?> type=defineAndLoad(original,name);Object instance=type.getConstructor().newInstance();
+        Class<?> type=defineAndLoad(original,name,context);Object instance=type.getConstructor().newInstance();
         assertEquals("before",type.getMethod("run").invoke(instance));
         String added=switch(edit) {
             case "socket" -> "@com.hybris.cockpitng.annotations.SocketEvent public void input(String value) {}";

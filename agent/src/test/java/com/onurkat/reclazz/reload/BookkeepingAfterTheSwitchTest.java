@@ -58,7 +58,7 @@ class BookkeepingAfterTheSwitchTest extends TransformTestBase {
                 compile(new SourceFile(name, source("v1", ""))).get(name));
         Map<String, byte[]> loadMap = new LinkedHashMap<>();
         loadMap.put(name, transformed);
-        Class<?> cls = defineAndLoad(loadMap, name);
+        Class<?> cls = defineAndLoad(loadMap, name, context);
         Object instance = cls.getDeclaredConstructor().newInstance();
 
         StructuralReloader reloader = new StructuralReloader(instrumentation, context, AgentConfig.parse(null), null);

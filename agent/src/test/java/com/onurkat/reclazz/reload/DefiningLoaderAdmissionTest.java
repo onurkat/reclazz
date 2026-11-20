@@ -33,4 +33,26 @@ class DefiningLoaderAdmissionTest extends TransformTestBase {
         try{assertNull(System.getProperty(key));proof.invoke(reloader,owner);assertNull(System.getProperty(key),"proof must not execute application clinit");}
         finally{System.clearProperty(key);}
     }
+    @Test void mixedFixtureLoaderAdmitsTransformedBytesAndStillRefusesRawStructuralEdits()throws Exception {
+        String good="FixtureTransformed"+IDS.incrementAndGet(),raw="FixtureRaw"+IDS.incrementAndGet();
+        String body="public class %s {public String value(){return \"one\";}}";
+        var bytes=compile(new SourceFile(good,body.formatted(good)),new SourceFile(raw,body.formatted(raw)));
+        var context=new TransformContext();context.addWatched(good);context.addWatched(raw);
+        var config=AgentConfig.parse(null);var transformer=new ReclazzTransformer(context,config);
+        byte[] enhanced=transformer.transform(getClass().getClassLoader(),good,null,null,bytes.get(good));
+        assertNotNull(enhanced);bytes.put(good,enhanced);
+        var loader=sharedLoader(bytes,context);Class<?> owner=loader.load(good),untouched=loader.load(raw);
+        Object held=owner.getConstructor().newInstance(),rawHeld=untouched.getConstructor().newInstance();
+        assertTrue(context.isTransformed(owner));assertFalse(context.isTransformed(untouched));
+        var reloader=new StructuralReloader(ByteBuddyAgent.install(),context,config,null);reloader.setTransformer(transformer);
+        try {
+            byte[] changed=compile(new SourceFile(good,"public class "+good+" {public String value(){return \"two\";}public int added(){return 7;}}")).get(good);
+            var applied=reloader.reload(good,changed);assertTrue(applied.isSuccess(),applied.getError());
+            assertEquals("two",owner.getMethod("value").invoke(held));
+            byte[] rawEdit=compile(new SourceFile(raw,"public class "+raw+" {public int added;public String value(){return \"two\";}}")).get(raw);
+            var refused=reloader.reload(raw,rawEdit);assertFalse(refused.isSuccess(),"raw fixture must not gain structural admission");
+            assertTrue(refused.getError().contains("loaded before Reclazz could instrument it"),refused.getError());
+            assertEquals("one",untouched.getMethod("value").invoke(rawHeld));
+        } finally {com.onurkat.reclazz.ui.RestartLedger.clear();}
+    }
 }

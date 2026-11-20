@@ -48,7 +48,7 @@ class ReloadKindReportingTest extends TransformTestBase {
         loadMap.put(name, transformed != null ? transformed : raw);
         lastContext = ctx;
         lastConfig = config;
-        return defineAndLoad(loadMap, name);
+        return defineAndLoad(loadMap, name, ctx);
     }
 
     private TransformContext lastContext;

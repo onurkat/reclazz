@@ -73,7 +73,7 @@ class RemovedMethodWarningTest extends TransformTestBase {
 
         Map<String, byte[]> loadMap = new LinkedHashMap<>();
         loadMap.put(name, transformed);
-        Class<?> cls = defineAndLoad(loadMap, name);
+        Class<?> cls = defineAndLoad(loadMap, name, context);
         Object instance = cls.getDeclaredConstructor().newInstance();
         Method keep = cls.getDeclaredMethod("keep");
         Method gone = cls.getDeclaredMethod("gone");

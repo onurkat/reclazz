@@ -203,7 +203,7 @@ class PremiumModuleOptionalTest extends TransformTestBase {
         var config = AgentConfig.parse(null); var transformer = new ReclazzTransformer(context, config);
         var original = compile(new SourceFile(name, widget("before", "")), annotation());
         original.put(name, transformer.transform(getClass().getClassLoader(), name, null, null, original.get(name)));
-        Class<?> type = defineAndLoad(original, name); Object held = type.getConstructor().newInstance();
+        Class<?> type = defineAndLoad(original, name, context); Object held = type.getConstructor().newInstance();
         byte[] saved = compile(new SourceFile(name, widget("after", "@com.hybris.cockpitng.annotations.SocketEvent public void input() {}")), annotation()).get(name);
         var calls = new AtomicInteger(); var admissions = new ArrayList<Capability>();
         var modules = new PremiumModules(c -> { admissions.add(c); return new PremiumAdmission.Admission(true, ""); });
