@@ -117,7 +117,7 @@ object HybrisAgentInstaller {
         val settings = ReclazzSettings.getInstance(project).state
         var agentArg = agentArgument(
             "${pluginAgentJar.toPath().toAbsolutePath()}=" +
-                    AgentJarLocator.buildAgentArgs(project, settings)
+                    AgentJarLocator.buildAgentArgs(project, settings, includeHybrisHome = false)
         )
 
         // From JDK 24 the JVM warns about the sun.misc.Unsafe access an enum

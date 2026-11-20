@@ -114,15 +114,20 @@ public class PlatformDetector {
     }
 
     private static PlatformContext createHybrisContext(AgentConfig config) {
-        Path hybrisHome = config.getHybrisHome();
-        if (hybrisHome == null) {
-            hybrisHome = detectHybrisHome();
-        }
-        if (hybrisHome == null) {
+        Home selected;
+        Path explicit=config.getHybrisHome();
+        if(explicit!=null) {
+            Home nativeHome=hybrisBinHome();
+            if(nativeHome!=null&&!canonical(explicit).equals(canonical(nativeHome.path())))
+                StatusReporter.warn("hybrisHome="+explicit+" disagrees with HYBRIS_BIN_DIR installation "+nativeHome.path()
+                        +"; the explicit override wins. You can drop hybrisHome= to use SAP Commerce startup detection.");
+            selected=new Home(explicit,"hybrisHome=");
+        } else selected=detectHome();
+        if (selected == null) {
             StatusReporter.error("Cannot detect Hybris home. Set hybrisHome= in agent args, HYBRIS_BIN_DIR env var, or -DHYBRIS_BIN_DIR= system property.");
             return null;
         }
-        return new HybrisPlatformContext(hybrisHome, config);
+        return new HybrisPlatformContext(selected.path(),config,selected.source());
     }
 
     private static PlatformContext createSpringBootContext(AgentConfig config) {
@@ -132,56 +137,54 @@ public class PlatformDetector {
     /**
      * Auto-detect Hybris home directory.
      */
-    private static Path detectHybrisHome() {
-        // Try HYBRIS_BIN_DIR, check both env var and system property,
-        // since Hybris's Tanuki Wrapper sets it as -D system property.
-        String binDir = System.getenv("HYBRIS_BIN_DIR");
-        if (binDir == null) {
-            binDir = System.getProperty("HYBRIS_BIN_DIR");
+    private record Home(Path path,String source) { }
+    private static Path canonical(Path path) {
+        try{return path.toRealPath();}catch(java.io.IOException | SecurityException unresolved){return path.toAbsolutePath().normalize();}
+    }
+    private static Home candidate(Path home,String source) {
+        return home!=null&&java.nio.file.Files.isDirectory(home.resolve("bin/platform"))?new Home(home,source):null;
+    }
+    private static Home binHome(String binDir,String source) {
+        if(binDir==null||binDir.isBlank())return null;
+        try {
+            Path bin=Paths.get(binDir).toAbsolutePath().normalize();
+            if(!java.nio.file.Files.isDirectory(bin.resolve("platform")))return null;
+            Home home=candidate(bin.getParent(),source);if(home!=null)return home;
+            // A link to bin itself need not have the installation as its lexical parent.
+            return candidate(canonical(bin).getParent(),source);
+        }catch(java.nio.file.InvalidPathException invalid){return null;}
+    }
+    private static Home hybrisBinHome() {
+        Home env=binHome(System.getenv("HYBRIS_BIN_DIR"),"HYBRIS_BIN_DIR environment");
+        return env!=null?env:binHome(System.getProperty("HYBRIS_BIN_DIR"),"HYBRIS_BIN_DIR system property");
+    }
+    private static Path installationAbovePlatform(Path platform) {
+        Path bin=platform.getParent();return bin==null?null:bin.getParent();
+    }
+    private static Home detectHome() {
+        Home nativeHome=hybrisBinHome();if(nativeHome!=null)return nativeHome;
+        String platformHome=System.getProperty("platform.home");
+        if(platformHome!=null&&!platformHome.isBlank()) {
+            try {
+                Home home=candidate(installationAbovePlatform(Paths.get(platformHome).toAbsolutePath().normalize()),"platform.home");
+                if(home!=null)return home;
+            }catch(java.nio.file.InvalidPathException invalid){/* Continue to other validated sources. */}
         }
-        if (binDir != null) {
-            Path platformDir = Paths.get(binDir, "platform");
-            if (platformDir.toFile().exists()) {
-                return Paths.get(binDir).getParent();
-            }
-        }
-
-        // Try platform.home system property
-        String platformHome = System.getProperty("platform.home");
-        if (platformHome != null) {
-            return Paths.get(platformHome).getParent();
-        }
-
-        // Try classpath, Hybris always has platform/bootstrap/bin on classpath
-        String classpath = System.getProperty("java.class.path", "");
-        for (String entry : classpath.split(java.io.File.pathSeparator)) {
-            Path p = Paths.get(entry);
-            // Look for .../platform/bootstrap/bin/... pattern
-            for (Path ancestor = p; ancestor != null; ancestor = ancestor.getParent()) {
-                if ("bootstrap".equals(String.valueOf(ancestor.getFileName()))) {
-                    Path platform = ancestor.getParent();
-                    if (platform != null && "platform".equals(String.valueOf(platform.getFileName()))) {
-                        Path hybrisHome = platform.getParent();
-                        if (hybrisHome != null && hybrisHome.toFile().exists()) {
-                            return hybrisHome;
-                        }
-                    }
+        for(String entry:System.getProperty("java.class.path","").split(java.io.File.pathSeparator)) {
+            if(entry.isBlank())continue;
+            Path path;try{path=Paths.get(entry).toAbsolutePath().normalize();}catch(java.nio.file.InvalidPathException invalid){continue;}
+            for(Path ancestor=path;ancestor!=null;ancestor=ancestor.getParent()) {
+                if(!"bootstrap".equals(String.valueOf(ancestor.getFileName())))continue;
+                Path platform=ancestor.getParent();
+                if(platform!=null&&"platform".equals(String.valueOf(platform.getFileName()))) {
+                    Home home=candidate(installationAbovePlatform(platform),"bootstrap classpath");if(home!=null)return home;
                 }
             }
         }
-
-        // Walk up from CWD
-        Path cwd = Paths.get(System.getProperty("user.dir"));
-        Path candidate = cwd;
-        for (int i = 0; i < 10; i++) {
-            Path platform = candidate.resolve("bin").resolve("platform");
-            if (platform.toFile().exists()) {
-                return candidate;
-            }
-            candidate = candidate.getParent();
-            if (candidate == null) break;
+        Path cwd=Paths.get(System.getProperty("user.dir"));
+        for(int i=0;i<10&&cwd!=null;i++,cwd=cwd.getParent()) {
+            Home home=candidate(cwd,"working directory");if(home!=null)return home;
         }
-
         return null;
     }
 }

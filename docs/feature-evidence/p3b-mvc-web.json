@@ -1663,7 +1663,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2523,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-ENDPOINT-GET"
         }
       ],
@@ -1715,7 +1715,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2533,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-ENDPOINT-POST"
         }
       ],
@@ -1755,14 +1755,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 977,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 984,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "Spring sees a hidden metadata class"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2543,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-EXCEPTION-LOCAL"
         }
       ],
@@ -1802,14 +1802,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 977,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 984,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "Spring sees a hidden metadata class"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2553,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-EXCEPTION-ADVICE"
         }
       ],
@@ -1890,7 +1890,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2563,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-EXCEPTION-MODERN"
         }
       ],
@@ -1954,14 +1954,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1039,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 1046,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "A supported plain controller or controller advice can gain entirely new"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2575,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-BINDER-LOCAL"
         }
       ],
@@ -2025,14 +2025,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1039,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 1046,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "A supported plain controller or controller advice can gain entirely new"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2585,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-BINDER-ADVICE"
         }
       ],
@@ -2096,14 +2096,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1039,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 1046,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "A supported plain controller or controller advice can gain entirely new"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2595,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-MODEL-LOCAL"
         }
       ],
@@ -2167,14 +2167,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1039,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 1046,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "A supported plain controller or controller advice can gain entirely new"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2605,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-MODEL-ADVICE"
         }
       ],
@@ -2238,14 +2238,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1188,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 1195,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "Jackson still decides which properties to read and write."
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2615,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-JACKSON-IN"
         }
       ],
@@ -2328,14 +2328,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1188,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 1195,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "Jackson still decides which properties to read and write."
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2625,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-JACKSON-OUT"
         }
       ],
@@ -2418,14 +2418,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1188,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 1195,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "Jackson still decides which properties to read and write."
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2635,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-JACKSON-NAMING"
         }
       ],
@@ -2470,14 +2470,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1188,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 1195,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "Jackson still decides which properties to read and write."
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2645,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-JACKSON-INCLUSION"
         }
       ],
@@ -2560,14 +2560,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1188,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 1195,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "Jackson still decides which properties to read and write."
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2655,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-JACKSON-CUSTOM"
         }
       ],
@@ -2607,14 +2607,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 3264,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 3271,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "MVC, `Callable`"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2665,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-ASYNC-CALLABLE"
         }
       ],
@@ -2654,14 +2654,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 3264,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 3271,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "MVC, `Callable`"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2675,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-ASYNC-DEFERRED"
         }
       ],
@@ -2701,14 +2701,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 3264,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 3271,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "MVC, `Callable`"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2685,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-ASYNC-TIMEOUT"
         }
       ],
@@ -2748,14 +2748,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 3264,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 3271,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "MVC, `Callable`"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2695,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-ASYNC-IMMEDIATE"
         }
       ],
@@ -2800,14 +2800,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1007,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 1014,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "Method-body saves on registered MVC interceptors"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2705,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-INTERCEPTOR-LIMIT"
         },
         {
@@ -2846,14 +2846,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1059,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 1066,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "return values and void methods"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2717,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-MODEL-VOID"
         }
       ],
@@ -2886,14 +2886,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1059,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 1066,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "return values and void methods"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2727,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-MODEL-GENERIC"
         }
       ],
@@ -2926,14 +2926,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 977,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 984,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "Spring sees a hidden metadata class"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2737,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-EXCEPTION-CAUSE"
         }
       ],
@@ -2966,14 +2966,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 977,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 984,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "Spring sees a hidden metadata class"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2747,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-EXCEPTION-INFER"
         }
       ],
@@ -3006,14 +3006,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 977,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 984,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "Spring sees a hidden metadata class"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2757,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-EXCEPTION-ENTITY"
         }
       ],
@@ -3046,14 +3046,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 977,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 984,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "Spring sees a hidden metadata class"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2767,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-EXCEPTION-CLASS-STATUS"
         }
       ],
@@ -3086,14 +3086,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1191,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 1198,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "field/method mix-ins"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2777,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-JACKSON-GETTER-MIXIN"
         }
       ],
@@ -3126,14 +3126,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1191,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 1198,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "field/method mix-ins"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2787,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-JACKSON-FIELD-MIXIN"
         }
       ],
@@ -3166,14 +3166,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1193,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 1200,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "one mapper granting access"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2797,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-JACKSON-GETTER-ACCESS"
         }
       ],
@@ -3206,14 +3206,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1193,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 1200,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "one mapper granting access"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2807,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-JACKSON-WRITE-ACCESS"
         }
       ],
@@ -3246,14 +3246,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1190,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 1197,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "read/write-only"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2817,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-JACKSON-READ-ONLY"
         }
       ],
@@ -3286,14 +3286,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1190,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 1197,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "read/write-only"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2827,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-JACKSON-WRITE-ONLY"
         }
       ],
@@ -3326,14 +3326,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1192,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 1199,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "Concrete generic collections"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2837,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-JACKSON-GENERIC-IN"
         }
       ],
@@ -3366,14 +3366,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1196,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 1203,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "mapping-error path"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2847,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-JACKSON-ERRORS"
         }
       ],
@@ -3406,14 +3406,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1196,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 1203,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "mapping-error path"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2857,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-JACKSON-GETTER-ERROR"
         }
       ],
@@ -3446,14 +3446,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1213,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 1220,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "ObjectWriter retained"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2867,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-JACKSON-HELD-WRITER"
         }
       ],
@@ -3486,14 +3486,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1079,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 1086,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "Proxy/subclass receivers are refused"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2877,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-BINDER-PROXY-REFUSAL"
         }
       ],
@@ -3526,14 +3526,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 977,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 984,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "Spring sees a hidden metadata class"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2887,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-EXCEPTION-PROXY-REFUSAL"
         }
       ],
@@ -3566,14 +3566,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1060,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 1067,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "Model-annotated request mappings are excluded"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2897,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-MODEL-MAPPED-EXCLUSION"
         }
       ],
@@ -3606,14 +3606,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1078,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 1085,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "non-void binders"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2907,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-BINDER-RETURN-REFUSAL"
         }
       ],
@@ -3646,14 +3646,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1078,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 1085,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "declared async/reactive/streaming model returns"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2917,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-MODEL-ASYNC-REFUSAL"
         }
       ],
@@ -3686,14 +3686,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1076,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 1083,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "Extra callback advice"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2927,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-CALLBACK-ADVICE-REFUSAL"
         }
       ],
@@ -3726,14 +3726,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1077,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 1084,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "static/abstract/native/bridge/synthetic callbacks"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2937,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-CALLBACK-STATIC-REFUSAL"
         }
       ],
@@ -3766,14 +3766,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1078,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 1085,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "signatures, non-void binders"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2947,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-CALLBACK-GENERIC-REFUSAL"
         }
       ],
@@ -3806,14 +3806,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1073,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 1080,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "interfaces or type variables."
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2957,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-CALLBACK-INTERFACE-REFUSAL"
         }
       ],
@@ -3846,14 +3846,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1080,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 1087,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "`@SessionAttributes`, composed metadata"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2967,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-CALLBACK-SESSION-REFUSAL"
         }
       ],
@@ -3886,14 +3886,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 977,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 984,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "Spring sees a hidden metadata class"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2977,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-EXCEPTION-AMBIGUITY"
         }
       ],
@@ -3926,14 +3926,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 977,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 984,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "Spring sees a hidden metadata class"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2987,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-EXCEPTION-ASYNC-REFUSAL"
         }
       ],
@@ -3966,14 +3966,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 977,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 984,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "Spring sees a hidden metadata class"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2997,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-EXCEPTION-ADVICE-REFUSAL"
         }
       ],
@@ -4006,14 +4006,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 977,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 984,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "Spring sees a hidden metadata class"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3007,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-EXCEPTION-GENERIC-REFUSAL"
         }
       ],
@@ -4046,14 +4046,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 977,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 984,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "Spring sees a hidden metadata class"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3017,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-EXCEPTION-STATIC-REFUSAL"
         }
       ],
@@ -4086,14 +4086,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 977,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 984,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "Spring sees a hidden metadata class"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3027,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-EXCEPTION-INTERFACE-REFUSAL"
         }
       ],
@@ -4126,14 +4126,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1204,
-          "sha256": "7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695",
+          "line": 1211,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "Final added fields can be read"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3037,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-JACKSON-FINAL-REFUSAL"
         }
       ],
@@ -4165,7 +4165,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3047,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-ENDPOINT-PUT"
         }
       ],
@@ -4194,7 +4194,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3057,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-ENDPOINT-PATCH"
         }
       ],
@@ -4223,7 +4223,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3067,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-ENDPOINT-DELETE"
         }
       ],
@@ -4252,7 +4252,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3077,
-          "sha256": "a9e29642aa13caa725b53b6a7d2532db70a1215b3c6ba68c1da9527511826bb0",
+          "sha256": "6cdc0282127c3dad34b14b9bee7a6cdfdb1213a14a2aa457203113f978262f61",
           "quote": "### P3B-ENDPOINT-REQUEST-MAPPING"
         }
       ],
@@ -5115,7 +5115,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2563,
-          "sha256": "a99662b09cb13a8f55b4358d1f75c4608f3c73476683d2951dfbbda0210d1e0a",
+          "sha256": "9b816456389e614159d991ea20bc284187a4452a61a4d3182a6d90be44b6367d",
           "quote": "### P3B-EXCEPTION-MODERN"
         }
       ],
@@ -5640,14 +5640,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 993,
-          "sha256": "59163b49706fdcd03f88cbb73ce595372b151e45d9e64609ccd0d0ab50946130",
+          "line": 1014,
+          "sha256": "c6ba104627d81ae1033b893d8fca536bdd11fa6263135d8f333d007d707ceff0",
           "quote": "Method-body saves on registered MVC interceptors"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2705,
-          "sha256": "a99662b09cb13a8f55b4358d1f75c4608f3c73476683d2951dfbbda0210d1e0a",
+          "sha256": "9b816456389e614159d991ea20bc284187a4452a61a4d3182a6d90be44b6367d",
           "quote": "### P3B-INTERCEPTOR-LIMIT"
         }
       ],

@@ -100,8 +100,9 @@ cp ~/Library/Application\ Support/JetBrains/IntelliJIdea&lt;sürüm&gt;/plugins/
             <li>Bu iki ayar zaten varsa değerlerini silmeyin; ajanı mevcut değerin sonuna ekleyin. Özellikle <code>tomcat.debugjavaoptions</code> genelde <code>-Xdebug</code> ve <code>-Xrunjdwp:...</code> gibi debug bayraklarını taşır, silerseniz debug çalışmaz.</li>
             <li>Her iki satırda da yalnızca bir tane <code>-javaagent:...reclazz-agent.jar</code> olsun.</li>
         </ol>
-<pre><code>tomcat.javaoptions=&lt;mevcut değerler&gt; -javaagent:/Users/ad/.reclazz/agent/reclazz-agent.jar=hybrisHome=/tam/yol/hybris,autoCompile=true
-tomcat.debugjavaoptions=&lt;mevcut debug bayrakları&gt; -javaagent:/Users/ad/.reclazz/agent/reclazz-agent.jar=hybrisHome=/tam/yol/hybris,autoCompile=true</code></pre>
+<pre><code>tomcat.javaoptions=&lt;mevcut değerler&gt; -javaagent:/Users/ad/.reclazz/agent/reclazz-agent.jar=autoCompile=true
+tomcat.debugjavaoptions=&lt;mevcut debug bayrakları&gt; -javaagent:/Users/ad/.reclazz/agent/reclazz-agent.jar=autoCompile=true</code></pre>
+        <p><code>hybrisHome=</code>, <code>hybrisserver.sh</code> ile başlatmada isteğe bağlıdır: ajan kurulumu SAP Commerce'in kendi <code>HYBRIS_BIN_DIR</code> bilgisinden bulur. JVM'i başka yolla başlatıyorsanız veya bilinçli bir override istiyorsanız kullanın. Açık değer çakışırsa uyarı verilir ve açık değer korunur. Managed Reinstall bu gereksiz argümanı çıkarır; doğrudan IDE başlatma ve attach açık yolu korur.</p>
         <p><code>autoCompile=true</code> kaydettiğiniz Java dosyasını <code>ant build</code> beklemeden ajana derletir. Elle eklenen satır başlangıç varsayımıdır; IDE ajana bağlandığında yukarıdaki altı canlı seçenek Settings'teki kayıtlı değerlerle eşitlenir. IDE bağlantısı yoksa başlangıç satırı geçerlidir. Canlı değişiklik satırı yeniden yazmaz. Satırlar makineye özel yol içerir; <code>local.properties</code> git'te tutuluyorsa commit etmeyin.</p>
 
         <h3 id="manuel-3">Manuel 3. IntelliJ'de Reclazz'ı açın (otomatik kurulum olmadan)</h3>

@@ -231,8 +231,15 @@ Edit `hybris/config/local.properties` and add the agent to `tomcat.javaoptions`,
 **Any JDK 17+ (works for structural reloads too):**
 
 ```properties
-tomcat.javaoptions=-javaagent:/path/to/reclazz-agent.jar=hybrisHome=/path/to/hybris
+tomcat.javaoptions=-javaagent:/path/to/reclazz-agent.jar
 ```
+
+`hybrisHome=` is optional under `hybrisserver.sh`: the agent reads SAP Commerce's
+own `HYBRIS_BIN_DIR` startup property. Use the explicit override when starting the
+JVM another way or deliberately selecting a different installation. The detected
+source is logged; a conflicting explicit home warns and still wins. Managed
+Reinstall omits this redundant argument; direct IDE launch and attach retain it.
+Other options stay as startup defaults, including while no IDE is connected.
 
 Structural hot-reload (adding/removing methods and fields) works on any
 JDK 17+ via Reclazz's companion-class reloader, no extra JVM flags
@@ -246,7 +253,7 @@ below for details.
 **JetBrains Runtime / DCEVM (full reflective visibility):**
 
 ```properties
-tomcat.javaoptions=-javaagent:/path/to/reclazz-agent.jar=hybrisHome=/path/to/hybris -XX:+AllowEnhancedClassRedefinition
+tomcat.javaoptions=-javaagent:/path/to/reclazz-agent.jar -XX:+AllowEnhancedClassRedefinition
 ```
 
 Enhanced redefinition applies structural changes to the original
@@ -256,7 +263,7 @@ members without restart.
 > **Tip:** If you already have debug options configured, you can append the agent to `tomcat.debugjavaoptions` instead. This property is applied when you start the server in debug mode:
 >
 > ```properties
-> tomcat.debugjavaoptions=-javaagent:/path/to/reclazz-agent.jar=hybrisHome=/path/to/hybris -Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,address=8000,suspend=n
+> tomcat.debugjavaoptions=-javaagent:/path/to/reclazz-agent.jar -Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,address=8000,suspend=n
 > ```
 
 ### Finding the Agent JAR Path
@@ -285,12 +292,12 @@ The location of `reclazz-agent.jar` depends on how you installed Reclazz:
 Arguments are passed as a comma-separated string after the `=` sign:
 
 ```properties
--javaagent:/path/to/reclazz-agent.jar=hybrisHome=/opt/hybris,watchExtensions=mycore;mystorefront,autoImpex=true,verbose=true
+-javaagent:/path/to/reclazz-agent.jar=watchExtensions=mycore;mystorefront,autoImpex=true,verbose=true
 ```
 
 | Argument | Default | Description |
 |---|---|---|
-| `hybrisHome` | auto-detect | Absolute path to the `hybris/` directory |
+| `hybrisHome` | auto-detect | Optional explicit installation override; SAP startup supplies `HYBRIS_BIN_DIR`; conflicting explicit override wins with a warning |
 | `watchExtensions` | all custom | Semicolon-separated extension names to watch (empty = all) |
 | `excludePatterns` | (none) | Semicolon-separated glob patterns to exclude (e.g., `*Test.class;*Mock*`) |
 | `autoCompile` | `false` | Compile `.java` files internally instead of watching `.class` files |

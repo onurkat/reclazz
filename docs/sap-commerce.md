@@ -35,12 +35,17 @@ very regeneration that used to remove it.
    breaks debugging.
 
    ```properties
-   tomcat.javaoptions=<your existing options> -javaagent:/abs/path/reclazz-agent.jar=platform=hybris,hybrisHome=${HYBRIS_HOME},autoCompile=true
-   tomcat.debugjavaoptions=<your existing debug options> -javaagent:/abs/path/reclazz-agent.jar=platform=hybris,hybrisHome=${HYBRIS_HOME},autoCompile=true
+   tomcat.javaoptions=<your existing options> -javaagent:/abs/path/reclazz-agent.jar=platform=hybris,autoCompile=true
+   tomcat.debugjavaoptions=<your existing debug options> -javaagent:/abs/path/reclazz-agent.jar=platform=hybris,autoCompile=true
    ```
 
-   `platform=hybris` is optional (the agent infers it from `hybrisHome`), but
-   naming it is unambiguous. On JetBrains Runtime or DCEVM add
+   `platform=hybris` and `hybrisHome=` are optional under `hybrisserver.sh`: the
+   agent detects SAP Commerce from its own `HYBRIS_BIN_DIR` startup property.
+   Set `hybrisHome=` for a JVM started another way or an intentional override;
+   a conflict warns but preserves that override. Reinstall omits it only from
+   the managed Tanuki line; direct IDE launch and attach keep it. Other options
+   remain startup defaults before an IDE connects and while it is absent.
+   On JetBrains Runtime or DCEVM add
    `-XX:+AllowEnhancedClassRedefinition` after the flag for full structural
    reloads; on JDK 24 and newer add `--sun-misc-unsafe-memory-access=allow` so
    appending an enum constant keeps working (do not add it on a JDK older than

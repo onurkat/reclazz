@@ -163,13 +163,15 @@ object AgentJarLocator {
         }
     }
 
-    fun buildAgentArgs(project: Project, settings: ReclazzSettings.State): String {
+    fun buildAgentArgs(project: Project, settings: ReclazzSettings.State, includeHybrisHome: Boolean = true): String {
         val args = mutableListOf<String>()
 
         // Platform-specific: Hybris home
         val hybrisHome = HybrisProjectDetector.findHybrisHome(project)
         if (hybrisHome != null) {
-            args.add("hybrisHome=$hybrisHome")
+            // Direct IDE/attach JVMs may have no SAP startup properties. Only the
+            // managed Tanuki installer can rely on the wrapper's HYBRIS_BIN_DIR.
+            if (includeHybrisHome) args.add("hybrisHome=$hybrisHome")
             // Hybris-specific settings
             if (settings.watchExtensions.isNotBlank()) {
                 args.add("watchExtensions=${settings.watchExtensions}")

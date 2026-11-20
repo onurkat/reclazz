@@ -38,6 +38,7 @@ class NewAgentSettingsRoundTripTest : BasePlatformTestCase() {
             val expected = setOf("autoSolrReindex=true", "autoUpdateRunningSystem=true", "impexAllowRemove=true", "backofficeConfigReset=false",
                 "reloadBoundary=request", "structuralReload=false", "resetStatics=true", "excludeClasses=com.example.Legacy*;com.example.Old")
             val args = AgentJarLocator.buildAgentArgs(layout.project, settings.state)
+            expectTrue(args.contains("hybrisHome=${layout.home}"), "direct IDE JVM may have no SAP startup properties")
             expectFalse(args.contains("injectIntoTests"), "IDE test preference is not an agent option")
             expectTrue(args.split(',').containsAll(expected), args)
             val jar = File("/synthetic tools/reclazz-agent.jar")
@@ -50,6 +51,7 @@ class NewAgentSettingsRoundTripTest : BasePlatformTestCase() {
             manager.addEventListener(listener)
             try {
                 val attach = JvmAttacher.buildAttachArgs(layout.project, settings.state)
+                expectTrue(attach.contains("hybrisHome=${layout.home}"), "attach must retain its known project home")
                 expectTrue(attach.split(',').containsAll(expected - "reloadBoundary=request"))
                 expectFalse(attach.contains("reloadBoundary="))
                 expectTrue(events.single().message.contains("Dynamic attach uses immediate reload"))
@@ -58,7 +60,9 @@ class NewAgentSettingsRoundTripTest : BasePlatformTestCase() {
             val result = HybrisAgentInstaller.install(layout.project) { jar }
             expectTrue(result is HybrisAgentInstaller.Result.Success, result.toString())
             val installed = HybrisPropertyFiles.readProperty(layout.home.resolve("config/local.properties"), "tomcat.javaoptions")!!
-            expectEquals(HybrisAgentInstaller.agentArgument("${jar.absolutePath}=$args"), installed)
+            val managed=args.split(',').filterNot { it.startsWith("hybrisHome=") }.joinToString(",")
+            expectEquals(HybrisAgentInstaller.agentArgument("${jar.absolutePath}=$managed"), installed)
+            expectFalse(installed.contains("hybrisHome="))
         }
     }
 

@@ -24,12 +24,15 @@ public class HybrisPlatformContext implements PlatformContext {
 
     private final Path hybrisHome;
     private final AgentConfig config;
+    private final String homeSource;
     private HybrisContext hybrisContext;
     private ClasspathResolver classpathResolver;
 
     public HybrisPlatformContext(Path hybrisHome, AgentConfig config) {
-        this.hybrisHome = hybrisHome;
-        this.config = config;
+        this(hybrisHome,config,config.getHybrisHome()!=null?"hybrisHome=":"provided context");
+    }
+    HybrisPlatformContext(Path hybrisHome,AgentConfig config,String homeSource) {
+        this.hybrisHome=hybrisHome;this.config=config;this.homeSource=homeSource;
     }
 
     @Override
@@ -41,7 +44,7 @@ public class HybrisPlatformContext implements PlatformContext {
     public void initialize() throws Exception {
         hybrisContext = new HybrisContext(hybrisHome);
         hybrisContext.initialize();
-        StatusReporter.info("Hybris home: " + hybrisHome);
+        StatusReporter.info("Hybris home: " + hybrisHome + " (from " + homeSource + ")");
         StatusReporter.info("Platform version: " + platformVersion());
         StatusReporter.info("Found " + hybrisContext.getExtensions().size() + " extensions");
     }
