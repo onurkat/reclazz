@@ -110,6 +110,29 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h3>1.8.0</h3>
+        <ul>
+            <li>SAP Commerce runtime options synchronize from Settings on Apply/reconnect. AutoCompile switches compiler/watch roots without restarting; runtime status shows effective options, pending changes and conflicts. Watch extensions still requires restart.</li>
+            <li>Build tooling uses Gradle 9.9.1, IntelliJ Platform Gradle Plugin 2.20.1 and Kotlin 2.3.21 while preserving the IDE 2023.3 API target. Gradle plugin TestKit coverage selects both 8.10.2 and 9.9.1 consumer runtimes.</li>
+            <li>Eligible annotated singletons also retain state when creation setters and callbacks are inherited from unchanged platform/library classes. Previously reloaded watched superclasses or missing superclass baselines still select recreation.</li>
+            <li>Eligible Spring singletons keep their identity and mutable state across business method edits, added methods and supported added-field initializers. Changes to creation, injection or lifecycle code still recreate the bean; reload output names the decision and reason.</li>
+            <li>The file watcher no longer keeps an extra WatchService open for its lifetime; on Linux each one held an inotify instance.</li>
+            <li>Save preparation leaves first-time classes unloaded until instrumentation admission, preserving new component and prepared-entity reload behaviour.</li>
+            <li>Record component changes are refused before record/caller publication, including later consumers of refused factories. Original-shape recovery keeps its restart note until native admission succeeds; startup catch-up preserves the save batch.</li>
+            <li>Boot 4 configuration-property changes pass the scratch binding check, with fallback validator factories closed after successful and rejected checks.</li>
+            <li>Enum switches compiled by javac keep the correct case mapping after adding or reordering cases, including a new switch table for another enum.</li>
+            <li>Jackson 3.1 to 3.3 added fields and setters use the live DTO and virtual storage while preserving mapper access checks and final-field write restrictions.</li>
+            <li>SAP Commerce settings and Install Agent use the resolved installation, including nested layouts and module content roots when configuration files are kept elsewhere.</li>
+            <li>Added getter serialization works with Jackson 3.3.</li>
+            <li>SAP Commerce compilation keeps bootstrap-generated DTO/model classes out of extension output and removes proven stale copies before codegen so combined XML and Java saves compile.</li>
+            <li>Watcher health and pushed failure reports detect a stopped or stalled watcher, including failure after the agent jar is overwritten.</li>
+            <li>SAP Commerce codegen ignores unchanged generated constants source touches while generated output is held. Already running, byte-identical javac byproducts no longer cause redundant reloads; real constant edits still rebuild consumers.</li>
+            <li>IDE-managed Java test runs skip agent injection by default, with an explicit opt-in in Settings. Server run configurations retain their existing behaviour.</li>
+            <li>Dynamic attach takes current class files as its baseline without replaying changes made since JVM startup; subsequent saves still reload normally.</li>
+            <li>New Spring component registration skips unavailable bean factories and declines annotated non-components before factory-dependent work.</li>
+            <li>Java sources held by missing generated accessors are compiled again after successful SAP Commerce codegen admission, without another source save.</li>
+            <li>On Spring Framework 7, a controller could continue serving an old injected service after reload recreated that service. Stale resolved MVC handlers are now invalidated under the registry lock, including concurrent resolution.</li>
+        </ul>
         <h3>1.7.2</h3>
         <ul>
             <li>Compatible with IntelliJ IDEA 2026.3: the supported range now extends through build <code>263.*</code>. No agent or plugin code changed.</li>

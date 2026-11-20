@@ -6,9 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [1.8.0] - 2026-11-20
+
 ### Changed
 
-- SAP runtime options synchronize from Settings on Apply/reconnect. AutoCompile
+- SAP Commerce runtime options synchronize from Settings on Apply/reconnect. AutoCompile
   switches compiler/watch roots without restarting; runtime status shows effective
   options, pending changes and conflicts. Watch extensions still requires restart.
 
@@ -27,6 +29,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- The file watcher no longer keeps an extra WatchService open for its lifetime;
+  on Linux each one held an inotify instance.
+
 - Save preparation leaves first-time classes unloaded until instrumentation admission,
   preserving new component and prepared-entity reload behaviour.
 
@@ -40,7 +45,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - Enum switches compiled by javac keep the correct case mapping after adding or
   reordering cases, including a new switch table for another enum.
 
-- Jackson 3.1–3.3 added fields and setters use the live DTO and virtual storage
+- Jackson 3.1 to 3.3 added fields and setters use the live DTO and virtual storage
   while preserving mapper access checks and final-field write restrictions.
 
 - SAP Commerce settings and Install Agent use the resolved installation, including

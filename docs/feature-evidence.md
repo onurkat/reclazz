@@ -352,7 +352,7 @@ Unrelated static blocks are not replayed for isolated static initializers.
 
 An updated caller can invoke an added method on the existing receiver.
 
-**Shipped surfaces:** `docs/product-reference.md:21` (SHA-256 `fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `95e1797e9c1c537ecede1f3794d498ab979376ce46c8dbe91781dd0ee52a7637`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md:21` (SHA-256 `fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `e926c90e2af794116d4f1679466026a320ac3059f2c05571d74005e705ef0b74`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -376,7 +376,7 @@ An updated caller can invoke an added method on the existing receiver.
 
 A held Method and an unchanged caller of a removed method get NoSuchMethodError, as after a restart; restoring the method makes both answer with the restored body, and held objects and fields survive.
 
-**Shipped surfaces:** `docs/product-reference.md:21` (SHA-256 `fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `95e1797e9c1c537ecede1f3794d498ab979376ce46c8dbe91781dd0ee52a7637`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md:21` (SHA-256 `fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `e926c90e2af794116d4f1679466026a320ac3059f2c05571d74005e705ef0b74`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -400,7 +400,7 @@ A held Method and an unchanged caller of a removed method get NoSuchMethodError,
 
 Original members removed by reload disappear from native reflection scans.
 
-**Shipped surfaces:** `docs/product-reference.md:21` (SHA-256 `fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `95e1797e9c1c537ecede1f3794d498ab979376ce46c8dbe91781dd0ee52a7637`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md:21` (SHA-256 `fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `e926c90e2af794116d4f1679466026a320ac3059f2c05571d74005e705ef0b74`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -424,7 +424,7 @@ Original members removed by reload disappear from native reflection scans.
 
 Restoring an original removed member makes it visible and callable again.
 
-**Shipped surfaces:** `docs/product-reference.md:21` (SHA-256 `fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `95e1797e9c1c537ecede1f3794d498ab979376ce46c8dbe91781dd0ee52a7637`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md:21` (SHA-256 `fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `e926c90e2af794116d4f1679466026a320ac3059f2c05571d74005e705ef0b74`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -448,7 +448,7 @@ Restoring an original removed member makes it visible and callable again.
 
 A removed original field is hidden while a held Field and unchanged caller retain its value.
 
-**Shipped surfaces:** `docs/product-reference.md:21` (SHA-256 `fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `95e1797e9c1c537ecede1f3794d498ab979376ce46c8dbe91781dd0ee52a7637`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md:21` (SHA-256 `fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `e926c90e2af794116d4f1679466026a320ac3059f2c05571d74005e705ef0b74`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -472,7 +472,7 @@ A removed original field is hidden while a held Field and unchanged caller retai
 
 Direct watched cross-class instance-field reads and writes share the owning object store on the recorded declaring-type paths.
 
-**Shipped surfaces:** `docs/usage.md:3489` (SHA-256 `7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695`); `docs/product-reference.md:603` (SHA-256 `fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5`); `CHANGELOG.md:864` (SHA-256 `f13d5623ac5fd08ab70173bb722f8856d9ac92b38408fc1623dc7e738727f4d0`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:3489` (SHA-256 `7dafccf8a9fce9cb9e382cd4247a907d0d26ad5edee7e2d28a08cc93d64ff695`); `docs/product-reference.md:603` (SHA-256 `fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5`); `CHANGELOG.md:869` (SHA-256 `a43172e5733d34ee56b488b38a534bbef5363ea517f8ed66bd294c8d7c478fbc`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -736,7 +736,7 @@ Advertised enhanced-JVM added/removed interfaces require their own native accept
 
 Reclazz preserves original hierarchy, applies eligible bodies, pins dependent methods and refuses unsafe signatures.
 
-**Shipped surfaces:** `docs/product-reference.md:29` (SHA-256 `fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `95e1797e9c1c537ecede1f3794d498ab979376ce46c8dbe91781dd0ee52a7637`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md:29` (SHA-256 `fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `e926c90e2af794116d4f1679466026a320ac3059f2c05571d74005e705ef0b74`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -880,7 +880,7 @@ Load-time transformation retains selected reflection metadata in component fixtu
 
 Original serialVersionUID and selected no-agent-to-transformed deserialization have component evidence.
 
-**Shipped surfaces:** `docs/product-reference.md:693` (SHA-256 `fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5`); `src/main/resources/META-INF/plugin.xml:84` (SHA-256 `95e1797e9c1c537ecede1f3794d498ab979376ce46c8dbe91781dd0ee52a7637`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md:693` (SHA-256 `fa1197db566bc573f9c6ac01080b411af7e35c75e380307c35b27aa671c299a5`); `src/main/resources/META-INF/plugin.xml:84` (SHA-256 `e926c90e2af794116d4f1679466026a320ac3059f2c05571d74005e705ef0b74`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -1230,7 +1230,7 @@ A plain singleton is recreated and loses mutable instance state when a construct
 
 A live manually wired singleton holder is repointed to the recreated bean.
 
-**Shipped surfaces:** `src/main/resources/META-INF/plugin.xml:47` (SHA-256 `95e1797e9c1c537ecede1f3794d498ab979376ce46c8dbe91781dd0ee52a7637`); this block (digest in JSON).
+**Shipped surfaces:** `src/main/resources/META-INF/plugin.xml:47` (SHA-256 `e926c90e2af794116d4f1679466026a320ac3059f2c05571d74005e705ef0b74`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2132,7 +2132,7 @@ Fixed composed policy markers enforce saved native pre/post authorization throug
 
 Resolved method-security cache entries are refilled from fresh Method objects.
 
-**Shipped surfaces:** `src/main/resources/META-INF/plugin.xml:52` (SHA-256 `95e1797e9c1c537ecede1f3794d498ab979376ce46c8dbe91781dd0ee52a7637`); this block (digest in JSON).
+**Shipped surfaces:** `src/main/resources/META-INF/plugin.xml:52` (SHA-256 `e926c90e2af794116d4f1679466026a320ac3059f2c05571d74005e705ef0b74`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2154,7 +2154,7 @@ Resolved method-security cache entries are refilled from fresh Method objects.
 
 Edited Secured policy is enforced on real calls.
 
-**Shipped surfaces:** `src/main/resources/META-INF/plugin.xml:52` (SHA-256 `95e1797e9c1c537ecede1f3794d498ab979376ce46c8dbe91781dd0ee52a7637`); this block (digest in JSON).
+**Shipped surfaces:** `src/main/resources/META-INF/plugin.xml:52` (SHA-256 `e926c90e2af794116d4f1679466026a320ac3059f2c05571d74005e705ef0b74`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2176,7 +2176,7 @@ Edited Secured policy is enforced on real calls.
 
 Edited web security configuration rebuilds a live filter chain and changes route authorization.
 
-**Shipped surfaces:** `src/main/resources/META-INF/plugin.xml:52` (SHA-256 `95e1797e9c1c537ecede1f3794d498ab979376ce46c8dbe91781dd0ee52a7637`); this block (digest in JSON).
+**Shipped surfaces:** `src/main/resources/META-INF/plugin.xml:52` (SHA-256 `e926c90e2af794116d4f1679466026a320ac3059f2c05571d74005e705ef0b74`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2220,7 +2220,7 @@ Reloading an annotated class evicts existing native caches.
 
 Ordinary registration/factories/injection/AOP watcher behavior is established on Spring 6 too.
 
-**Shipped surfaces:** `src/main/resources/META-INF/plugin.xml:27` (SHA-256 `95e1797e9c1c537ecede1f3794d498ab979376ce46c8dbe91781dd0ee52a7637`); this block (digest in JSON).
+**Shipped surfaces:** `src/main/resources/META-INF/plugin.xml:27` (SHA-256 `e926c90e2af794116d4f1679466026a320ac3059f2c05571d74005e705ef0b74`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
