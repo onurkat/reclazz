@@ -73,3 +73,8 @@ tasks.test {
     systemProperty("reclazz.mcp.releaseChecksum", releaseChecksum.get().asFile.absolutePath)
     systemProperty("reclazz.mcp.releaseVersion", project.version.toString())
 }
+
+// Sources are UTF-8; a Windows runner defaults javac to windows-1252.
+tasks.withType<JavaCompile>().configureEach {
+    options.encoding = "UTF-8"
+}

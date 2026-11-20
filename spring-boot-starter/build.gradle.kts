@@ -111,3 +111,8 @@ val centralBundle = tasks.register("centralBundle", Zip::class) {
     archiveFileName.set("reclazz-spring-boot-starter-${project.version}-central-bundle.zip")
     destinationDirectory.set(layout.buildDirectory)
 }
+
+// Sources are UTF-8; a Windows runner defaults javac to windows-1252.
+tasks.withType<JavaCompile>().configureEach {
+    options.encoding = "UTF-8"
+}

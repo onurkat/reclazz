@@ -52,3 +52,8 @@ tasks.processResources {
         expand("version" to project.version.toString())
     }
 }
+
+// Sources are UTF-8; a Windows runner defaults javac to windows-1252.
+tasks.withType<JavaCompile>().configureEach {
+    options.encoding = "UTF-8"
+}
