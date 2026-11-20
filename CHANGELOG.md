@@ -30,6 +30,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Spring Data repository type lookups remain discoverable while a warm FactoryBean
+  is recreated, preventing concurrent requests from retaining an empty type cache.
+
 - A refused constructor refresh no longer warns or marks receipts unverified
   when its constructor bodies are unchanged. Refused constructor edits keep
   their warning and restart concern across later saves. Refused static-initializer

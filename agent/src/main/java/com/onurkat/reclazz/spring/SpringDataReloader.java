@@ -73,17 +73,19 @@ public class SpringDataReloader {
                     // An existing factory is not proof its product is warm. Evict
                     // the factory's old metadata without constructing a cold product;
                     // first access will create the updated factory/product normally.
-                    destroy.invoke(beanFactory, name);
-                    if (old == null) continue;
-                    Object replacement = appContext.getClass().getMethod("getBean", String.class).invoke(appContext, name);
-                    // A concurrent lookup while the factory was creating can
-                    // cache an empty type result. Destruction clears it BEFORE
-                    // that window; clear again after the warm product exists.
-                    clearTypes.invoke(beanFactory);
-                    if (!reloadedClass.isInstance(replacement))
-                        throw new IllegalStateException("recreated product does not match repository type");
-                    if (old != replacement) replacements.put(old, replacement);
-                    refreshed.add(name);
+                    try (var productType = preserveProductType(beanFactory, name, owner, old, factoryType)) {
+                        destroy.invoke(beanFactory, name);
+                        if (old == null) continue;
+                        Object replacement = appContext.getClass().getMethod("getBean", String.class).invoke(appContext, name);
+                        // Clearing cannot cancel a lookup that computed an empty
+                        // result before the clear and publishes it afterwards.
+                        // The scoped product type prevents that empty candidate.
+                        clearTypes.invoke(beanFactory);
+                        if (!reloadedClass.isInstance(replacement))
+                            throw new IllegalStateException("recreated product does not match repository type");
+                        if (old != replacement) replacements.put(old, replacement);
+                        refreshed.add(name);
+                    }
                 } catch (Exception e) {
                     StatusReporter.warn("Spring Data repository reload failed for " + name + ": " + Failures.describe(e));
                 }
@@ -91,6 +93,27 @@ public class SpringDataReloader {
         } catch (Exception e) {
             StatusReporter.warn("Spring Data repository reload failed: " + Failures.describe(e));
         }
+    }
+
+    /** Keep the known warm factory product discoverable while its owner is absent/creating. */
+    private static AutoCloseable preserveProductType(Object beanFactory, String name, Object owner,
+                                                       Object product, Class<?> factoryType) throws Exception {
+        if (product == null || !factoryType.isInstance(owner)) return () -> { };
+        Object definition = required(beanFactory, "getMergedBeanDefinition", String.class).invoke(beanFactory, name);
+        String attribute = (String) factoryType.getField("OBJECT_TYPE_ATTRIBUTE").get(null);
+        Method get = required(definition, "getAttribute", String.class);
+        // A declared Class/ResolvableType may carry more precise generic metadata.
+        if (get.invoke(definition, attribute) != null) return () -> { };
+        Object reported = factoryType.getMethod("getObjectType").invoke(owner);
+        if (!(reported instanceof Class<?> type) || !type.isInstance(product))
+            throw new IllegalStateException("warm factory product type is unavailable");
+        Method set = required(definition, "setAttribute", String.class, Object.class);
+        Method remove = required(definition, "removeAttribute", String.class);
+        set.invoke(definition, attribute, type);
+        return () -> {
+            // Do not remove metadata another participant replaced in the meantime.
+            if (get.invoke(definition, attribute) == type) remove.invoke(definition, attribute);
+        };
     }
 
     /** Marker assignability covers the type itself and every inherited interface. */

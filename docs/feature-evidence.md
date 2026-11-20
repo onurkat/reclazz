@@ -472,7 +472,7 @@ A removed original field is hidden while a held Field and unchanged caller retai
 
 Direct watched cross-class instance-field reads and writes share the owning object store on the recorded declaring-type paths.
 
-**Shipped surfaces:** `docs/usage.md:3496` (SHA-256 `998fb600d2d78f0d3996e7ba51b7c9402d1c1dcd951f8cb227a6a14ab85e07ad`); `docs/product-reference.md:608` (SHA-256 `c044331cf98e075708faa9116f9855c69110a658f65c830ae4157f89eabe1d59`); `CHANGELOG.md:912` (SHA-256 `6aff64a811799044703860611aad67fdd636af7943942133cc20d0641ec93ca3`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:3496` (SHA-256 `998fb600d2d78f0d3996e7ba51b7c9402d1c1dcd951f8cb227a6a14ab85e07ad`); `docs/product-reference.md:608` (SHA-256 `c044331cf98e075708faa9116f9855c69110a658f65c830ae4157f89eabe1d59`); `CHANGELOG.md:915` (SHA-256 `cc194d28626dddc4c547f34c35266d693f0361f073cde1d2ae77c8acf9f4965e`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 

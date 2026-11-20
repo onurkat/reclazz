@@ -88,15 +88,16 @@ class SpringDataNativeQueryTest {
 
     private static int factories;
     private static Class<?> lookupDuringCreation;
-    private static int lookupResult = -1;
+    private static String[] lookupResult;
 
     @Test void typeLookupDuringFactoryRecreationDoesNotPoisonFutureLookup() {
         try (var ctx = context()) {
             ctx.getBean(Records.class);
-            lookupDuringCreation = Records.class; lookupResult = -1;
+            lookupDuringCreation = Records.class; lookupResult = null;
             try {
                 assertTrue(new SpringDataReloader(SpringDataRefreshTest.platform(ctx)).reloadRepository(Records.class));
-                assertEquals(0, lookupResult, "negative witness: lookup while factory is creating can see no product type");
+                // The warm product type stays discoverable while its factory is recreated.
+                assertArrayEquals(new String[]{"records"}, lookupResult);
                 assertNotNull(ctx.getBean(Records.class), "a transient type lookup must not remain cached after recreation");
             } finally { lookupDuringCreation = null; }
         }
@@ -127,7 +128,7 @@ class SpringDataNativeQueryTest {
     private static <T extends org.springframework.data.repository.Repository<Record,Long>> JpaRepositoryFactoryBean<T,Record,Long>
     factory(GenericApplicationContext ctx,Class<T> type) {
         factories++;
-        if (type == lookupDuringCreation) lookupResult = ctx.getBeanNamesForType(type).length;
+        if (type == lookupDuringCreation) lookupResult = ctx.getBeanNamesForType(type);
         var f=new JpaRepositoryFactoryBean<T,Record,Long>(type);
         f.setEntityManager(SharedEntityManagerCreator.createSharedEntityManager(ctx.getBean(EntityManagerFactory.class)));
         f.setEntityPathResolver(ctx.getBeanProvider(org.springframework.data.querydsl.EntityPathResolver.class));
