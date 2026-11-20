@@ -1,5 +1,6 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import java.io.ByteArrayOutputStream
+import java.io.File
 import org.gradle.kotlin.dsl.support.serviceOf
 
 /**
@@ -364,6 +365,7 @@ dependencies {
     add(springSixTests.runtimeOnlyConfigurationName, "org.junit.platform:junit-platform-launcher")
 }
 val springSixTest = tasks.register("springSixTest", Test::class) {
+    exclude("**/BootLoggingStartupBaselineSevenTest*")
     group = "verification"
     description = "Real Spring 6 / Jakarta lifecycle regressions on an isolated dependency graph"
     useJUnitPlatform()
@@ -421,6 +423,7 @@ dependencies {
     add(springSevenTests.runtimeOnlyConfigurationName, "org.junit.platform:junit-platform-launcher:6.1.3")
 }
 val springSevenTest = tasks.register("springSevenTest", Test::class) {
+    exclude("**/BootLoggingStartupBaselineSixTest*")
     systemProperty("reclazz.jackson3.expectedVersion", "3.3.0")
     group = "verification"
     description = "Focused Spring 7 / Jakarta lifecycle regressions on an isolated dependency graph"
@@ -874,4 +877,51 @@ tasks.register("testShardReport") {
             "testDependencies" to task.taskDependencies.getDependencies(task)
                 .filterIsInstance<Test>().map { it.path }.sorted())))
     }
+}
+
+// Isolated logging backends for R27 child-process fixtures; never shipped.
+val loggingTestBackends = linkedMapOf<String, org.gradle.api.artifacts.Configuration>()
+for ((line, versions) in mapOf(
+    "Boot27" to listOf("1.2.12", "2.17.2", "1.7.36"),
+    "Boot33" to listOf("1.5.11", "2.23.1", "2.0.16"),
+    "Boot41" to listOf("1.5.38", "2.25.5", "2.0.20")
+)) {
+    for (backend in listOf("Logback", "Log4j")) {
+        val isolated = configurations.create("logging${line}${backend}TestRuntime") {
+            isCanBeConsumed = false
+            isCanBeResolved = true
+        }
+        loggingTestBackends[line + backend] = isolated
+        if (backend == "Logback") dependencies.add(isolated.name, "ch.qos.logback:logback-classic:${versions[0]}")
+        else {
+            dependencies.add(isolated.name, "org.apache.logging.log4j:log4j-core:${versions[1]}")
+            dependencies.add(isolated.name, "org.apache.logging.log4j:${if (line == "Boot27") "log4j-slf4j-impl" else "log4j-slf4j2-impl"}:${versions[1]}")
+        }
+        dependencies.add(isolated.name, "org.slf4j:slf4j-api:${versions[2]}")
+    }
+}
+for ((taskName, line) in mapOf("test" to "Boot27", "unitTest" to "Boot27", "springSixTest" to "Boot33", "springSevenTest" to "Boot41")) {
+    tasks.named<Test>(taskName) {
+        // Resolve only when this focused test task actually runs.
+        doFirst {
+            for (backend in listOf("Logback", "Log4j"))
+                systemProperty("reclazz.logging.${backend.lowercase()}.classpath", loggingTestBackends.getValue(line + backend).asPath)
+        }
+    }
+}
+tasks.register("resolveLoggingTestBackends") {
+    group = "verification"
+    description = "Resolve the isolated logging fixture backends without executing tests"
+    doLast {
+        val report = providers.gradleProperty("reclazz.loggingReport").orNull
+            ?: error("Supply -Preclazz.loggingReport=<file>")
+        file(report).writeText(loggingTestBackends.entries.joinToString("\n") { (name, config) ->
+            name + "=" + config.files.sortedBy { it.name }.joinToString(File.pathSeparator)
+        } + "\n")
+        logger.lifecycle("Resolved ${loggingTestBackends.size} isolated logging test backends")
+    }
+}
+
+tasks.withType<Test>().configureEach {
+    providers.gradleProperty("reclazz.loggingEvidence").orNull?.let { systemProperty("reclazz.logging.evidence", it) }
 }

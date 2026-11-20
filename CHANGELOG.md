@@ -39,6 +39,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   added overloads keep following later body edits. Inherited added instance and
   static fields resolve through subclass references while preserving field shadowing.
 
+- Removing a Logback/Log4j2 property level restores its pre-edit state; Boot
+  startup properties restore the logging-file/debug baseline. SAP Commerce
+  startup pairs reset when their in-memory declaration is verified. Root
+  changes target the real root logger, unrelated console levels stay intact,
+  and unprovable owners remain pending with a precise warning. Missing baselines
+  receive one restart warning and ledger note; retries preserve applied levels.
+  Boot logger groups reset their members, fresh edits replace obsolete baselines
+  after logging reconfiguration, and SAP Commerce removal honors lower property
+  layers while non-level logging keys retain their restart warning.
+
 ## [1.8.0] - 2026-11-20
 
 ### Changed

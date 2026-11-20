@@ -220,8 +220,10 @@ than either.
   are checked before singleton recreation too. See [computed fields](usage.md#computed-value-fields)
 - **Logging configuration**: `logging.level.<logger>` in a properties file, or a
   saved `logback.xml` / `log4j2.xml`, is applied to the running logging context.
-  Raising a logger to debug is one of the most common reasons to restart a
-  server and one of the least necessary
+  Removing a supported level key restores its recorded pre-edit level, or its
+  pre-property startup level on Boot. Earlier console overrides are preserved;
+  unknown baselines or ownership hold the reset with a reason. See
+  [logger removal](usage.md#yaml-and-removed-configuration-keys)
 - **Auto-detection**: Automatically detects Spring Boot, Maven, and Gradle project layouts
 - **Zero config**: Just add `-javaagent`, no configuration files needed
 - **IntelliJ IDEA plugin**: Auto-injects agent into run configurations, auto-detects JDK and JBR
@@ -484,7 +486,10 @@ Hybris-specific features:
   `log4j2.xml`, as a `log4j2.logger.<key>.name` and `.level` pair. Changing a
   level applies it to the running Log4j2 context, so raising a logger to debug
   no longer costs a restart. Only the loggers the save touched are set, which
-  leaves a level raised from the HAC console alone.
+  leaves a level raised from the HAC console alone. Removing a pair restores
+  the recorded pre-edit level; startup pairs can be removed when their unique
+  in-memory source declaration is verified. Unknown or ambiguous ownership is
+  held with a warning.
 - **Type and enum text**: editing an `<ext>-locales_<iso>.properties` re-reads
   the platform's localization cache, so the new text is served on the next
   lookup. No system update and no database write.

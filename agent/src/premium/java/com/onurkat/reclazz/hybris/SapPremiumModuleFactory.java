@@ -19,6 +19,7 @@ import com.onurkat.reclazz.ui.StatusReporter;
 import com.onurkat.reclazz.ui.Plural;
 import com.onurkat.reclazz.watcher.ChangeEvent;
 import java.lang.instrument.Instrumentation;
+import java.nio.file.Path;
 import java.util.List;
 
 /** Explicit optional module; all automation remains behind core admission. */
@@ -32,6 +33,8 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
         private final PlatformContext platformContext;
         private final PropertyFileSnapshots propertySnapshots;
         private final Instrumentation instrumentation;
+        private final java.util.Set<Path> pendingLoggerMerges=java.util.concurrent.ConcurrentHashMap.newKeySet();
+        private static final String LOGGER_MERGE_PENDING="logger reset pending: lower configuration merge unavailable";
 
         private Assembly(PremiumContext context) {
             this.context = context;
@@ -223,16 +226,20 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
             StatusReporter.info("Config file changed: " + fileName);
             var candidate = fileName.endsWith(".properties") ? propertySnapshots.pending(event.getPath()) : null;
             if (candidate == null) return;
+            java.util.Map<String,String> previous=propertySnapshots.previous(candidate);
             java.util.Set<String> removed = propertySnapshots.removed(candidate);
-            if (!removed.isEmpty()) {
-                // Measured: a key deleted from local.properties kept its value and
-                // the save was reported as "No property values changed".
-                StatusReporter.warn("Removed from " + fileName + ": " + removed + ". The running "
-                        + "configuration keeps " + (removed.size() == 1 ? "its value" : "their values")
-                        + " until a restart, since what a removed key falls back to depends on the other files.");
-                RestartLedger.note(fileName, "removed " + removed + ", still set in the running configuration");
+            var loggerResetKeys=com.onurkat.reclazz.reload.LoggingReloader.resetKeys(previous,removed,candidate.changed().keySet(),candidate.content());
+            var otherRemoved=new java.util.TreeSet<>(removed);otherRemoved.removeIf(Assembly::isLoggingKey);
+            if (!otherRemoved.isEmpty()) {
+                StatusReporter.warn("Removed from " + fileName + ": " + otherRemoved + ". The running configuration keeps its value until a restart, since what a removed key falls back to depends on the other files.");
+                RestartLedger.note(fileName,"removed " + otherRemoved + ", still set in the running configuration");
             }
-            if (candidate.changed().isEmpty()) {
+            propertySnapshots.acceptKeys(candidate,otherRemoved);
+            if(loggerResetKeys.isEmpty()) {
+                pendingLoggerMerges.remove(candidate.file());
+                RestartLedger.resolve(fileName,LOGGER_MERGE_PENDING);
+            }
+            if (candidate.changed().isEmpty() && loggerResetKeys.isEmpty()) {
                 propertySnapshots.accept(candidate);
                 if (removed.isEmpty()) StatusReporter.info("No property values changed.");
                 return;
@@ -253,9 +260,40 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
                         : platformContext.getClass().getClassLoader();
                 HybrisConfigReloader configReloader =
                         new HybrisConfigReloader(platformLoader, propertySnapshots);
-                var propertyResult = configReloader.applyResult(candidate);
+                var deferred=candidate.changed().keySet().stream().filter(Assembly::isLoggingKey).toList();
+                var propertyResult = configReloader.applyResult(candidate,deferred);
                 java.util.List<String> applied = propertyResult.applied();
-                context.applyLoggerLevels(candidate.content(), applied);
+                int loggerSets=context.applyLoggerLevels(candidate.content(), applied);
+                if(propertyResult.reachable()) {
+                    int resetCount=0;
+                    boolean resetVerified=true;
+                    try {
+                        if(!loggerResetKeys.isEmpty()) {
+                            java.util.Map<String,String> effective=new java.util.LinkedHashMap<>(configReloader.effectiveLoggingValues(candidate,removed));
+                            var knownKeys=new java.util.LinkedHashSet<>(previous.keySet());knownKeys.addAll(candidate.content().keySet());
+                            effective.putAll(configReloader.currentValues(knownKeys.stream().filter(Assembly::isLoggingKey).filter(key->!removed.contains(key)).toList()));
+                            resetCount=context.resetLoggerLevels(previous,loggerResetKeys,effective);
+                        }
+                        pendingLoggerMerges.remove(candidate.file());
+                        RestartLedger.resolve(fileName,LOGGER_MERGE_PENDING);
+                    } catch(RuntimeException failure) {
+                        resetVerified=false;
+                        if(pendingLoggerMerges.add(candidate.file())) {
+                            StatusReporter.warn("Logger reset remains pending for "+fileName+"; lower configuration layers could not be verified. Save again to retry.");
+                            RestartLedger.note(fileName,LOGGER_MERGE_PENDING);
+                        }
+                    }
+                    var properties=new java.util.Properties();properties.putAll(candidate.content());
+                    int expectedSets=com.onurkat.reclazz.reload.LoggingReloader.levelsIn(properties,applied).size();
+                    boolean handled=resetVerified && resetCount==com.onurkat.reclazz.reload.LoggingReloader.resetLoggerNames(previous,loggerResetKeys).size()
+                            && loggerSets==expectedSets;
+                    if(handled) {
+                        var acknowledge=new java.util.LinkedHashSet<String>(removed);
+                        applied.stream().filter(Assembly::isLoggingKey).forEach(acknowledge::add);
+                        propertySnapshots.acceptKeys(candidate,acknowledge);
+                    }
+                    if(candidate.changed().isEmpty()) return;
+                }
                 // A no-change save may retry a failed setter; Config acceptance stays independent.
                 java.util.Set<String> replayKeys=new java.util.LinkedHashSet<>(candidate.changed().isEmpty()
                         ? candidate.content().keySet() : candidate.changed().keySet());
@@ -286,9 +324,16 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
             if (platformContext instanceof HybrisPlatformContext) {
                 // Preserve the logger-only fallback when the platform Config API is absent.
                 int levels = context.applyLoggerLevels(candidate.content(), changed.keySet());
-                propertySnapshots.acceptKeys(candidate, changed.keySet().stream()
-                        .filter(Assembly::isLoggingKey).toList());
-                if (levels == 0 || !changed.keySet().stream().allMatch(Assembly::isLoggingKey))
+                int resetCount=context.resetLoggerLevels(previous,loggerResetKeys,candidate.content());
+                var properties=new java.util.Properties();properties.putAll(candidate.content());
+                if(levels==com.onurkat.reclazz.reload.LoggingReloader.levelsIn(properties,changed.keySet()).size()
+                        && resetCount==com.onurkat.reclazz.reload.LoggingReloader.resetLoggerNames(previous,loggerResetKeys).size()) {
+                    var acknowledge=new java.util.LinkedHashSet<>(loggerResetKeys);
+                    changed.keySet().stream().filter(Assembly::isLoggingKey).forEach(acknowledge::add);
+                    propertySnapshots.acceptKeys(candidate,acknowledge);
+                }
+                levels+=resetCount;
+                if (!changed.isEmpty() && (levels == 0 || !changed.keySet().stream().allMatch(Assembly::isLoggingKey)))
                     reportUnconsumedProperties(changed);
                 return;
             }
@@ -427,7 +472,7 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
             reloader.handle(event);
         }
         private static boolean isLoggingKey(String key) {
-            return key.startsWith("logging.level.") || key.startsWith("log4j2.logger.");
+            return com.onurkat.reclazz.reload.LoggingReloader.isLevelKey(key);
         }
     }
 }

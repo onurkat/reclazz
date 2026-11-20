@@ -28,6 +28,8 @@ public interface PremiumContext {
     PropertyFileSnapshots propertySnapshots();
     Instrumentation instrumentation();
     int applyLoggerLevels(Map<String, String> content, Collection<String> keys);
+    default int resetLoggerLevels(Map<String, String> previous, Collection<String> keys,
+                                  Map<String, String> effective) { return 0; }
     boolean requestRunningSystemUpdate();
     /** Configuration keys the platform now answers with new values; consumers that read them once read again. */
     default void propertiesApplied(Collection<String> keys) { }

@@ -57,6 +57,43 @@ public final class SpringPropertyRebinder {
         this.applicationContexts = applicationContexts;
     }
 
+    /** Lower sources for deleted logger keys; the agent overlay cannot be its own fallback. */
+    public Map<String,String> loggerFallbacks(java.util.Collection<String> keys) {
+        Map<String,String> result=new LinkedHashMap<>();
+        for(String key:keys) {
+            String agreed=null;boolean first=true;
+            for(Object context:applicationContexts) {
+                try {
+                    Object environment=PropertyChangeCheck.call(context,"getEnvironment");String value=null;
+                    for(Object source:(Iterable<?>)PropertyChangeCheck.call(environment,"getPropertySources")) {
+                        if(SOURCE_NAME.equals(PropertyChangeCheck.call(source,"getName")))continue;
+                        Object raw=PropertyChangeCheck.call(source,"getProperty",key);
+                        if(raw!=null){value=String.valueOf(raw);break;}
+                    }
+                    if(!first && !java.util.Objects.equals(agreed,value))throw new IllegalStateException("logger lower sources disagree between owners");
+                    agreed=value;first=false;
+                }catch(Exception failure){throw new IllegalStateException("logger lower sources unavailable",failure);}
+            }
+            if(agreed!=null)result.put(key,agreed);
+        }
+        return result;
+    }
+    public void forgetLoggerOverrides(java.util.Collection<String> keys) {
+        for(Object context:applicationContexts)try {
+            Object environment=PropertyChangeCheck.call(context,"getEnvironment");
+            Object sources=PropertyChangeCheck.call(environment,"getPropertySources");
+            Object source=PropertyChangeCheck.call(sources,"get",SOURCE_NAME);
+            if(source==null)continue;
+            Object values=PropertyChangeCheck.call(source,"getSource");
+            if(!(values instanceof Map<?,?> old))throw new IllegalStateException("unknown logger overlay shape");
+            Map<String,Object> next=new LinkedHashMap<>();old.forEach((key,value)->{if(!keys.contains(key))next.put(String.valueOf(key),value);});
+            ClassLoader loader=environment.getClass().getClassLoader();
+            Class<?> type=Class.forName("org.springframework.core.env.MapPropertySource",false,loader);
+            Object replacement=type.getConstructor(String.class,Map.class).newInstance(SOURCE_NAME,next);
+            PropertyChangeCheck.call(sources,"replace",SOURCE_NAME,replacement);
+        }catch(Exception failure){throw new IllegalStateException("logger overlay removal failed",failure);}
+    }
+
     /** Validate first; only completed work can accept the immutable file candidate. */
     public PropertyChangeOutcome apply(Map<String, String> changed) {
         return apply(changed, Runnable::run, () -> { });

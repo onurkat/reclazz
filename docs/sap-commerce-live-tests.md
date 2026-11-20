@@ -372,6 +372,22 @@ file/XML, unknown or oversized sources refuse the group. Plain level maps and
 other ambiguous owners remain refused. Partial failure triggers verified
 rollback; failed rollback reports an error and a restart concern. Several
 contexts without a unique owner remain refused.
+Removing a pair undoes the agent's earlier level edit, including a previous
+console override. For a pair present at server startup, removal requires the
+verified unique in-memory property declaration and removes its exact logger
+configuration, restoring inheritance. Renaming a pair resets its old logger.
+A remaining effective pair for that logger supplies the level instead. The
+platform's own configuration merger resolves lower layers, so deleting a local
+level can reveal the extension's project.properties level. If that merge
+cannot be verified, only the logger reset stays pending; successful native
+property changes and XML scalar consumers still run. Restoring the removed pair
+cancels the pending merge concern; a later independent failure warns again.
+Removal of additivity
+or appender-reference keys is not a level reset and retains its restart warning. Root
+uses the real root configuration and never a named `root` logger. Missing prior
+state, changed configuration and unprovable ownership hold the reset, report
+why, and leave it pending for an identical-save retry.
+
 A cold logger is allowed in a sole existing context. Inherited levels receive
 a named child configuration; parent and root remain unchanged. Discovery covers
 listed contexts plus the initialized selector default, using a read-only

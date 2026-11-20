@@ -106,6 +106,10 @@ public class HybrisConfigReloader {
     }
 
     public Result applyResult(PropertyFileSnapshots.Candidate candidate) {
+        return applyResult(candidate, java.util.Set.of());
+    }
+
+    public Result applyResult(PropertyFileSnapshots.Candidate candidate, java.util.Collection<String> deferAcceptance) {
         if (candidate == null) return new Result(List.of(), List.of(), false);
         var edited = candidate.changed();
         Class<?> config = findConfig();
@@ -147,7 +151,7 @@ public class HybrisConfigReloader {
         } catch (ReflectiveOperationException e) {
             pending.addAll(edited.keySet());
         }
-        snapshots.acceptKeys(candidate, accepted);
+        snapshots.acceptKeys(candidate, accepted.stream().filter(key -> !deferAcceptance.contains(key)).toList());
         if (!pending.isEmpty()) {
             StatusReporter.warn("Property changes not applied: " + pending
                     + ". Unresolved placeholders need platform startup; other failures can be retried by saving.");
@@ -155,6 +159,52 @@ public class HybrisConfigReloader {
                     "property changes still pending: " + pending);
         }
         return new Result(applied, pending, true);
+    }
+
+    /** Fresh platform-native merge for removed logger keys, not the stale runtime override. */
+    public java.util.Map<String,String> effectiveLoggingValues(PropertyFileSnapshots.Candidate candidate,
+                                                               java.util.Collection<String> removed) {
+        var result=new java.util.LinkedHashMap<>(currentLoggingValues());
+        if(removed.isEmpty())return result;
+        Class<?> config=findConfig();
+        if(config==null)throw new IllegalStateException("native logger fallback is unavailable");
+        try {
+            if(!matchesCandidate(candidate))throw new IllegalStateException("logger candidate changed before native merge");
+            Class<?> utility=Class.forName("de.hybris.bootstrap.config.ConfigUtil",false,config.getClassLoader());
+            var merged=new java.util.Properties();
+            Object platform=utility.getMethod("getPlatformConfig",Class.class).invoke(null,config);
+            utility.getMethod("loadRuntimeProperties",java.util.Properties.class,platform.getClass()).invoke(null,merged,platform);
+            if(!matchesCandidate(candidate))throw new IllegalStateException("logger candidate changed during native merge");
+            for(String key:removed)if(com.onurkat.reclazz.reload.LoggingReloader.isLevelKey(key)) {
+                String value=merged.getProperty(key);
+                if(value==null)result.remove(key);else if(!isUnresolved(value))result.put(key,value);
+                else throw new IllegalStateException("unresolved lower logger value");
+            }
+            return java.util.Map.copyOf(result);
+        } catch(ReflectiveOperationException | java.io.IOException unavailable) {
+            throw new IllegalStateException("native logger layers could not be verified",unavailable);
+        }
+    }
+    private static boolean matchesCandidate(PropertyFileSnapshots.Candidate candidate) throws java.io.IOException {
+        var properties=new java.util.Properties();
+        try(var stream=java.nio.file.Files.newInputStream(candidate.file())) {properties.load(stream);}
+        return properties.equals(candidate.content());
+    }
+
+    /** Read only native logger keys; do not expose unrelated configuration values. */
+    public java.util.Map<String,String> currentLoggingValues() {
+        java.util.Map<String,String> values=new java.util.LinkedHashMap<>();
+        Class<?> config=findConfig();if(config==null)return values;
+        try {
+            Object all=config.getMethod("getAllParameters").invoke(null);
+            if(all instanceof java.util.Map<?,?> map)map.forEach((key,value)->{
+                if(key instanceof String name && value instanceof String text
+                        && com.onurkat.reclazz.reload.LoggingReloader.isLevelKey(name) && !isUnresolved(text))values.put(name,text);
+            });
+        }catch(ReflectiveOperationException | RuntimeException unavailable) {
+            // Older/test Config APIs can still answer the requested keys through currentValues.
+        }
+        return java.util.Map.copyOf(values);
     }
 
     /** Read only the requested keys from the active native configuration, without exposing values in logs. */

@@ -2660,9 +2660,33 @@ profile groups or cloud-platform selection requires a restart. Files containing
 other `spring.config.*` or `spring.profiles*` controls are held. New or initially
 empty files with no identifiable Boot source, custom source loaders and changed
 source ownership are outside this path. Applications with Boot file sources do
-not fall back to a global override for an unowned file. SAP configuration removal
-is outside this feature. Removing a logging level without a lower configured
-level still needs a logger reset/restart.
+not fall back to a global override for an unowned file. General SAP configuration
+removal remains outside this feature.
+
+For Logback and Log4j2, removing a supported logger-level key undoes that edit.
+A key added at runtime returns to the logger's recorded pre-edit state, including
+an earlier console override; unrelated console-set loggers stay unchanged.
+A key present at Boot startup returns to its state after the logging file and
+Boot debug/trace defaults, before the explicit `logging.level.*` value. A
+remaining effective key for the same logger takes precedence. Root restores its
+recorded level and is never set to null. This level reset does not rebuild
+appenders or the whole logging context.
+
+Boot startup capture is verified with 2.7.18, 3.3.5 and 4.1.2 on both backends.
+An unprovable owner or retryable verification failure holds the reset; the next
+save retries only unresolved logger keys, preserving successful level changes
+and property bindings. A missing baseline cannot be reconstructed by another
+save: it receives one restart warning and a ledger note, then is acknowledged.
+Editing that level again captures a new baseline. Dynamically attaching after
+startup cannot reconstruct a missing startup baseline. JUL level reset is
+unsupported. A SET with no supported backend is acknowledged after one warning
+and ledger note; it is not repeatedly reported as a new applied edit. Logging group metadata is checked only for saves with logger work. Boot built-in and custom logger groups reset their
+members, preserving a remaining member-level property from another source.
+Reconfiguration invalidates an old baseline; a subsequent level edit captures
+the new one. Repeated saves of an unresolved baseline warn once for that logger.
+SAP Commerce property-pair removal uses the same
+pre-edit record, or a verified, unique in-memory property declaration for a
+pair present at startup; file/XML and ambiguous declarations are held.
 
 Verified in current P5 with Spring Boot 2.7.18, Spring 5.3.39, SnakeYAML 1.30
 and stock SapMachine JDK 17/21 on macOS arm64:

@@ -271,6 +271,66 @@ class SpringPropertyFilesTest {
         }
     }
 
+    @Test void deletedLoggerDataKeepsEachOwnerAndFailedResetCanRetryWithoutRebindingOthers() throws Exception {
+        Path file=file("logging-owned.properties","svc.timeout=10\nlogging.level.fixture=DEBUG\n");
+        try(var first=context(file,"dev");var second=context(file,"dev")) {
+            var reload=new SpringPropertyFiles();Files.writeString(file,"svc.timeout=20\n");
+            var result=reload.apply(file,List.of(first,second),Runnable::run);
+            assertEquals(PropertyChangeOutcome.State.APPLIED,result.outcome().state());assertEquals(2,result.loggerOwners().size());
+            var a=result.loggerOwners().get(0);var b=result.loggerOwners().get(1);
+            assertSame(first,a.applicationContext());assertSame(second,b.applicationContext());
+            assertEquals(Set.of("logging.level.fixture"),a.removedKeys());
+            assertEquals(Map.of("logging.level.fixture","DEBUG"),a.previousLoggingValues());assertTrue(a.effectiveLoggingValues().isEmpty());
+            a.retryLoggerReset().run();
+            var retry=reload.apply(file,List.of(first,second),Runnable::run);
+            assertEquals(Set.of("logging.level.fixture"),retry.loggerOwners().get(0).removedKeys());
+            assertEquals(1,retry.loggerOwners().size());assertSame(first,retry.loggerOwners().get(0).applicationContext());assertValues(first,20);assertValues(second,20);
+        }
+    }
+
+    @Test void loggerGroupMembersKeepEffectiveLevelsFromOtherSources() throws Exception {
+        Path file=file("group.properties","svc.timeout=10\nlogging.level.fixturegroup=DEBUG\n");
+        try(var context=context(file,"dev")) {
+            context.getBeanFactory().registerSingleton(org.springframework.boot.context.logging.LoggingApplicationListener.LOGGER_GROUPS_BEAN_NAME,new org.springframework.boot.logging.LoggerGroups(Map.of("fixturegroup",List.of("fixture.member"))));
+            context.getEnvironment().getPropertySources().addLast(new MapPropertySource("lower",Map.of("logging.level.fixture.member","ERROR")));
+            Files.writeString(file,"svc.timeout=10\n");
+            var result=new SpringPropertyFiles().apply(file,List.of(context),Runnable::run);
+            assertEquals(PropertyChangeOutcome.State.APPLIED,result.outcome().state());
+            assertEquals("fixture.member",result.loggerOwners().get(0).previousLoggingValues().get("logging.group.fixturegroup"));
+            assertEquals("ERROR",result.loggerOwners().get(0).effectiveLoggingValues().get("logging.level.fixture.member"));
+        }
+    }
+
+    @Test void invalidGroupMetadataDoesNotUndoOrMisreportSuccessfulPropertyApplication() throws Exception {
+        Path file=file("broken-group.properties","svc.timeout=10\nlogging.level.fixturegroup=DEBUG\n");
+        try(var context=context(file,"dev")) {
+            context.getBeanFactory().registerSingleton(org.springframework.boot.context.logging.LoggingApplicationListener.LOGGER_GROUPS_BEAN_NAME,
+                    new org.springframework.boot.logging.LoggerGroups(Map.of("fixturegroup",List.of("fixture.member"))));
+            context.getEnvironment().getPropertySources().addLast(new MapPropertySource("invalid-member",Map.of("logging.level.fixture.member","${missing.logger.level}")));
+            var reload=new SpringPropertyFiles();Files.writeString(file,"svc.timeout=20\n");
+            var result=reload.apply(file,List.of(context),Runnable::run);
+            assertValues(context,20);
+            assertEquals(PropertyChangeOutcome.State.APPLIED,result.outcome().state());
+            var retry=reload.apply(file,List.of(context),Runnable::run);
+            assertEquals(PropertyChangeOutcome.State.APPLIED,retry.outcome().state());
+            assertTrue(retry.loggerOwners().get(0).removedKeys().contains("logging.level.fixturegroup"));
+            assertValues(context,20);
+        }
+    }
+
+    @Test void unrelatedPropertySaveDoesNotReadBrokenLoggerGroupMetadata() throws Exception {
+        Path file=file("nonlogging.properties","svc.timeout=10\nlogging.level.fixturegroup=DEBUG\n");
+        try(var context=context(file,"dev")) {
+            context.getBeanFactory().registerSingleton(org.springframework.boot.context.logging.LoggingApplicationListener.LOGGER_GROUPS_BEAN_NAME,
+                    new org.springframework.boot.logging.LoggerGroups(Map.of("fixturegroup",List.of("fixture.member"))));
+            context.getEnvironment().getPropertySources().addLast(new MapPropertySource("invalid-member",Map.of("logging.level.fixture.member","${missing.logger.level}")));
+            var reload=new SpringPropertyFiles();Files.writeString(file,"svc.timeout=20\nlogging.level.fixturegroup=DEBUG\n");
+            var result=reload.apply(file,List.of(context),Runnable::run);
+            assertEquals(PropertyChangeOutcome.State.APPLIED,result.outcome().state());assertValues(context,20);
+            assertTrue(result.loggerOwners().isEmpty(),result.loggerOwners().toString());
+        }
+    }
+
     private Path file(String name, String content) throws Exception {
         Path file = tmp.resolve(name); Files.writeString(file, content); return file;
     }

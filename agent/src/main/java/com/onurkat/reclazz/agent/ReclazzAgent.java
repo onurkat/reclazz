@@ -194,6 +194,7 @@ public class ReclazzAgent {
                 com.onurkat.reclazz.spring.AddedJmsListenerAdapter.class);
         LookupCapture.trust(com.onurkat.reclazz.spring.AddedRabbitListenerAdapter.class);
         LookupCapture.trust(com.onurkat.reclazz.spring.AddedLifecycleAdapter.class);
+        com.onurkat.reclazz.bootstrap.BootLoggingBaselineRecorder.install(LoggingReloader::captureBootLevel);
         LookupCapture.seal();
     }
 
@@ -367,6 +368,9 @@ public class ReclazzAgent {
             // Commerce Cloud 2205+ where tenant wiring happens late in
             // tenant init, AFTER Spring refresh has completed).
             try {
+                if (bootstrapInstalled) {
+                    instrumentation.addTransformer(new com.onurkat.reclazz.platform.BootLoggingBaselineTransformer(), false);
+                }
                 SpringContextInterceptTransformer contextTransformer = new SpringContextInterceptTransformer();
                 instrumentation.addTransformer(contextTransformer, false);
                 if (config.isVerbose()) StatusReporter.info("Spring context intercept transformer registered");
@@ -880,6 +884,9 @@ public class ReclazzAgent {
                     @Override public Instrumentation instrumentation() { return instrumentation; }
                     @Override public int applyLoggerLevels(Map<String, String> content, java.util.Collection<String> keys) {
                         return ReclazzAgent.applyLoggerLevels(content, keys);
+                    }
+                    @Override public int resetLoggerLevels(Map<String,String> previous, java.util.Collection<String> keys, Map<String,String> effective) {
+                        return ReclazzAgent.resetLoggerLevels(previous, keys, effective);
                     }
                     @Override public PremiumContext.GeneratedOutput holdGeneratedClasses(java.util.Collection<Path> roots) {
                         ReloadQueue queue=reloadQueue; Runnable scan=generatedClassScan;
@@ -1906,18 +1913,68 @@ public class ReclazzAgent {
                 agentConfig != null && agentConfig.isRequestBoundary() ? RequestReloadBoundary::run : Runnable::run);
         if (fileResult != null) {
             if (fileResult.outcome().state() == com.onurkat.reclazz.spring.PropertyChangeOutcome.State.APPLIED) {
-                applyLoggerLevels(fileResult.effective(), fileResult.changed());
                 StatusReporter.success("Applied " + Plural.of(fileResult.changed().size(), "property change")
                         + " from " + fileName + ": " + fileResult.changed());
-                if (fileResult.changed().stream().anyMatch(key -> isLoggingKey(key) && !fileResult.effective().containsKey(key))) {
-                    StatusReporter.warn("A removed logging level has no lower configured value; restart to reset that logger.");
-                    RestartLedger.note(fileName, "a removed logging level has no lower configured value; the logger needs resetting");
+                for (var owner : fileResult.loggerOwners()) {
+                    var pending=new java.util.LinkedHashSet<String>();
+                    pending.addAll(owner.changedKeys());pending.addAll(owner.removedKeys());pending.removeIf(key->!LoggingReloader.isLevelKey(key));
+                    if(owner.metadataFailure()!=null) {
+                        keepLoggerResetPending(owner,pending,"logger-group-metadata","logger group metadata could not be verified");
+                        continue;
+                    }
+                    try {
+                        // Merge the whole save once: mixed spellings retain their precedence and alias guards.
+                        var properties=new java.util.Properties();properties.putAll(owner.effectiveLoggingValues());
+                        var desired=LoggingReloader.levelsIn(properties,owner.changedKeys());
+                        var setFailures=new java.util.ArrayList<String>();
+                        var reloader=new LoggingReloader(instrumentation,setFailures::add);
+                        boolean unsupported=!desired.isEmpty() && !reloader.frameworkPresent();
+                        var applied=unsupported?java.util.List.<String>of():reloader.applyPropertyLevels(properties,owner.changedKeys());
+                        for(String key:owner.changedKeys())if(LoggingReloader.isLevelKey(key)
+                                && (unsupported || applied.containsAll(LoggingReloader.levelsIn(properties,java.util.Set.of(key)).keySet())))pending.remove(key);
+                        var attemptedSetKeys=new java.util.LinkedHashSet<>(owner.changedKeys());attemptedSetKeys.removeIf(key->!LoggingReloader.isLevelKey(key));
+                        var unappliedSetKeys=new java.util.LinkedHashSet<String>();
+                        for(String key:attemptedSetKeys) {
+                            var names=LoggingReloader.levelsIn(properties,java.util.Set.of(key)).keySet();
+                            if(!names.isEmpty() && (unsupported || !applied.containsAll(names)))unappliedSetKeys.add(key);
+                        }
+                        owner.acceptance().setConcern(attemptedSetKeys,unappliedSetKeys);
+                        if(unsupported) {
+                            owner.acceptance().warn("logger-set-unsupported","Logger level changes not applied: no supported loaded Logback/Log4j2 backend (JUL is unsupported); restart with a supported backend: "+desired.keySet());
+                        } else if(!applied.containsAll(desired.keySet())) {
+                            var failedNames=new java.util.TreeSet<>(desired.keySet());failedNames.removeAll(applied);
+                            owner.acceptance().warn("logger-set-pending:"+failedNames,"Logger level SET remains pending for "+failedNames+": "+(setFailures.isEmpty()?"backend did not verify the requested levels":String.join("; ",setFailures)));
+                        }
+                        if(!applied.isEmpty())StatusReporter.success(Plural.word(applied.size(),"Logger level applied: ","Logger levels applied: ")+applied);
+                        var resetKeys=LoggingReloader.resetKeys(owner.previousLoggingValues(),owner.removedKeys(),owner.changedKeys(),owner.effectiveLoggingValues());
+                        ClassLoader loader=(ClassLoader)owner.applicationContext().getClass().getMethod("getClassLoader").invoke(owner.applicationContext());
+                        var resets=new LoggingReloader(instrumentation).resetLevelsResult(loader,owner.previousLoggingValues(),resetKeys,owner.effectiveLoggingValues(),owner.acceptance()::warn);
+                        var settled=new java.util.HashSet<>(resets.applied());settled.addAll(resets.restartOnly());
+                        for(String key:resetKeys) {
+                            if(settled.containsAll(LoggingReloader.resetLoggerNames(owner.previousLoggingValues(),java.util.Set.of(key))))pending.remove(key);
+                            else pending.add(key);
+                        }
+                        // Missing baseline already has its warning and ledger; acknowledge it, do not retry forever.
+                        if(pending.isEmpty())owner.acceptance().resolved();
+                        else owner.acceptance().retry(pending);
+                    } catch(Exception failure) {
+                        keepLoggerResetPending(owner,pending,"logger-update-failure","logger update failed: "+Failures.describe(failure));
+                    }
                 }
             }
             return;
         }
         if (candidate == null) return;
-        if (candidate.changed().isEmpty()) {
+        var previous=propertySnapshots.previous(candidate);
+        var removed=propertySnapshots.removed(candidate);
+        var resetKeys=LoggingReloader.resetKeys(previous,removed,candidate.changed().keySet(),candidate.content());
+        var otherRemoved=new java.util.TreeSet<>(removed);otherRemoved.removeIf(LoggingReloader::isLevelKey);
+        if(!otherRemoved.isEmpty()) {
+            StatusReporter.warn("Removed from "+fileName+": "+otherRemoved+". The running configuration keeps its value until a restart.");
+            RestartLedger.note(fileName,"removed configuration keys still have their running values: "+otherRemoved);
+            propertySnapshots.acceptKeys(candidate,otherRemoved);
+        }
+        if (candidate.changed().isEmpty() && resetKeys.isEmpty()) {
             propertySnapshots.accept(candidate);
             StatusReporter.info("No property values changed.");
             return;
@@ -1925,16 +1982,26 @@ public class ReclazzAgent {
 
         java.util.Map<String, String> changed = candidate.changed();
         int[] levelsApplied = {0};
-        var applied = new SpringPropertyRebinder(platformContext.getAllApplicationContexts())
-                .apply(changed,
+        var rebinder=new SpringPropertyRebinder(platformContext.getAllApplicationContexts());
+        var applied = rebinder.apply(changed,
                         agentConfig != null && agentConfig.isRequestBoundary()
                                 ? RequestReloadBoundary::run : Runnable::run,
                         () -> {
-                            propertySnapshots.accept(candidate);
                             levelsApplied[0] = applyLoggerLevels(candidate.content(), changed.keySet());
+                            var effective=new java.util.LinkedHashMap<>(candidate.content());
+                            effective.putAll(rebinder.loggerFallbacks(removed.stream().filter(LoggingReloader::isLevelKey).toList()));
+                            int resets=resetLoggerLevels(previous,resetKeys,effective);
+                            levelsApplied[0]+=resets;
+                            if(resets==LoggingReloader.resetLoggerNames(previous,resetKeys).size()) {
+                                rebinder.forgetLoggerOverrides(removed.stream().filter(LoggingReloader::isLevelKey).toList());
+                                propertySnapshots.accept(candidate);
+                            }
+                            else propertySnapshots.acceptKeys(candidate,changed.keySet().stream().filter(key -> !resetKeys.contains(key)).toList());
                         });
         if (applied.state() != com.onurkat.reclazz.spring.PropertyChangeOutcome.State.APPLIED) return;
-        StatusReporter.success("Applied " + Plural.of(changed.size(), "property change") + ": " + changed.keySet());
+        if(!changed.isEmpty())StatusReporter.success("Applied " + Plural.of(changed.size(), "property change") + ": " + changed.keySet());
+        else if(levelsApplied[0]<LoggingReloader.resetLoggerNames(previous,resetKeys).size())
+            StatusReporter.info("Logger reset remains pending for "+LoggingReloader.resetLoggerNames(previous,resetKeys));
         java.util.List<String> rebound = applied.rebound();
         if (!rebound.isEmpty()) {
             StatusReporter.success("Rebound " + Plural.of(rebound.size(), "@ConfigurationProperties bean")
@@ -1942,7 +2009,16 @@ public class ReclazzAgent {
         }
         if (!rebound.isEmpty() || applied.valueFields() > 0 || !applied.rebuilt().isEmpty()) return;
         if (levelsApplied[0] > 0 && changed.keySet().stream().allMatch(ReclazzAgent::isLoggingKey)) return;
-        reportUnconsumedProperties(changed);
+        if(!changed.isEmpty())reportUnconsumedProperties(changed);
+    }
+
+    private static void keepLoggerResetPending(com.onurkat.reclazz.spring.SpringPropertyFiles.LoggerOwner owner,java.util.Set<String> keys,String concern,String reason) {
+        try {owner.acceptance().retry(keys);}
+        catch(Exception failure) {
+            owner.acceptance().warn("logger-ownership-changed","Logger reset remains pending; newer file ownership was kept: "+Failures.describe(failure));
+            return;
+        }
+        owner.acceptance().warn(concern,"Logger reset remains pending: "+reason);
     }
 
     private static void reportUnconsumedProperties(java.util.Map<String, String> changed) {
@@ -2006,9 +2082,11 @@ public class ReclazzAgent {
         return applied.size();
     }
 
-    private static boolean isLoggingKey(String key) {
-        return key.startsWith("logging.level.") || key.startsWith("log4j2.logger.");
+    private static int resetLoggerLevels(Map<String,String> previous, java.util.Collection<String> keys, Map<String,String> effective) {
+        return new LoggingReloader(instrumentation).resetLevels(null, previous, keys, effective).size();
     }
+
+    private static boolean isLoggingKey(String key) { return LoggingReloader.isLevelKey(key); }
 
     private static boolean prepareLocalizationChange(ChangeEvent event) {
         String fileName = event.getPath().getFileName().toString();

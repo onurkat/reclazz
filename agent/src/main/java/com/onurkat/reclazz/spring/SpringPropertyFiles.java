@@ -22,10 +22,37 @@ public final class SpringPropertyFiles {
     // Values do not retain their Environment key. Empty sources need explicit ownership
     // because they have no remaining key from which Boot can return a resource origin.
     private final Map<Object, Map<Path, List<Owned>>> ownership = new WeakHashMap<>();
+    private record LoggerWarnings(Map<String,Object> values, Set<String> messages) { }
+    private final Map<Object,Map<Path,LoggerWarnings>> loggerWarnings=new WeakHashMap<>();
+    private static final String LOGGER_SET_PENDING="logger level changes have not reached the logging backend";
+    private final Map<Object,Map<Path,Map<String,Object>>> unappliedSets=new WeakHashMap<>();
+    public interface LoggerAcceptance {
+        void retry(Set<String> keys);
+        void warn(String message);
+        default void warn(String concern,String message){warn(message);}
+        default void setConcern(Set<String> attempted,Set<String> unapplied) { }
+        void resolved();
+    }
     private record Owned(String name, int document, Object source, Map<String, Object> accepted) { }
     private record Prepared(Object context, Object live, Object candidate, Object before, Path file, List<Owned> old,
                             List<Owned> next, Map<String, String> changed, Set<String> removed) { }
-    public record Result(PropertyChangeOutcome outcome, Map<String, String> effective, Set<String> changed) { }
+    public record LoggerOwner(Object applicationContext, Set<String> changedKeys, Set<String> removedKeys,
+                              Map<String, String> previousLoggingValues, Map<String, String> effectiveLoggingValues, Runnable retryLoggerReset, String metadataFailure, LoggerAcceptance acceptance) {
+        public LoggerOwner(Object applicationContext, Set<String> changedKeys, Set<String> removedKeys,
+                           Map<String,String> previousLoggingValues, Map<String,String> effectiveLoggingValues, Runnable retryLoggerReset) {
+            this(applicationContext,changedKeys,removedKeys,previousLoggingValues,effectiveLoggingValues,retryLoggerReset,null,new LoggerAcceptance() {
+                public void retry(Set<String> keys){if(!keys.isEmpty())retryLoggerReset.run();}
+                public void warn(String message){StatusReporter.warn(message);}
+                public void resolved() { }
+            });
+        }
+    }
+    public record Result(PropertyChangeOutcome outcome, Map<String, String> effective, Set<String> changed,
+                         List<LoggerOwner> loggerOwners) {
+        public Result(PropertyChangeOutcome outcome, Map<String, String> effective, Set<String> changed) {
+            this(outcome, effective, changed, List.of());
+        }
+    }
 
     /** Null means an unowned .properties file: the caller may retain its legacy path. */
     public synchronized Result apply(Path path, List<Object> contexts, Consumer<Runnable> boundary) {
@@ -76,6 +103,50 @@ public final class SpringPropertyFiles {
                 Object value = call(plans.get(0).candidate(), "getProperty", key);
                 if (value != null) effective.put(key, String.valueOf(value));
             }
+            List<LoggerOwner> loggerOwners = new ArrayList<>();
+            Map<Prepared,Set<String>> metadataHeld=new IdentityHashMap<>();
+            for (Prepared plan : plans) {
+                Set<String> loggingKeys=new LinkedHashSet<>(plan.changed().keySet());loggingKeys.addAll(plan.removed());
+                loggingKeys.removeIf(key->!com.onurkat.reclazz.reload.LoggingReloader.isLevelKey(key));
+                if(loggingKeys.isEmpty())continue;
+                Map<String,Object> loggingValues=new LinkedHashMap<>();
+                for(Owned next:plan.next())next.accepted().forEach((key,value)->{
+                    if(com.onurkat.reclazz.reload.LoggingReloader.isLevelKey(key) || key.startsWith("logging.group."))loggingValues.put(key,value);
+                });
+                var warnings=loggerWarnings.computeIfAbsent(plan.live(),ignored->new HashMap<>());
+                LoggerWarnings priorWarnings=warnings.get(plan.file());
+                if(priorWarnings==null || !priorWarnings.values().equals(loggingValues))
+                    warnings.put(plan.file(),new LoggerWarnings(Map.copyOf(loggingValues),new HashSet<>()));
+                Map<String, String> previous = new LinkedHashMap<>(), current = new LinkedHashMap<>();
+                Set<String> keys = new LinkedHashSet<>(plan.changed().keySet());
+                for (Owned old : plan.old()) keys.addAll(old.accepted().keySet());
+                String metadataFailure=null;
+                try {
+                for (String key : keys) {
+                    if (!key.startsWith("logging.level.") && !key.startsWith("log4j2.logger.")
+                            && !key.equals("log4j2.rootLogger.level")) continue;
+                    Object before = call(plan.before(), "getProperty", key);
+                    Object after = call(plan.candidate(), "getProperty", key);
+                    if (before != null) previous.put(key, String.valueOf(before));
+                    if (after != null) current.put(key, String.valueOf(after));
+                }
+                addLoggerGroups(plan.context(),plan.before(),previous);
+                addLoggerGroups(plan.context(),plan.candidate(),current);
+                } catch(Exception | LinkageError failure) {
+                    metadataFailure=Failures.describe(PropertyChangeCheck.unwrap(failure));
+                    metadataHeld.put(plan,loggingKeys);
+                }
+                loggerOwners.add(new LoggerOwner(plan.context(), Set.copyOf(plan.changed().keySet()), plan.removed(),
+                        Map.copyOf(previous), Map.copyOf(current), () -> retryLoggerAcceptance(plan,loggingKeys), metadataFailure,new LoggerAcceptance() {
+                            public void retry(Set<String> keys){retryLoggerAcceptance(plan,keys);}
+                            public void warn(String message){
+                                int separator=message.indexOf(':');warnLoggerOnce(plan,separator<0?message:message.substring(0,separator),message);
+                            }
+                            public void warn(String concern,String message){warnLoggerOnce(plan,concern,message);}
+                            public void setConcern(Set<String> attempted,Set<String> unapplied){updateSetConcern(plan,attempted,unapplied);}
+                            public void resolved(){clearLoggerWarnings(plan);}
+                        }));
+            }
             PropertyChangeOutcome[] outcome = {PropertyChangeOutcome.held(PropertyChangeOutcome.State.NOT_RUN,
                     List.of("Configuration file boundary did not run"))};
             boundary.accept(() -> {
@@ -112,17 +183,108 @@ public final class SpringPropertyFiles {
                         fields += result.valueFields(); failures.addAll(result.findings());
                     }
                     if (failures.isEmpty())
-                        for (Prepared plan : plans) ownership.get(plan.live()).put(plan.file(), plan.next());
+                        for (Prepared plan : plans) {
+                            ownership.get(plan.live()).put(plan.file(), plan.next());
+                            if(metadataHeld.containsKey(plan))retryLoggerAcceptance(plan,metadataHeld.get(plan));
+                            pruneSetConcerns(plan);
+                        }
                 } catch (Throwable failure) { failures.add(Failures.describe(failure)); }
                 outcome[0] = new PropertyChangeOutcome(failures.isEmpty() ? PropertyChangeOutcome.State.APPLIED
                         : PropertyChangeOutcome.State.PARTIAL, rebound, fields, rebuilt, failures);
             });
             if (outcome[0].state() == PropertyChangeOutcome.State.PARTIAL)
                 StatusReporter.warn("Property change partially applied; file remains pending: " + outcome[0].findings());
-            return new Result(outcome[0], Map.copyOf(effective), Set.copyOf(changed));
+            return new Result(outcome[0], Map.copyOf(effective), Set.copyOf(changed), List.copyOf(loggerOwners));
         } catch (Throwable failure) {
             return held(PropertyChangeOutcome.State.UNCHECKABLE, Failures.describe(PropertyChangeCheck.unwrap(failure)));
         }
+    }
+
+    private static void addLoggerGroups(Object context, Object environment, Map<String,String> result) throws Exception {
+        ClassLoader loader=context.getClass().getClassLoader();
+        try {
+            Class<?> listener=Class.forName("org.springframework.boot.context.logging.LoggingApplicationListener",false,loader);
+            String bean=(String)listener.getField("LOGGER_GROUPS_BEAN_NAME").get(null);
+            if ((boolean)call(context,"containsBean",bean)) {
+                for(Object group:(Iterable<?>)call(context,"getBean",bean)) {
+                    String name=(String)call(group,"getName");
+                    @SuppressWarnings("unchecked") List<String> members=(List<String>)call(group,"getMembers");
+                    result.put("logging.group."+name,String.join(",",members));
+                }
+            }
+        } catch (ClassNotFoundException noBoot) { return; }
+        Set<String> names=new LinkedHashSet<>();
+        for(Object source:(Iterable<?>)call(environment,"getPropertySources")) {
+            try {
+                for(String key:(String[])call(source,"getPropertyNames"))if(key.startsWith("logging.group.")) {
+                    String name=key.substring("logging.group.".length());int index=name.indexOf('[');
+                    names.add(index<0?name:name.substring(0,index));
+                }
+            } catch(NoSuchMethodException notEnumerable) { }
+        }
+        for(String name:names) {
+            String[] members=(String[])environment.getClass().getMethod("getProperty",String.class,Class.class)
+                    .invoke(environment,"logging.group."+name,String[].class);
+            if(members!=null)result.put("logging.group."+name,String.join(",",members));
+        }
+        Set<String> members=new LinkedHashSet<>();
+        result.forEach((key,value)->{if(key.startsWith("logging.group."))for(String member:value.split(","))if(!member.isBlank())members.add(member.trim());});
+        for(String member:members) {
+            String key="logging.level."+member;
+            Object value=call(environment,"getProperty",key);
+            if(value!=null)result.put(key,String.valueOf(value));
+        }
+    }
+
+    private synchronized void warnLoggerOnce(Prepared plan,String concern,String message) {
+        LoggerWarnings state=loggerWarnings.getOrDefault(plan.live(),Map.of()).get(plan.file());
+        if(state!=null && state.messages().add(concern))StatusReporter.warn(message);
+    }
+    private static Map<String,Object> proposedFileValues(Prepared plan) {
+        Map<String,Object> values=new HashMap<>();for(Owned next:plan.next())values.putAll(next.accepted());return values;
+    }
+    private synchronized void updateSetConcern(Prepared plan,Set<String> attempted,Set<String> unapplied) {
+        try {verifyOwnership(plan.live(),plan.next());}catch(Exception stale){return;}
+        Map<Path,Map<String,Object>> files=unappliedSets.computeIfAbsent(plan.live(),ignored->new HashMap<>());
+        Map<String,Object> values=new HashMap<>(files.getOrDefault(plan.file(),Map.of()));
+        attempted.forEach(values::remove);
+        Map<String,Object> proposed=proposedFileValues(plan);
+        for(String key:unapplied)if(proposed.containsKey(key))values.put(key,proposed.get(key));
+        if(values.isEmpty())files.remove(plan.file());else files.put(plan.file(),Map.copyOf(values));
+        refreshSetLedger(plan.file());
+    }
+    private synchronized void pruneSetConcerns(Prepared plan) {
+        Map<Path,Map<String,Object>> files=unappliedSets.get(plan.live());
+        if(files!=null && files.containsKey(plan.file())) {
+            Map<String,Object> proposed=proposedFileValues(plan),values=new HashMap<>(files.get(plan.file()));
+            values.entrySet().removeIf(entry->!Objects.equals(proposed.get(entry.getKey()),entry.getValue()));
+            if(values.isEmpty())files.remove(plan.file());else files.put(plan.file(),Map.copyOf(values));
+        }
+        refreshSetLedger(plan.file());
+    }
+    private void refreshSetLedger(Path file) {
+        boolean pending=unappliedSets.values().stream().anyMatch(files->!files.getOrDefault(file,Map.of()).isEmpty());
+        if(pending)RestartLedger.note(file.toString(),LOGGER_SET_PENDING);
+        else RestartLedger.resolve(file.toString(),LOGGER_SET_PENDING);
+    }
+    private synchronized void clearLoggerWarnings(Prepared plan) {
+        Map<Path,LoggerWarnings> states=loggerWarnings.get(plan.live());
+        if(states!=null)states.remove(plan.file());
+    }
+    private synchronized void retryLoggerAcceptance(Prepared plan,Set<String> keys) {
+        if(keys.isEmpty())return;
+        List<Owned> current=ownership.getOrDefault(plan.live(),Map.of()).get(plan.file());
+        if(current==null || current.size()!=plan.next().size())throw new IllegalStateException("logger file ownership changed");
+        List<Owned> pending=new ArrayList<>();
+        for(int i=0;i<current.size();i++) {
+            Owned now=current.get(i),old=plan.old().get(i);
+            if(now.source()!=plan.next().get(i).source())throw new IllegalStateException("logger source replaced before retry");
+            Map<String,Object> accepted=new HashMap<>(now.accepted());
+            accepted.keySet().removeAll(keys);
+            old.accepted().forEach((key,value)->{if(keys.contains(key))accepted.put(key,value);});
+            pending.add(new Owned(now.name(),now.document(),now.source(),Map.copyOf(accepted)));
+        }
+        ownership.get(plan.live()).put(plan.file(),List.copyOf(pending));
     }
 
     private static Result held(PropertyChangeOutcome.State state, String reason) {

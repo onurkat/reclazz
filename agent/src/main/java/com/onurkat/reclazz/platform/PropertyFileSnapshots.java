@@ -89,6 +89,11 @@ public final class PropertyFileSnapshots {
         return gone;
     }
 
+    /** Immutable last accepted file values; obtain before accepting the candidate. */
+    public Map<String, String> previous(Candidate candidate) {
+        return Map.copyOf(lastSeen.getOrDefault(candidate.file(), Map.of()));
+    }
+
     public void accept(Candidate candidate) {
         lastSeen.put(candidate.file(), candidate.content());
     }
@@ -97,7 +102,10 @@ public final class PropertyFileSnapshots {
     public void acceptKeys(Candidate candidate, java.util.Collection<String> keys) {
         lastSeen.compute(candidate.file(), (file, previous) -> {
             Map<String, String> accepted = new HashMap<>(previous == null ? Map.of() : previous);
-            for (String key : keys) accepted.put(key, candidate.content().get(key));
+            for (String key : keys) {
+                if (candidate.content().containsKey(key)) accepted.put(key, candidate.content().get(key));
+                else accepted.remove(key);
+            }
             return Map.copyOf(accepted);
         });
     }

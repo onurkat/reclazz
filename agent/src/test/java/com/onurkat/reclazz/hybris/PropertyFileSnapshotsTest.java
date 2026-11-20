@@ -70,4 +70,14 @@ class PropertyFileSnapshotsTest {
         assertNull(snapshots.pending(file));
         assertEquals(Map.of("svc.timeout", "10"), snapshots.current(file));
     }
+    @Test void removedKeyAcceptanceRetainsAnImmutableBeforeViewWithoutNulls() throws Exception {
+        var snapshots=new PropertyFileSnapshots();Path file=tmp.resolve("removed-logger.properties");
+        Files.writeString(file,"logging.level.app=DEBUG\n");snapshots.baseline(file);Files.writeString(file,"");
+        var candidate=snapshots.pending(file);var before=snapshots.previous(candidate);
+        assertEquals(Map.of("logging.level.app","DEBUG"),before);
+        assertThrows(UnsupportedOperationException.class,()->before.put("x","y"));
+        snapshots.acceptKeys(candidate,java.util.Set.of("logging.level.app"));
+        assertTrue(snapshots.current(file).isEmpty());assertTrue(snapshots.removed(snapshots.pending(file)).isEmpty());
+        assertEquals(Map.of("logging.level.app","DEBUG"),before);
+    }
 }
