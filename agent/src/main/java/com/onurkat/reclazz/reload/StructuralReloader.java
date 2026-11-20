@@ -1006,6 +1006,9 @@ public class StructuralReloader {
             java.util.concurrent.ConcurrentHashMap.newKeySet();
 
     private ClassReloader.ReloadResult standardReload(String className, byte[] newBytecode) {
+        return standardReload(className,newBytecode,newBytecode);
+    }
+    private ClassReloader.ReloadResult standardReload(String className,byte[] newBytecode,byte[] rawAdmission) {
         try {
             Class<?> existingClass = findLoadedClass(className);
             if (existingClass == null) {
@@ -1015,6 +1018,7 @@ public class StructuralReloader {
 
             var definition = new java.lang.instrument.ClassDefinition(existingClass, newBytecode);
             instrumentation.redefineClasses(definition);
+            com.onurkat.reclazz.transform.KeepBaseline.constructorBodiesApplied(existingClass,rawAdmission);
             StaticInitializerReset.afterReload(existingClass, newBytecode, config.isResetStatics());
             // Repository interfaces deliberately have no companion metadata.
             // A successful shape-preserving JVM redefinition must still reach
@@ -1524,10 +1528,14 @@ public class StructuralReloader {
                 final byte[] payloadToApply = redefinePayload;
                 final boolean keptBodies = removedBodiesKept;
                 final RemovalPrep keptPrep = kept;
+                final boolean constructorEdit = !com.onurkat.reclazz.transform.KeepBaseline
+                        .constructorBodiesUnchanged(targetClass,newBytecode);
+                final boolean initializerEdit=!com.onurkat.reclazz.transform.KeepBaseline.staticInitializerUnchanged(targetClass,newBytecode);
                 // What this class does with the outcome, now or at the end of
                 // the batch it is part of. See redefine().
                 RedefineOutcome.Handler afterRedefine = outcome -> {
                     if (outcome.applied()) {
+                        com.onurkat.reclazz.transform.KeepBaseline.constructorBodiesApplied(targetClass,newBytecode);
                         StaticInitializerReset.afterReload(targetClass, newBytecode, config.isResetStatics(), diff.getAddedFields());
                         // The loaded class now holds what the payload holds,
                         // removed methods included, and the record has to say so
@@ -1536,13 +1544,25 @@ public class StructuralReloader {
                             context.putMetadata(internalName, keptPrep.schema());
                         }
                     } else if (outcome.refused()) {
-                        if (config.isVerbose()) StatusReporter.info("Constructor redefine refusal for "
+                        if (config.isVerbose()) StatusReporter.info("Native redefine refusal for "
                                 + className + ": " + outcome.failure());
-                        StatusReporter.warn("Constructor bodies not refreshed for " + className
-                                + ": new objects are still built by the previous constructor. "
-                                + "Other method bodies reloaded; restart to apply the constructor edit.");
-                        RestartLedger.note(className,
-                                "a constructor the JVM would not redefine: " + outcome.failure());
+                        if(constructorEdit) {
+                            StatusReporter.warn("Constructor bodies not refreshed for " + className
+                                    + ": new objects are still built by the previous constructor. "
+                                    + "Other method bodies reloaded; restart to apply the constructor edit.");
+                            RestartLedger.note(className,
+                                    "a constructor the JVM would not redefine: " + outcome.failure());
+                        }
+                        if(initializerEdit) {
+                            StatusReporter.warn("Static initializer not refreshed for "+className
+                                    +": the JVM refused the initializer edit; restart to apply it.");
+                            RestartLedger.note(className,"a static initializer the JVM would not redefine: "+outcome.failure());
+                        }
+                        if(diff.isAnnotationsChanged()) {
+                            StatusReporter.warn("Annotation metadata not refreshed for " + className
+                                    + ": the JVM refused redefinition; restart to apply the annotation edit.");
+                            RestartLedger.note(className,"annotation metadata the JVM would not redefine: " + outcome.failure());
+                        }
                     } else {
                         StatusReporter.warn("Constructor-body refresh skipped for " + className + ": " + outcome.failure());
                     }
@@ -1597,7 +1617,7 @@ public class StructuralReloader {
                 // exactly the crash back that the splice exists to prevent.
                 // The spliced payload is the one that is safe to redefine.
                 return standardReload(className,
-                        pinnedRedefinePayload != null ? pinnedRedefinePayload : newBytecode);
+                        pinnedRedefinePayload != null ? pinnedRedefinePayload : newBytecode,newBytecode);
             }
             return ClassReloader.ReloadResult.failure(
                     "Structural reload failed: " + e.getMessage(), true);

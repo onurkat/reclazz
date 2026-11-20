@@ -14,14 +14,25 @@ public final class KeepBaseline {
     public record Fingerprint(Map<String,Long> constructors, Map<String,Long> methods,
                               Set<String> injection, Set<String> lifecycle,
                               Set<String> fields, Set<String> publicMethods, String annotations,
-                              Map<String,String> memberAnnotations) { }
+                              Map<String,String> memberAnnotations, Map<String,Long> initializers) {
+        public Fingerprint(Map<String,Long> constructors,Map<String,Long> methods,Set<String> injection,Set<String> lifecycle,
+                           Set<String> fields,Set<String> publicMethods,String annotations,Map<String,String> memberAnnotations) {
+            this(constructors,methods,injection,lifecycle,fields,publicMethods,annotations,memberAnnotations,Map.of());
+        }
+    }
     public record Input(Fingerprint old, byte[] newRaw) { }
     private static final ReferenceQueue<ClassLoader> COLLECTED = new ReferenceQueue<>();
     private static final Map<LoaderKey,Map<String,Entry>> OWNERS = new HashMap<>();
     private static final class Entry {
         Fingerprint fingerprint;
+        Map<String,Long> physicalConstructors;
+        Map<String,Long> physicalInitializers;
         long reloads;
-        Entry(Fingerprint fingerprint) { this.fingerprint=fingerprint; }
+        Entry(Fingerprint fingerprint) {
+            this.fingerprint=fingerprint;
+            this.physicalConstructors=fingerprint==null?null:fingerprint.constructors();
+            this.physicalInitializers=fingerprint==null?null:fingerprint.initializers();
+        }
     }
     private static volatile java.util.function.Predicate<String> watched = name -> true;
     /** No installed watch inventory means unknown, not immutable. */
@@ -68,6 +79,45 @@ public final class KeepBaseline {
         Entry entry=type==null ? null : owners(type.getClassLoader(),false).get(type.getName().replace('.','/'));
         return entry==null ? null : entry.fingerprint;
     }
+    /** Logical framework advancement is not evidence that native constructor bodies landed. */
+    public static synchronized boolean constructorBodiesUnchanged(Class<?> type, byte[] raw) {
+        if(type==null)return false;
+        Entry entry=owners(type.getClassLoader(),false).get(type.getName().replace('.','/'));
+        if(entry==null || entry.physicalConstructors==null)return false;
+        try {
+            Map<String,Long> next=fingerprint(raw).constructors();
+            // Added logical overloads are stripped from the VM payload; only physical descriptors matter.
+            return entry.physicalConstructors.entrySet().stream()
+                    .allMatch(old -> Objects.equals(old.getValue(),next.get(old.getKey())));
+        } catch(RuntimeException | LinkageError unavailable) { return false; }
+    }
+    public static synchronized boolean staticInitializerUnchanged(Class<?> type,byte[] raw) {
+        if(type==null)return false;
+        Entry entry=owners(type.getClassLoader(),false).get(type.getName().replace('.','/'));
+        if(entry==null || entry.physicalInitializers==null)return false;
+        try {return entry.physicalInitializers.equals(fingerprint(raw).initializers());}
+        catch(RuntimeException | LinkageError unavailable){return false;}
+    }
+    /** Update constructor/initializer proof only after native admission, with raw user bytes. */
+    public static synchronized void constructorBodiesApplied(Class<?> type, byte[] raw) {
+        if(type==null)return;
+        Entry entry=owners(type.getClassLoader(),false).get(type.getName().replace('.','/'));
+        if(entry==null)return;
+        try {
+            Fingerprint admitted=fingerprint(raw);
+            Map<String,Long> next=admitted.constructors();
+            if(entry.physicalConstructors!=null) {
+                if(!next.keySet().containsAll(entry.physicalConstructors.keySet()))entry.physicalConstructors=null;
+                else {
+                    Map<String,Long> physical=new TreeMap<>();
+                    for(String descriptor:entry.physicalConstructors.keySet())physical.put(descriptor,next.get(descriptor));
+                    entry.physicalConstructors=Map.copyOf(physical);
+                }
+            }
+            entry.physicalInitializers=admitted.initializers();
+        } catch(RuntimeException | LinkageError unavailable) {entry.physicalConstructors=null;entry.physicalInitializers=null;}
+    }
+
     /** A fingerprint that cannot be read drops the old one: a stale baseline must not decide the next reload. */
     public static void advance(Class<?> type,byte[] raw) {
         if(type==null || type.getClassLoader()==null)return;
@@ -87,7 +137,7 @@ public final class KeepBaseline {
     }
     public static Fingerprint fingerprint(byte[] raw) {
         ClassNode c=read(raw);
-        Map<String,Long> ctors=new TreeMap<>(), methods=new TreeMap<>();
+        Map<String,Long> ctors=new TreeMap<>(), methods=new TreeMap<>(), initializers=new TreeMap<>();
         Map<String,String> members=new TreeMap<>();
         Set<String> injection=new TreeSet<>(), lifecycle=new TreeSet<>(), fields=new TreeSet<>(), publics=new TreeSet<>();
         for(FieldNode f:c.fields) {
@@ -100,7 +150,8 @@ public final class KeepBaseline {
         for(MethodNode m:c.methods) {
             String key=m.name+":"+m.desc;
             if(m.name.equals("<init>")) ctors.put(m.desc,digest(m));
-            else if(!m.name.equals("<clinit>")) {
+            else if(m.name.equals("<clinit>"))initializers.put(m.desc,digest(m));
+            else {
                 // A business-body edit can remove a compiler-generated lambda helper.
                 // Creation callbacks are user-declared; synthetic members are not creation signatures.
                 if ((m.access & Opcodes.ACC_SYNTHETIC) == 0) methods.put(key,digest(m));
@@ -127,7 +178,7 @@ public final class KeepBaseline {
             if(m.name.equals("afterPropertiesSet")||m.name.equals("destroy")) lifecycle.add(key);
         }
         return new Fingerprint(Map.copyOf(ctors),Map.copyOf(methods),Set.copyOf(injection),Set.copyOf(lifecycle),
-                Set.copyOf(fields),Set.copyOf(publics),annotations(c.visibleAnnotations)+annotations(c.invisibleAnnotations),Map.copyOf(members));
+                Set.copyOf(fields),Set.copyOf(publics),annotations(c.visibleAnnotations)+annotations(c.invisibleAnnotations),Map.copyOf(members),Map.copyOf(initializers));
     }
     public static boolean injection(String desc) {
         return Set.of("Lorg/springframework/beans/factory/annotation/Autowired;","Lorg/springframework/beans/factory/annotation/Value;",

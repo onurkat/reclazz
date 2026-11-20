@@ -30,6 +30,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- A refused constructor refresh no longer warns or marks receipts unverified
+  when its constructor bodies are unchanged. Refused constructor edits keep
+  their warning and restart concern across later saves. Refused static-initializer
+  edits also retain a precise warning and an unverified receipt.
+
 - Constructor bodies continue updating after constructor overloads are added;
   added overloads keep following later body edits. Inherited added instance and
   static fields resolve through subclass references while preserving field shadowing.
