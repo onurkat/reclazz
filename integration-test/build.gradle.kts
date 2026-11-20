@@ -22,6 +22,10 @@ application {
     mainClass.set("com.onurkat.reclazz.inttest.ReclazzTestRunnerKt")
 }
 
+// The test sources are contract harnesses run through the JavaExec tasks below, not JUnit
+// classes. Gradle 9 fails a Test task that finds sources but discovers no tests.
+tasks.test { failOnNoDiscoveredTests = false }
+
 // Uses the JDK HTTP server and Kotlin check(), without another test dependency.
 val sapProofTest = tasks.register("sapProofTest", JavaExec::class) {
     group = "verification"
