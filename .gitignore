@@ -118,3 +118,6 @@ reclazztestbackofficecfg/resources/reclazztestbackofficecfg/
 reclazztestbackofficecfg/resources/reclazztestbackofficecfg.build.number
 reclazztestbackofficecfg/resources/backoffice/
 reclazztestbackofficecfg/src/com/onurkat/reclazztestbackofficecfg/constants/
+
+# Kotlin 2.x compiler session data
+.kotlin/
