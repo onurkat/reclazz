@@ -23,14 +23,15 @@ gradle.taskGraph.whenReady { graph ->
             // The platform uploads signPlugin's output only when signPlugin did
             // work in this invocation; it is disabled below, so without this the
             // unsigned zip would be the one uploaded.
-            task.archiveFile.set(task.project.tasks.getByName('signPlugin').signedArchiveFile)
+            // IntelliJ Platform Gradle Plugin 2.20 replaced archiveFile with the archiveFiles collection.
+            task.archiveFiles.setFrom(task.project.tasks.getByName('signPlugin').signedArchiveFile)
         }
         if (uploads.contains(task.path)) {
             task.doFirst {
                 def publisher = task.path == ':publishPlugin' ? 'marketplace' : 'portal'
                 def files
                 if (publisher == 'marketplace') {
-                    files = [task.archiveFile.get().asFile.absolutePath]
+                    files = task.archiveFiles.files.collect { it.absolutePath }
                 } else {
                     def publication = task.project.publishing.publications.getByName('pluginMaven')
                     files = publication.artifacts.collect { it.file.absolutePath }

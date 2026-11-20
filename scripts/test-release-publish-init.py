@@ -32,7 +32,8 @@ class PublisherPreflightTest(unittest.TestCase):
                 doLast { file('signed-again').text='unexpected' }
             }
             tasks.register('publishPlugin') {
-                ext.archiveFile = objects.fileProperty().fileValue(file('unsigned.zip'))
+                // IntelliJ Platform Gradle Plugin 2.20 shape: a file collection.
+                ext.archiveFiles = objects.fileCollection().from(file('unsigned.zip'))
                 dependsOn 'compileJava', 'signPlugin'
                 doLast { file('publisher-action').text='local fake action' }
             }
