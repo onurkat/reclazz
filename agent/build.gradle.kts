@@ -495,7 +495,10 @@ configurations[modernMessagingTests.runtimeClasspathConfigurationName].resolutio
 val modernMessagingTest = tasks.register("modernMessagingTest", Test::class) {
     group = "verification"
     description = "Native modern Kafka/Jakarta JMS/Rabbit reload and refusal regressions"
-    jvmArgs("-Djdk.attach.allowAttachSelf=true")
+    // Kafka 3.7's embedded broker upper-cases "classic" with the default locale and
+    // fails to start under Turkish ("CLASSİC"). That is the broker's bug, not ours,
+    // so only this suite pins an English locale; the others keep the host's.
+    jvmArgs("-Djdk.attach.allowAttachSelf=true", "-Duser.language=en", "-Duser.country=US")
     useJUnitPlatform()
     testClassesDirs = modernMessagingTests.output.classesDirs
     classpath = modernMessagingTests.runtimeClasspath
