@@ -10,6 +10,7 @@ import java.io.InputStreamReader
 import java.io.StreamTokenizer
 import java.io.StringReader
 import java.net.Socket
+import java.net.InetSocketAddress
 import java.net.SocketTimeoutException
 
 data class AgentEvent(
@@ -107,9 +108,12 @@ class AgentStatusClient(
 
         while (running) {
             try {
-                Socket("127.0.0.1", port).use { s ->
-                    s.soTimeout = 30_000
+                Socket().use { s ->
+                    // Publish before connecting so cancellation can also close an in-flight connect.
                     socket = s
+                    if (!running) return
+                    s.connect(InetSocketAddress("127.0.0.1", port), 3000)
+                    s.soTimeout = 30_000
                     retryDelay = 1000L
                     wasConnected = true
 
@@ -171,7 +175,7 @@ class AgentStatusClient(
         }
     }
 
-    private fun parseJsonObject(json: String): Map<String, String> {
+    internal fun parseJsonObject(json: String): Map<String, String> {
         val result = mutableMapOf<String, String>()
         val tokenizer = StreamTokenizer(StringReader(json))
         tokenizer.ordinaryChar('{'.code)

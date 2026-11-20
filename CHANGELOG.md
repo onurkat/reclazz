@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added
+
+- SAP Commerce Settings offers a read-only **Check setup** report with concrete
+  fixes for launch properties/wrappers, debug flags, jar/JDK versions, other
+  agents and watched extensions, plus a running-agent DOCTOR summary when
+  reachable. Successful Install Agent/Reinstall also reports the check summary.
+
 ### Changed
 
 - Managed SAP Commerce installation omits redundant `hybrisHome` from the agent

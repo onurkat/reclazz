@@ -32,6 +32,10 @@ class ReclazzConfigurable internal constructor(
 ) : Configurable {
     constructor(project: Project) : this(project, HybrisAgentInstaller::install)
 
+    internal var startSetupCheck: (Boolean, String?) -> Unit = { show, message ->
+        SetupCheckUi.run(project, showResults=show, installedMessage=message)
+    }
+
     private var dialogPanel: DialogPanel? = null
 
     private var injectIntoTestsCheckbox = false
@@ -135,6 +139,7 @@ class ReclazzConfigurable internal constructor(
                     applyConnectionSettings()
                     testConnection()
                 }
+                if (isHybris) link("Check setup") { startSetupCheck(true, null) }
             }
 
             row {
@@ -346,7 +351,7 @@ class ReclazzConfigurable internal constructor(
     private fun installAgentIntoWrapperConf() {
         when (val result = installAgent(project)) {
             is HybrisAgentInstaller.Result.Success ->
-                ReloadNotifications.info(project, "Reclazz", result.message)
+                startSetupCheck(false, result.message)
             is HybrisAgentInstaller.Result.Error ->
                 ReloadNotifications.warn(project, "Reclazz", result.message)
         }

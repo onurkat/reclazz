@@ -142,6 +142,8 @@ ant server
         </ol>
 
         <h2 id="sorun-giderme">Sorun giderme</h2>
+        <p>Önce <strong>Settings → Tools → Reclazz → Check setup</strong> bağlantısını açın. Her satır kurulumdaki bir kontrolü ve gerekiyorsa çözümünü gösterir: normal/debug ajan seçenekleri, üretilen wrapper, debug bayrakları, JAR sürümü, sunucu JDK'sı, diğer ajanlar ve izlenen uzantılar. Sunucu açıksa çalışan ajan sürümü ve DOCTOR özeti de görünür; kapalıysa bu adım atlanır. Kontrol dosya oluşturmaz veya değiştirmez.</p>
+        <p><strong>Install Agent</strong> veya <strong>Reinstall</strong> başarılı olunca kurulum sonucu hemen gösterilir; aynı kontrol otomatik çalışır ve özeti ayrı bir bildirimle iletilir. Wrapper seçenekleri gerçekten farklıysa <code>ant server</code> önerilir; ilgisiz bir properties değişikliğinin tarihi tek başına hata sayılmaz. Önerilen düzeltmeden sonra yeniden kontrol edin.</p>
         <div class="table-scroll">
             <table>
                 <thead><tr><th>Belirti</th><th>Neden</th><th>Çözüm</th></tr></thead>

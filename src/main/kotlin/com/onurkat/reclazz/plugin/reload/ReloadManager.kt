@@ -344,13 +344,13 @@ class ReloadManager(private val project: Project) : Disposable {
 
     // Note: there is an inherent TOCTOU between isPortOpen() and the actual connection.
     // If the port is reclaimed between check and connect, AgentStatusClient will retry.
-    private fun readPortFile(): Int? {
+    internal fun readPortFile(checkPortOpen: Boolean = true): Int? {
         val settings = ReclazzSettings.getInstance(project).state
 
         // Priority 1: Explicit port configured in settings
         if (settings.agentPort in VALID_PORT_RANGE) {
             val port = settings.agentPort
-            return if (isPortOpen(port)) port else {
+            return if (!checkPortOpen || isPortOpen(port)) port else {
                 log.info("Configured port $port not open, agent may not be running")
                 null
             }
@@ -389,7 +389,7 @@ class ReloadManager(private val project: Project) : Disposable {
                 }
                 val port = content.toIntOrNull() ?: continue
                 if (port in VALID_PORT_RANGE) {
-                    return if (isPortOpen(port)) port else {
+                    return if (!checkPortOpen || isPortOpen(port)) port else {
                         log.info("Port file $portFile found but port $port not open, agent may not be running")
                         null
                     }

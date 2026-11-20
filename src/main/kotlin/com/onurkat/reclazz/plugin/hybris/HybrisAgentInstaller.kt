@@ -88,7 +88,9 @@ object HybrisAgentInstaller {
         configDir(project)?.let { HybrisPropertyFiles.targetFile(it) }
 
     fun isInstalled(project: Project): Boolean {
-        val target = targetFile(project) ?: return false
+        val config = configDir(project) ?: return false
+        val target = HybrisPropertyFiles.optionalConfigDir(config, createMissing = false)
+            ?.resolve(HybrisPropertyFiles.RECLAZZ_PROPERTIES) ?: config.resolve("local.properties")
         return try {
             Files.isRegularFile(target) && Files.readString(target).contains(MARKER_BEGIN)
         } catch (e: Exception) {
@@ -365,10 +367,9 @@ object HybrisAgentInstaller {
                 if (managed || line.trimStart().startsWith("#") || line.trimStart().startsWith("!")) continue
                 val key = line.substringBefore('=', "").trim()
                 if (key !in listOf(JAVA_OPTIONS, DEBUG_JAVA_OPTIONS, "tomcat.generaloptions", "tomcat.debuggeneraloptions")) continue
-                for (token in JVM_OPTION.findAll(line.substringAfter('=', ""))) {
-                    val option = token.value.trim('"', '\'')
+                for (option in jvmOptions(line.substringAfter('=', ""))) {
                     if (!option.startsWith("-javaagent:")) continue
-                    val jar = option.removePrefix("-javaagent:").substringBefore('=').trim('"', '\'')
+                    val jar = option.removePrefix("-javaagent:").substringBefore('=').removeSurrounding("\"").removeSurrounding("'")
                     val normalized = jar.replace('\\', '/')
                     val name = normalized.substringAfterLast('/')
                     if (jar == expectedJar || RECLAZZ_JAR.matches(name) || normalized.endsWith("/.reclazz/agent.jar")) {
@@ -381,7 +382,24 @@ object HybrisAgentInstaller {
         return null
     }
 
-    private val JVM_OPTION = Regex("""(?:"[^"]*"|'[^']*'|[^\s"'])+""")
+    /** Quotes open at an option/value boundary, never in the middle of an unquoted path. */
+    internal fun jvmOptions(value: String): List<String> {
+        val result=mutableListOf<String>();var index=0
+        while(index<value.length) {
+            while(index<value.length && value[index].isWhitespace())index++
+            if(index==value.length)break
+            val start=index;val token=StringBuilder()
+            while(index<value.length && !value[index].isWhitespace()) {
+                val ch=value[index]
+                val boundary=index==start || value[index-1]==':' || value[index-1]=='='
+                val close=if(boundary && ch in charArrayOf('"','\''))value.indexOf(ch,index+1) else -1
+                if(close>=0) { token.append(value,index+1,close);index=close+1 }
+                else { token.append(ch);index++ }
+            }
+            result.add(token.toString())
+        }
+        return result
+    }
     private val RECLAZZ_JAR = Regex("""reclazz-agent(?:-[0-9][^/\\]*)?\.jar""")
 
     /**

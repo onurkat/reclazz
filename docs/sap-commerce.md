@@ -12,6 +12,21 @@ For application-level proof, see [what we test live on SAP Commerce](sap-commerc
 64 default scenarios, separate opt-in profiles, their repeatability and the
 areas that still need live acceptance.
 
+## Check setup before troubleshooting
+
+In IntelliJ, open **Settings → Tools → Reclazz → Check setup**. The read-only
+check lists each result and its suggested fix: effective normal/debug agent
+options, generated wrapper arguments, preserved debug flags, agent jar version,
+server JDK and required flags, other agents and watched extension names. When an
+agent is reachable it also shows the running version and a DOCTOR summary.
+A stopped server is reported as skipped; it does not prevent the file checks.
+
+After **Install Agent** or **Reinstall**, the success message appears immediately
+and the same setup check runs automatically. A follow-up notification reports
+its summary. A wrapper mismatch suggests `ant server`;
+an unrelated properties-file edit alone does not require rebuilding. Apply the
+suggested fixes and check again. The check does not install or repair anything.
+
 ## Why Hybris is different from Spring Boot
 
 A Spring Boot app is one JVM you start yourself, so a build plugin or a plain
