@@ -82,12 +82,13 @@ bundles are still uploaded manually using the paths printed by the script;
 run `python3 scripts/release-evidence.py verify` before uploading those files.
 
 After the gate, the script uploads Marketplace, stages Maven, uploads Portal,
-and tags the exact checked commit. It pushes only that commit and tag. The tag
-workflow independently runs the shared tests and records/checks its own agent
-and MCP artifacts before creating a **draft** GitHub release. CI does not receive
-the IDE signing key. The local script checks that the intended release is still
-a draft, attaches the checked signed ZIP as `reclazz-X.Y.Z.zip` from
-`build/release-gate/assets/`, and checks completeness before publishing the draft.
+and tags the exact checked commit. It pushes only that commit and tag, then
+immediately creates a **draft** GitHub release itself, with notes from that
+version's `CHANGELOG.md` section and all five checked assets from
+`build/release-gate/assets/`. It checks completeness before publishing the draft.
+No CI workflow runs on the tag: the commit has already passed the gate, and the
+old tag workflow that ran the gate again kept 1.8.0 off GitHub for two hours
+after it reached the Marketplace.
 The five required assets are the agent JAR, MCP JAR, their two `.sha256` sidecars,
 and signed IDE ZIP, all named for this version. Each must appear exactly once
 with `state: uploaded` and a positive size; the ZIP size must match the locally
@@ -135,23 +136,23 @@ channel credentials fail before preparation and do not silently skip a channel.
    or rebuilding. Inspect the first failure and the affected remote channel; a
    timeout/error may follow an accepted upload. Do not blindly rerun the entire
    release script, delete its tag or overwrite existing assets.
-2. For an incomplete GitHub draft, wait for the tag workflow to finish and inspect
-   its logs and asset list. Keep the draft unpublished. Before uploading a missing
-   signed ZIP, return to the exact clean source checkout and verify the existing
-   receipt. Upload only the missing checked file; do not use `--clobber`:
+2. For a missing or incomplete GitHub draft, inspect its asset list. Keep the
+   draft unpublished. Return to the exact clean source checkout and verify the
+   existing receipt. If no release exists, create it with the same
+   `gh release create ... --draft --verify-tag` command the script prints. Otherwise
+   upload only the missing checked file; do not use `--clobber`:
 
    ```bash
    python3 scripts/release-evidence.py verify
    python3 scripts/release-evidence.py github-check --draft-only
-   gh release upload vX.Y.Z build/release-gate/assets/reclazz-X.Y.Z.zip
+   gh release upload vX.Y.Z build/release-gate/assets/<missing file>
    python3 scripts/release-evidence.py github-check
    python3 scripts/release-evidence.py verify
    gh release edit vX.Y.Z --draft=false --verify-tag
    ```
 
-   Substitute the receipt's version. If the ZIP already exists, inspect it and
-   omit the upload. Missing agent/MCP assets need the matching tag workflow's
-   checked outputs; do not substitute unrelated local builds. If the receipt,
+   Substitute the receipt's version. Upload only files from this receipt's
+   `build/release-gate/assets/`; do not substitute unrelated local builds. If the receipt,
    source, draft identity or required assets fail verification, stop and resolve
    the mismatch. An already public release needs manual inspection, not this
    draft completion route.
@@ -162,29 +163,26 @@ channel credentials fail before preparation and do not silently skip a channel.
    resolution and update the site separately. The script does not prove these
    final outcomes or automate recovery.
 
-## What the tag does on its own
+## What goes on the GitHub release
 
-`.github/workflows/release.yml` fires on `vX.Y.Z` and creates a draft release:
-it checks that the tag and `gradle.properties` agree, takes the notes from
-that version's section of `CHANGELOG.md` (`scripts/changelog-section.sh`,
-which fails when there is no such section), runs the shared build/test gate,
-records/checks its artifact receipt, and attaches both jars with a `.sha256` beside each:
+`scripts/release.sh` creates it right after pushing the tag, from the checked
+receipt: notes from that version's section of `CHANGELOG.md`
+(`scripts/changelog-section.sh`, which the script requires before it starts), the
+signed IDE ZIP, and both jars with a `.sha256` beside each:
 `reclazz-agent-X.Y.Z.jar` and `reclazz-mcp-X.Y.Z.jar`.
 
 Before releasing, `./gradlew :mcp-server:test :mcp-server:mcpRelease` locally stages
 `mcp-server/build/distributions/mcp/reclazz-mcp-X.Y.Z.jar` and its checksum.
 The tests relocate the packaged jar and launch both entry points without Gradle's
 classpath, checking the reported version and stdio tools. This task does not
-publish anything. The tag workflow attaches those exact tested MCP assets;
+publish anything. The release attaches those exact tested MCP assets;
 older releases are not retroactively changed. See [MCP installation](mcp-server.md#running-it).
 
-Signing is not in there and cannot be: the private key and its passphrase
-live on your machine and are deliberately not repository secrets. So the
-signed ZIP still comes from the local maintainer's checked build. The tag-only
-workflow intentionally leaves the draft unpublished and reports the remaining
-manual action. The local script (or the verified recovery steps above) completes
-the five assets and then publishes it. Forgetting the ZIP now leaves a draft
-instead of a publicly incomplete release.
+Signing stays on your machine: the private key and its passphrase are
+deliberately not repository secrets, which is one more reason the release is
+made locally rather than by a tag workflow. The draft is published only after
+all five assets are checked, so a failure leaves a draft instead of a publicly
+incomplete release.
 
 The agent jar is the other reason for it. Somebody using Reclazz without
 IntelliJ had no download: the README told them to clone the repository and

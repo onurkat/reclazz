@@ -46,10 +46,9 @@ Stop on a checksum mismatch. This stages/installs local files; it does not publi
 
 ### Release assets
 
-The updated tag workflow will attach `reclazz-mcp-X.Y.Z.jar` and
-`reclazz-mcp-X.Y.Z.jar.sha256` to future GitHub releases, next to the matching
-agent jar. **This change is unreleased; it does not add MCP assets to existing
-releases.** When a release contains these assets, download both from that same
+GitHub releases carry `reclazz-mcp-X.Y.Z.jar` and
+`reclazz-mcp-X.Y.Z.jar.sha256` next to the matching agent jar. Older releases
+were not changed retroactively. When a release contains these assets, download both from that same
 tag, put them together in a permanent directory and verify the checksum as above.
 Use matching agent and MCP builds for BUILD/VERIFY support. A checksum detects
 file corruption; it is not a signature or proof of publisher identity.

@@ -92,10 +92,12 @@ class ReleaseScriptTest {
                 "would run: git tag -a v1.2.3 " + commit + " -m Reclazz 1.2.3",
                 "would run: python3 scripts/release-evidence.py verify",
                 "would run: git push origin " + commit + ":refs/heads/main refs/tags/v1.2.3",
-                "would wait for: gh release view v1.2.3",
-                "would run: python3 scripts/release-evidence.py github-check --draft-only",
+                "would write: build/release-notes/notes-1.2.3.md from CHANGELOG.md",
                 "would run: python3 scripts/release-evidence.py verify",
-                "would run: gh release upload v1.2.3 build/release-gate/assets/reclazz-1.2.3.zip",
+                "would run: gh release create v1.2.3 build/release-gate/assets/reclazz-1.2.3.zip"
+                        + " build/release-gate/assets/reclazz-agent-1.2.3.jar build/release-gate/assets/reclazz-agent-1.2.3.jar.sha256"
+                        + " build/release-gate/assets/reclazz-mcp-1.2.3.jar build/release-gate/assets/reclazz-mcp-1.2.3.jar.sha256"
+                        + " --title Reclazz 1.2.3 --draft --verify-tag --notes-file build/release-notes/notes-1.2.3.md",
                 "would run: python3 scripts/release-evidence.py github-check",
                 "would run: python3 scripts/release-evidence.py verify",
                 "would run: gh release edit v1.2.3 --draft=false --verify-tag"), steps);
@@ -245,7 +247,9 @@ class ReleaseScriptTest {
         assertTrue(result.out().contains("GitHub: completed"), result.out());
         assertTrue(result.out().contains("Remote availability remains unverified"), result.out());
         assertTrue(trace().lastIndexOf("CHECK gh assets") < trace().indexOf("UPLOAD gh release edit"), trace());
-        assertTrue(trace().lastIndexOf("CHECK gh assets") > trace().indexOf("UPLOAD gh release upload"), trace());
+        assertTrue(trace().lastIndexOf("CHECK gh assets") > trace().indexOf("UPLOAD gh release create"), trace());
+        assertFalse(trace().contains("WAIT"), "the GitHub release must not wait for any workflow");
+        assertTrue(Files.readString(repo.resolve("build/release-notes/notes-1.2.3.md")).contains("reclazz-mcp-1.2.3.jar"));
         assertEquals(Files.readString(repo.resolve("build/distributions/reclazz-1.2.3-signed.zip")),
                 Files.readString(repo.resolve("build/uploaded.zip")), "GitHub receives the checked signed ZIP");
         assertEquals("", git("tag", "-l").out().trim(), "publication commands are stubs");
@@ -259,35 +263,9 @@ class ReleaseScriptTest {
     }
 
     @Test
-    void tagWorkflowCannotCreateAReleaseWhenItsGateFails() throws Exception {
-        publicationStubs();
-        Path root = AgentSources.root().getParent().getParent().getParent().getParent();
-        String workflow = Files.readString(root.resolve(".github/workflows/release.yml"));
-        String check = workflowRun(workflow, "Test and package before creating any release");
-        String publish = workflowRun(workflow, "Create the release").replace("/tmp/", "build/notes/");
-        Files.createDirectories(repo.resolve("build/notes"));
-        Files.writeString(repo.resolve("build/notes/notes.md"), "Release notes\n");
-        for (String failure : List.of("build", "npm", "verify", "consumer", "")) {
-            Files.deleteIfExists(repo.resolve("build/trace"));
-            Run result = run(List.of("bash", "-e", "-c", check + "\n" + publish),
-                    Map.of("RELEASE_FAIL", failure, "GITHUB_REF_NAME", "v1.2.3"));
-            if (failure.isEmpty()) {
-                assertEquals(0, result.exit(), result.out() + result.err());
-                assertTrue(trace().contains("UPLOAD gh release create"), trace());
-                assertTrue(trace().contains("--draft --verify-tag"), trace());
-                assertFalse(trace().contains("release edit"), trace());
-                assertTrue(result.out().contains("GitHub: awaiting manual action"), result.out());
-            } else {
-                assertNotEquals(0, result.exit(), result.out());
-                assertFalse(trace().contains("UPLOAD"), trace());
-            }
-        }
-    }
-
-    @Test
     void incompleteDraftAndFailedUploadNeverPublishAndRetainEarlierOutcomes() throws Exception {
         publicationStubs();
-        for (String fault : List.of("missing-asset", "upload", "edit", "public", "read")) {
+        for (String fault : List.of("missing-asset", "create", "edit", "public", "read")) {
             Files.deleteIfExists(repo.resolve("build/trace"));
             Files.deleteIfExists(repo.resolve("build/uploaded.zip"));
             Run result = releaseWith(Map.of("RELEASE_FAIL", fault), "1.2.3");
@@ -339,17 +317,6 @@ class ReleaseScriptTest {
         assertTrue(result.err().contains("gh is required"), result.err());
         assertFalse(result.out().contains(": completed"));
         assertEquals("", trace());
-    }
-
-    private String workflowRun(String workflow, String step) {
-        String section = workflow.substring(workflow.indexOf("      - name: " + step));
-        section = section.substring(section.indexOf("        run: |\n") + "        run: |\n".length());
-        StringBuilder script = new StringBuilder();
-        for (String line : section.split("\n")) {
-            if (!line.isBlank() && !line.startsWith("          ")) break;
-            script.append(line.isBlank() ? "" : line.substring(10)).append('\n');
-        }
-        return script.toString();
     }
 
     private String trace() throws IOException {
@@ -429,19 +396,18 @@ class ReleaseScriptTest {
                 #!/usr/bin/env bash
                 set -eu
                 if [[ "$*" == *'release view'* ]]; then
-                    if [[ "${RELEASE_DRIFT:-}" == artifact ]]; then
-                        echo 'modified' >> build/distributions/reclazz-1.2.3-signed.zip
-                    fi
                     if [[ "$*" == *--json* ]]; then
                         [[ "${RELEASE_FAIL:-}" != read ]] || exit 31
                         echo 'CHECK gh assets' >> build/trace
                         python3 scripts/fixture-github.py
+                    else
+                        echo 'WAIT gh release view' >> build/trace
                     fi
                     exit 0
                 fi
-                if [[ "$*" == *'release upload'* ]]; then
-                    [[ "${RELEASE_FAIL:-}" != upload ]] || exit 32
-                    cp "${*: -1}" build/uploaded.zip
+                if [[ "$*" == *'release create'* ]]; then
+                    [[ "${RELEASE_FAIL:-}" != create ]] || exit 32
+                    cp "$4" build/uploaded.zip
                 fi
                 if [[ "$*" == *'release edit'* ]]; then
                     [[ "${RELEASE_FAIL:-}" != edit ]] || exit 33
@@ -463,6 +429,9 @@ class ReleaseScriptTest {
                 set -eu
                 if [[ "${RELEASE_STUBS:-}" == 1 && ( "$*" == 'tag -a '* || "$*" == 'push '* ) ]]; then
                     echo "UPLOAD git $*" >> build/trace
+                    if [[ "$*" == 'push '* && "${RELEASE_DRIFT:-}" == artifact ]]; then
+                        echo 'modified' >> build/distributions/reclazz-1.2.3-signed.zip
+                    fi
                     exit 0
                 fi
                 exec '%s' "$@"

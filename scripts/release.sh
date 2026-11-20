@@ -10,7 +10,7 @@
 #   scripts/release.sh X.Y.Z [--dry-run] [--skip-publish] [--skip-distribution]
 #
 # --skip-publish leaves the Marketplace upload out (the signed zip is still
-# built and attached to the GitHub release).
+# built and attached to the GitHub release, which this script creates itself).
 # --skip-distribution leaves the Maven Central and Gradle Plugin Portal steps
 # out (the Marketplace release still goes ahead).
 set -euo pipefail
@@ -180,17 +180,35 @@ publish git tag -a "$tag" "$source_commit" -m "Reclazz $version"
 # Push only the checked commit and this tag, not other pending local tags.
 publish git push origin "$source_commit:refs/heads/main" "refs/tags/$tag"
 
+# The GitHub release is created here, from the same checked assets the gate
+# recorded, right after the tag. It used to come from a tag workflow that ran
+# the whole release gate again in CI (about 1h45m) before creating the draft,
+# so 1.8.0 sat on the Marketplace for two hours without a GitHub release.
+notes="build/release-notes/notes-$version.md"
 if [ "$dry_run" = true ]; then
-    echo "would wait for: gh release view $tag"
+    echo "would write: $notes from CHANGELOG.md"
 else
-    for _ in $(seq 1 60); do
-        if gh release view "$tag" >/dev/null 2>&1; then break; fi
-        sleep 10
-    done
-    gh release view "$tag" >/dev/null 2>&1 || { echo "the release for $tag did not appear; check the Release workflow" >&2; exit 1; }
+    mkdir -p "$(dirname "$notes")"
+    {
+        scripts/changelog-section.sh "$version" CHANGELOG.md
+        echo
+        echo '---'
+        echo
+        echo "\`reclazz-agent-$version.jar\` is the agent on its own, for use without the"
+        echo "IntelliJ plugin: add it to a JVM with \`-javaagent:reclazz-agent-$version.jar=...\`."
+        echo "\`reclazz-$version.zip\` is the signed IntelliJ plugin."
+        echo
+        echo "\`reclazz-mcp-$version.jar\` is the standalone stdio MCP server (Java 17+)."
+        echo "Verify its adjacent SHA-256 sidecar, then launch with \`java -jar reclazz-mcp-$version.jar\`."
+        echo "Use an absolute jar path in your MCP client. Installation and agent selection:"
+        echo "https://github.com/onurkat/reclazz/blob/$tag/docs/mcp-server.md"
+    } > "$notes"
 fi
-run python3 scripts/release-evidence.py github-check --draft-only
-publish gh release upload "$tag" "build/release-gate/assets/reclazz-$version.zip"
+assets=build/release-gate/assets
+publish gh release create "$tag" "$assets/reclazz-$version.zip" \
+    "$assets/reclazz-agent-$version.jar" "$assets/reclazz-agent-$version.jar.sha256" \
+    "$assets/reclazz-mcp-$version.jar" "$assets/reclazz-mcp-$version.jar.sha256" \
+    --title "Reclazz $version" --draft --verify-tag --notes-file "$notes"
 run python3 scripts/release-evidence.py github-check
 publish gh release edit "$tag" --draft=false --verify-tag
 github='completed, required asset metadata checked and publish command succeeded; downloads unverified'

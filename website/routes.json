@@ -577,7 +577,7 @@
       "per-release": "per-release",
       "channel-outcomes": "channel-outcomes",
       "manual-recovery": "manual-recovery",
-      "what-the-tag-does-on-its-own": "what-the-tag-does-on-its-own",
+      "what-goes-on-the-github-release": "what-goes-on-the-github-release",
       "website-documentation-is-generated-from-main": "website-documentation-is-generated-from-main",
       "then-hide-what-it-supersedes": "then-hide-what-it-supersedes",
       "release-notes-live-in-two-files": "release-notes-live-in-two-files",

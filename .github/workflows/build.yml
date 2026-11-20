@@ -4,13 +4,12 @@ on:
   # The three-platform matrix (Windows included) is the expensive part, and it
   # was running on every push to main and every pull request, including the many
   # prose-only commits. To keep Actions spend down it no longer runs
-  # automatically: it runs on demand, and when a release tag is pushed, which is
-  # when the full cross-platform check is actually wanted. Local lanes run
-  # targeted checks; full suites run only on owner request or before release.
+  # automatically: it runs on demand, and is run by hand on the release
+  # candidate before the release. Not on the tag: that commit has already
+  # passed it, and rerunning it there only spent another two hours.
+  # Local lanes run targeted checks; full suites run only on owner request or
+  # before release.
   workflow_dispatch:
-  push:
-    tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'
 
 # Cancel superseded runs of the same branch/PR
 concurrency:

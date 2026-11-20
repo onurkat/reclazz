@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Shared local/tag-workflow gate. No IDE signing, tagging or remote publication.
+# The release gate (release.sh runs it). No IDE signing, tagging or remote publication.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 # The Orika e2e tests need SAP Commerce's Orika jars and skip without them. Supply them when a
-# local install is present (release.sh requires it); the tag workflow has none and skips them.
+# local install is present (release.sh requires it); without one they skip.
 if [ -z "${RECLAZZ_ORIKA_TEST_CLASSPATH:-}" ] && orika="$(scripts/orika-test-classpath.sh)"; then
     export RECLAZZ_ORIKA_TEST_CLASSPATH="$orika"
 fi
