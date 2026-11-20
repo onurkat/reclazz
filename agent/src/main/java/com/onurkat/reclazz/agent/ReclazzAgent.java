@@ -369,7 +369,7 @@ public class ReclazzAgent {
             // tenant init, AFTER Spring refresh has completed).
             try {
                 if (bootstrapInstalled) {
-                    instrumentation.addTransformer(new com.onurkat.reclazz.platform.BootLoggingBaselineTransformer(), false);
+                    instrumentation.addTransformer(new com.onurkat.reclazz.transform.BootLoggingBaselineTransformer(), false);
                 }
                 SpringContextInterceptTransformer contextTransformer = new SpringContextInterceptTransformer();
                 instrumentation.addTransformer(contextTransformer, false);

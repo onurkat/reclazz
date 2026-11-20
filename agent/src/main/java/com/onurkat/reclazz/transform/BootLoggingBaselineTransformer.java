@@ -1,5 +1,5 @@
 /* Copyright 2026 Onur Kat. SPDX-License-Identifier: Apache-2.0 */
-package com.onurkat.reclazz.platform;
+package com.onurkat.reclazz.transform;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;

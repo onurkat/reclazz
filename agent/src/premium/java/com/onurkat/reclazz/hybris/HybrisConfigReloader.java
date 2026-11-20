@@ -175,7 +175,7 @@ public class HybrisConfigReloader {
             Object platform=utility.getMethod("getPlatformConfig",Class.class).invoke(null,config);
             utility.getMethod("loadRuntimeProperties",java.util.Properties.class,platform.getClass()).invoke(null,merged,platform);
             if(!matchesCandidate(candidate))throw new IllegalStateException("logger candidate changed during native merge");
-            for(String key:removed)if(com.onurkat.reclazz.reload.LoggingReloader.isLevelKey(key)) {
+            for(String key:removed)if(com.onurkat.reclazz.platform.LoggingPropertyKeys.isLevelKey(key)) {
                 String value=merged.getProperty(key);
                 if(value==null)result.remove(key);else if(!isUnresolved(value))result.put(key,value);
                 else throw new IllegalStateException("unresolved lower logger value");
@@ -199,7 +199,7 @@ public class HybrisConfigReloader {
             Object all=config.getMethod("getAllParameters").invoke(null);
             if(all instanceof java.util.Map<?,?> map)map.forEach((key,value)->{
                 if(key instanceof String name && value instanceof String text
-                        && com.onurkat.reclazz.reload.LoggingReloader.isLevelKey(name) && !isUnresolved(text))values.put(name,text);
+                        && com.onurkat.reclazz.platform.LoggingPropertyKeys.isLevelKey(name) && !isUnresolved(text))values.put(name,text);
             });
         }catch(ReflectiveOperationException | RuntimeException unavailable) {
             // Older/test Config APIs can still answer the requested keys through currentValues.

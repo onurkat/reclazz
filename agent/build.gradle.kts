@@ -900,7 +900,7 @@ for ((line, versions) in mapOf(
         dependencies.add(isolated.name, "org.slf4j:slf4j-api:${versions[2]}")
     }
 }
-for ((taskName, line) in mapOf("test" to "Boot27", "unitTest" to "Boot27", "springSixTest" to "Boot33", "springSevenTest" to "Boot41")) {
+for ((taskName, line) in mapOf("test" to "Boot27", "unitTest" to "Boot27", "e2eTest" to "Boot27", "springSixTest" to "Boot33", "springSevenTest" to "Boot41")) {
     tasks.named<Test>(taskName) {
         // Resolve only when this focused test task actually runs.
         doFirst {

@@ -228,7 +228,7 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
             if (candidate == null) return;
             java.util.Map<String,String> previous=propertySnapshots.previous(candidate);
             java.util.Set<String> removed = propertySnapshots.removed(candidate);
-            var loggerResetKeys=com.onurkat.reclazz.reload.LoggingReloader.resetKeys(previous,removed,candidate.changed().keySet(),candidate.content());
+            var loggerResetKeys=com.onurkat.reclazz.platform.LoggingPropertyKeys.resetKeys(previous,removed,candidate.changed().keySet(),candidate.content());
             var otherRemoved=new java.util.TreeSet<>(removed);otherRemoved.removeIf(Assembly::isLoggingKey);
             if (!otherRemoved.isEmpty()) {
                 StatusReporter.warn("Removed from " + fileName + ": " + otherRemoved + ". The running configuration keeps its value until a restart, since what a removed key falls back to depends on the other files.");
@@ -284,8 +284,8 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
                         }
                     }
                     var properties=new java.util.Properties();properties.putAll(candidate.content());
-                    int expectedSets=com.onurkat.reclazz.reload.LoggingReloader.levelsIn(properties,applied).size();
-                    boolean handled=resetVerified && resetCount==com.onurkat.reclazz.reload.LoggingReloader.resetLoggerNames(previous,loggerResetKeys).size()
+                    int expectedSets=com.onurkat.reclazz.platform.LoggingPropertyKeys.levelsIn(properties,applied).size();
+                    boolean handled=resetVerified && resetCount==com.onurkat.reclazz.platform.LoggingPropertyKeys.resetLoggerNames(previous,loggerResetKeys).size()
                             && loggerSets==expectedSets;
                     if(handled) {
                         var acknowledge=new java.util.LinkedHashSet<String>(removed);
@@ -326,8 +326,8 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
                 int levels = context.applyLoggerLevels(candidate.content(), changed.keySet());
                 int resetCount=context.resetLoggerLevels(previous,loggerResetKeys,candidate.content());
                 var properties=new java.util.Properties();properties.putAll(candidate.content());
-                if(levels==com.onurkat.reclazz.reload.LoggingReloader.levelsIn(properties,changed.keySet()).size()
-                        && resetCount==com.onurkat.reclazz.reload.LoggingReloader.resetLoggerNames(previous,loggerResetKeys).size()) {
+                if(levels==com.onurkat.reclazz.platform.LoggingPropertyKeys.levelsIn(properties,changed.keySet()).size()
+                        && resetCount==com.onurkat.reclazz.platform.LoggingPropertyKeys.resetLoggerNames(previous,loggerResetKeys).size()) {
                     var acknowledge=new java.util.LinkedHashSet<>(loggerResetKeys);
                     changed.keySet().stream().filter(Assembly::isLoggingKey).forEach(acknowledge::add);
                     propertySnapshots.acceptKeys(candidate,acknowledge);
@@ -472,7 +472,7 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
             reloader.handle(event);
         }
         private static boolean isLoggingKey(String key) {
-            return com.onurkat.reclazz.reload.LoggingReloader.isLevelKey(key);
+            return com.onurkat.reclazz.platform.LoggingPropertyKeys.isLevelKey(key);
         }
     }
 }
