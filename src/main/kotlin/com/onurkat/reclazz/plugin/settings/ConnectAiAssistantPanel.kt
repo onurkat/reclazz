@@ -47,12 +47,16 @@ class ConnectAiAssistantPanel internal constructor(
     private var cleanupPreview:List<Path> = emptyList()
     private var cleanupCurrent:McpLauncherStaging.Staged?=null
     private var detectedClients:Map<McpClient,Boolean> = emptyMap()
-    internal val status=object:JLabel() {
-        override fun setText(text:String?) {
-            val escaped=text.orEmpty().replace("&","&amp;").replace("<","&lt;").replace(">","&gt;")
-            super.setText("<html><body style='width: 850px'>"+escaped+"</body></html>")
-        }
-    }.apply { text="Select a client and preview its Reclazz entry. No client config has been written." }
+    internal val status=object:JTextArea(2,70) {
+        override fun setText(text:String?) { super.setText(text);toolTipText=text }
+    }.apply {
+        isEditable=false;isFocusable=false;isOpaque=false
+        lineWrap=true;wrapStyleWord=true
+        font=UIManager.getFont("Label.font")
+        minimumSize=Dimension(0,0)
+        accessibleContext.accessibleName="Status"
+        text="Select a client and preview its Reclazz entry. No client config has been written."
+    }
     private val formatNotice=JLabel("VS Code uses editor-managed MCP configuration (deprecated; removal February 2027).").apply { isVisible=false }
     private val before=JTextArea(12,35).apply { isEditable=false;lineWrap=true;wrapStyleWord=false;minimumSize=Dimension(0,0) }
     private val after=JTextArea(12,35).apply { isEditable=false;lineWrap=true;wrapStyleWord=false;minimumSize=Dimension(0,0) }

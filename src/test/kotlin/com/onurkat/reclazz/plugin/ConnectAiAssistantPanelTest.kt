@@ -43,6 +43,22 @@ class ConnectAiAssistantPanelTest : BasePlatformTestCase() {
             (if(c is java.awt.Container)c.components.flatMap { areas(it) } else emptyList())
         yes(areas(panel).all { it.lineWrap })
     }
+    fun testLongStatusDoesNotExpandDialogWidth()=fixture { panel,_,_ ->
+        McpPanelTestUi.edt {
+            val width=panel.preferredSize.width
+            val minimumWidth=panel.minimumSize.width
+            val message="Backup: /"+"a".repeat(400)
+            panel.status.text=message
+            yes(panel.status.preferredSize.width<=width,"Unbroken status must fit the dialog width")
+            eq(minimumWidth,panel.minimumSize.width,"Status must not increase the dialog minimum width")
+            eq(width,panel.preferredSize.width)
+            eq(message,panel.status.text,"Full status must remain available")
+            eq(message,panel.status.toolTipText)
+            yes(panel.status.lineWrap);yes(panel.status.wrapStyleWord)
+            no(panel.status.isEditable);no(panel.status.isFocusable);no(panel.status.isOpaque)
+            eq("Status",panel.status.accessibleContext.accessibleName)
+        }
+    }
     fun testMissingOptionalEditorsRemainCopyOnly() {
         var clipboard=""
         fixture(false,{clipboard=it}) { panel,dir,_ ->
