@@ -9,12 +9,17 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.function.LongSupplier;
 import java.util.regex.Pattern;
 
 /** Received-event correlation followed by an exact-byte receipt, never source-revision proof. */
 final class AwaitReload implements AutoCloseable {
     private final ObservationRegistry registry;
-    AwaitReload(ObservationRegistry registry) { this.registry = registry; }
+    private final LongSupplier nanoTime;
+    AwaitReload(ObservationRegistry registry) { this(registry, System::nanoTime); }
+    AwaitReload(ObservationRegistry registry, LongSupplier nanoTime) {
+        this.registry = registry; this.nanoTime = nanoTime;
+    }
     record Selection(String status, long sequence, String detail) { }
 
     static boolean valid(JsonObject args, Map<String, String> opts) {
@@ -39,7 +44,7 @@ final class AwaitReload implements AutoCloseable {
     private static boolean token(String s) { return s != null && s.matches("[A-Za-z0-9_-]{1,64}"); }
 
     JsonObject run(Map<String, String> opts, RequestCancellation cancel) {
-        long until = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(Integer.parseInt(opts.getOrDefault("timeoutMs", "5000")));
+        long until = nanoTime.getAsLong() + TimeUnit.MILLISECONDS.toNanos(Integer.parseInt(opts.getOrDefault("timeoutMs", "5000")));
         JsonObject out = base(opts);
         ObservationRegistry.Entry entry = null;
         try {
@@ -60,7 +65,7 @@ final class AwaitReload implements AutoCloseable {
             if (owner == null) throw new EventSubscription.Failure("owner_required", "Source mode requires ownerClassName; basenames cannot identify a binary owner");
             out.addProperty("ownerClassName", owner);
             String file = opts.containsKey("filePath") ? Path.of(opts.get("filePath")).getFileName().toString() : null;
-            while (System.nanoTime() < until) {
+            while (nanoTime.getAsLong() < until) {
                 if (cancel.isCancelled()) throw new EventSubscription.Failure("cancelled", "Observation cancelled");
                 List<EventSubscription.Event> events = observations(out, stream, after);
                 Selection selected = select(events, file, owner);
@@ -100,7 +105,7 @@ final class AwaitReload implements AutoCloseable {
                     return outcome(out, "held", "admission_blocked", "Agent-wide admission state only; target observation/pending is unconfirmed and already admitted work may finish");
                 }
                 long head = stream.cursor();
-                if (System.nanoTime() >= until) break;
+                if (nanoTime.getAsLong() >= until) break;
                 stream.awaitChange(head, until);
             }
             return outcome(out, "timeout", "no_matching_outcome", "No qualifying received-event and receipt evidence before the total deadline");

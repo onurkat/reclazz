@@ -15,10 +15,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AwaitReloadTest {
     static final String OWNER = "com.example.Service";
+    static final int RESPONSE_BUDGET_MS = 5000, SHORT_DEADLINE_MS = 250;
     static JsonObject request(int port, String action) {
         JsonObject r = JsonParser.parseString("{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/call\",\"params\":{\"name\":\"reclazz_await_reload\",\"arguments\":{}}}").getAsJsonObject();
         JsonObject a = r.getAsJsonObject("params").getAsJsonObject("arguments");
-        a.addProperty("port", "" + port); a.addProperty("action", action); a.addProperty("timeoutMs", "1000");
+        a.addProperty("port", "" + port); a.addProperty("action", action); a.addProperty("timeoutMs", Integer.toString(RESPONSE_BUDGET_MS));
         return r;
     }
     static JsonObject data(McpServer server, JsonObject request) {
@@ -90,7 +91,11 @@ class AwaitReloadTest {
     static final class Fixture implements AutoCloseable {
         final AtomicReference<PrintWriter> output = new AtomicReference<>();
         final List<String> commands = new CopyOnWriteArrayList<>();
-        final McpServer server = new McpServer();
+        final java.util.concurrent.atomic.AtomicLong clockOffset = new java.util.concurrent.atomic.AtomicLong();
+        final McpServer server = new McpServer(
+                McpTarget.parse(new String[0], Path.of(System.getProperty("user.dir"))),
+                () -> System.nanoTime() + clockOffset.get());
+        int timeoutMs = RESPONSE_BUDGET_MS;
         volatile String status = "applied", session = "session-test";
         volatile boolean acceptsReset;
         volatile java.net.SocketException resetFailure;
@@ -124,7 +129,16 @@ class AwaitReloadTest {
                 }
             });
         }
-        JsonObject checkpoint() { return data(server, request(agent.server.getLocalPort(), "checkpoint")); }
+        JsonObject checkpoint() {
+            JsonObject result = data(server, request(agent.server.getLocalPort(), "checkpoint"));
+            assertEquals("ready", result.get("status").getAsString(), result.toString());
+            return result;
+        }
+        void expireAfterAdmissionResponse() {
+            // Advance only after real session/transport checks have succeeded. Socket queries
+            // keep their real monotonic deadline; the next await-loop check expires immediately.
+            beforeState = out -> clockOffset.set(java.util.concurrent.TimeUnit.SECONDS.toNanos(10));
+        }
         JsonObject observed(JsonObject result) {
             if ("unavailable".equals(result.get("status").getAsString())
                     && result.has("reasonCode") && "response_timeout".equals(result.get("reasonCode").getAsString())
@@ -139,10 +153,9 @@ class AwaitReloadTest {
             JsonObject a = r.getAsJsonObject("params").getAsJsonObject("arguments");
             if (source) { a.remove("className"); a.addProperty("filePath", Path.of("build", "synthetic", "Service.java").toAbsolutePath().normalize().toString()); a.addProperty("ownerClassName", OWNER); }
             if (!hash) a.remove("sha256");
-            // A total deadline, not a sleep: it also has to cover the read-only session and
-            // admission queries. At 200 ms a slow CI runner (reproduced at 0.15 CPU in Docker)
-            // ran out during those queries and reported unavailable instead of timeout.
-            a.addProperty("timeoutMs", "1000"); return r;
+            // Successful protocol exchanges get a separate budget from intentional real
+            // response-timeout witnesses. No-event tests advance the loop clock after state.
+            a.addProperty("timeoutMs", Integer.toString(timeoutMs)); return r;
         }
         void emit(String level, String message) {
             // The fake agent publishes its writer from its own thread after the first connection;
@@ -163,6 +176,7 @@ class AwaitReloadTest {
     @Test void responseTimeoutResetDoesNotFailFixtureClose() throws Exception {
         try (var f = new Fixture()) {
             JsonObject cp = f.checkpoint();
+            f.timeoutMs = SHORT_DEADLINE_MS;
             var release = new java.util.concurrent.CountDownLatch(1);
             f.beforeState = out -> {
                 assertTrue(release.await(5, java.util.concurrent.TimeUnit.SECONDS));
@@ -209,6 +223,7 @@ class AwaitReloadTest {
                 f.checkpoint();
                 if (mode.equals("stale")) { f.emit("COMPILE", "Compiled Service.java (1ms)"); f.emit("RELOAD", "Reloaded " + OWNER + " (1ms)"); }
                 JsonObject cp = f.checkpoint();
+                f.expireAfterAdmissionResponse();
                 switch (mode) {
                     case "other-owner" -> { f.emit("COMPILE", "Compiled Service.java (1ms)"); f.emit("RELOAD", "Reloaded " + OWNER + "Other (1ms)"); }
                     case "inner-display" -> { f.emit("COMPILE", "Compiled Service.java (1ms)"); f.emit("RELOAD", "Reloaded " + OWNER + " (inner class) (1ms)"); }
@@ -217,6 +232,7 @@ class AwaitReloadTest {
                     case "wrong-order" -> { f.emit("RELOAD", "Reloaded " + OWNER + " (1ms)"); f.emit("COMPILE", "Compiled Service.java (1ms)"); }
                 }
                 JsonObject d = f.await(cp, true, true);
+                assertEquals("timeout", d.get("status").getAsString(), mode + d);
                 assertRanOutOfTime(d, mode);
                 assertEquals(0, f.commands.stream().filter(c -> c.startsWith("VERIFY ")).count(), mode);
             }
@@ -238,10 +254,12 @@ class AwaitReloadTest {
         for (String status : List.of("failed", "unverified", "mismatch", "not_observed", "running")) {
             try (var f = new Fixture()) {
                 f.status = status; JsonObject cp = f.checkpoint();
+                if (Set.of("not_observed", "running").contains(status)) f.timeoutMs = SHORT_DEADLINE_MS;
                 f.emit("RELOAD", "Reloaded " + OWNER + " (1ms)");
                 JsonObject d = f.await(cp, false, true);
                 assertNotEquals("applied", d.get("status").getAsString(), status + d);
                 assertFalse(d.get("reloadConfirmed").getAsBoolean());
+                assertTrue(f.commands.stream().anyMatch(c -> c.startsWith("VERIFY ")), status + d);
             }
         }
         try (var f = new Fixture()) {
@@ -280,8 +298,12 @@ class AwaitReloadTest {
     @Test void genericOrWrongDiagnosticCannotBeAssignedToTheTarget() throws Exception {
         for (String diagnostic : List.of("  Other.java:1: missing", "  Service.javaOther:1: missing", "Compilation failed for module", "  Service.java: no line")) {
             try (var f = new Fixture()) {
-                JsonObject cp = f.checkpoint(); f.emit("ERROR", "Compilation failed:"); f.emit("ERROR", diagnostic);
-                assertRanOutOfTime(f.await(cp, true, true), diagnostic);
+                JsonObject cp = f.checkpoint(); f.expireAfterAdmissionResponse();
+                f.emit("ERROR", "Compilation failed:"); f.emit("ERROR", diagnostic);
+                JsonObject d = f.await(cp, true, true);
+                assertEquals("timeout", d.get("status").getAsString(), diagnostic + d);
+                assertRanOutOfTime(d, diagnostic);
+                assertTrue(f.commands.stream().noneMatch(c -> c.startsWith("VERIFY ")), diagnostic);
             }
         }
     }

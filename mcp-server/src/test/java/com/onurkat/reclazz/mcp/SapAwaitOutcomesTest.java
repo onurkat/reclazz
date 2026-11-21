@@ -40,9 +40,12 @@ class SapAwaitOutcomesTest {
         for (boolean held : List.of(false,true)) try (var f = new AwaitReloadTest.Fixture()) {
             JsonObject cp = f.checkpoint(); empty(cp);
             if (held) f.admission = "paused=false pendingClasses=0 pendingActions=1 buildHold=named";
+            else f.expireAfterAdmissionResponse();
             for (var sample : SapOperationObservationTest.samples()) f.emit(sample.level(),sample.message());
             JsonObject d = await(f,cp);
             assertEquals(held ? "held" : "timeout",d.get("status").getAsString(),d.toString());
+            assertEquals(1, f.commands.stream().filter(c -> c.startsWith("RELOAD status request=")).count(),
+                    "The explicit expiry must end the no-event loop after its first admission response");
             assertFalse(d.get("reloadConfirmed").getAsBoolean()); assertFalse(d.has("receipt"));
             assertEquals(16,d.getAsJsonArray("sapOutcomes").size()); assertTrue(d.get("sapOutcomesTruncated").getAsBoolean());
             long previous = 0;
@@ -72,6 +75,7 @@ class SapAwaitOutcomesTest {
             for (JsonElement e : d.getAsJsonArray("sapOutcomes")) assertFalse(e.getAsJsonObject().has("ownerClassName"));
             export("await-applied","reclazz_await_reload",d);
             JsonObject fresh = f.checkpoint(); empty(fresh);
+            f.expireAfterAdmissionResponse();
             assertFreshCheckpointExpired(f,fresh);
         }
     }
@@ -87,6 +91,7 @@ class SapAwaitOutcomesTest {
     @Test void freshCheckpointReadOnlyDeadlineHasNoNeighborReceipt() throws Exception {
         try (var f = new AwaitReloadTest.Fixture()) {
             JsonObject fresh = f.checkpoint();
+            f.timeoutMs = AwaitReloadTest.SHORT_DEADLINE_MS;
             var release = new java.util.concurrent.CountDownLatch(1);
             f.beforeState = out -> assertTrue(release.await(5, java.util.concurrent.TimeUnit.SECONDS));
             try { assertFreshCheckpointExpired(f,fresh); }

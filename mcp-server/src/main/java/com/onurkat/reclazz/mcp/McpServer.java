@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.LongSupplier;
 
 /**
  * A small Model Context Protocol server: it turns the running Reclazz agent's
@@ -32,14 +33,17 @@ public final class McpServer implements AutoCloseable {
     private static final String SERVER_NAME = "reclazz-mcp";
     private final McpTarget target;
     private final ObservationRegistry observations = new ObservationRegistry();
-    private final AwaitReload awaitReload = new AwaitReload(observations);
+    private final AwaitReload awaitReload;
     private final RecentEvents recentEvents = new RecentEvents(observations);
     private final ReadOnlyQueries queries = new ReadOnlyQueries(recentEvents);
 
     @Override public void close() { awaitReload.close(); }
 
     public McpServer() { this(McpTarget.parse(new String[0], Path.of(System.getProperty("user.dir")))); }
-    McpServer(McpTarget target) { this.target = target; }
+    McpServer(McpTarget target) { this(target, System::nanoTime); }
+    McpServer(McpTarget target, LongSupplier nanoTime) {
+        this.target = target; this.awaitReload = new AwaitReload(observations, nanoTime);
+    }
 
     /** Handle one JSON-RPC request. Returns the response, or null for a notification. */
     public JsonObject handle(JsonObject request) {
