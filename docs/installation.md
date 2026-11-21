@@ -194,9 +194,10 @@ server-facing agent at a stable path, outside versioned IDE installation folders
 ## Optional MCP server
 
 First run the application with the agent using one of the routes above. Then
-follow [MCP installation](mcp-server.md#running-it): build or obtain the matching
-standalone `reclazz-mcp-X.Y.Z.jar`, verify its checksum, and point the client's
-stdio configuration at its absolute path and a Java 17+ executable. Use an
+use **Settings | Tools | Reclazz | Connect AI assistant** in IntelliJ for the bundled
+matching MCP server, preview and confirmation. For standalone/manual setup, follow
+[MCP installation](mcp-server.md#running-it): build or obtain the matching
+`reclazz-mcp-X.Y.Z.jar`, verify its checksum, and configure a Java 17+ executable. Use an
 explicit application `portFile` in tool calls when the client's working directory
 is different. The MCP server connects to the application; it does not launch or
 instrument it. MCP assets/features described on main are not retroactively

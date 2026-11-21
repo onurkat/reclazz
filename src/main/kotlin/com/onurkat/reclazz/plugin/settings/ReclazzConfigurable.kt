@@ -145,6 +145,10 @@ class ReclazzConfigurable internal constructor(
             row {
                 label(liveSettingsMarkup(liveSettingsManager?.liveSettingsStatus.orEmpty())).applyToComponent { liveSettingsLabel = this }
             }
+            row {
+                button("Connect AI assistant") { ConnectAiAssistantPanel.show(project) }
+                contextHelp("Connect Claude Code, Cursor, VS Code or Codex to the bundled Reclazz MCP server. Preview and confirm before changing client settings.")
+            }
             if (isHybris) {
                 group("SAP Commerce") {
                     row {

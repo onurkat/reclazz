@@ -18,6 +18,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   the installed schema and report an unverified receipt with precise restart concerns.
   Stock, pre-watch, ambiguous-owner and ordinary-class/record kind changes remain refused.
 
+- The IntelliJ plugin bundles its matching MCP server and offers **Connect AI assistant**
+  in Settings for Claude Code, Cursor, VS Code and Codex. Project setup is the default;
+  preview and confirmation preserve other entries, with a timestamped backup before replacement.
+  Preview is read-only; Copy requires explicit publication confirmation. Project scope
+  stays inside the IDE project, setup runs off the UI thread, and cleanup protects the
+  running version and copied setups. Windows automatic setup refuses unsafe batch paths.
+  Versioned launchers find Java 17+ without putting an IDE Java path in client configs.
+
 - SAP Commerce Settings offers a read-only **Check setup** report with concrete
   fixes for launch properties/wrappers, debug flags, jar/JDK versions, other
   agents and watched extensions, plus a running-agent DOCTOR summary when
@@ -42,6 +50,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   shape capture when no accepted schema exists.
 
 ### Fixed
+
+- MCP discovers a SAP Commerce port file in fixed descendant installation layouts
+  when the selected project sits above the platform home. Explicit endpoints keep
+  precedence; multiple installations and paths escaping the project are not guessed.
 
 - Spring Data repository type lookups remain discoverable while a warm FactoryBean
   is recreated, preventing concurrent requests from retaining an empty type cache.

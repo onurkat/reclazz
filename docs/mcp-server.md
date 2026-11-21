@@ -18,6 +18,44 @@ For the developer workflow, read
 [MCP for coding agents: close the loop](mcp-for-coding-agents.md): each benefit
 has a recorded example and a limit, from target discovery to byte receipts.
 
+## Connect from IntelliJ
+
+In **Settings | Tools | Reclazz**, choose **Connect AI assistant**. The plugin includes
+its matching MCP jar; no separate download is needed. Select Claude Code, Cursor,
+VS Code or Codex, preview the target file and the Reclazz entry, then choose **Connect**
+to confirm. Existing files get a timestamped, uniquely named backup next to the original; the saved message shows its location. A file
+changed after preview, invalid syntax or an ambiguous entry must be corrected before
+registration. Other server entries and comments are preserved.
+
+Project scope is the default and accepts only this IDE project or a directory inside it.
+Symlinked config files and parent directories are refused. Cursor and Codex offer an explicit global choice;
+review the previous project target before replacing a global Reclazz entry. Codex
+project configuration requires a trusted project. VS Code setup uses its deprecated
+editor-managed `servers` format, not Copilot-native configuration. Reconnect the client
+and complete any client-side approval/trust prompt.
+
+**Copy command / config** provides manual setup when optional JSON or TOML support
+is unavailable. Its first click previews the setup without writing; **Create and copy**
+explicitly confirms launcher/fallback publication and remembers the copied version.
+Preview alone never creates or refreshes the MCP cache. Codex project scope copies TOML, while a global selection can copy
+`codex mcp add`. The MCP launchers live under
+`~/.reclazz/mcp/<version>-<digest>/`; the digest covers the MCP jar and both exact
+launcher templates, so another launcher generation gets its own directory. Client
+entries keep their version. Java selection
+is `RECLAZZ_JAVA`, `JAVA_HOME`, PATH, then the IDE Java fallback refreshed at staging.
+An invalid explicit Java choice reports an error. Java must be 17+; a running application
+still needs its agent. Old unreferenced versions can be previewed and removed through
+an explicit Settings action; the running plugin version, newest three version numbers,
+known client references and copied setups are kept. Copied setups stay protected even
+before paste. Cleanup cannot discover manually created, unregistered client configs;
+check those before confirming deletion.
+
+Windows automatic setup refuses paths containing `&`, `%`, `^`, `!`, quotes or line
+separators because batch invocations reparse arguments. Copy also refuses dollar signs
+and backticks, whose meaning differs between PowerShell and cmd. Use a safe project
+and launcher directory for automatic setup. The UTF-8 IDE Java fallback is read under
+a temporary UTF-8 code page; the previous code page is restored before Java starts.
+
 ## Running it
 
 The server requires Java 17 or newer and speaks JSON-RPC over stdio. It is a
@@ -80,8 +118,12 @@ Restart/reconnect the MCP client after changing the entry.
 
 The application must separately run with the Reclazz agent attached. The
 `--project-dir` option makes startup independent of the client's working
-directory. Discovery checks only that directory's `.reclazz/agent.port` and
-`.idea/reclazz/agent.port`, in that order. For a custom port file, also add
+directory. Discovery checks that directory's `.reclazz/agent.port` and
+`.idea/reclazz/agent.port`, in that order. If neither exists, it checks fixed SAP Commerce
+homes: the base, `hybris`, `core-customize/hybris`, `core-customize`, `commerce-suite`,
+and `ccv2/hybris`. A home needs `bin/platform/build.xml` and `.reclazz/agent.port`,
+with canonical paths inside the selected project. There is no recursive or upward scan;
+multiple eligible files require an explicit choice. For a custom port file, also add
 `"--port-file", "relative/or/absolute/agent.port"` to the argument array.
 The port file may be absent at startup; the application can create it later.
 An absent, unreadable, malformed or unreachable explicit target never causes

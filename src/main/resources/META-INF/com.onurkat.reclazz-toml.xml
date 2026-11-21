@@ -1,0 +1,6 @@
+<idea-plugin>
+    <extensions defaultExtensionNs="com.intellij">
+        <projectService serviceInterface="com.onurkat.reclazz.plugin.settings.TomlMcpEditor"
+                        serviceImplementation="com.onurkat.reclazz.plugin.settings.TomlPsiMcpEditor"/>
+    </extensions>
+</idea-plugin>

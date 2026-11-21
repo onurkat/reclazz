@@ -31,6 +31,7 @@ dependencies {
     intellijPlatform {
         intellijIdeaCommunity(providers.gradleProperty("platformVersion").get())
         bundledPlugin("com.intellij.java")
+        bundledPlugin("org.toml.lang")
 
         // Real Application and Project fixtures. The bytecode call-graph test
         // answers "can startup reach a dialog"; this answers "does startup
@@ -64,6 +65,13 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+    // DistributionContentsTest must inspect this build even when :test is invoked alone.
+    val distribution = tasks.named<Zip>("buildPlugin")
+    dependsOn(distribution)
+    inputs.file(distribution.flatMap { it.archiveFile })
+    doFirst {
+        systemProperty("reclazz.distribution.zip", distribution.get().archiveFile.get().asFile.absolutePath)
+    }
 }
 
 // Signing material, resolved once so both the intellijPlatform block and
@@ -353,6 +361,7 @@ intellijPlatform {
 
 // Bundle the agent shadow JAR as a separate file in the plugin distribution
 evaluationDependsOn(":agent")
+evaluationDependsOn(":mcp-server")
 
 val copyAgentJar = tasks.register("copyAgentJar", Copy::class) {
     val agentShadowJar = project(":agent").tasks.named("shadowJar")
@@ -362,16 +371,30 @@ val copyAgentJar = tasks.register("copyAgentJar", Copy::class) {
     into(layout.buildDirectory.dir("idea-sandbox/plugins/reclazz/agent"))
 }
 
+val copyMcpJar = tasks.register("copyMcpJar", Copy::class) {
+    val mcpShadowJar = project(":mcp-server").tasks.named("shadowJar")
+    dependsOn(mcpShadowJar)
+    from(mcpShadowJar)
+    rename { "reclazz-mcp.jar" }
+    into(layout.buildDirectory.dir("idea-sandbox/plugins/reclazz/mcp"))
+}
+
 tasks.named("prepareSandbox") {
-    dependsOn(copyAgentJar)
+    dependsOn(copyAgentJar, copyMcpJar)
 }
 
 tasks.named("buildPlugin") {
-    dependsOn(copyAgentJar)
+    dependsOn(copyAgentJar, copyMcpJar)
 }
 
 // Also include the agent JAR in the final distribution ZIP
 tasks.named<Zip>("buildPlugin") {
+    val mcpShadowJar = project(":mcp-server").tasks.named("shadowJar")
+    dependsOn(mcpShadowJar)
+    from(mcpShadowJar) {
+        rename { "reclazz-mcp.jar" }
+        into("mcp")
+    }
     val agentShadowJar = project(":agent").tasks.named("shadowJar")
     dependsOn(agentShadowJar)
     from(agentShadowJar) {

@@ -142,7 +142,9 @@ final class AgentSocket {
             }
         }
         if (port == null) {
-            Path portFile = locatePortFile(opts);
+            Path portFile;
+            try { portFile = locatePortFile(opts); }
+            catch (IOException invalid) { result.reason = invalid.getMessage(); return; }
             if (portFile == null) {
                 result.reason = "no port file found; run the app with the Reclazz agent, or pass port/portFile";
                 return;
@@ -160,7 +162,7 @@ final class AgentSocket {
         }
     }
 
-    private static Path locatePortFile(Map<String, String> opts) {
+    private static Path locatePortFile(Map<String, String> opts) throws IOException {
         if (opts.containsKey("portFile")) {
             Path p = Paths.get(opts.getOrDefault("baseDir", System.getProperty("user.dir"))).resolve(opts.get("portFile"));
             return Files.isRegularFile(p) ? p : null;
@@ -177,7 +179,22 @@ final class AgentSocket {
         for (Path p : candidates) {
             if (Files.isRegularFile(p)) return p;
         }
-        return null;
+        // Fixed descendant layouts only. Explicit selectors and original defaults
+        // above retain precedence, including their fail-closed behavior.
+        Path root = Paths.get(base).toRealPath();
+        var discovered = new java.util.LinkedHashSet<Path>();
+        for (String relative : List.of("", "hybris", "core-customize/hybris", "core-customize", "commerce-suite", "ccv2/hybris")) {
+            Path home = root.resolve(relative);
+            Path marker = home.resolve("bin/platform/build.xml");
+            Path port = home.resolve(".reclazz/agent.port");
+            if (!Files.isRegularFile(marker) || !Files.isRegularFile(port)) continue;
+            Path realHome = home.toRealPath(), realMarker = marker.toRealPath(), realPort = port.toRealPath();
+            if (!realHome.startsWith(root) || !realMarker.startsWith(root) || !realPort.startsWith(root)) continue;
+            discovered.add(realPort);
+        }
+        if (discovered.size() > 1)
+            throw new IOException("ambiguous SAP Commerce port files; select --port-file explicitly: " + discovered);
+        return discovered.stream().findFirst().orElse(null);
     }
 
     private static int intOption(Map<String, String> opts, String key, int fallback) {

@@ -61,6 +61,24 @@ class DistributionContentsTest {
         }
     }
 
+    @Test
+    fun `bundled MCP and agent have the plugin release version`() {
+        val configured=System.getProperty("reclazz.distribution.zip")
+        val zip=if(configured!=null) File(configured) else newestDistribution()
+            ?: error("Build the plugin zip before checking its bundled MCP")
+        ZipFile(zip).use { archive ->
+            fun manifest(suffix:String):java.util.jar.Manifest {
+                val entry=archive.entries().toList().single { it.name.endsWith(suffix) }
+                java.util.jar.JarInputStream(archive.getInputStream(entry)).use { return checkNotNull(it.manifest) }
+            }
+            val mcp=manifest("mcp/reclazz-mcp.jar").mainAttributes
+            val agent=manifest("agent/reclazz-agent.jar").mainAttributes
+            org.junit.Assert.assertEquals(agent.getValue("Implementation-Version"),mcp.getValue("Implementation-Version"))
+            org.junit.Assert.assertEquals("com.onurkat.reclazz.mcp.McpMain",mcp.getValue("Main-Class"))
+            assertTrue(mcp.getValue("Implementation-Version").isNotBlank())
+        }
+    }
+
     private fun newestDistribution(): File? =
         File("build/distributions").listFiles { f: File -> f.name.endsWith(".zip") && !f.name.contains("signed") }
             ?.maxByOrNull { it.lastModified() }
