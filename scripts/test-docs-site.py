@@ -584,11 +584,11 @@ class Stage3bContractTest(unittest.TestCase):
         for mutation in [rows.replace('class="badge works"','class="badge restart"',1),rows.replace('/docs/support-matrix/#method-body','/docs/support-matrix/#missing',1),rows.replace(self.records[0]['conditions'],'drift',1)]:
             self.assertTrue(guide_records_errors(self.records,{'guide':mutation},assignment))
         with self.assertRaisesRegex(ValueError,'Unknown guide support ID'):build.guide_rows(['absent'],self.records,self.renderer)
-    def test_T9_all_83_records_have_their_assigned_guide(self):
+    def test_T9_all_84_records_have_their_assigned_guide(self):
         from website.content import GUIDE_IDS
         from website.check import guide_records_errors
         lock=json.loads((build.REPO/'website/support-status.lock.json').read_text())
-        self.assertEqual(83,len(lock));self.assertEqual(set(lock),{x for keys in GUIDE_IDS.values() for x in keys})
+        self.assertEqual(84,len(lock));self.assertEqual(set(lock),{x for keys in GUIDE_IDS.values() for x in keys})
         self.assertIn('constructor-helper',GUIDE_IDS['spring'])
         pages={name:build.guide_rows(keys,self.records,self.renderer) for name,keys in GUIDE_IDS.items()}
         self.assertEqual([],guide_records_errors(self.records,pages,GUIDE_IDS))
