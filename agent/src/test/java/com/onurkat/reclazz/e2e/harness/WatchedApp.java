@@ -142,6 +142,12 @@ public final class WatchedApp implements AutoCloseable {
         private boolean mavenLayout;
         private boolean childClassLoader;
         private boolean agentless;
+        private Path childJava;
+
+        /** A selected native-capability witness may use an explicitly configured child JVM. */
+        public Builder javaExecutable(Path executable) {
+            this.childJava = java.util.Objects.requireNonNull(executable); return this;
+        }
 
         /** Launch a fresh native framework control without loading the agent. */
         public Builder withoutAgent() {
@@ -234,7 +240,7 @@ public final class WatchedApp implements AutoCloseable {
             }
 
             List<String> command = new ArrayList<>();
-            command.add(javaBinary());
+            command.add(childJava == null ? javaBinary() : childJava.toString());
             // The harness reads the child's output as UTF-8.
             command.addAll(UTF8_OUTPUT);
             command.addAll(jvmArgs);

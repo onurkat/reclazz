@@ -68,6 +68,18 @@ class JacksonEnumCachesTest {
         ApplicationContextHolder.clear();
     }
 
+    @Test void nativePreflightNeverCreatesLazyMapperBeans()throws Exception {
+        var created=new java.util.concurrent.atomic.AtomicInteger();
+        try(var context=new org.springframework.context.annotation.AnnotationConfigApplicationContext()) {
+            context.refresh();
+            var definition=new org.springframework.beans.factory.support.RootBeanDefinition(com.fasterxml.jackson.databind.ObjectMapper.class);
+            definition.setLazyInit(true);definition.setInstanceSupplier(()->{created.incrementAndGet();return new com.fasterxml.jackson.databind.ObjectMapper();});
+            context.registerBeanDefinition("lazyMapper",definition);
+            assertEquals(0,created.get());
+            JacksonEnumCaches.prepareRecords(java.util.List.of(context));
+            assertEquals(0,created.get(),"refused-save preflight must never create a lazy mapper");
+        }
+    }
     @Test
     void withoutJacksonOrSpringTheFlushDoesNothingAndSaysNothing() throws Exception {
         assertEquals(0, JacksonEnumCaches.flush(),

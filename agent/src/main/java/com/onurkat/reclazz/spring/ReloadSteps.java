@@ -57,6 +57,14 @@ public final class ReloadSteps {
         }
     }
 
+    private static final ThreadLocal<Consumer<String>> failureObserver=new ThreadLocal<>();
+    public interface FailureScope extends AutoCloseable { @Override void close(); }
+    /** Native repair scopes observe every failed step, even when the ordinary console warning is deduplicated. */
+    public static FailureScope observeFailures(Consumer<String> observer) {
+        if(observer==null)return ()->{};
+        Consumer<String> previous=failureObserver.get();failureObserver.set(observer);
+        return ()->{if(previous==null)failureObserver.remove();else failureObserver.set(previous);};
+    }
     private static final Set<String> reported = ConcurrentHashMap.newKeySet();
 
     private ReloadSteps() {
@@ -80,6 +88,8 @@ public final class ReloadSteps {
             step.action().accept(target);
             return true;
         } catch (Throwable t) {
+            Consumer<String> observer=failureObserver.get();
+            if(observer!=null)try{observer.accept(step.name()+": "+Failures.describe(t));}catch(Throwable ignored){/* Continue the remaining framework steps. */}
             // Throwable: the failure this exists for is a NoClassDefFoundError
             // from an optional Spring module, and catching Exception would let
             // exactly that one through.

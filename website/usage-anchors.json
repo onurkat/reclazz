@@ -402,7 +402,7 @@
       "level": 3,
       "title": "Jackson properties added after startup",
       "id": "jackson-properties-added-after-startup",
-      "body_sha256": "779f9ed83fb5993b329dc359293044f41a5c00ef0a37a0d09b51f0b52bf1757e",
+      "body_sha256": "48a0778da67a858c383e1b83e55dab9c11281e508f0c6176f01550597180b90d",
       "heading": "### Jackson properties added after startup\n"
     },
     {
@@ -506,7 +506,7 @@
       "level": 3,
       "title": "Property changes keep the last working values",
       "id": "property-changes-keep-the-last-working-values",
-      "body_sha256": "963bd59e61495a3b395ad17f1e0d3f542a1617e6df699a91da7fbfd6ef026764",
+      "body_sha256": "ec12bf53572624bdca4de727f9bf3d79086861c76ee5deec36c67e232d8a978f",
       "heading": "### Property changes keep the last working values\n"
     },
     {

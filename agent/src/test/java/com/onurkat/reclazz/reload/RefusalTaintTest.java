@@ -47,6 +47,20 @@ class RefusalTaintTest {
         assertEquals(0,RestartLedger.size());assertTrue(guard.preflight(Map.of("p.Caller",badCaller),paths("p.Caller"),census).containsKey("p.Caller"));
         assertTrue(guard.preflight(Map.of("p.Caller",reference("p.Caller","p.Factory","old","()V")),paths("p.Caller"),census).isEmpty());
     }
+    @Test void refusedSameErasureMetadataTaintsEvenStillExistingCallerMembers()throws Exception {
+        var loader=new Loader(dir);byte[] original=record("text","Ljava/lang/String;");
+        Class<?> owner=define(loader,"p.Greeting",original),caller=define(loader,"p.Caller",type("p.Caller",false,new String[0],null));
+        com.onurkat.reclazz.transform.KeepBaseline.capture(loader,"p/Greeting",original);
+        var node=com.onurkat.reclazz.transform.KeepBaseline.read(original);node.recordComponents.get(0).visitAnnotation("Lp/Tag;",true).visitEnd();
+        var writer=new ClassWriter(0);node.accept(writer);byte[] metadata=writer.toByteArray();
+        var guard=new RefusalTaint();Class<?>[] census={owner,caller};
+        assertTrue(guard.preflight(Map.of("p.Greeting",metadata),paths("p.Greeting"),census).containsKey("p.Greeting"));
+        byte[] known=reference("p.Caller","p.Greeting","old","()V");
+        assertTrue(guard.preflight(Map.of("p.Caller",known),paths("p.Caller"),census).containsKey("p.Caller"));
+        guard.accepted(owner,metadata);assertTrue(guard.recovering("p.Greeting"));
+        guard.accepted(owner,original);assertFalse(guard.recovering("p.Greeting"));
+        assertTrue(guard.preflight(Map.of("p.Caller",known),paths("p.Caller"),census).isEmpty());
+    }
     @Test void historicalShapesAndStaleCallerRemainRefused()throws Exception {
         var loader=new Loader(dir);byte[] original=record("text","Ljava/lang/String;");Class<?> owner=define(loader,"p.Greeting",original),caller=define(loader,"p.Caller",type("p.Caller",false,new String[0],null));var guard=new RefusalTaint();Class<?>[] census={owner,caller};
         for(String name:List.of("marker","count"))assertTrue(guard.preflight(Map.of("p.Greeting",record("text","Ljava/lang/String;",name,"I")),paths("p.Greeting"),census).containsKey("p.Greeting"));

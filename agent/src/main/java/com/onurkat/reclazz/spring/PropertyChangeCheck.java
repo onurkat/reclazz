@@ -233,8 +233,18 @@ public final class PropertyChangeCheck {
         return name.equals(BOUND) || name.equals(PLACEHOLDERS);
     }
 
+    /** Bind and validate a detached native record before replacing any live singleton. */
+    static Object bindRecordCandidate(Object context,String name,Object live) throws Exception {
+        ClassLoader loader=context.getClass().getClassLoader();
+        ScratchBinder binder=scratchBinder(context,call(context,"getEnvironment"),loader);
+        try{return bindBean(context,name,live,binder,loader,true);}finally{binder.close();}
+    }
     private static Object checkBean(Object context, String name, Object live, ScratchBinder binder,
                                   ClassLoader loader) throws Exception {
+        return bindBean(context,name,live,binder,loader,false);
+    }
+    private static Object bindBean(Object context,String name,Object live,ScratchBinder binder,
+                                   ClassLoader loader,boolean returnRecord) throws Exception {
         Class<?> metadata = Class.forName(PROPERTIES + "ConfigurationPropertiesBean", true, loader);
         Class<?> appContext = Class.forName("org.springframework.context.ApplicationContext", true, loader);
         Object bean = metadata.getMethod("get", appContext, Object.class, String.class).invoke(null, context, live, name);
@@ -274,8 +284,8 @@ public final class PropertyChangeCheck {
         binder.prepare(target, javaType);
         Method bind = binder.nativeBinder.getClass().getDeclaredMethod(valueObject ? "bindOrCreate" : "bind", metadata);
         bind.setAccessible(true);
-        bind.invoke(binder.nativeBinder, detached);
-        return instance;
+        Object bound=bind.invoke(binder.nativeBinder, detached);
+        return valueObject&&returnRecord?bound:instance;
     }
 
     /** Per-save ownership; live context validators are borrowed and never closed here. */

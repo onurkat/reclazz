@@ -81,5 +81,6 @@
   "dependency": "restart",
   "sap-solr-reindex": "conditional",
   "request-boundary": "conditional",
-  "build-failure": "conditional"
+  "build-failure": "conditional",
+  "record-components": "conditional"
 }

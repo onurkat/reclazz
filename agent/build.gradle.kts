@@ -193,6 +193,8 @@ dependencies {
     testImplementation("org.yaml:snakeyaml:1.30")
     // Real DTO serialization regressions; never included in the agent jar.
     testImplementation("com.fasterxml.jackson.core:jackson-databind:2.23.0")
+    // Optional<P> retained native-record codecs; test-only, absent from agent artifacts.
+    testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.23.0")
     testImplementation("org.hibernate.validator:hibernate-validator:6.2.5.Final")
     testImplementation("org.glassfish:jakarta.el:3.0.4")
     // Native cached-template evidence only; never packaged with the agent.
@@ -345,6 +347,7 @@ dependencies {
     }
     // Real Jakarta constraint reload acceptance; test-only, never shipped.
     add(springSixTests.implementationConfigurationName, "com.fasterxml.jackson.core:jackson-databind:2.23.0")
+    add(springSixTests.implementationConfigurationName, "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.23.0")
     add(springSixTests.implementationConfigurationName, "org.hibernate.validator:hibernate-validator:8.0.2.Final")
     add(springSixTests.implementationConfigurationName, "org.glassfish.expressly:expressly:5.0.0")
     // Native modern method authorization; isolated from Spring 5 and never packaged.
@@ -401,6 +404,7 @@ dependencies {
     }
     // Legacy Jackson 2 fixture sidecar; this does not exercise Jackson 3 defaults.
     add(springSevenTests.implementationConfigurationName, "com.fasterxml.jackson.core:jackson-databind:2.23.0")
+    add(springSevenTests.implementationConfigurationName, "com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.23.0")
     // Real Jackson 3 reload coverage; isolated test graph only.
     add(springSevenTests.implementationConfigurationName, "tools.jackson.core:jackson-databind:3.3.0")
     add(springSevenTests.implementationConfigurationName, "org.hibernate.validator:hibernate-validator:9.1.5.Final")
@@ -924,4 +928,9 @@ tasks.register("resolveLoggingTestBackends") {
 
 tasks.withType<Test>().configureEach {
     providers.gradleProperty("reclazz.loggingEvidence").orNull?.let { systemProperty("reclazz.logging.evidence", it) }
+}
+
+// Native record witnesses select their own enhanced child; ordinary tests keep their JVM.
+for (name in listOf("test", "unitTest", "e2eTest", "springSixTest", "springSevenTest")) tasks.named<Test>(name) {
+    providers.systemProperty("reclazz.record.java").orNull?.let { systemProperty("reclazz.record.java", it) }
 }

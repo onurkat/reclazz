@@ -580,11 +580,19 @@ public final class ReloadQueue {
     }
 
     private void applyClassBatch(List<ChangeEvent> batch) {
-        SavePlan plan = preparer.prepare(batch);
         try {
-            if (plan.apply().isEmpty()) return;
-            if (verification == null) applyCaptured(plan.apply());
-            else verification.applyFiles(plan.apply(), () -> applyCaptured(plan.apply()));
+            SavePlan plan = preparer.prepare(batch);
+            if (verification == null) {
+                if (!plan.apply().isEmpty()) applyCaptured(plan.apply());
+            } else {
+                java.util.List<ChangeEvent> attempted = new java.util.ArrayList<>(plan.apply());
+                for (ChangeEvent event : plan.refused().keySet()) if (!attempted.contains(event)) attempted.add(event);
+                if (!attempted.isEmpty()) verification.applyFiles(attempted, () -> {
+                    plan.refused().forEach((event, reason) -> verification.outcome(
+                            new org.objectweb.asm.ClassReader(event.getBytes()).getClassName().replace('/', '.'), false, reason));
+                    if (!plan.apply().isEmpty()) applyCaptured(plan.apply());
+                });
+            }
         } finally { preparer.complete(); }
     }
 

@@ -14,10 +14,16 @@ public final class RefusalTaint {
     int rootResolutions() { return rootResolutions; }
     private final Map<Class<?>,Boolean> loaded=new WeakHashMap<>();
     private final Set<Class<?>> pending=Collections.newSetFromMap(new WeakHashMap<>());
+    private final Set<Class<?>> metadataPending=Collections.newSetFromMap(new WeakHashMap<>());
     private final Map<ClassLoader,Set<String>> absent=new WeakHashMap<>();
     private record Origin(Class<?> type,ClassLoader loader,boolean known,boolean ambiguous) { }
 
     public synchronized Map<String,String> preflight(Map<String,byte[]> bytes,Map<String,Path> paths,Class<?>[] census) {
+        return preflight(bytes, paths, census, Set.of());
+    }
+    /** Only a proven, complete native cohort may skip the fallback shape refusal in this save. */
+    public synchronized Map<String,String> preflight(Map<String,byte[]> bytes, Map<String,Path> paths,
+                                                     Class<?>[] census, Set<String> nativeCohort) {
         rootResolutions = 0;
         Map<String,String> refused=new LinkedHashMap<>();Map<String,Origin> origins=new HashMap<>();
         Map<String,List<Class<?>>> names=new HashMap<>();for(Class<?> type:census)names.computeIfAbsent(type.getName(),n->new ArrayList<>()).add(type);
@@ -35,9 +41,13 @@ public final class RefusalTaint {
                 refused.put(name,"ambiguous record owner "+name+" across class loaders; restart to apply");
                 matches.forEach(type->taint(type,true));return;
             }
-            if(origin.type!=null && RecordShapeCheck.changed(origin.type,raw)
-                    && !RecordReloadPlan.canAdmitShape(origin.type,raw)) {
-                refused.put(name,"record components of "+name+" changed (a JVM limit): restart to apply");taint(origin.type,true);
+            if(origin.type!=null && (RecordShapeCheck.changed(origin.type,raw) || KeepBaseline.recordMetadataChanged(origin.type,raw))
+                    && !nativeCohort.contains(name) && !RecordReloadPlan.canAdmitShape(origin.type,raw)) {
+                refused.put(name,RecordShapeCheck.changed(origin.type,raw)
+                        ? "record components of "+name+" changed (a JVM limit): restart to apply"
+                        : "record metadata of "+name+" changed: restart to apply");
+                if(!RecordShapeCheck.changed(origin.type,raw)&&KeepBaseline.recordMetadataChanged(origin.type,raw))metadataPending.add(origin.type);
+                taint(origin.type,true);
             } else if(matches.size()>1 && (RecordShapeCheck.incoming(raw).record()||matches.stream().anyMatch(Class::isRecord))) {
                 // The downstream legacy reload path still resolves a target by name.
                 // Never let an otherwise safe payload mutate the other loader's record.
@@ -56,6 +66,8 @@ public final class RefusalTaint {
                 Origin origin=null;var refs=ReferenceScan.read(entry.getValue());String reason=null;
                 for(var member:refs.members()) {
                     if(!relevant.contains(member.owner()))continue;
+                    // Native preflight has validated these exact frozen references against the incoming layout.
+                    if(nativeCohort.contains(entry.getKey()) && nativeCohort.contains(member.owner()))continue;
                     if (origin == null) origin=originFor.apply(entry.getKey());
                     reason=unsafe(origin,member.owner(),member,names);
                     if(reason!=null)break;
@@ -93,6 +105,7 @@ public final class RefusalTaint {
             return null;
         }
         Class<?> type=visible.get(0);if(!loaded.containsKey(type))return null;
+        if(metadataPending.contains(type))return "uses refused record metadata of "+owner+"; restart to apply";
         if(member==null)return "reflective use of tainted owner "+owner;
         try {if(exists(type,member,new HashSet<>()))return null;}
         catch(LinkageError|RuntimeException unavailable){return "live members unavailable for "+owner+"; restart to apply";}
@@ -174,10 +187,22 @@ public final class RefusalTaint {
     public synchronized boolean recovering(String name) {
         return pending.stream().anyMatch(type -> type.getName().equals(name));
     }
+    public synchronized void nativeAccepted(Class<?> type, byte[] raw) {
+        if (type == null || !type.isRecord() || RecordShapeCheck.changed(type, raw))
+            throw new IllegalStateException("native record shape was not physically admitted");
+        loaded.put(type, true);
+        pending.remove(type); metadataPending.remove(type); RestartLedger.resolve(subject(type), REASON);
+    }
+    public synchronized void nativeRefused(Map<Class<?>,byte[]> records) {
+        records.forEach((type,raw)->{
+            if(!RecordShapeCheck.changed(type,raw)&&KeepBaseline.recordMetadataChanged(type,raw))metadataPending.add(type);
+            taint(type,true);
+        });
+    }
     /** Only terminal successful admission resolves the visible restart concern; provenance remains. */
     public synchronized void accepted(Class<?> type,byte[] raw) {
-        if(type!=null&&pending.contains(type)&&!RecordShapeCheck.changed(type,raw)) {
-            pending.remove(type);RestartLedger.resolve(subject(type),REASON);
+        if(type!=null&&pending.contains(type)&&!RecordShapeCheck.changed(type,raw)&&!KeepBaseline.recordMetadataChanged(type,raw)) {
+            pending.remove(type);metadataPending.remove(type);RestartLedger.resolve(subject(type),REASON);
             com.onurkat.reclazz.ui.StatusReporter.info("Record component shape restored: "+type.getName());
         }
     }

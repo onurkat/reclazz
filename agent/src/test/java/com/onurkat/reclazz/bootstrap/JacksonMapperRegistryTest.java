@@ -20,6 +20,16 @@ class JacksonMapperRegistryTest {
         assertEquals(1,live.stream().filter(value->value==first).count());
         assertEquals(1,live.stream().filter(value->value==second).count());
     }
+    @Test void alreadyRegisteredMapperCallsNeverTakeTheGlobalMonitor()throws Exception {
+        java.util.List<Object> mappers=new java.util.ArrayList<>();for(int i=0;i<256;i++){Object mapper=new Object();mappers.add(mapper);JacksonMapperRegistry.track(mapper);}
+        var executor=java.util.concurrent.Executors.newSingleThreadExecutor();java.util.concurrent.Future<?> future;
+        try {
+            synchronized(JacksonMapperRegistry.class) {
+                future=executor.submit(()->{for(int pass=0;pass<50;pass++)for(Object mapper:mappers)JacksonMapperRegistry.track(mapper);});
+                assertDoesNotThrow(()->future.get(2,java.util.concurrent.TimeUnit.SECONDS),"hot mapper calls cannot scan or lock the global registry");
+            }
+        }finally{executor.shutdownNow();executor.awaitTermination(5,java.util.concurrent.TimeUnit.SECONDS);}
+    }
     @Test void discardedMapperIsNotRetained() throws Exception {
         var reference=registerDisposable();
         for(int i=0;i<80 && reference.get()!=null;i++){System.gc();Thread.sleep(25);}

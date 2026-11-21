@@ -20,7 +20,7 @@ class RecordReadinessTest {
         assertEquals(0,ToolProvider.getSystemJavaCompiler().run(null,null,null,"--release","17","-d",dir.toString(),source.toString()));
         return dir.resolve("com/example/P.class");
     }
-    @Test void infrastructureCommitDoesNotAdmitEitherColumn()throws Exception {
+    @Test void readinessAndSubstrateNeverBypassSaveSpecificAdmission()throws Exception {
         RestartLedger.clear();Path file=compile("int a");
         try(var loader=new URLClassLoader(new java.net.URL[]{dir.toUri().toURL()},null)) {
             Class<?> owner=loader.loadClass("com.example.P");
@@ -32,7 +32,9 @@ class RecordReadinessTest {
             var refused=new RefusalTaint().preflight(Map.of(owner.getName(),changed),Map.of(owner.getName(),file),new Class<?>[]{owner});
             assertEquals(List.of("record components of com.example.P changed (a JVM limit): restart to apply"),List.copyOf(refused.values()));
             assertEquals(1,owner.getRecordComponents().length);assertEquals(1,RestartLedger.size());
-            for(var route:RecordReloadPlan.Route.values())assertFalse(RecordReloadPlan.ready(route));
+            assertTrue(RecordReloadPlan.ready(RecordReloadPlan.Route.NATIVE));
+            assertFalse(RecordReloadPlan.ready(RecordReloadPlan.Route.STOCK));
+            assertFalse(RecordReloadPlan.canAdmitShape(owner, changed));
         } finally {RestartLedger.clear();}
     }
 }

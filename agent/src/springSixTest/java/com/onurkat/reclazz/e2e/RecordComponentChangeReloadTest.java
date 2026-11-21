@@ -33,7 +33,7 @@ class RecordComponentChangeReloadTest {
             Files.writeString(signal,"go");
             String text=edit.equals("remove")?"Greeting[text=before, marker=seed]":"Greeting[text=before]";
             String json=edit.equals("remove")?"{\"text\":\"before\",\"marker\":\"seed\"}":"{\"text\":\"before\"}";
-            app.awaitOrFail("SAFE|0|before|"+text+"|"+text+"|true|"+json+"|"+json,"old caller/held/fresh record and Jackson2/3 remain usable");
+            app.awaitOrFail("SAFE|0|before|"+text+"|"+text+"|true|"+json+"|"+(jackson3Present()?json:"not-present"),"fallback caller/held/fresh record and present Jackson families remain usable");
             app.awaitOrFail("PENDING|go|","restart ledger reply follows the SAFE observation");
             assertTrue(app.output().stream().anyMatch(s->s.contains("PENDING|")&&s.contains("app.Greeting")),"PENDING must identify refused record");
             assertFalse(app.output().stream().anyMatch(s->s.contains("[STRC]")&&s.contains("app.Greeting")),"no structural success receipt for refused record");
@@ -58,7 +58,7 @@ class RecordComponentChangeReloadTest {
     void prove(WatchedApp app,String token,int version,String freshText)throws Exception {
         String request=token+":"+version;Files.writeString(dir.resolve("signal"),request);
         String json="{\"text\":\"before\"}";
-        app.awaitOrFail("CHECK|"+request+"|SAFE|"+version+"|before|Greeting[text=before]|Greeting[text="+freshText+"]|"+freshText.equals("before")+"|"+json+"|"+json,"existing and new instances stay callable");
+        app.awaitOrFail("CHECK|"+request+"|SAFE|"+version+"|before|Greeting[text=before]|Greeting[text="+freshText+"]|"+freshText.equals("before")+"|"+json+"|"+(jackson3Present()?json:"not-present"),"existing and new instances stay callable");
         app.awaitOrFail("PENDING|"+request+"|","restart ledger reply follows the CHECK observation");
     }
     static void remember(WatchedApp app,String name)throws Exception {
@@ -125,19 +125,23 @@ class RecordComponentChangeReloadTest {
     }
     static String record(String components){return "package app;public record Greeting("+components+"){}";}
     static String caller(int version,String args){return "package app;public class Caller {public static int version(){return "+version+";}public static Object make(){return new Greeting("+args+");}}";}
+    static boolean jackson3Present() {
+        try { Class.forName("tools.jackson.databind.json.JsonMapper"); return true; }
+        catch(ClassNotFoundException absent) { return false; }
+    }
     static String jacksonClasspath() throws Exception {
         var entries=new LinkedHashSet<String>();
-        // Jackson 3 is only on the Spring 7 suite; the Spring 6 run of this shared source skips.
-        try { Class.forName("tools.jackson.databind.json.JsonMapper"); }
-        catch (ClassNotFoundException absent) { org.junit.jupiter.api.Assumptions.abort("Jackson 3 is isolated to the Spring 7 suite"); }
-        for(String name:List.of("com.fasterxml.jackson.databind.ObjectMapper","com.fasterxml.jackson.core.JsonFactory","com.fasterxml.jackson.annotation.JsonProperty","tools.jackson.databind.json.JsonMapper","tools.jackson.core.json.JsonFactory"))
-            entries.add(Path.of(Class.forName(name).getProtectionDomain().getCodeSource().getLocation().toURI()).toString());
+        // This is the explicit stock/fallback matrix. Boot3 runs Jackson2; Boot4 also checks its real Jackson3.
+        for(String name:List.of("com.fasterxml.jackson.databind.ObjectMapper","com.fasterxml.jackson.core.JsonFactory","com.fasterxml.jackson.annotation.JsonProperty","tools.jackson.databind.json.JsonMapper","tools.jackson.core.json.JsonFactory")) {
+            try { entries.add(Path.of(Class.forName(name).getProtectionDomain().getCodeSource().getLocation().toURI()).toString()); }
+            catch(ClassNotFoundException absent) { if(!name.startsWith("tools.jackson.")) throw absent; }
+        }
         return String.join(File.pathSeparator,entries);
     }
     static final String APP="""
         package app;import java.nio.file.*;import java.util.*;
         public class App {
-          static String json(Object v,String name)throws Exception {Object mapper=Class.forName(name).getConstructor().newInstance();return (String)mapper.getClass().getMethod("writeValueAsString",Object.class).invoke(mapper,v);}
+          static String json(Object v,String name)throws Exception {Class<?> type;try{type=Class.forName(name);}catch(ClassNotFoundException absent){if(name.startsWith("tools.jackson."))return "not-present";throw absent;}Object mapper=type.getConstructor().newInstance();return (String)mapper.getClass().getMethod("writeValueAsString",Object.class).invoke(mapper,v);}
           public static void main(String[]args)throws Exception {
             Class<?> agent=Class.forName("com.onurkat.reclazz.agent.ReclazzAgent");
             var reloaderField=agent.getDeclaredField("structuralReloader");reloaderField.setAccessible(true);Object reloader=reloaderField.get(null);

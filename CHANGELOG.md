@@ -8,6 +8,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Native enhanced-JVM record component edits use one record/caller cohort with
+  real capability and ownership checks (including same-erasure metadata edits),
+  retained Jackson 2/3 snapshot repair and
+  Boot configuration-record replacement with live-holder reference healing.
+  Binding is validated before replacement and does not destroy dependent lifecycle beans.
+  Jackson hot paths avoid shared registry monitors and repeated failed-generation repairs.
+  Post-native repair failures retain
+  the installed schema and report an unverified receipt with precise restart concerns.
+  Stock, pre-watch, ambiguous-owner and ordinary-class/record kind changes remain refused.
+
 - SAP Commerce Settings offers a read-only **Check setup** report with concrete
   fixes for launch properties/wrappers, debug flags, jar/JDK versions, other
   agents and watched extensions, plus a running-agent DOCTOR summary when

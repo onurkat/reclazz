@@ -69,6 +69,25 @@ public class ClassReloader {
     /**
      * Reload a class by its fully qualified name with new bytecode.
      */
+    /** Snapshot the same ordinary native aftermath before an atomic record cohort changes any class. */
+    public java.util.function.Supplier<ReloadResult> prepareNativeAftermath(Class<?> owner, byte[] incoming) {
+        byte[] bytes = incoming.clone(); String className = owner.getName();
+        var mapping = JpaEntityChange.check(owner, bytes);
+        var enumChange = EnumConstantChange.check(owner, bytes);
+        boolean recordShape = com.onurkat.reclazz.reload.RecordShapeCheck.changed(owner, bytes);
+        boolean recordMetadata = com.onurkat.reclazz.transform.KeepBaseline.recordMetadataChanged(owner, bytes);
+        return () -> {
+            com.onurkat.reclazz.reload.StaticInitializerReset.afterReload(owner, bytes, resetStatics);
+            JpaEntityChange.report(className, owner, mapping);
+            EnumConstantAppender.applyOrExplain(className, owner, bytes, enumChange, instrumentation);
+            springBeanCache.remove(className); interceptorCache.remove(className);
+            ReloadResult result = ReloadResult.structuralSuccess(isSpringManagedBean(owner), isHybrisInterceptor(owner), recordShape);
+            result.setAnnotationsChanged(recordMetadata);
+            result.setNewBytecode(bytes);
+            return result;
+        };
+    }
+
     public ReloadResult reload(String className, byte[] newBytecode) {
         String tooNew = BytecodeVersion.rejectionReason(newBytecode);
         if (tooNew != null) {
@@ -96,6 +115,14 @@ public class ClassReloader {
             ClassDefinition definition = new ClassDefinition(existingClass, newBytecode);
             instrumentation.redefineClasses(definition);
             com.onurkat.reclazz.reload.StaticInitializerReset.afterReload(existingClass, newBytecode, resetStatics);
+            if (existingClass.isRecord() && !com.onurkat.reclazz.transform.KeepBaseline.witnessedLoad(existingClass)) {
+                StatusReporter.warn("Native record body was installed; pre-watch record metadata has no witnessed baseline. Restart to verify record metadata: " + className);
+            }
+            if (existingClass.isRecord() && com.onurkat.reclazz.transform.KeepBaseline.witnessedLoad(existingClass)
+                    && !com.onurkat.reclazz.transform.KeepBaseline.recordNativeSchemaApplied(existingClass, newBytecode)) {
+                String reason = "Native record changes are installed; physical constructor receipt did not pass readback";
+                StatusReporter.warn(reason); com.onurkat.reclazz.ui.RestartLedger.note(className, reason);
+            }
 
             // A mapped class that gained a persistent field reloads cleanly and
             // is still not persisted, because Hibernate's mapping was built

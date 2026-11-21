@@ -25,11 +25,14 @@ public final class KeepBaseline {
     private static final Map<LoaderKey,Map<String,Entry>> OWNERS = new HashMap<>();
     private static final class Entry {
         Fingerprint fingerprint;
+        String recordMetadata;
         Map<String,Long> physicalConstructors;
         Map<String,Long> physicalInitializers;
         Map<String,Long> logicalRecordConstructors;
         long reloads;
+        final boolean witnessedLoad;
         Entry(Fingerprint fingerprint) {
+            witnessedLoad = fingerprint != null;
             this.fingerprint=fingerprint;
             this.physicalConstructors=fingerprint==null?null:fingerprint.constructors();
             this.physicalInitializers=fingerprint==null?null:fingerprint.initializers();
@@ -72,13 +75,21 @@ public final class KeepBaseline {
     /** Never throws: it runs inside class definition, and missing evidence already selects recreation. */
     public static void capture(ClassLoader loader,String internalName,byte[] raw) {
         if(loader==null)return;
-        Fingerprint print;
-        try { print=fingerprint(raw); } catch(RuntimeException|LinkageError unavailable) { return; }
-        synchronized(KeepBaseline.class) { owners(loader,true).putIfAbsent(internalName,new Entry(print)); }
+        Fingerprint print; String metadata;
+        try { print=fingerprint(raw); metadata=recordMetadataToken(raw); } catch(RuntimeException|LinkageError unavailable) { return; }
+        synchronized(KeepBaseline.class) {
+            Entry entry=new Entry(print); entry.recordMetadata=metadata;
+            owners(loader,true).putIfAbsent(internalName,entry);
+        }
     }
     public static synchronized Fingerprint get(Class<?> type) {
         Entry entry=type==null ? null : owners(type.getClassLoader(),false).get(type.getName().replace('.','/'));
         return entry==null ? null : entry.fingerprint;
+    }
+    /** A reload-created fingerprint must not turn a pre-watch class into a watched-load admission. */
+    public static synchronized boolean witnessedLoad(Class<?> type) {
+        Entry entry = type == null ? null : owners(type.getClassLoader(),false).get(type.getName().replace('.','/'));
+        return entry != null && entry.witnessedLoad;
     }
     /** Logical framework advancement is not evidence that native constructor bodies landed. */
     public static synchronized boolean constructorBodiesUnchanged(Class<?> type, byte[] raw) {
@@ -132,6 +143,11 @@ public final class KeepBaseline {
                     .map(c->c.getName()+":"+Type.getDescriptor(c.getType())).toList();
             if(!incoming.equals(physical))return false;
             Fingerprint admitted=fingerprint(raw);
+            Set<String> constructors=new TreeSet<>();
+            for(var constructor:com.onurkat.reclazz.bootstrap.ReflectionBridge.physicalDeclaredConstructors(type))
+                constructors.add(Type.getConstructorDescriptor(constructor));
+            if(!constructors.equals(admitted.constructors().keySet()))return false;
+            entry.recordMetadata=recordMetadataToken(raw);
             entry.physicalConstructors=admitted.constructors();entry.physicalInitializers=admitted.initializers();
             entry.logicalRecordConstructors=null;return true;
         }catch(RuntimeException|LinkageError unavailable){return false;}
@@ -168,12 +184,43 @@ public final class KeepBaseline {
         synchronized(KeepBaseline.class) {
             owners(type.getClassLoader(),true).computeIfAbsent(name,k->new Entry(null)).reloads++;
         }
-        Fingerprint print;
-        try { print=fingerprint(raw); } catch(RuntimeException|LinkageError unavailable) { print=null; }
+        Fingerprint print; String metadata;
+        try { print=fingerprint(raw); metadata=recordMetadataToken(raw); } catch(RuntimeException|LinkageError unavailable) { print=null; metadata=null; }
         synchronized(KeepBaseline.class) {
             var owned=owners(type.getClassLoader(),true);
-            owned.get(name).fingerprint=print;
+            owned.get(name).fingerprint=print; owned.get(name).recordMetadata=metadata;
         }
+    }
+    /** Byte-only metadata comparison: erased descriptors alone cannot describe a record contract. */
+    public static synchronized boolean recordMetadataChanged(Class<?> type,byte[] raw) {
+        if(type==null)return false;
+        Entry entry=owners(type.getClassLoader(),false).get(type.getName().replace('.','/'));
+        return entry!=null && entry.recordMetadata!=null && !entry.recordMetadata.equals(recordMetadataToken(raw));
+    }
+    private static String recordMetadataToken(byte[] raw) {
+        ClassReader reader=new ClassReader(raw);
+        ClassNode shape=new ClassNode();reader.accept(shape,ClassReader.SKIP_CODE|ClassReader.SKIP_DEBUG|ClassReader.SKIP_FRAMES);
+        if((shape.access&Opcodes.ACC_RECORD)==0)return null;
+        Set<String> fields=new HashSet<>(),accessors=new HashSet<>();
+        if(shape.recordComponents!=null)for(var component:shape.recordComponents) {
+            fields.add(component.name+":"+component.descriptor);accessors.add(component.name+"()"+component.descriptor);
+        }
+        ClassWriter writer=new ClassWriter(0);
+        reader.accept(new ClassVisitor(Opcodes.ASM9,writer) {
+            @Override public FieldVisitor visitField(int access,String name,String descriptor,String signature,Object value) {
+                return fields.contains(name+":"+descriptor)?super.visitField(access,name,descriptor,signature,value):null;
+            }
+            @Override public MethodVisitor visitMethod(int access,String name,String descriptor,String signature,String[] exceptions) {
+                return name.equals("<init>")||accessors.contains(name+descriptor)?super.visitMethod(access,name,descriptor,signature,exceptions):null;
+            }
+            @Override public void visitInnerClass(String name,String outer,String inner,int access) { }
+            @Override public void visitNestHost(String host) { }
+            @Override public void visitNestMember(String member) { }
+            @Override public void visitPermittedSubclass(String subclass) { }
+            @Override public void visitAttribute(Attribute attribute) { }
+        },ClassReader.SKIP_CODE|ClassReader.SKIP_DEBUG|ClassReader.SKIP_FRAMES);
+        // This normalized metadata is an identity token, never a JVM definition payload.
+        return Base64.getEncoder().encodeToString(writer.toByteArray());
     }
     public static ClassNode read(byte[] raw) {
         ClassNode c=new ClassNode(); new ClassReader(raw).accept(c,ClassReader.SKIP_DEBUG|ClassReader.SKIP_FRAMES); return c;

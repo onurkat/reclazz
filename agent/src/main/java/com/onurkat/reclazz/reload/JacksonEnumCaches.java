@@ -101,6 +101,63 @@ final class JacksonEnumCaches {
      * would make "Jackson sees the new constant" half true, which is the kind
      * of report this codebase refuses to make.
      */
+    @FunctionalInterface interface RecordFlush { void apply() throws ReflectiveOperationException; }
+    record NamedRecordFlush(String surface, RecordFlush action) { }
+
+    /** Read-only, strict native-record preflight. No mapper may silently half-flush. */
+    static java.util.List<NamedRecordFlush> prepareRecords(java.util.List<Object> contexts) throws ReflectiveOperationException {
+        Map<Object, Boolean> mappers = new IdentityHashMap<>();
+        for (Object mapper : com.onurkat.reclazz.bootstrap.JacksonMapperRegistry.live()) mappers.put(mapper, true);
+        for (Object context : contexts) {
+            for (String name : new String[]{"com.fasterxml.jackson.databind.ObjectMapper", "tools.jackson.databind.ObjectMapper"}) {
+                Class<?> type;
+                try { type = Class.forName(name, false, context.getClass().getClassLoader()); }
+                catch (ClassNotFoundException absent) { continue; }
+                Object factory=context.getClass().getMethod("getBeanFactory").invoke(context);
+                String[] names=(String[])context.getClass().getMethod("getBeanNamesForType",Class.class,boolean.class,boolean.class)
+                        .invoke(context,type,true,false);
+                for(String beanName:names) {
+                    Object mapper=factory.getClass().getMethod("getSingleton",String.class).invoke(factory,beanName);
+                    if(mapper!=null&&type.isInstance(mapper))mappers.put(mapper,true);
+                }
+            }
+        }
+        var actions = new java.util.ArrayList<NamedRecordFlush>();
+        for (Object mapper : mappers.keySet()) {
+            RecordFlush action;
+            if (isModern(mapper)) {
+                Method clear = mapper.getClass().getMethod("clearCaches");
+                action = () -> clear.invoke(mapper);
+            } else {
+                Object serializers = read(read(mapper, "_serializerProvider"), "_serializerCache");
+                Method flush = serializers.getClass().getMethod("flush"); flush.setAccessible(true);
+                Object deserializers = read(read(mapper, "_deserializationContext"), "_cache");
+                Method flushDeser = deserializers.getClass().getMethod("flushCachedDeserializers"); flushDeser.setAccessible(true);
+                Object roots = read(mapper, "_rootDeserializers");
+                if (!(roots instanceof Map<?, ?> rootMap)) throw new IllegalStateException("Jackson root cache is not a Map");
+                java.util.concurrent.atomic.AtomicReference<?> readOnly;
+                try {
+                    Object raw = read(serializers, "_readOnlyMap");
+                    if (!(raw instanceof java.util.concurrent.atomic.AtomicReference<?> reference))
+                        throw new IllegalStateException("Jackson serializer snapshot is not an AtomicReference");
+                    readOnly = reference;
+                } catch (NoSuchFieldException absent) { readOnly = null; }
+                var snapshot = readOnly;
+                action = () -> {
+                    synchronized (serializers) { flush.invoke(serializers); if (snapshot != null) snapshot.set(null); }
+                    flushDeser.invoke(deserializers); rootMap.clear();
+                };
+            }
+            actions.add(new NamedRecordFlush("Jackson mapper " + mapper.getClass().getName(), action));
+        }
+        return java.util.List.copyOf(actions);
+    }
+    private static boolean isModern(Object mapper) {
+        for (Class<?> type = mapper.getClass(); type != null; type = type.getSuperclass())
+            if (type.getName().equals("tools.jackson.databind.ObjectMapper")) return true;
+        return false;
+    }
+
     private static boolean flushMapper(Object mapper) {
         try {
             Class<?> modern = Class.forName("tools.jackson.databind.ObjectMapper", false,
@@ -152,7 +209,7 @@ final class JacksonEnumCaches {
         }
     }
 
-    private static Object read(Object target, String fieldName) throws Exception {
+    private static Object read(Object target, String fieldName) throws ReflectiveOperationException {
         for (Class<?> c = target.getClass(); c != null; c = c.getSuperclass()) {
             try {
                 Field field = c.getDeclaredField(fieldName);

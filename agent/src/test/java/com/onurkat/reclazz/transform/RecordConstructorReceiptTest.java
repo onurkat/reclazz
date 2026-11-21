@@ -31,6 +31,25 @@ class RecordConstructorReceiptTest {
         assertFalse(KeepBaseline.constructorBodiesUnchanged(type,record(true,3,2)));
         assertTrue(KeepBaseline.staticInitializerUnchanged(type,next));assertFalse(KeepBaseline.staticInitializerUnchanged(type,record(true,2,3)));
     }
+    @Test void nativeReceiptRejectsUninstalledAuxiliaryConstructor() {
+        byte[] old=record(false,1,1);var loader=new Loader();Class<?> type=loader.define(old);
+        KeepBaseline.capture(loader,"com/example/RecordReceipt",old);
+        var node=KeepBaseline.read(old);var auxiliary=new org.objectweb.asm.tree.MethodNode(Opcodes.ACC_PUBLIC,"<init>","()V",null,null);
+        node.methods.add(auxiliary);var writer=new ClassWriter(0);node.accept(writer);
+        assertFalse(KeepBaseline.recordNativeSchemaApplied(type,writer.toByteArray()));
+        assertTrue(KeepBaseline.constructorBodiesUnchanged(type,old));
+    }
+    @Test void componentAnnotationsParticipateInMetadataButConstructorBodiesDoNot() {
+        byte[] old=record(false,1,1);var loader=new Loader();Class<?> type=loader.define(old);
+        KeepBaseline.capture(loader,"com/example/RecordReceipt",old);
+        assertFalse(KeepBaseline.recordMetadataChanged(type,record(false,2,2)));
+        var node=KeepBaseline.read(old);
+        node.recordComponents.get(0).visitAnnotation("Lcom/example/Tag;",true).visit("value","changed");
+        var writer=new ClassWriter(0);node.accept(writer);byte[] changed=writer.toByteArray();
+        assertTrue(KeepBaseline.recordMetadataChanged(type,changed));
+        assertFalse(com.onurkat.reclazz.reload.RecordShapeCheck.changed(type,changed));
+        KeepBaseline.advance(type,changed);assertFalse(KeepBaseline.recordMetadataChanged(type,changed));
+    }
     @Test void virtualReceiptDoesNotOverwritePhysicalCtorProof() {
         byte[] old=record(false,1,1),next=record(true,2,1);var loader=new Loader();Class<?> type=loader.define(old);
         KeepBaseline.capture(loader,"com/example/RecordReceipt",old);

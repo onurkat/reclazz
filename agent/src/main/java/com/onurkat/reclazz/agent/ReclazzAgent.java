@@ -137,6 +137,161 @@ public class ReclazzAgent {
     private static volatile JvmCapabilityProbe.ProbeResult probeResult;
     private static volatile TransformContext transformContext;
     private static final com.onurkat.reclazz.reload.RefusalTaint recordRefusals = new com.onurkat.reclazz.reload.RefusalTaint();
+    private static final Map<String,String> lateCodecConcerns=new java.util.LinkedHashMap<>() {
+        @Override protected boolean removeEldestEntry(Map.Entry<String,String> entry){return size()>200;}
+    };
+    private static void lateCodecFailure(String subject,String reason) {
+        String previous;
+        synchronized(lateCodecConcerns){previous=reason==null?lateCodecConcerns.remove(subject):lateCodecConcerns.put(subject,reason);}
+        if(previous!=null&&!previous.equals(reason))com.onurkat.reclazz.ui.RestartLedger.resolve(subject,previous);
+        if(reason!=null&&!reason.equals(previous)){com.onurkat.reclazz.ui.RestartLedger.note(subject,reason);StatusReporter.warn(reason);}
+    }
+    private static volatile boolean recordCodecHooksInstalled;
+    private static volatile JvmCapabilityProbe.RecordCapability nativeRecordCapability;
+    private static final Map<Class<?>,Map<String,String>> nativeRecordRepairConcerns = new java.util.WeakHashMap<>();
+    private static final Map<Class<?>,Map<String,String>> nativeFrameworkRepairConcerns = new java.util.WeakHashMap<>();
+    private static void nativeFrameworkFailure(Class<?> type,String surface,String reason) {
+        if(type==null)return;
+        String concern="Native changes are installed; "+surface+" did not finish: "+reason+"; save "+type.getName()+" again to retry";
+        String previous;
+        synchronized(nativeFrameworkRepairConcerns){previous=nativeFrameworkRepairConcerns.computeIfAbsent(type,key->new java.util.LinkedHashMap<>()).put(surface,concern);}
+        String subject=type.getName()+" / "+surface;
+        if(previous!=null&&!previous.equals(concern))com.onurkat.reclazz.ui.RestartLedger.resolve(subject,previous);
+        if(!concern.equals(previous))com.onurkat.reclazz.ui.RestartLedger.note(subject,concern);
+    }
+    private static boolean nativeFrameworkPending(Class<?> type) {
+        synchronized(nativeFrameworkRepairConcerns){return nativeFrameworkRepairConcerns.containsKey(type);}
+    }
+    private static void nativeFrameworkCompleted(Class<?> type,boolean published) {
+        if(type==null)return;
+        synchronized(nativeFrameworkRepairConcerns){
+            Map<String,String> pending=nativeFrameworkRepairConcerns.get(type);if(pending==null)return;
+            pending.entrySet().removeIf(entry->{
+                if(!published&&entry.getKey().startsWith("receipt publication "))return false;
+                com.onurkat.reclazz.ui.RestartLedger.resolve(type.getName()+" / "+entry.getKey(),entry.getValue());return true;
+            });
+            if(pending.isEmpty())nativeFrameworkRepairConcerns.remove(type);
+        }
+    }
+    private static boolean nativeRepairPending(Class<?> type) {
+        synchronized (nativeRecordRepairConcerns) { return nativeRecordRepairConcerns.containsKey(type); }
+    }
+    private static final ThreadLocal<NativeRecordSave> nativeRecordSave = new ThreadLocal<>();
+    private static final ThreadLocal<Map<String,String>> compiledSaveRefusals = new ThreadLocal<>();
+    private static final class NativeRecordSave {
+        com.onurkat.reclazz.reload.RecordNativeBatch batch;
+        com.onurkat.reclazz.reload.RecordNativeRepairs repairs;
+        final Map<String, java.util.function.Supplier<ClassReloader.ReloadResult>> aftermath = new java.util.LinkedHashMap<>();
+        final Map<String, ClassReloader.ReloadResult> results = new java.util.LinkedHashMap<>();
+        final Map<String, String> repairFailures = new java.util.LinkedHashMap<>();
+        final java.util.Set<String> aftermathFailures = new java.util.HashSet<>();
+        String preflightFailure;
+        boolean applied;
+        NativeRecordSave(com.onurkat.reclazz.reload.RecordNativeBatch batch) { this.batch = batch; }
+        java.util.Set<String> eligible() {
+            return preflightFailure == null && batch.refusals().isEmpty() ? batch.names() : java.util.Set.of();
+        }
+        Map<String, String> refusals() {
+            if (preflightFailure == null && batch.refusals().isEmpty()) return java.util.Map.of();
+            recordRefusals.nativeRefused(batch.changes().stream().filter(change -> batch.recordNames().contains(change.name()))
+                    .collect(java.util.stream.Collectors.toMap(com.onurkat.reclazz.reload.RecordNativeBatch.Change::owner,
+                            com.onurkat.reclazz.reload.RecordNativeBatch.Change::bytes)));
+            if (preflightFailure == null) return batch.refusals();
+            Map<String,String> refused = new java.util.LinkedHashMap<>();
+            for (String name : batch.names()) refused.put(name, preflightFailure + "; restart to apply");
+            return refused;
+        }
+        void failure(String surface, String reason) {
+            repairFailures.put(surface, reason);
+            for(var change:batch.changes()) {
+                if(surface.equals("framework refresh "+change.name())||surface.equals("receipt publication "+change.name())
+                        ||surface.equals("native aftermath "+change.name())) {
+                    nativeFrameworkFailure(change.owner(),surface,reason);StatusReporter.warn("Native changes are installed; "+surface+" did not finish: "+reason);return;
+                }
+            }
+            String message = "Native record changes are installed; " + surface + " repair did not finish: " + reason;
+            for (var change : batch.changes()) {
+                if (!batch.recordNames().contains(change.name())) continue;
+                String previous;
+                synchronized (nativeRecordRepairConcerns) {
+                    previous = nativeRecordRepairConcerns.computeIfAbsent(change.owner(), ignored -> new java.util.LinkedHashMap<>()).put(surface, message + "; save " + change.name() + " again to retry");
+                }
+                String subject = change.name() + " / " + surface;
+                String concern = message + "; save " + change.name() + " again to retry";
+                if (previous != null && !previous.equals(concern)) com.onurkat.reclazz.ui.RestartLedger.resolve(subject, previous);
+                com.onurkat.reclazz.ui.RestartLedger.note(subject, concern);
+            }
+            StatusReporter.warn(message);
+        }
+        void repairsCompleted() {
+            for (var change : batch.changes()) {
+                if (!batch.recordNames().contains(change.name())) continue;
+                Map<String,String> previous;
+                synchronized (nativeRecordRepairConcerns) { previous = nativeRecordRepairConcerns.remove(change.owner()); }
+                if (previous != null) previous.forEach((surface, reason) ->
+                        com.onurkat.reclazz.ui.RestartLedger.resolve(change.name() + " / " + surface, reason));
+            }
+        }
+        ClassReloader.ReloadResult apply(String name, ClassReloader reloader) {
+            if (!applied) {
+                applied = true;
+                try {
+                    for (var change : batch.changes()) {
+                        String dependentFailure = SwitchMapRefresh.dependencyFailure(change.owner(), structuralReloader);
+                        if (dependentFailure != null) { preflightFailure = dependentFailure; break; }
+                        aftermath.put(change.name(), reloader.prepareNativeAftermath(change.owner(), change.bytes()));
+                    }
+                } catch (RuntimeException | LinkageError failure) {
+                    preflightFailure = "native record aftermath preflight failed: " + Failures.describe(failure);
+                }
+                if (preflightFailure != null) {
+                    for (var change : batch.changes()) {
+                        SwitchMapRefresh.result(change.owner(), false);
+                        results.put(change.name(), ClassReloader.ReloadResult.failure(preflightFailure, true));
+                    }
+                    recordRefusals.nativeRefused(batch.changes().stream().filter(c -> batch.recordNames().contains(c.name()))
+                            .collect(java.util.stream.Collectors.toMap(com.onurkat.reclazz.reload.RecordNativeBatch.Change::owner,
+                                    com.onurkat.reclazz.reload.RecordNativeBatch.Change::bytes)));
+                    return results.get(name);
+                }
+                for (var change : batch.changes()) {
+                    SwitchMapRefresh.mutationStarting(change.owner());
+                    com.onurkat.reclazz.transform.AdmittedBytes.invalidate(change.owner());
+                    if (verification != null) verification.invalidateUntracked(change.name());
+                }
+                var outcome = batch.commit(change -> {
+                    if (!batch.recordNames().contains(change.name())) return;
+                    if (!com.onurkat.reclazz.transform.KeepBaseline.recordNativeSchemaApplied(change.owner(), change.bytes()))
+                        throw new IllegalStateException("physical native record constructor receipt failed readback");
+                    recordRefusals.nativeAccepted(change.owner(), change.bytes());
+                });
+                if (!outcome.committed()) {
+                    recordRefusals.nativeRefused(batch.changes().stream().filter(c -> batch.recordNames().contains(c.name()))
+                            .collect(java.util.stream.Collectors.toMap(com.onurkat.reclazz.reload.RecordNativeBatch.Change::owner,
+                                    com.onurkat.reclazz.reload.RecordNativeBatch.Change::bytes)));
+                    for (var change : batch.changes()) {
+                        SwitchMapRefresh.result(change.owner(), false);
+                        results.put(change.name(), ClassReloader.ReloadResult.failure(outcome.reason(), true));
+                    }
+                } else {
+                    outcome.repairFailures().forEach((surface, reason) -> failure("physical constructor receipt " + surface, reason));
+                    for (var change : batch.changes()) {
+                        SwitchMapRefresh.result(change.owner(), true);
+                        try { results.put(change.name(), aftermath.get(change.name()).get()); }
+                        catch (RuntimeException | LinkageError failure) {
+                            aftermathFailures.add(change.name());
+                            failure("native aftermath " + change.name(), Failures.describe(failure));
+                            results.put(change.name(), ClassReloader.ReloadResult.success(false, false));
+                        }
+                    }
+                    repairs.apply().forEach(this::failure);
+                    if (repairFailures.isEmpty()) repairsCompleted();
+                }
+            }
+            return results.get(name);
+        }
+    }
+
     private static volatile StructuralReloader structuralReloader;
     private static final TemplateReloader templateReloader =
             new TemplateReloader();
@@ -516,6 +671,29 @@ public class ReclazzAgent {
                 }
             }
 
+            if (bootstrapInstalled && instrumentation.isRetransformClassesSupported()) {
+                com.onurkat.reclazz.bootstrap.RecordCodecs.reporter(ReclazzAgent::lateCodecFailure);
+                var codecs = new com.onurkat.reclazz.transform.RecordCodecTransformer();
+                instrumentation.addTransformer(codecs, true);
+                try {
+                    java.util.List<Class<?>> loadedCodecs = new java.util.ArrayList<>();
+                    for (Class<?> type : instrumentation.getAllLoadedClasses()) {
+                        String name = type.getName();
+                        if ((name.startsWith("com.fasterxml.jackson.databind.") || name.startsWith("tools.jackson.databind."))
+                                && java.util.Set.of("ObjectMapper", "ObjectReader", "ObjectWriter", "MappingIterator")
+                                .contains(name.substring(name.lastIndexOf('.') + 1))) {
+                            if (!instrumentation.isModifiableClass(type)) throw new IllegalStateException("unmodifiable Jackson codec " + name);
+                            loadedCodecs.add(type);
+                        }
+                    }
+                    if (!loadedCodecs.isEmpty()) instrumentation.retransformClasses(loadedCodecs.toArray(Class<?>[]::new));
+                    recordCodecHooksInstalled = true;
+                } catch (Exception | LinkageError failure) {
+                    recordCodecHooksInstalled = false;
+                    StatusReporter.warn("Native record snapshot hooks unavailable: " + Failures.describe(failure));
+                }
+            }
+
             // After the transform context exists, because half the answer to
             // "why didn't my class reload?" is what that context knows about
             // the class in question.
@@ -623,7 +801,7 @@ public class ReclazzAgent {
                         public ReloadQueue.SavePlan prepare(java.util.List<ChangeEvent> captured) {
                             return prepareSwitchMaps(captured);
                         }
-                        public void complete() { SwitchMapRefresh.end(); }
+                        public void complete() { try { SwitchMapRefresh.end(); } finally { nativeRecordSave.remove(); } }
                     });
 
             reloadQueue.setVerification(verification);
@@ -953,7 +1131,8 @@ public class ReclazzAgent {
                         List<Class<?>> loaded = byName.get(name);
                         if (loaded == null) return false;
                         for (Class<?> type : loaded)
-                            if (!com.onurkat.reclazz.transform.AdmittedBytes.matches(type, bytes)) return false;
+                            if (nativeRepairPending(type) || nativeFrameworkPending(type)
+                                    || !com.onurkat.reclazz.transform.AdmittedBytes.matches(type, bytes)) return false;
                         return true;
                     };
                 });
@@ -1136,6 +1315,46 @@ public class ReclazzAgent {
         });
     }
 
+    private static NativeRecordSave prepareNativeRecords(Map<String, byte[]> incoming, Class<?>[] census) {
+        if (!com.onurkat.reclazz.reload.RecordReloadPlan.ready(com.onurkat.reclazz.reload.RecordReloadPlan.Route.NATIVE)
+                || structuralReloader != null || transformContext == null) return null;
+        boolean shape = false; java.util.Set<String> pendingRepairs = new java.util.HashSet<>();
+        for (Class<?> type : census) {
+            byte[] raw = incoming.get(type.getName());
+            if (raw == null || !type.isRecord()) continue;
+            if (nativeRepairPending(type)) { pendingRepairs.add(type.getName()); shape = true; }
+            if (com.onurkat.reclazz.reload.RecordShapeCheck.changed(type, raw)
+                    || com.onurkat.reclazz.transform.KeepBaseline.recordMetadataChanged(type, raw)) shape = true;
+        }
+        if (!shape) return null;
+        JvmCapabilityProbe.RecordCapability capability = nativeRecordCapability;
+        if (capability == null) nativeRecordCapability = capability = JvmCapabilityProbe.probeRecordSchema(instrumentation);
+        if (!capability.nativeSchema()) return null; // Keep the existing explicit R20 fallback unchanged.
+        NativeRecordSave save = new NativeRecordSave(com.onurkat.reclazz.reload.RecordNativeBatch.prepare(incoming, census,
+                name -> transformContext.isWatched(name.replace('.', '/')), capability, instrumentation, pendingRepairs));
+        if (save.batch.refusals().isEmpty()) {
+            try {
+                if (!recordCodecHooksInstalled) throw new IllegalStateException("Jackson snapshot hooks were not installed");
+                save.repairs = com.onurkat.reclazz.reload.RecordNativeRepairs.prepare(save.batch.changes().stream()
+                        .map(com.onurkat.reclazz.reload.RecordNativeBatch.Change::owner).toList(),
+                        platformContext == null ? java.util.List.of() : platformContext.getAllApplicationContexts());
+            } catch (Exception | LinkageError failure) {
+                save.preflightFailure = "native record repair preflight failed: " + Failures.describe(failure);
+            }
+        }
+        return save;
+    }
+    private static boolean nativeCohortMember(String name) {
+        NativeRecordSave save = nativeRecordSave.get();
+        return save != null && save.batch.names().contains(name);
+    }
+    private static void finishNativePreflight(NativeRecordSave save, java.util.Set<String> accepted) {
+        if (save == null) { nativeRecordSave.remove(); return; }
+        save.batch = save.batch.requireComplete(accepted);
+        save.refusals(); // A late refusal must establish the same record provenance as an early one.
+        nativeRecordSave.set(save);
+    }
+
     private static ReloadQueue.SavePlan prepareSwitchMaps(java.util.List<ChangeEvent> captured) {
         var loaded = com.onurkat.reclazz.util.ClassLookup.loadedClasses(instrumentation);
         Map<String, byte[]> recordBytes = new java.util.LinkedHashMap<>();
@@ -1144,8 +1363,10 @@ public class ReclazzAgent {
             String name = new org.objectweb.asm.ClassReader(event.getBytes()).getClassName().replace('/', '.');
             recordBytes.put(name, event.getBytes()); recordPaths.put(name, event.getPath());
         }
-        Map<String, String> recordRejected = recordRefusals.preflight(recordBytes, recordPaths,
-                loaded.all());
+        NativeRecordSave nativeSave = prepareNativeRecords(recordBytes, loaded.all());
+        Map<String, String> recordRejected = new java.util.LinkedHashMap<>(recordRefusals.preflight(recordBytes, recordPaths,
+                loaded.all(), nativeSave == null ? java.util.Set.of() : nativeSave.eligible()));
+        if (nativeSave != null) recordRejected.putAll(nativeSave.refusals());
         Map<ChangeEvent, String> recordEvents = new java.util.LinkedHashMap<>();
         for (ChangeEvent event : captured) {
             String name = new org.objectweb.asm.ClassReader(event.getBytes()).getClassName().replace('/', '.');
@@ -1158,7 +1379,9 @@ public class ReclazzAgent {
             boolean sameOutput = false;
             try { sameOutput = owner != null && classOutputRoot(owner).equals(switchOutputRoot(event.getPath(), owner.getName().replace('.', '/')).toRealPath()); }
             catch (Exception unavailable) { /* Unproven origins never suppress an event. */ }
-            if (sameOutput && SwitchMapRefresh.alreadyApplied(owner, event.getBytes())) {
+            if (sameOutput && SwitchMapRefresh.alreadyApplied(owner, event.getBytes())
+                    && !nativeFrameworkPending(owner)
+                    && !(nativeSave != null && nativeSave.batch.names().contains(owner.getName()))) {
                 recordRefusals.accepted(owner, event.getBytes());
                 StatusReporter.detail("Unchanged applied class skipped: " + owner.getName());
                 continue;
@@ -1209,6 +1432,14 @@ public class ReclazzAgent {
             if (reason != null) refused.put(event, reason);
             if (!refused.containsKey(event)) { apply.add(event); accepted.put(name, event.getBytes()); }
         }
+        finishNativePreflight(nativeSave, accepted.keySet());
+        if (nativeSave != null) nativeSave.refusals().forEach((name, reason) -> {
+            apply.removeIf(event -> {
+                if (!new org.objectweb.asm.ClassReader(event.getBytes()).getClassName().replace('/', '.').equals(name)) return false;
+                refused.put(event, reason); return true;
+            });
+            accepted.remove(name); recordRejected.put(name, reason);
+        });
         refused.forEach((event, reason) -> {
             String name = new org.objectweb.asm.ClassReader(event.getBytes()).getClassName().replace('/', '.');
             if (recordRejected.containsKey(name)) refuseRecord(name, reason, event.getPath().toString());
@@ -1216,6 +1447,12 @@ public class ReclazzAgent {
         });
         SwitchMapRefresh.begin(accepted, preflight.plans(), loaded);
         return new ReloadQueue.SavePlan(com.onurkat.reclazz.reload.BatchOrder.calleesFirst(apply), refused);
+    }
+
+    private static void recordCompiledRefusals(Map<String,String> refusals,Map<String,String> sources) {
+        // Preparation already emitted DIAGNOSE and failure events; only VERIFY needs the active bracket.
+        ReloadVerification current=verification;
+        if(refusals!=null&&current!=null)refusals.forEach((name,reason)->current.outcome(name,false,reason));
     }
 
     private static Map<String, byte[]> prepareCompiledSwitchMaps(Map<String, byte[]> candidates, Map<String, String> sources) {
@@ -1230,8 +1467,10 @@ public class ReclazzAgent {
             }
             if (matches.size() == 1) recordPaths.put(name, matches.get(0));
         }
-        Map<String, String> recordRejected = recordRefusals.preflight(candidates, recordPaths,
-                loaded.all());
+        NativeRecordSave nativeSave = prepareNativeRecords(candidates, loaded.all());
+        Map<String, String> recordRejected = new java.util.LinkedHashMap<>(recordRefusals.preflight(candidates, recordPaths,
+                loaded.all(), nativeSave == null ? java.util.Set.of() : nativeSave.eligible()));
+        if (nativeSave != null) recordRejected.putAll(nativeSave.refusals());
         Map<String, byte[]> compiled = new java.util.LinkedHashMap<>(candidates);
         recordRejected.keySet().forEach(compiled::remove);
         var preflight = SwitchMapPreflight.check(compiled);
@@ -1264,6 +1503,9 @@ public class ReclazzAgent {
             catch (Exception unavailable) { /* Needed enum origins are refused by capture. */ }
         }
         capturePendingEnums(accepted, paths, preflight.plans(), refused, loaded);
+        finishNativePreflight(nativeSave, accepted.keySet().stream().filter(name -> !refused.containsKey(name))
+                .collect(java.util.stream.Collectors.toSet()));
+        if (nativeSave != null) { refused.putAll(nativeSave.refusals()); recordRejected.putAll(nativeSave.refusals()); }
         refused.forEach((name, reason) -> {
             accepted.remove(name);
             if (recordRejected.containsKey(name)) refuseRecord(name, reason, sources.get(name));
@@ -1280,6 +1522,7 @@ public class ReclazzAgent {
 
         }
         SwitchMapRefresh.begin(ordered, preflight.plans(), loaded);
+        compiledSaveRefusals.set(Map.copyOf(refused));
         return ordered;
     }
 
@@ -1338,7 +1581,7 @@ public class ReclazzAgent {
             long startTime = System.currentTimeMillis();
             ReloadEffects.begin(className);
 
-            chaseChangedConstants(internalName, className, bytecode);
+            if (!nativeCohortMember(className)) chaseChangedConstants(internalName, className, bytecode);
 
             // A class the JVM has never loaded is exactly the case where the
             // stock-JDK wall does not stand: everything about it is real. If
@@ -1366,6 +1609,7 @@ public class ReclazzAgent {
                     reloadResult.isSuccess() ? kindOf(reloadResult) : reloadResult.getError(), source);
 
             if (reloadResult.isSuccess()) {
+                if (nativeCohortMember(className)) chaseChangedConstants(internalName, className, bytecode);
                 deferOrComplete(new FrameworkReload(className, reloadResult, bytecode, wasLoaded,
                         source, startTime, true, springOrchestrator, modules, keepInput));
             } else {
@@ -1568,14 +1812,21 @@ public class ReclazzAgent {
         if (compiledClasses.isEmpty()) return;
 
         Runnable apply = () -> {
-            Map<String, byte[]> prepared = prepareCompiledSwitchMaps(compiledClasses, sources);
             try {
+                Map<String, byte[]> prepared = prepareCompiledSwitchMaps(compiledClasses, sources);
                 int refusedCount = (int) compiledClasses.keySet().stream().filter(name -> !prepared.containsKey(name)).count();
-                Runnable reload = () -> applyCompiledClasses(prepared, sources, reloader, springOrchestrator, modules, refusedCount);
+                Runnable reload = () -> {
+                    Map<String,String> refusals = compiledSaveRefusals.get();
+                    recordCompiledRefusals(refusals, sources);
+                    if (!prepared.isEmpty()) applyCompiledClasses(prepared, sources, reloader, springOrchestrator, modules, refusedCount);
+                };
                 ReloadVerification v = verification;
                 if (v == null) reload.run();
-                else v.apply(prepared, sources, reload);
-            } finally { SwitchMapRefresh.end(); }
+                else {
+                    Map<String,byte[]> attempted = new java.util.LinkedHashMap<>(compiledClasses); attempted.putAll(prepared);
+                    v.apply(attempted, sources, reload);
+                }
+            } finally { try { SwitchMapRefresh.end(); } finally { nativeRecordSave.remove(); compiledSaveRefusals.remove(); } }
         };
         if (agentConfig != null && agentConfig.isRequestBoundary()) RequestReloadBoundary.run(apply);
         else apply.run();
@@ -1594,7 +1845,7 @@ public class ReclazzAgent {
         final PremiumModules modules;
         boolean success = true;
         String effects;
-        boolean frameworkCompleted;
+        boolean frameworkCompleted, frameworkFailed, nativeRepair;
 
         FrameworkReload(String className, ClassReloader.ReloadResult result, byte[] bytes,
                         boolean wasLoaded, String source, long started, boolean timed,
@@ -1643,7 +1894,23 @@ public class ReclazzAgent {
                 }
             } finally {
                 try {
-                    spring.endBatch();
+                    try { spring.endBatch(); }
+                    catch (RuntimeException | Error failure) {
+                        NativeRecordSave nativeSave = nativeRecordSave.get();
+                        if (failure instanceof ThreadDeath || failure instanceof VirtualMachineError || nativeSave == null
+                                || !nativeSave.applied || nativeSave.results.values().stream().noneMatch(ClassReloader.ReloadResult::isSuccess))
+                            throw failure;
+                        String why = Failures.describe(failure);
+                        nativeSave.failure("Spring batch completion", why);
+                        for (FrameworkReload work : ready) {
+                            work.success = false; work.frameworkCompleted = false;
+                            boolean installed = nativeSave.batch.names().contains(work.className);
+                            if(installed)nativeFrameworkFailure(findLoadedClass(work.className),"Spring batch completion "+work.className,why);
+                            recordOutcome(work.className, installed, installed
+                                    ? "native record changes are installed; Spring batch completion did not finish: " + why
+                                    : "framework batch completion did not finish: " + why, work.source);
+                        }
+                    }
                     // Ordinary constructor owners can be recreated only here.
                     // No client may observe RELOAD while those old receivers
                     // still own timers or references.
@@ -1685,6 +1952,9 @@ public class ReclazzAgent {
                 ReloadEvents.failed(work.className, why, work.source);
                 return;
             }
+            NativeRecordSave nativeSave = nativeRecordSave.get();
+            work.nativeRepair=(nativeSave!=null&&nativeSave.batch.names().contains(work.className))||nativeFrameworkPending(type);
+            work.frameworkFailed=nativeSave!=null&&nativeSave.aftermathFailures.contains(work.className);
             if (!deferred) com.onurkat.reclazz.transform.KeepBaseline.advance(type, work.bytes);
             if (structural == null || structural.nativeOutcome(type) == StructuralReloader.NativeOutcome.APPLIED) {
                 com.onurkat.reclazz.transform.AdmittedBytes.admitted(type, work.bytes);
@@ -1695,7 +1965,13 @@ public class ReclazzAgent {
                     && platformContext.getPlatformId() == PlatformContext.Platform.HYBRIS
                     ? work.modules.prepareInterceptor(work.className, platformContext.getAllApplicationContexts()) : null;
             work.spring.setPreviousOperationDescriptors(work.result.getPreviousOperationDescriptors());
-            try {
+            try (com.onurkat.reclazz.spring.ReloadSteps.FailureScope observed=com.onurkat.reclazz.spring.ReloadSteps.observeFailures(work.nativeRepair?reason->{
+                work.frameworkFailed=true;
+                if(nativeSave!=null)nativeSave.failure("framework refresh "+work.className,reason);
+                else nativeFrameworkFailure(type,"framework refresh "+work.className,reason);
+            }:null)) {
+            boolean ownedConfiguration=nativeSave!=null&&nativeSave.repairs!=null&&nativeSave.repairs.ownsConfiguration(type);
+            if(!ownedConfiguration) {
             if (work.result.isSpringBean()) {
                 work.spring.onClassReloaded(work.className, type, work.result.isStructuralReload(),
                         work.result.isAnnotationsChanged(), work.result.isMethodsAdded(),
@@ -1705,17 +1981,23 @@ public class ReclazzAgent {
                         work.result.isAnnotationsChanged(), work.result.isMethodsAdded(),
                         work.result.getAddedMethodSigs(), work.result.getNewBytecode());
             }
+            }
             } finally { work.spring.setPreviousOperationDescriptors(null); }
             if (interceptor != null && interceptor.complete()) {
                 ReloadEffects.note("interceptor re-registered");
                 StatusReporter.detail("Interceptor reloaded: " + work.className);
             }
             work.effects = ReloadEffects.end();
-            work.frameworkCompleted = true;
+            work.frameworkCompleted = !work.frameworkFailed;
+            if(work.frameworkFailed){recordOutcome(work.className,true,"native changes are installed; framework refresh did not finish",work.source);return;}
             if (!deferred) publishFramework(work);
         } catch (Throwable t) {
             work.success = false;
             String why = Failures.describe(t);
+            NativeRecordSave nativeSave = nativeRecordSave.get();
+            if (nativeSave != null && nativeSave.batch.names().contains(work.className))
+                nativeSave.failure("framework refresh " + work.className, why);
+            else if(work.nativeRepair)nativeFrameworkFailure(findLoadedClass(work.className),"framework refresh "+work.className,why);
             StatusReporter.error("Reload of " + work.className + " did not finish: " + why);
             recordOutcome(work.className, true, kindOf(work.result)
                     + "; the framework refresh after it did not finish: " + why, work.source);
@@ -1726,14 +2008,26 @@ public class ReclazzAgent {
 
     private static void publishFramework(FrameworkReload work) {
         try {
+            Class<?> type=findLoadedClass(work.className);
+            nativeFrameworkCompleted(type,false);
+            NativeRecordSave save=nativeRecordSave.get();
+            if(save!=null&&save.batch.names().contains(work.className)&&!save.repairFailures.isEmpty()) {
+                String reason="native changes are installed; post-native repairs did not finish: "+String.join(", ",save.repairFailures.keySet());
+                StatusReporter.warn(reason);recordOutcome(work.className,true,reason,work.source);return;
+            }
             reloadLanded(work.className, work.result.isStructuralReload(),
                     work.timed ? System.currentTimeMillis() - work.started : -1,
                     work.result.getShape(), work.source, work.effects);
+            nativeFrameworkCompleted(type,true);
         } catch (Throwable t) {
             // Receipt delivery retains the same per-class failure boundary as
             // framework work; one listener cannot suppress sibling receipts.
             work.success = false;
             String why = Failures.describe(t);
+            NativeRecordSave nativeSave = nativeRecordSave.get();
+            if (nativeSave != null && nativeSave.batch.names().contains(work.className))
+                nativeSave.failure("receipt publication " + work.className, why);
+            else if(work.nativeRepair)nativeFrameworkFailure(findLoadedClass(work.className),"receipt publication "+work.className,why);
             StatusReporter.error("Reload of " + work.className + " did not finish: " + why);
             recordOutcome(work.className, true, kindOf(work.result)
                     + "; the reload receipt did not finish: " + why, work.source);
@@ -1743,6 +2037,12 @@ public class ReclazzAgent {
     private static ClassReloader.ReloadResult reloadWithCacheBoundary(String className, String internalName,
                                                                      byte[] bytecode, ClassReloader reloader) {
         Class<?> owner = findLoadedClass(className);
+        NativeRecordSave nativeSave = nativeRecordSave.get();
+        if (nativeSave != null && nativeSave.batch.names().contains(className)) {
+            if (cacheTrackingInstalled) CacheDependencyLedger.beginMutation();
+            try { return nativeSave.apply(className, reloader); }
+            finally { if (cacheTrackingInstalled) CacheDependencyLedger.endMutation(); }
+        }
         String dependencyFailure = SwitchMapRefresh.dependencyFailure(owner, structuralReloader);
         if (dependencyFailure != null) {
             SwitchMapRefresh.result(owner, false);
@@ -1795,7 +2095,7 @@ public class ReclazzAgent {
             // Per-class isolation: one class failing (possibly with an Error,
             // e.g. VerifyError from companion generation on a nested class)
             // must not abort the rest of the batch.
-            chaseChangedConstants(internalName, className, bytecode);
+            if (!nativeCohortMember(className)) chaseChangedConstants(internalName, className, bytecode);
 
             // Same as the single-file path: a never-loaded stereotype class
             // becomes a live bean and is done.
@@ -1828,6 +2128,7 @@ public class ReclazzAgent {
                     sources.get(className));
 
             if (reloadResult.isSuccess()) {
+                if (nativeCohortMember(className)) chaseChangedConstants(internalName, className, bytecode);
                 successCount++;
                 FrameworkReload work = new FrameworkReload(className, reloadResult, bytecode, wasLoaded,
                         sources.get(className), startTime, compiledClasses.size() == 1, springOrchestrator, modules, keepInput);

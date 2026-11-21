@@ -42,6 +42,24 @@ class ReloadStepsTest {
     private static final ReloadSteps.Reloaded TARGET =
             new ReloadSteps.Reloaded("app.Service", ReloadStepsTest.class, true, false);
 
+    @Test void nativeFailureObserverSeesDeduplicatedFailuresAndReleasesItsScope() {
+        List<String> failures=new ArrayList<>();List<String> ran=new ArrayList<>();
+        var steps=List.of(new ReloadSteps.Step("bad",r->{throw new IllegalStateException("synthetic");}),new ReloadSteps.Step("good",r->ran.add("good")));
+        try(var scope=ReloadSteps.observeFailures(failures::add)){
+            assertEquals(1,ReloadSteps.runAll(steps,TARGET));assertEquals(1,ReloadSteps.runAll(steps,TARGET));
+        }
+        assertEquals(2,failures.size());assertEquals(List.of("good","good"),ran);
+        ReloadSteps.runAll(steps,TARGET);assertEquals(2,failures.size(),"closed scope cannot observe ordinary later saves");
+    }
+    @Test void nestedNativeFailureObserverRestoresOuterObserver() {
+        List<String> outer=new ArrayList<>(),inner=new ArrayList<>();var steps=List.of(new ReloadSteps.Step("bad",r->{throw new IllegalStateException("synthetic");}));
+        try(var first=ReloadSteps.observeFailures(outer::add)){
+            ReloadSteps.runAll(steps,TARGET);
+            try(var second=ReloadSteps.observeFailures(inner::add)){ReloadSteps.runAll(steps,TARGET);}
+            ReloadSteps.runAll(steps,TARGET);
+        }
+        assertEquals(2,outer.size());assertEquals(1,inner.size());
+    }
     @Test
     void everyStepRunsWhenNothingGoesWrong() {
         List<String> ran = new ArrayList<>();
