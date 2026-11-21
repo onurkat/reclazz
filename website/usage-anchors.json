@@ -89,7 +89,7 @@
       "level": 3,
       "title": "Message bundles and cached templates",
       "id": "message-bundles-and-cached-templates",
-      "body_sha256": "e76770f1d4ef00dee50ba9da080c8d53ecda8af495c428bdea5c46630e01b408",
+      "body_sha256": "a6a93b83d5e81dac0d3e269a6f10eff6c6c4d1677aafea7db42667410228e74d",
       "heading": "### Message bundles and cached templates\n"
     },
     {
@@ -115,7 +115,7 @@
       "level": 3,
       "title": "OCC field-set mappings",
       "id": "occ-field-set-mappings",
-      "body_sha256": "2153d112529be1cbcffbd2f4ea847e5ac815ad0511500ff955df4a48f1f970bb",
+      "body_sha256": "9934d9e5f8904157c385e4d1eb196e72da40c6876facaafc9caad129b78d6737",
       "heading": "### OCC field-set mappings\n"
     },
     {
@@ -128,7 +128,7 @@
       "level": 3,
       "title": "WsDTO properties added in beans.xml",
       "id": "wsdto-properties-added-in-beansxml",
-      "body_sha256": "d2ced06f1a7ba26a8cfca707f5b8b23f5001fa9815c99955b9358dc5bbbfc1cb",
+      "body_sha256": "233d37a8ac28168dd22ee08d9a8e6baadc70681950b4775ae7096ea980854ccf",
       "heading": "### WsDTO properties added in beans.xml\n"
     },
     {
@@ -148,14 +148,14 @@
       "key": "sap-populator-and-list-merge-directives",
       "identity": [
         "Option 1: Manual Setup",
-        "SAP populator and list-merge directives"
+        "SAP Commerce populator and list-merge directives"
       ],
       "occurrence": 0,
       "level": 3,
-      "title": "SAP populator and list-merge directives",
+      "title": "SAP Commerce populator and list-merge directives",
       "id": "sap-populator-and-list-merge-directives",
-      "body_sha256": "a3c3709a3b926a5874492c1a1838d944004ec130a8b0492558a65731e96fa05a",
-      "heading": "### SAP populator and list-merge directives\n"
+      "body_sha256": "c678f7927ccdaeb10c0335d587d798254198522bc20af1dd9ef5ece589010175",
+      "heading": "### SAP Commerce populator and list-merge directives<a id=\"sap-populator-and-list-merge-directives\"></a>\n"
     },
     {
       "key": "refreshing-a-custom-cache-after-a-helper-reload",
@@ -363,7 +363,7 @@
       "level": 3,
       "title": "Composed transaction annotations on added services",
       "id": "composed-transaction-annotations-on-added-services",
-      "body_sha256": "4387cb1d9ecc78a8659a4d2a6955cf933d586e1af9e969b575a2b9cc71ce7d7b",
+      "body_sha256": "db65b18d831677c108b7aede2fcd3f47160ed66031c68ef2fef2bcd9da73b709",
       "heading": "### Composed transaction annotations on added services\n"
     },
     {
@@ -506,7 +506,7 @@
       "level": 3,
       "title": "Property changes keep the last working values",
       "id": "property-changes-keep-the-last-working-values",
-      "body_sha256": "c75b2f9513b6253d0dbab1802dc3dc4e43eb564ceaccbaac9855a607406c8a77",
+      "body_sha256": "963bd59e61495a3b395ad17f1e0d3f542a1617e6df699a91da7fbfd6ef026764",
       "heading": "### Property changes keep the last working values\n"
     },
     {
@@ -519,7 +519,7 @@
       "level": 3,
       "title": "YAML and removed configuration keys",
       "id": "yaml-and-removed-configuration-keys",
-      "body_sha256": "4dda7a07b5ce4c1fc41aa0ed982d883315b03417e2d1cbe9118802b0483e9e0b",
+      "body_sha256": "1c0a4eb74a8b06df8402dc7173da7c2ee80aadbb5b2c0445e2abad038f88928a",
       "heading": "### YAML and removed configuration keys\n"
     },
     {
@@ -532,7 +532,7 @@
       "level": 3,
       "title": "Computed @Value fields",
       "id": "computed-value-fields",
-      "body_sha256": "c00c9da903c3ee2cbb0d5353dafd49424d5c235a80fd273c27c7f04789201200",
+      "body_sha256": "273d14e40892dbac8d1d7960807f1c199223a0e5fc14d839f025364a2e6eaf22",
       "heading": "### Computed @Value fields\n"
     },
     {
@@ -545,7 +545,7 @@
       "level": 3,
       "title": "Computed @Value constructor parameters",
       "id": "computed-value-constructor-parameters",
-      "body_sha256": "5741acd3267f1ea948d051fd8dfc154f3285bf9b9812c89f0a076f1bf5dacaad",
+      "body_sha256": "02b5bd86d8e0789122161dfc9a1f87f47e51d4157f612f57b95d327706ee8301",
       "heading": "### Computed @Value constructor parameters\n"
     },
     {
@@ -558,7 +558,7 @@
       "level": 3,
       "title": "@Value factory method parameters",
       "id": "value-factory-method-parameters",
-      "body_sha256": "78fd52a2cb92fbd64c88d857d6bc510ac2b597cd91661f71632c0a64cac271fa",
+      "body_sha256": "0b70520f0821b5786ca1dcc9e506a7b6ca428804829ecaf2d6261a8a99dbc826",
       "heading": "### @Value factory method parameters\n"
     },
     {
@@ -571,7 +571,7 @@
       "level": 3,
       "title": "Added factory values on property changes",
       "id": "added-factory-values-on-property-changes",
-      "body_sha256": "89f851088ba07048fb59158ffd307b8100b2860b2cd6e371b8c6a3a578a68b95",
+      "body_sha256": "5084e76636e36b0ae4081f8b023ff945f4a958e26df22b5835096301ef142774",
       "heading": "### Added factory values on property changes\n"
     },
     {
@@ -584,7 +584,7 @@
       "level": 3,
       "title": "Transaction and security proxies on property changes",
       "id": "transaction-and-security-proxies-on-property-changes",
-      "body_sha256": "0f17c897f0ab2899efae73cdc441f2ee2c598356cdb42068bbf23a6f3f26cbb3",
+      "body_sha256": "7b5a8b28823d171fa5a010ff3309258054d3d724a2939b0b163b073e8adec23c",
       "heading": "### Transaction and security proxies on property changes\n"
     },
     {
@@ -597,7 +597,7 @@
       "level": 3,
       "title": "Indirect @Value dependencies",
       "id": "indirect-value-dependencies",
-      "body_sha256": "177ecf22921a6dd30f55b22af2a278ff1ee7fa9859564af72cdd4d9a35c00346",
+      "body_sha256": "319597be3e96f39d57b7406191e783a3162ef7d2e77a281e681acac7039cbf12",
       "heading": "### Indirect @Value dependencies\n"
     },
     {
@@ -707,14 +707,14 @@
       "key": "project-settings-and-managed-sap-startup",
       "identity": [
         "Option 2: IntelliJ Automatic Mode (Recommended)",
-        "Project settings and managed SAP startup"
+        "Project settings and managed SAP Commerce startup"
       ],
       "occurrence": 0,
       "level": 3,
-      "title": "Project settings and managed SAP startup",
+      "title": "Project settings and managed SAP Commerce startup",
       "id": "project-settings-and-managed-sap-startup",
       "body_sha256": "a213f944617fa43fe329c17e9fd2441a362670f30a96ad33a2a4fdfa04b1a363",
-      "heading": "### Project settings and managed SAP startup\n"
+      "heading": "### Project settings and managed SAP Commerce startup<a id=\"project-settings-and-managed-sap-startup\"></a>\n"
     },
     {
       "key": "workflow-with-ant-build",
@@ -1120,7 +1120,7 @@
       "level": 3,
       "title": "Changed Static Initializers",
       "id": "changed-static-initializers",
-      "body_sha256": "89ac9bf5182d9048d3f5088ac0a0e8f9609a60caa91fe7c39122ffc80f8d054b",
+      "body_sha256": "ef027712812ee76f77d5c6a476079f54ae95e88a376e7299faabf649ca044a3e",
       "heading": "### Changed Static Initializers\n"
     },
     {
@@ -1165,40 +1165,40 @@
       "key": "new-sap-process-definitions",
       "identity": [
         "What Cannot Be Hot-Reloaded",
-        "New SAP process definitions"
+        "New SAP Commerce process definitions"
       ],
       "occurrence": 0,
       "level": 3,
-      "title": "New SAP process definitions",
+      "title": "New SAP Commerce process definitions",
       "id": "new-sap-process-definitions",
-      "body_sha256": "ccc144a1421ce32b21a410867760bc7a5ef9ab7e6d8402385fa9558fd8b314a1",
-      "heading": "### New SAP process definitions\n"
+      "body_sha256": "98b392dcecc61939872c1b822f8eeb41cd74adadda3cc7ce38b65248a079f91e",
+      "heading": "### New SAP Commerce process definitions<a id=\"new-sap-process-definitions\"></a>\n"
     },
     {
       "key": "targeted-sap-solr-reindexing",
       "identity": [
         "What Cannot Be Hot-Reloaded",
-        "Targeted SAP Solr reindexing"
+        "Targeted SAP Commerce Solr reindexing"
       ],
       "occurrence": 0,
       "level": 3,
-      "title": "Targeted SAP Solr reindexing",
+      "title": "Targeted SAP Commerce Solr reindexing",
       "id": "targeted-sap-solr-reindexing",
-      "body_sha256": "7a80f7550bd068f5378a66ba0c282db3e89ff532a8ba83e770bd8054acbeaa8c",
-      "heading": "### Targeted SAP Solr reindexing\n"
+      "body_sha256": "d3a97cc103c8859d999931a3363a891d7945a64762ce7450fe3a5cf89dad8f3f",
+      "heading": "### Targeted SAP Commerce Solr reindexing<a id=\"targeted-sap-solr-reindexing\"></a>\n"
     },
     {
       "key": "sap-reload-outcomes-and-verification",
       "identity": [
         "What Cannot Be Hot-Reloaded",
-        "SAP reload outcomes and verification"
+        "SAP Commerce reload outcomes and verification"
       ],
       "occurrence": 0,
       "level": 3,
-      "title": "SAP reload outcomes and verification",
+      "title": "SAP Commerce reload outcomes and verification",
       "id": "sap-reload-outcomes-and-verification",
-      "body_sha256": "5a1d3dbba9da1c35c2aa90197523089e9fe2c045ddefb966ce21c839eb1ea368",
-      "heading": "### SAP reload outcomes and verification\n"
+      "body_sha256": "8dce85bf5619c41ee66c5dce9f7f41c72a51dfa50411b080a5ac98d8700f5468",
+      "heading": "### SAP Commerce reload outcomes and verification<a id=\"sap-reload-outcomes-and-verification\"></a>\n"
     },
     {
       "key": "native-http-validation-and-overlapping-request-evidence",
@@ -1223,7 +1223,7 @@
       "level": 3,
       "title": "Cache and transaction annotations during concurrent reloads",
       "id": "cache-and-transaction-annotations-during-concurrent-reloads",
-      "body_sha256": "77fd07e09f720983abcffb079dcc9b08fd6827afde6e72f90285ca4c5f1b3195",
+      "body_sha256": "1e68be682ebcc3591a56b8407b992bb58c546e68b5f1b3d4396ae4b0df83ff99",
       "heading": "### Cache and transaction annotations during concurrent reloads\n"
     }
   ]

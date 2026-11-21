@@ -39,7 +39,7 @@ You do not need to edit any properties files or manage the agent JAR path.
 1. Enable the plugin: **Settings** > **Tools** > **Reclazz** > check **Enable Reclazz**
 2. That's it. Run your Hybris server from IntelliJ as usual.
 
-### Project settings and managed SAP startup
+### Project settings and managed SAP Commerce startup<a id="project-settings-and-managed-sap-startup"></a>
 
 **Settings > Tools > Reclazz** stores agent choices per project. On **Apply** and
 on reconnect, the plugin synchronizes supported runtime options with the connected
@@ -1509,7 +1509,7 @@ Verified with Spring 5.3.39, H2 2.2.224 and JDK 21: native attribute comparisons
 checked-exception rollback, read-only hints, manager aliases and `REQUIRES_NEW`
 inside an outer rollback. Real agent tests cover five saves through a held CGLIB
 proxy in ordinary and child classloaders, including annotation removal and method
-removal/restoration. No new Spring 6, JDK 17 or live SAP compatibility claim.
+removal/restoration. No new Spring 6, JDK 17 or live SAP Commerce compatibility claim.
 
 ### Composed cache annotations on added services
 
@@ -2377,7 +2377,7 @@ source-resource copying is not established by these observations.
 
 These observations use stock SapMachine JDK 17/21 on macOS arm64 and startup
 agent attachment. They do not certify other versions, operating systems, late
-attachment or native SAP tenant behavior. Engine libraries are test-only and are
+attachment or native SAP Commerce tenant behavior. Engine libraries are test-only and are
 not packaged with the production agent. See the [P5 registry](feature-evidence.md#p5-properties-xml-messages-and-templates)
 for separate watcher, component, refusal and unverified claims.
 
@@ -2567,7 +2567,7 @@ integration and a JDK 17 runtime have not been verified for this extension.
 
 ### Property changes keep the last working values
 
-For non-SAP Spring applications, Reclazz checks a saved `.properties` change
+For non-SAP Commerce Spring applications, Reclazz checks a saved `.properties` change
 before putting it into the running Environment. It binds affected
 `@ConfigurationProperties` beans on separate objects and resolves and converts
 direct `@Value` fields and constructor parameters, including the supported
@@ -2660,7 +2660,7 @@ profile groups or cloud-platform selection requires a restart. Files containing
 other `spring.config.*` or `spring.profiles*` controls are held. New or initially
 empty files with no identifiable Boot source, custom source loaders and changed
 source ownership are outside this path. Applications with Boot file sources do
-not fall back to a global override for an unowned file. General SAP configuration
+not fall back to a global override for an unowned file. General SAP Commerce configuration
 removal remains outside this feature.
 
 For Logback and Log4j2, removing a supported logger-level key undoes that edit.
@@ -2752,7 +2752,7 @@ partial rather than rolled back. Background readers are not paused.
 Current P5 observes real watched property saves on standalone Spring 5.3.39
 and isolated Spring 6.1.14 with stock SapMachine JDK 17/21 on macOS arm64.
 The Spring 5 dependency graph also contains Boot 2.7.18; these computed-value
-watchers use plain Spring configuration. Live SAP runtime compatibility is
+watchers use plain Spring configuration. Live SAP Commerce runtime compatibility is
 unverified.
 
 ### Computed @Value constructor parameters
@@ -2810,7 +2810,7 @@ are followed within the scope below.
 Current P5 watches saves, rejection, recovery and holder replacement on
 standalone Spring 5.3.39 and isolated Spring 6.1.14 with stock SapMachine
 JDK 17/21 on macOS arm64. These are directly constructed Spring singletons,
-not Boot 3 configuration-properties or live SAP tenant acceptance.
+not Boot 3 configuration-properties or live SAP Commerce tenant acceptance.
 
 ### @Value factory method parameters
 
@@ -2863,7 +2863,7 @@ and an already destroyed old bean. There is no rollback or background-reader pau
 
 Current P5 watches native factory-argument saves on Spring 5.3.39 and isolated
 Spring 6.1.14, stock SapMachine JDK 17/21, macOS arm64, in ordinary and child
-application loaders. Boot 3 and live SAP factory-property compatibility remain
+application loaders. Boot 3 and live SAP Commerce factory-property compatibility remain
 unverified.
 
 ### Added factory values on property changes
@@ -2907,7 +2907,7 @@ listener-container retirement.
 
 Current P5 watches property saves after adding a factory method to lite/default
 configurations on Spring 5.3.39 and isolated Spring 6.1.14, stock SapMachine
-JDK 17/21, macOS arm64, in ordinary and child application loaders. Live SAP
+JDK 17/21, macOS arm64, in ordinary and child application loaders. Live SAP Commerce
 factory-property compatibility remains unverified.
 
 <a id="transaction-proxies-and-property-recreation"></a>
@@ -2962,7 +2962,7 @@ pre-authorization and authorized calls, and carry a `@PostAuthorize` rule; they
 are not acceptance for every denied post-authorization or CGLIB product variant.
 Broader component/proxy coverage remains separate from this watcher proof.
 The Spring 5 graph also contains Boot 2.7.18; the isolated Spring 6 graph uses
-plain Spring configuration. Live SAP compatibility remains unverified.
+plain Spring configuration. Live SAP Commerce compatibility remains unverified.
 
 ### Indirect @Value dependencies
 
@@ -3018,7 +3018,7 @@ limits; failures during live application remain partial without rollback.
 
 Current P5 watches indirect-value saves, rejection and recovery on standalone
 Spring 5.3.39 and isolated Spring 6.1.14 with stock SapMachine JDK 17/21 on
-macOS arm64. Boot 3 binding, indirect Boot configuration-properties and live SAP
+macOS arm64. Boot 3 binding, indirect Boot configuration-properties and live SAP Commerce
 runtime compatibility remain unverified.
 
 ## Data and caches
@@ -3178,8 +3178,8 @@ edits now refresh the standard `DefaultFieldSetLevelHelper` consumers and their
 manager-backed `fieldSetCache`. BASIC/DEFAULT/FULL selections can add or remove
 existing DTO fields. Descendant contexts that see the changed mapping are included;
 unrelated contexts and other named caches are left alone, and nothing is created in
-them: SAP's lazy web beans stay uncreated. The edited file is parsed again with the
-document reader its context used, so SAP's lazy web singletons do not read as a
+them: SAP Commerce's lazy web beans stay uncreated. The edited file is parsed again with the
+document reader its context used, so SAP Commerce's lazy web singletons do not read as a
 `lazy-init` change, and a file under a symlinked extension (`bin/custom` linked to a
 checkout) is matched to the context that loaded it through its target. Repeated unchanged saves
 do not rebuild the table. Multiple declarations for one DTO are rebuilt from fresh
@@ -3198,7 +3198,7 @@ restart requirement; follow that diagnostic.
 A property added to a data class and its WsDTO in `*-beans.xml` reaches OCC responses
 once the DTOs regenerate (`autoCompile=true`). Orika's mapping for the pair is
 refreshed with the added property; the mapper it generates is compiled against the
-class file the reload applied, because SAP's loader finds `models.jar`, which holds
+class file the reload applied, because SAP Commerce's loader finds `models.jar`, which holds
 the class as it was at startup, before the directory the regen writes. The JAXB
 (EclipseLink MOXy) contexts the OCC message converters cached for a changed class,
 or for a response type that maps it, are dropped and built again on the next
@@ -3236,12 +3236,12 @@ There is no new property-file hot reload: priority values must already be availa
 through the application's configuration service. Ordinary Spring MVC retains its
 existing controller rescan and added-endpoint behavior.
 
-### SAP populator and list-merge directives
+### SAP Commerce populator and list-merge directives<a id="sap-populator-and-list-merge-directives"></a>
 
 Changing which populator an existing `ModifyPopulatorList` adds or removes
 (its `add` or `remove` reference) applies to the running converter: Reclazz takes
 the old `add` out of the target list, puts the old `remove` back, then removes the
-new `remove` and appends the new `add`, the same way SAP applies a directive at
+new `remove` and appends the new `add`, the same way SAP Commerce applies a directive at
 startup. A populator bean added in the same save can be the new `add`. A populator
 that comes back this way is appended, so when several directives touch one list
 its order can differ from a fresh start. If the edit cannot be applied, the list
@@ -3630,7 +3630,7 @@ Keep `structuralReload=true` so first-load preparation is enabled.
 For example, editing an existing `static final Map<String,String> CODES =
 Map.of("key", "new")` can update the value read by subsequent field readers
 without restarting. The current recorded watcher lanes are stock SapMachine
-17/21 on macOS arm64; live SAP boot/endpoint acceptance is a separate audit gate.
+17/21 on macOS arm64; live SAP Commerce boot/endpoint acceptance is a separate audit gate.
 
 Only a changed initializer belonging to an existing, prepared physical field is
 considered. An unchanged initializer leaves runtime writes and null alone. A
@@ -3840,9 +3840,9 @@ The action depends on which part changed. Regeneration and reload do not update 
 | `*-spring.xml` and captured local Spring XML bean definitions | Supported bean-definition changes are diffed and applied | Unsupported changes are reported; follow that diagnostic instead of assuming every XML edit needs a restart |
 
 
-### New SAP process definitions
+### New SAP Commerce process definitions<a id="new-sap-process-definitions"></a>
 
-With the SAP automation module, add a local process XML and its ordinary
+With the SAP Commerce automation module, add a local process XML and its ordinary
 `ProcessDefinitionResource` singleton to an existing watched Spring XML that
 Reclazz observed loading. Either save order works: the resource registration
 checks an already present file, and a later process file save retries a pending
@@ -3851,7 +3851,7 @@ registration. A filename or a preexisting resource bean alone grants no access.
 If the standard native process cache is already warm, Reclazz validates the
 complete relevant registration batch, rejects duplicate/existing names and
 active `DynamicProcessDefinition` rows, then publishes through the native
-factory. A cold cache is left for SAP's existing lazy load. Each supported provider-owner context is evaluated independently, with its own
+factory. A cold cache is left for SAP Commerce's existing lazy load. Each supported provider-owner context is evaluated independently, with its own
 cache, collision checks and tenant database guard. Native work runs in the proven
 owning tenant with a fresh session, and restores the caller state afterwards.
 An unproven or refused owner does not block another valid owner. Exact
@@ -3873,11 +3873,11 @@ propagation are outside this guarantee.
 [Creation verification scope](feature-evidence/sap-process-create.json) separates
 unit/watcher and native SDK checks from live tenant acceptance.
 
-### Targeted SAP Solr reindexing
+### Targeted SAP Commerce Solr reindexing<a id="targeted-sap-solr-reindexing"></a>
 
 Provider code reload already changes subsequent indexing calls. Stored search
 documents require a separate indexing operation. With `autoSolrReindex=true`
-and the SAP automation module, recognised `FieldValueProvider`, `ValueResolver`
+and the SAP Commerce automation module, recognised `FieldValueProvider`, `ValueResolver`
 and `TypeValueResolver` reloads queue that operation automatically. The default
 keeps the existing advice and does not invoke indexing.
 
@@ -3917,7 +3917,7 @@ some historical full-index runs. Those timings are observational.
 
 Native indexing recomputes values from the current application data and session;
 it does not preserve stale values previously stored in the index. A type-level
-UPDATE rebuilds the whole selected document. On the inspected SAP 2211 native
+UPDATE rebuilds the whole selected document. On the inspected SAP Commerce 2211 native
 converter, the live type fixture implemented both `TypeValueResolver` and the
 legacy `IndexedTypeFieldsValuesProvider` interface; the indexer selected its
 legacy callback. A modern-only `TypeValueResolver` cannot be the type provider
@@ -3939,7 +3939,7 @@ scope. Validate the served search field and consult the native indexing logs
 for application failures. See the [evidence record](feature-evidence/sap-solr-reindex.json)
 for the distinct unit, watcher, SDK and live verification status.
 
-### SAP reload outcomes and verification
+### SAP Commerce reload outcomes and verification<a id="sap-reload-outcomes-and-verification"></a>
 
 An identical property save retries keys whose runtime write failed. Successful
 keys are acknowledged individually, so a later HAC edit to one of those keys is
@@ -3956,10 +3956,10 @@ use HAC for inputs whose safety the bounded header scan cannot establish.
 Macros in ordinary value rows remain usable. This scan is not a full ImpEx
 parser or a sandbox for executable import scripts.
 
-SAP interceptor refresh captures Spring mapping identities before bean refresh
+SAP Commerce interceptor refresh captures Spring mapping identities before bean refresh
 and explicitly unregisters/registers them in the tenant's registry afterwards.
 Missing registry/mapping or a failed update is not reported as re-registration.
-The registry contract is checked against the owner's SAP 2211-jdk21.8 SDK;
+The registry contract is checked against the owner's SAP Commerce 2211-jdk21.8 SDK;
 model-save behavior additionally needs the live test extension described in
 [the integration tests](../integration-test/README.md).
 
@@ -4004,7 +4004,7 @@ best effort. This does not provide concurrency-safe metadata publication.
 
 
 The SAP Commerce default live suite also checks native OCC error serialization:
-an owned service's thrown exception type changes through Java reload, while SAP's
+an owned service's thrown exception type changes through Java reload, while SAP Commerce's
 own resolver produces the HTTP400 document. The generic message, a success
 endpoint and an independent error remain stable; no custom error handler is added.
 

@@ -41,6 +41,18 @@
         <p class="subtitle">Reclazz, SAP Commerce'te Java, Spring XML, items.xml, beans.xml, ImpEx ve properties değişikliklerini sunucuyu yeniden başlatmadan uygular. Kurulum IntelliJ eklentisiyle yapılır; ajanı eklentinin Install Agent düğmesiyle (kolay yol) ya da local.properties dosyasını elle düzenleyerek (manuel yol) eklersiniz. Yaklaşık 10 dakika sürer. Ücretsiz ve açık kaynaktır (Apache 2.0).</p>
         <p>Reclazz yalnızca geliştirme ortamı içindir. Production'a, CCv2 manifest'ine ya da projenin build'ine girmez; eklediğiniz satır sizin makinenizde kalır.</p>
 
+        <h2 id="marketplace-kurulum">JetBrains Marketplace'ten kurun (önerilen)</h2>
+        <ol>
+            <li>IntelliJ IDEA'da <strong>Settings → Plugins → Marketplace</strong> ekranını açın. <strong>Reclazz</strong> arayın ve <strong>Install</strong> seçin; istenirse IntelliJ'yi yeniden başlatın.</li>
+            <li>SAP Commerce projenizi açın. <strong>Settings → Tools → Reclazz</strong> ekranında <strong>Enable Reclazz in this project</strong> kutusunu işaretleyip <strong>Apply</strong> seçin.</li>
+            <li><strong>SAP Commerce</strong> bölümündeki <strong>Install Agent</strong> düğmesine basın. Ajan eklentinin içindedir; güncellenen başlangıç ayarlarının yedeği alınır.</li>
+            <li>Kurulum kontrolündeki önerileri izleyin. Wrapper seçenekleri farklıysa <code>ant server</code> çalıştırın, ardından geliştirme sunucunuzu yeniden başlatın. <a href="#baslatma">Aşağıdaki adım</a> bu komutları gösterir.</li>
+            <li><strong>Check setup</strong> bağlantısını açın. Ajan bağlanınca mevcut bir metodu değiştirin, kullandığınız yöntemle derleyin ve aynı uygulama işlemini tekrarlayın.</li>
+        </ol>
+        <p>Aynı sunucu yeniden başlamadan değiştirdiğiniz sonucu döndürüyorsa ilk reload çalışmıştır.</p>
+        <p><a class="btn btn-primary" href="https://plugins.jetbrains.com/plugin/33498-reclazz">Marketplace'ten yükle</a> · <a href="/docs/sap-commerce/" lang="en" hreflang="en">English setup guide</a></p>
+        <h2 id="diger-kurulum-yollari">Diğer kurulum yolları ve ayrıntılar</h2>
+
         <h2 id="gereksinimler">Gereksinimler</h2>
         <div class="table-scroll">
             <table>

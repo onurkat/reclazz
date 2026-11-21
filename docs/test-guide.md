@@ -185,13 +185,15 @@ python3 scripts/test-sap-occ-sdk.py /path/to/hybris
 The runner compiles synthetic DTOs against the local SDK, uses real XML reload,
 `DefaultDataMapper` and a Spring cache proxy, and checks BASIC/DEFAULT/FULL field
 additions/removals, repeated saves, parent/child visibility, merged declarations,
-unrelated contexts/caches and custom-helper restart reporting. It never starts SAP,
+unrelated contexts/caches and custom-helper restart reporting. It never starts SAP Commerce,
 contacts a database or writes the SDK. The SDK jars are not distributed.
 Add `--disable-refresh` for a negative control in a temporary compiled copy; this
 must fail on stale mapping output. This is an isolated SDK check, not live OCC HTTP
 acceptance. Use a JDK compatible with the installed SDK.
 
-### Isolated SAP list-directive diagnostics
+<a id="isolated-sap-list-directive-diagnostics"></a>
+
+### Isolated SAP Commerce list-directive diagnostics
 
 After `./gradlew :agent:compileJava`, run
 `python3 scripts/test-sap-directives-sdk.py /path/to/hybris` with an installed SDK
@@ -200,7 +202,7 @@ processors and converter output to verify restart diagnostics, unchanged live
 definitions/lists, repeated saves, inherited/subclass/lazy directives, shared targets,
 and unrelated XML property updates. Add `--disable-guard` to remove the guard in a
 temporary compiled copy: the restart assertion must fail. The runner neither starts
-SAP nor writes the SDK; it is not live application acceptance.
+SAP Commerce nor writes the SDK; it is not live application acceptance.
 
 ### Isolated OCC request mapping acceptance
 
@@ -223,11 +225,11 @@ generated-adapter preservation, sticky added-method refusal across saves, indepe
 context diagnostics, lookup locking during rebuild and ordinary Spring MVC behavior.
 Add `--disable-refresh` to compile a temporary copy without the SDK rescan hook;
 the removed-winner fallback assertion must fail. SDK jars and sources are not copied
-into the project, and the runner does not start or write a SAP application.
+into the project, and the runner does not start or write a SAP Commerce application.
 
 The fixture substitutes only configuration-service priority lookup with numeric
 synthetic keys. It proves priority selection and registry refresh on Spring 5.3.43
-and 6.2.12, not property-file reload, live SAP HTTP acceptance, or custom/programmatic
+and 6.2.12, not property-file reload, live SAP Commerce HTTP acceptance, or custom/programmatic
 mapping discovery.
 
 ### Isolated dynamic-attribute and CronJob reload acceptance
@@ -250,13 +252,15 @@ not be certified as applied.
 
 Persistence/type resolution is isolated in memory and jobs are invoked directly.
 This does not test CronJobService scheduling, stored models, item-type metadata
-changes, real tenant startup or cluster behavior. Report a live SAP lane separately
+changes, real tenant startup or cluster behavior. Report a live SAP Commerce lane separately
 as unrun unless it was actually executed in an authorized test environment.
 Cross-check the existing OCC/list-directive/request-mapping runners above, keeping
 their support boundaries unchanged. No proprietary jars or private source belong
 in the fixture. See [integration acceptance](../integration-test/README.md).
 
-### SAP Solr provider/resolver reload guidance
+<a id="sap-solr-providerresolver-reload-guidance"></a>
+
+### SAP Commerce Solr provider/resolver reload guidance
 
 A successful code reload for a class implementing SAP Commerce
 `FieldValueProvider`, `ValueResolver` or `TypeValueResolver` emits a visible INFO advisory:
@@ -282,13 +286,13 @@ python3 scripts/test-sap-indexing-sdk.py /path/to/hybris --agent agent/build/lib
 
 The portable tests use synthetic interface identities and a snapshot. The optional
 SDK acceptance instead compiles synthetic application classes against installed
-SAP interfaces, invokes genuine `FieldValue` / `DefaultSolrInputDocument` paths
+SAP Commerce interfaces, invokes genuine `FieldValue` / `DefaultSolrInputDocument` paths
 with the real agent, and stores immutable document snapshots locally. It checks
 method-body edits, a newly added helper method, a revert, same-session exact-byte
 receipts, changed newly built documents, unchanged older snapshots until explicit
 reindex, and ordinary-class exclusion. The installed SDK stays outside the repo.
 
-This is isolated document-building acceptance, not live Solr or full SAP indexer
+This is isolated document-building acceptance, not live Solr or full SAP Commerce indexer
 acceptance. It starts no tenant, indexer CronJob or Solr server, and writes no live
 index. Schema changes, index configuration, cluster distribution, commit/query
 visibility and selecting affected documents/indexes remain unverified here.
@@ -331,14 +335,16 @@ bean refresh covers the tested owner/registered-dependency paths; custom caches
 on plain helper dependencies require separate treatment if immediate freshness is
 needed. No automatic general invalidation is claimed.
 
-This is isolated Spring/Guava acceptance using SDK libraries. It starts no SAP
+This is isolated Spring/Guava acceptance using SDK libraries. It starts no SAP Commerce
 tenant and contacts no external service or cluster. Structural edits, external
 references to destroyed beans, static/shared caches, FactoryBeans, scoped/prototype
 owners and concurrent TTL computation are outside this experiment. The simple
 AtomicReference fixture publishes immutable entries under serial test operations;
 it is not a concurrency algorithm recommendation.
 
-### SAP process definition diagnostics
+<a id="sap-process-definition-diagnostics"></a>
+
+### SAP Commerce process definition diagnostics
 
 Changes to local XML referenced by an existing `ProcessDefinitionResource`
 singleton in a captured active Spring context produce a `WARN`: **not applied;
@@ -364,11 +370,13 @@ python3 scripts/test-sap-process-sdk.py /path/to/hybris
 The portable tests use a synthetic API fixture and a real agent/watcher JVM. The
 SDK runner independently checks genuine resource registrations against the
 installed Spring/SDK jars after `:agent:compileJava`. It does not start a tenant,
-parse a business process or exercise a scheduler. These checks are not live SAP
+parse a business process or exercise a scheduler. These checks are not live SAP Commerce
 acceptance. Automatic definition refresh requires a separate design: the SDK
 factory/cache APIs alone do not establish isolation to newly started processes.
 
-### Isolated SAP event-listener acceptance
+<a id="isolated-sap-event-listener-acceptance"></a>
+
+### Isolated SAP Commerce event-listener acceptance
 
 ```bash
 ./gradlew :agent:shadowJar
@@ -387,10 +395,10 @@ each requires an applied VERIFY receipt with the exact class hash in one JVM/ses
 and is checked for changed event output, exactly one delivery per publish, preserved
 listener identity and an unaffected unrelated bean.
 
-This confirms the existing hot-swap already covers SAP event-listener reload; no new
+This confirms the existing hot-swap already covers SAP Commerce event-listener reload; no new
 production hook was needed. It is isolated acceptance, not a live run: it starts no
 tenant or cluster, sends no external events, and the `afterPropertiesSet` tenant-scope
-initialization path is **unverified** here because it needs live SAP infrastructure.
+initialization path is **unverified** here because it needs live SAP Commerce infrastructure.
 
 ### Isolated ConstraintValidator acceptance
 
@@ -501,7 +509,7 @@ provider lifecycle beyond instance reuse.
 
 ## Synthetic constructor ownership on installed SDK Spring graphs
 
-`scripts/test-sap-constructor-sdk.py` runs agentless fresh startup and cached-constructor controls, then real class-file saves through a held HTTP caller. It uses the installed exact SAP SDK Spring5.3.43/6.2.12 binaries in isolated classpaths and never starts a tenant or writes the SDK tree. The current runner targets local SapMachine17/21 installations on macOS; other JVM/OS layouts need a separately reviewed runner configuration.
+`scripts/test-sap-constructor-sdk.py` runs agentless fresh startup and cached-constructor controls, then real class-file saves through a held HTTP caller. It uses the installed exact SAP Commerce SDK Spring5.3.43/6.2.12 binaries in isolated classpaths and never starts a tenant or writes the SDK tree. The current runner targets local SapMachine17/21 installations on macOS; other JVM/OS layouts need a separately reviewed runner configuration.
 
 ```bash
 python3 scripts/test-sap-constructor-sdk.py --sdk-search-root /path/to/local/sdks --agent agent/build/libs/agent-1.8.0.jar --output /tmp/reclazz-constructor-results
@@ -511,16 +519,18 @@ The search root must contain the owner's installed SDK directories. The exact me
 
 Fresh native controls use10/20/30/40. Watcher cases cover direct Owner saves followed by helper-only saves, parent-child helper-only cascade, same-factory recursive destruction, and a withheld-save negative control. Accepted save receipts alone do not pass: exact session/input hashes, current constructor value, current held receiver, native dependency edges and unrelated identity are asserted. The HTTP observer never looks up or recreates a bean to repair the fixture. Exit0 requires all desired/control cases to pass; baseline desired failures remain exit1.
 
-The fixture uses @Component to select actual ordinary Spring recreation. A plain programmatic registration without a stereotype can use the agent's helper-body route, so a stale result from that different route is not constructor-transaction causal proof. SDK-derived native graph acceptance must not be labelled live SAP application/tenant acceptance. Ordinary sibling/shadow/refusal/failure/batch controls also live in the inherited `ConstructorDependencyContract`; the standard Spring5 and isolated Spring6 test wrappers remain their normal Gradle entry points. SDK execution uses existing test-only JUnit artifacts and keeps them out of runtime distributions.
+The fixture uses @Component to select actual ordinary Spring recreation. A plain programmatic registration without a stereotype can use the agent's helper-body route, so a stale result from that different route is not constructor-transaction causal proof. SDK-derived native graph acceptance must not be labelled live SAP Commerce application/tenant acceptance. Ordinary sibling/shadow/refusal/failure/batch controls also live in the inherited `ConstructorDependencyContract`; the standard Spring5 and isolated Spring6 test wrappers remain their normal Gradle entry points. SDK execution uses existing test-only JUnit artifacts and keeps them out of runtime distributions.
 
 
-### Live SAP runner determinism
+<a id="live-sap-runner-determinism"></a>
+
+### Live SAP Commerce runner determinism
 
 `./gradlew :integration-test:harnessContractTest --rerun` checks thirteen runner
-ordering/polling/restoration cases without SAP, using fake socket events, actual
+ordering/polling/restoration cases without SAP Commerce, using fake socket events, actual
 runner child JVMs and loopback HTTP. `:integration-test:sapProofTest --rerun`
 retains eight model-save acceptance checks. Both are wired into this module's
-`check`; a green portable target is not a live SAP result.
+`check`; a green portable target is not a live SAP Commerce result.
 
 Live runs read committed fixture baselines from HEAD, wait for each changed
 source's own COMPILE then exact-owner RELOAD, poll expected HTTP status and body,
@@ -528,9 +538,9 @@ and verify final byte-identical restoration. ImpEx must transition from a visibl
 v1 baseline to v2 and back to v1, with terminal import outcomes; stale v2 data
 cannot establish success. The single nonce-based model-save POST is not retried.
 Record five identical full runs on one boot plus a fresh-boot run, the exact agent
-artifact/server identity and the fixture/ImpEx restoration checks. The SAP
+artifact/server identity and the fixture/ImpEx restoration checks. The SAP Commerce
 default suite has 45 scenarios and requires all 45 to PASS; any SKIP is rejected. It contains no Hibernate ORM scenario. The real Hibernate L2
 provider regression remains separate in `:agent:hibernateTest`.
 See [the runner guide](../integration-test/README.md#runner-ordering-and-restoration)
-for scope and prerequisites. Broader SAP capability coverage remains a separate
+for scope and prerequisites. Broader SAP Commerce capability coverage remains a separate
 staged task; these synchronization changes do not certify those capabilities.

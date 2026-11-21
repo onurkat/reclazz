@@ -15,6 +15,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- Documentation starts with Marketplace installation and links the existing English
+  and Turkish SAP Commerce setup guides from the shared navigation.
+
 - Managed SAP Commerce installation omits redundant `hybrisHome` from the agent
   line; direct IDE launches and dynamic attach keep the explicit project home.
   Detection logs its source, warns when an explicit override conflicts with SAP Commerce's

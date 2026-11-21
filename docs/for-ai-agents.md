@@ -11,7 +11,7 @@ Reclazz is a `-javaagent` that watches compiled class files and hot-swaps them
 into the running JVM in place. Supported edits keep the JVM running; object
 state depends on the reload route, and Spring may recreate affected beans.
 See [reload support](reload-support.md) and the
-[SAP scenarios tested live](sap-commerce-live-tests.md) for the proven scope.
+[SAP Commerce scenarios tested live](sap-commerce-live-tests.md) for the proven scope.
 It is free, open source, sends no telemetry, and needs no
 IDE: everything below is a shell command or a build-file edit, the two things
 an agent already does.

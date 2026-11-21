@@ -1,5 +1,21 @@
 # Reclazz on SAP Commerce, for a coding agent
 
+## Install from Marketplace
+
+1. In IntelliJ IDEA, open **Settings → Plugins → Marketplace**, search **Reclazz** and choose **Install**. Restart IntelliJ if prompted.
+2. Open your SAP Commerce project. In **Settings → Tools → Reclazz**, tick **Enable Reclazz in this project** and choose **Apply**.
+3. Choose **Install Agent** in the **SAP Commerce** section. The plugin includes the agent and backs up the startup-properties file it updates.
+4. Follow the setup check: if it reports different wrapper options, regenerate them with `ant server`, then restart the development server. See the [command-line steps](#enable-it-from-the-shell) if you need help with those commands.
+5. Choose **Check setup**. Once the agent connects, change an existing method, compile with your usual build, and repeat the same application action.
+
+It worked when the running server returns your changed result without another restart. The check reports suggested fixes; it does not silently repair them.
+
+[Install from Marketplace](https://plugins.jetbrains.com/plugin/33498-reclazz) · [Türkçe kurulum rehberi](https://reclazz.com/tr/sap-commerce-kurulum/)
+
+## Command-line setup for coding agents
+
+
+
 This is the SAP Commerce (Hybris) counterpart of
 [for-ai-agents.md](for-ai-agents.md): how a coding agent working on a Hybris
 project enables Reclazz from the shell, verifies it, and keeps its edit-run loop
@@ -316,7 +332,7 @@ relations, incompatible edits or arbitrary schema changes. No new dependency or
 production agent change is involved.
 
 The pre-generation negative control inspects class resources rather than trying
-to load a nonexistent class: SAP's enabled `CacheClassNotFoundRule` remembers
+to load a nonexistent class: SAP Commerce's enabled `CacheClassNotFoundRule` remembers
 failed class loads. After generation the profile requires the real generated
 Model/Jalo classes and rejects generic fallbacks. A class previously requested
 and negatively cached before generation is outside this bounded coverage.
@@ -330,7 +346,7 @@ supports the bounded one-to-many and many-to-many relation edit exercised here.
 warms their model classes, then adds both relations in one XML save. It requires
 new typed accessors on those same loaded classes and persisted asymmetric links
 re-read detached from both ends in a separate request. The one-to-many qualifier
-is `relationParent`; `owner` is inherited from SAP's base Item and is not a new
+is `relationParent`; `owner` is inherited from SAP Commerce's base Item and is not a new
 relation attribute. The many-to-many relation has its own deployment31995.
 
 Run `scripts/test-sap-items-live.py --new-relation --runs 1` with the same explicit
@@ -341,7 +357,7 @@ config and native outputs, original agent and extension links must all recover,
 then experimental types/tables/resources must be absent after a fresh normal
 boot. An inner PASS alone cannot pass the outer profile. Never run this inner
 profile directly or undo schema changes live. Future classes are inspected by
-resource lookup before generation to avoid seeding SAP's negative class cache.
+resource lookup before generation to avoid seeding SAP Commerce's negative class cache.
 
 This opt-in proof covers existing behavior and leaves default suite and normal
 fixture membership unchanged. It does not certify arbitrary, localized, ordered,

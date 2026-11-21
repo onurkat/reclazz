@@ -197,14 +197,14 @@ def expand_claims(text, values, locale="en"):
 
 
 HOME_FAQ = [
- ('Which changes can I reload?', 'Start with a method-body edit. Added methods, Spring beans, endpoints, properties and SAP generated classes have documented conditions. Check the reload matrix before a larger change.',
-  'Hangi değişiklikleri yenileyebilirim?', 'Bir metot gövdesi değişikliğiyle başlayın. Eklenen metotların, Spring bean ve endpoint değişikliklerinin, property dosyalarının ve SAP sınıflarının belgelenmiş koşulları vardır. Daha büyük bir değişiklikten önce reload tablosuna bakın.'),
+ ('Which changes can I reload?', 'Start with a method-body edit. Added methods, Spring beans, endpoints, properties and SAP Commerce generated classes have documented conditions. Check the reload matrix before a larger change.',
+  'Hangi değişiklikleri yenileyebilirim?', 'Bir metot gövdesi değişikliğiyle başlayın. Eklenen metotların, Spring bean ve endpoint değişikliklerinin, property dosyalarının ve SAP Commerce sınıflarının belgelenmiş koşulları vardır. Daha büyük bir değişiklikten önce reload tablosuna bakın.'),
  ('Will my application state survive?', 'Method-body edits keep existing object fields on the JVM-only path. A refreshed Spring bean is destroyed and recreated, so its mutable state can reset.',
   'Uygulama durumum korunur mu?', 'Yalnız JVM yolundaki metot gövdesi değişiklikleri mevcut nesne alanlarını korur. Yenilenen Spring bean yok edilip yeniden oluşturulur; değişebilir durumu sıfırlanabilir.'),
  ('Do I need a special JVM?', 'Supported structural changes work on stock JDK {{CLAIM:agent_java_min}}+ through hot-compiled callers. Plain reflection cannot see added members on that path. JetBrains Runtime or DCEVM provides enhanced redefinition; a superclass change still needs a restart.',
   'Özel bir JVM gerekli mi?', 'Desteklenen yapısal değişiklikler standart JDK {{CLAIM:agent_java_min}}+ üzerinde yeniden derlenen çağıranlar üzerinden çalışır. Bu yolda sıradan reflection eklenen üyeleri göremez. JetBrains Runtime veya DCEVM gelişmiş yeniden tanımlama sağlar; üst sınıf değişikliği yine restart gerektirir.'),
- ('What happens after an items.xml save?', 'Reclazz runs platform generation and reloads the generated classes within the documented SAP scope. A new database column still needs a schema update. Follow the SAP Commerce guide for setup and opt-ins.',
-  'items.xml kaydından sonra ne olur?', 'Reclazz belgelenmiş SAP kapsamı içinde platform kod üretimini çalıştırır ve üretilen sınıfları yeniler. Yeni bir veritabanı sütunu hâlâ şema güncellemesi gerektirir. Kurulum ve isteğe bağlı ayarlar için SAP Commerce rehberini izleyin.'),
+ ('What happens after an items.xml save?', 'Reclazz runs platform generation and reloads the generated classes within the documented SAP Commerce scope. A new database column still needs a schema update. Follow the SAP Commerce guide for setup and opt-ins.',
+  'items.xml kaydından sonra ne olur?', 'Reclazz belgelenmiş SAP Commerce kapsamı içinde platform kod üretimini çalıştırır ve üretilen sınıfları yeniler. Yeni bir veritabanı sütunu hâlâ şema güncellemesi gerektirir. Kurulum ve isteğe bağlı ayarlar için SAP Commerce rehberini izleyin.'),
  ('Can I use Gradle or Maven instead of IntelliJ?', 'Yes. Attach the agent through one launcher: IntelliJ, the Gradle plugin, Maven or a standalone Java command. Build your edit into a watched output and verify the changed application behaviour.',
   'IntelliJ yerine Gradle veya Maven kullanabilir miyim?', 'Evet. Agent için tek başlatma yolu seçin: IntelliJ, Gradle eklentisi, Maven veya bağımsız Java komutu. Değişikliği izlenen çıktıya derleyin ve uygulamanın değişen davranışını doğrulayın.'),
 ]

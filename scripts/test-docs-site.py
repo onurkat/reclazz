@@ -356,6 +356,24 @@ class DocumentationBuildTest(unittest.TestCase):
         for name in ('compare/index.html','privacy/index.html','license/index.html','docs/index.html'):
             self.assertNotIn('id="langToggle"',self.markup(output[name]))
         self.assertIn('<a href="/compare/" aria-current="page">',self.markup(output['compare/index.html']))
+    def test_sap_setup_navigation_keeps_en_tr_destinations_and_active_state(self):
+        for active,href,label,other in (
+            ('setup','/docs/sap-commerce/','SAP Commerce setup','/tr/sap-commerce-kurulum/'),
+            ('setup-tr','/tr/sap-commerce-kurulum/','SAP Commerce kurulumu','/docs/sap-commerce/')):
+            header=layout.header(active)
+            self.assertEqual(2,header.count('href="'+href+'" aria-current="page"'))
+            self.assertEqual(2,Document(header).active)
+            self.assertIn(label,header)
+            self.assertIn('href="'+other+'" lang=',header)
+            self.assertNotIn('href="/docs/" aria-current',header)
+            footer=layout.footer(setup_tr=active=='setup-tr')
+            self.assertIn('href="'+href+'" data-sap-setup',footer)
+        for active in ('home','docs','compare'):
+            header=layout.header(active,bilingual=active=='home')
+            self.assertEqual(2,header.count('href="/docs/sap-commerce/"'))
+            self.assertNotIn('href="/docs/sap-commerce/" aria-current',header)
+        self.assertIn('data-i18n="nav.sapSetup"',layout.header('home',True))
+
     def test_native_license_disclosure_retains_the_complete_text(self):
         source=(Path(__file__).resolve().parents[1]/'website/static/license/index.html').read_text()
         self.assertRegex(source,r'<details class="license-text"')
@@ -645,6 +663,27 @@ class UsageStructureContractTest(unittest.TestCase):
         structure=json.loads((build.REPO/'website/usage-structure.json').read_text());intro=structure['groups'][0]['intro']
         self.assertTrue(any('C2 unlisted usage intro' in e for e in usage_contract_errors(build.REPO,text=self.source.replace(intro,intro+'\nUnexpected added sentence.',1))))
         # Tests read only tracked contracts and sources; there is no .collab import or runtime baseline dependency.
+    def test_renamed_usage_titles_keep_source_and_unique_published_anchors(self):
+        from website.content import heading_ids
+        source_ids=heading_ids(build.REPO/'docs/usage.md')
+        ids=Document(self.html).ids
+        for anchor in ('sap-populator-and-list-merge-directives','project-settings-and-managed-sap-startup',
+                       'new-sap-process-definitions','targeted-sap-solr-reindexing','sap-reload-outcomes-and-verification'):
+            self.assertIn(anchor,source_ids)
+            self.assertEqual(1,ids.count(anchor),anchor)
+        self.assertNotIn('&lt;a name=',self.html)
+
+    def test_different_source_alias_inside_pinned_heading_is_retained(self):
+        anchor='sap-populator-and-list-merge-directives'
+        source=self.source.replace('<a id="'+anchor+'"></a>','<a id="'+anchor+'"></a><a id="different-source-alias"></a>',1)
+        original_read=Path.read_text
+        def read(path,*args,**kwargs):
+            if path.resolve()==(build.REPO/'docs/usage.md').resolve():return source
+            return original_read(path,*args,**kwargs)
+        with patch.object(Path,'read_text',read):rendered=self.renderer.render('docs/usage.md')
+        ids=Document(rendered).ids
+        self.assertEqual(1,ids.count(anchor));self.assertEqual(1,ids.count('different-source-alias'))
+
     def test_T15_usage_groups_own_every_original_manual_section_once(self):
         from website.check import usage_contract_errors
         from website.markdown import usage_heading_blocks

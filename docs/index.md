@@ -20,7 +20,7 @@ Choose a reference for the task you are working on. Start with the [quickstart](
 ## Work with SAP Commerce
 
 - [SAP Commerce reference](sap-commerce.md): Look up platform integrations and reload outcomes.
-- [SAP test guide](test-guide.md): Try the SAP Commerce evaluation workflow.
+- [SAP Commerce test guide](test-guide.md): Try the SAP Commerce evaluation workflow.
 
 ## Integrate tools and coding agents
 
@@ -34,7 +34,7 @@ Choose a reference for the task you are working on. Start with the [quickstart](
 These references are available in the repository.
 
 - [Feature evidence](feature-evidence.md)
-- [SAP live test details](sap-commerce-live-tests.md)
+- [SAP Commerce live test details](sap-commerce-live-tests.md)
 - [Constructor dependency research](spring-constructor-dependencies.md)
 - [Superclass research](superclass-feasibility.md)
 - [Client acceptance matrix](client-matrix.md)

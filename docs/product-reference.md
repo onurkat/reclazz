@@ -469,7 +469,7 @@ Hybris-specific features:
   existing constructor/factory/lifecycle definitions are recreated, with writable
   direct holder references repaired. [Scope](usage.md#xml-singleton-recreation).
 - **Interceptor reload**: Captures mappings before Spring refresh and updates the
-  actual SAP registry afterwards (Validate, Prepare, Load, Remove, InitDefaults).
+  actual SAP Commerce registry afterwards (Validate, Prepare, Load, Remove, InitDefaults).
   Missing or failed registration is reported instead of success. The SDK
   contract and the live model-save check are described in
   [integration tests](../integration-test/README.md#sap-reliability-checks).

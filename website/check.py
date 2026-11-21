@@ -160,7 +160,11 @@ def check_site(output, revision='main'):
         check(doc.lang == ('tr' if path.is_relative_to(output/'tr') else 'en'), str(path) + ': missing language')
         check(doc.headings.count(1) == 1 and doc.mains == 1 and doc.title_count == 1, str(path) + ': require one H1/main/title')
         check(len(doc.ids) == len(set(doc.ids)), str(path) + ': duplicate IDs')
-        if path in docs: check(doc.active == (0 if path == output/'docs/evidence/index.html' else 2), str(path) + ': desktop/mobile active navigation mismatch')
+        if path in docs:
+            expected_active = 0 if path == output/'docs/evidence/index.html' else 2
+            # The setup page also has its two current links in the shared desktop/mobile header.
+            if path == output/'docs/sap-commerce/index.html': expected_active += 2
+            check(doc.active == expected_active, str(path) + ': desktop/mobile active navigation mismatch')
         check(doc.headers == 1 and doc.footers == 1, str(path) + ': require one shared header/footer')
         for control in ('theme-toggle','search-open','search-dialog'):
             check(control in doc.ids, str(path)+': missing shared '+control)

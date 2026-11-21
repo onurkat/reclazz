@@ -216,7 +216,7 @@ Recorded result excerpt:
 ```
 
 The build hold also gates automatic source/resource reload actions. The live
-SAP acceptance retained the previous HTTP/class behavior under both started
+SAP Commerce acceptance retained the previous HTTP/class behavior under both started
 and failed holds, rejected a competing owner, then applied the latest source
 after the original owner's successful build. The
 [terminal build wrapper](mcp-server.md#protecting-terminal-builds) manages these
@@ -314,16 +314,18 @@ application baselines. These are recorded runs, not new runs of this page.
 
 **Limit:** Shared tools do not make every framework edit reloadable. Type-system
 updates, schema changes, framework refresh and restart requirements retain their
-own conditions. SAP events in this tool are not a dedicated SAP operation
-receipt API. See [live SAP scope](sap-commerce-live-tests.md) and
+own conditions. SAP Commerce events in this tool are not a dedicated SAP Commerce operation
+receipt API. See [live SAP Commerce scope](sap-commerce-live-tests.md) and
 [reload limits](usage.md#known-limitations).
 
-## Read SAP operation outcomes with their limits
+<a id="read-sap-operation-outcomes-with-their-limits"></a>
+
+## Read SAP Commerce operation outcomes with their limits
 
 A coding agent investigating a resource edit can read a stable operation and
 outcome instead of interpreting every log sentence. Event pages and the event
 resource classify recognized ImpEx, codegen, items schema, Backoffice reset
-and Solr messages. Java await also includes a bounded list of recent SAP
+and Solr messages. Java await also includes a bounded list of recent SAP Commerce
 observations, so the agent can see related activity while checking Java bytes.
 
 This selected field projection comes from a recorded live ImpEx event:
@@ -355,8 +357,8 @@ and configuration media supplied separate behavioral checks. Other recognized
 outcomes have unit/fake-agent coverage only. Backoffice media checks do not
 establish browser rendering or widget/socket behavior.
 
-**Limit:** SAP observations cannot turn a Java await into success. Await keeps
-at most 16 SAP rows and reports truncation; invalid observation history clears
+**Limit:** SAP Commerce observations cannot turn a Java await into success. Await keeps
+at most 16 SAP Commerce rows and reports truncation; invalid observation history clears
 them. Read [the full typed contract and live coverage](mcp-server.md#typed-sap-operation-observations)
 for outcome meanings and recovery boundaries.
 
@@ -474,16 +476,16 @@ follow the [matching-build instructions](mcp-server.md#build-and-install-locally
 
 | Evidence area | What was independently accepted | Public contract or test |
 |---|---|---|
-| Status, doctor, build, verify, batch, pause and diagnostics | Local Spring/SAP tool probes and real application checks | [MCP reference](mcp-server.md), [packaged workflow](../mcp-server/src/test/java/com/onurkat/reclazz/mcp/AgenticEndToEndTest.java) |
-| Automatic actions during BUILD holds | Started/failed hold, same-owner recovery and restored SAP behavior | [Automatic action tests](../agent/src/test/java/com/onurkat/reclazz/agent/ReloadBuildAutomaticTest.java) |
+| Status, doctor, build, verify, batch, pause and diagnostics | Local Spring/SAP Commerce tool probes and real application checks | [MCP reference](mcp-server.md), [packaged workflow](../mcp-server/src/test/java/com/onurkat/reclazz/mcp/AgenticEndToEndTest.java) |
+| Automatic actions during BUILD holds | Started/failed hold, same-owner recovery and restored SAP Commerce behavior | [Automatic action tests](../agent/src/test/java/com/onurkat/reclazz/agent/ReloadBuildAutomaticTest.java) |
 | Await reload | Received-event correlation, exact-owner receipts and negative outcomes | [Await tests](../mcp-server/src/test/java/com/onurkat/reclazz/mcp/AwaitReloadTest.java) |
 | Event pages | Ordered pagination, exact filters, gaps and honest observation limits | [Event tests](../mcp-server/src/test/java/com/onurkat/reclazz/mcp/RecentEventsTest.java) |
 | Resources and verification prompt | Packaged resource/prompt contracts and SDK reads; installed Claude Code listing with explicit limits | [Resource and prompt reference](mcp-server.md#read-only-resources) |
-| Typed SAP observations | Parsed messages from all five families, with separate native oracles and explicit unit-only outcomes | [Typed SAP contract](mcp-server.md#typed-sap-operation-observations) |
+| Typed SAP Commerce observations | Parsed messages from all five families, with separate native oracles and explicit unit-only outcomes | [Typed SAP Commerce contract](mcp-server.md#typed-sap-operation-observations) |
 | Real coding clients | Eleven-tool discovery and read-only status in Claude Code and Codex CLI | [Dated client acceptance](client-matrix.md#installed-coding-clients) |
 
 The bridge provides tools, read-only resources and a verification prompt.
-SAP-specific operation receipts remain outside this work. No automatic restart,
+SAP Commerce-specific operation receipts remain outside this work. No automatic restart,
 durable edit journal, source-revision proof or universal rollback is promised.
 
 Start with the [setup reference](mcp-server.md), verify the intended JVM, and

@@ -101,7 +101,7 @@ def github_anchor_map(path):
     return result
 
 
-REFERENCE_TITLES = {'index': 'Reference library', 'installation': 'Installation', 'usage': 'Usage manual', 'gradle-plugin': 'Gradle plugin', 'maven': 'Maven plugin', 'spring-boot-starter': 'Spring Boot starter', 'for-ai-agents': 'IntelliJ + coding agents', 'mcp-for-coding-agents': 'MCP for coding agents', 'mcp-server': 'MCP server reference', 'sap-commerce': 'SAP Commerce reference', 'test-guide': 'SAP test guide', 'reload-support': 'What reloads source table', 'product-reference': 'Product reference', 'protocol': 'Status socket protocol'}
+REFERENCE_TITLES = {'index': 'Reference library', 'installation': 'Installation', 'usage': 'Usage manual', 'gradle-plugin': 'Gradle plugin', 'maven': 'Maven plugin', 'spring-boot-starter': 'Spring Boot starter', 'for-ai-agents': 'IntelliJ + coding agents', 'mcp-for-coding-agents': 'MCP for coding agents', 'mcp-server': 'MCP server reference', 'sap-commerce': 'SAP Commerce reference', 'test-guide': 'SAP Commerce test guide', 'reload-support': 'What reloads source table', 'product-reference': 'Product reference', 'protocol': 'Status socket protocol'}
 
 
 def reference_pages(repo):
@@ -217,6 +217,17 @@ class MarkdownRenderer:
                 fixed=pinned.get(token.map[0]) if token.map else None
                 if fixed:
                     anchor=fixed['id'];token.attrSet('data-section-key',fixed['key'])
+                    # Source aliases keep GitHub links; the pinned heading already owns this id.
+                    children=inline.children or [];kept=[];child_index=0
+                    while child_index<len(children):
+                        child=children[child_index]
+                        if (child.type=='html_inline' and child.content=='<a id="'+anchor+'">'
+                            and child_index+1<len(children) and children[child_index+1].type=='html_inline'
+                            and children[child_index+1].content=='</a>'):
+                            child_index+=2
+                        else:
+                            kept.append(child);child_index+=1
+                    inline.children=kept
                 elif reserved:
                     base=slug(text);anchor=base;occurrence=seen[base]
                     while anchor in reserved or anchor in used_ids:

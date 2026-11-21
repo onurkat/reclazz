@@ -1,5 +1,23 @@
 # Installation
 
+## Install from JetBrains Marketplace (recommended)
+
+For an application you run directly from IntelliJ, start here. You do not need to download a separate agent.
+
+1. In IntelliJ IDEA, open **Settings → Plugins → Marketplace**.
+2. Search for **Reclazz**, choose **Install**, and restart IntelliJ if prompted.
+3. Open your project. In **Settings → Tools → Reclazz**, tick **Enable Reclazz in this project** and choose **Apply**.
+4. Start your application with an IntelliJ-managed Java run configuration. Wait for Reclazz to connect.
+5. Change the text returned by an existing method, use **Build Project**, and call it again in the same running application.
+
+It worked when the application returns your new text without restarting; the Reclazz tool window also names the reloaded class.
+
+[Install from Marketplace](https://plugins.jetbrains.com/plugin/33498-reclazz)
+
+Running Gradle or Maven from a terminal? Use the [Gradle](#gradle) or [Maven](#maven) steps below. For SAP Commerce, use its [short setup guide](sap-commerce.md#install-from-marketplace).
+
+## Other ways to install
+
 Choose the route that starts your **application JVM**. IntelliJ and SAP Commerce
 are optional; Reclazz also runs with Spring Boot and plain Java.
 
@@ -30,7 +48,7 @@ Finish with [your first reload](#your-first-reload).
   this is not a full Spring 7/JDK25 pass. See the [runtime matrix](client-matrix.md#jdk-25-agent-runtime).
 - The IDE plugin declares IntelliJ builds **233 through 263.\*** (2023.3–2026.3).
   IDE compatibility and application-JVM compatibility are separate.
-- SAP Commerce is needed only for the SAP route; see its [guide](sap-commerce.md).
+- SAP Commerce is needed only for the SAP Commerce route; see its [guide](sap-commerce.md).
 - Stock JDKs support Reclazz's documented structural reload paths; a special JBR
   installation is not required to begin. Supported changes and native type limits
   are in [usage](usage.md) and [superclass feasibility](superclass-feasibility.md).
@@ -45,8 +63,8 @@ Finish with [your first reload](#your-first-reload).
    and restart the IDE if prompted. Alternatively, use **Install Plugin from
    Disk…** with a plugin ZIP from [GitHub Releases](https://github.com/onurkat/reclazz/releases).
    Choose a release that actually contains the ZIP; the agent JAR is not the IDE plugin.
-2. Open the project and enable **Settings → Tools → Reclazz → Enable Reclazz**.
-   It is off by default. This also works for non-SAP projects.
+2. Open the project and enable **Settings → Tools → Reclazz → Enable Reclazz in this project**.
+   It is off by default. This also works for non-SAP Commerce projects.
 3. Start a Java run configuration handled by the IDE. Reclazz supplies its bundled
    agent and watches the IDE's module compiler outputs. For a run delegated to
    Gradle or Maven, follow the [Gradle](#gradle) or [Maven](#maven) setup rather than assuming IDE injection.
@@ -58,8 +76,8 @@ Finish with [your first reload](#your-first-reload).
 
 The ZIP contains `agent/reclazz-agent.jar` under the plugin's installed root;
 that bundled name is deliberately unversioned. No separate agent download is
-needed for IDE-managed runs. SAP launches outside the IDE use a staged copy;
-follow the SAP guide rather than persisting a path inside an IDE installation.
+needed for IDE-managed runs. SAP Commerce launches outside the IDE use a staged copy;
+follow the SAP Commerce guide rather than persisting a path inside an IDE installation.
 
 For IDE-managed launches, one existing Reclazz VM option is reused only when its
 jar path and options exactly match what the IDE would inject, after quote parsing.

@@ -285,7 +285,7 @@ as after a restart is informational for verification; it still appears as WARN.
 A removal that keeps a previous implementation until restart remains
 `unverified`, including in a batch that also has a restart-equivalent notice.
 
-Optional SAP `autoSolrReindex` work runs after a provider/resolver reload on a
+Optional SAP Commerce `autoSolrReindex` work runs after a provider/resolver reload on a
 separate worker. Its `FINISHED`, `FINISHED_UNVERIFIED` or `FAILED` INFO line
 describes the indexing operation only. An `applied` class receipt does not
 certify stored search-field freshness, and an indexing failure does not undo
@@ -384,7 +384,7 @@ underscores or hyphens. Keys in `live` are the only options the peer may SET:
 | `autoUpdateRunningSystem` | update policy captured at codegen/localization operation start |
 | `autoSolrReindex` | new indexing enqueues; queued/running work drains when disabled |
 
-A SAP agent advertises all six booleans and, in named mode, `watchExtensions`; a non-SAP agent advertises only `autoCompile`.
+A SAP Commerce agent advertises all six booleans and, in named mode, `watchExtensions`; a non-SAP Commerce agent advertises only `autoCompile`.
 The watch filter hash is SHA-256 of sorted, distinct nonblank configured names
 joined by semicolons (UTF-8); `*` represents watch-all. Count/hash are display
 and comparison evidence, never SET inputs. They describe the effective filter,

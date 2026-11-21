@@ -800,7 +800,7 @@ receipt, not application behavior, source revision, atomic reload or retained
 bean state. Exercise the live endpoint/test afterward. Typed restart diagnosis
 currently recognizes the agent's superclass-change warning; unknown failures
 cannot become success through an unverified receipt. This is not an exhaustive
-classifier for SAP resource operations.
+classifier for SAP Commerce resource operations.
 
 BUILD ok acknowledges scheduling. A subsequent await can still report `held`
 before the agent accepts the queued build output. Reuse the same checkpoint
@@ -884,7 +884,7 @@ Types are `compile`, `reload`, `structural_reload`, `compile_error`,
 `compiler_diagnostic`, `refused`, `framework_failure`, `restart_required`, `sap_operation` and
 `unknown`. These describe emitted text; even `reload` confirms no completed
 receipt. A compiler diagnostic identifies a basename, not a full source path
-or a reconstructed compile batch. Unknown events remain visible. Known SAP producer messages have the typed observations described below;
+or a reconstructed compile batch. Unknown events remain visible. Known SAP Commerce producer messages have the typed observations described below;
 unrecognized messages remain `unknown`. Use `await_reload`/`verify` and
 an endpoint or application test to confirm a change.
 
@@ -901,15 +901,17 @@ remain available during a blocked read. No BUILD, SCAN, pause, resume,
 compilation or restart command is sent by event listing.
 
 
-## Typed SAP operation observations
+<a id="typed-sap-operation-observations"></a>
 
-`reclazz_events` and the event resource expose recognized SAP messages as
+## Typed SAP Commerce operation observations
+
+`reclazz_events` and the event resource expose recognized SAP Commerce messages as
 `type:sap_operation` with a nested `sap` object. Each row is an **agent message,
 not a request receipt**. Matching uses the complete received message and its
 level before display clipping. Unknown or malformed formats remain `unknown`.
 
 The nested fields `operation`, `reportedOutcome` and `reasonCode` describe that
-single message. Every SAP observation has `evidenceScope:"agent_message"` and
+single message. Every SAP Commerce observation has `evidenceScope:"agent_message"` and
 `applicationBehaviorConfirmed:false`. Explicit resource basenames, counts or
 anonymous Solr target tags appear only where the message supplies them. Rows
 carry no operation request ID, edit revision or inferred link to adjacent events.
@@ -945,16 +947,16 @@ Interpret the families separately:
   has `fieldFreshnessConfirmed:false`; inspect actual stored documents. Mixed
   owner results remain separate observations, without an aggregate success.
 
-`reclazz_await_reload` adds `sapOutcomes` containing the latest at most 16 SAP
+`reclazz_await_reload` adds `sapOutcomes` containing the latest at most 16 SAP Commerce
 rows after the supplied cursor, with `sapOutcomesTruncated` when older matching
 rows are omitted. The returned cursor comes from the same checked snapshot.
 Checkpoint results start empty; invalid history, session, target or transport
-clears the annotations. These rows do not select a SAP wait target or change
-Java await status: a SAP `applied` row alone cannot yield top-level `applied`
+clears the annotations. These rows do not select a SAP Commerce wait target or change
+Java await status: a SAP Commerce `applied` row alone cannot yield top-level `applied`
 or `reloadConfirmed:true`. Use event pages to inspect retained observations
 and the application's own tests to establish behavior.
 
-See the [SAP observation benefit](mcp-for-coding-agents.md#read-sap-operation-outcomes-with-their-limits)
+See the [SAP Commerce observation benefit](mcp-for-coding-agents.md#read-sap-operation-outcomes-with-their-limits)
 and the [parser contract tests](../mcp-server/src/test/java/com/onurkat/reclazz/mcp/SapOperationObservationTest.java).
 
 ### Scan completion support

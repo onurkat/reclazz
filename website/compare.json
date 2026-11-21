@@ -544,7 +544,7 @@
           }
         },
         "jrebel": {
-          "text": "Agent plus licence activation; rebel.xml on SAP (Backoffice generation available)",
+          "text": "Agent plus licence activation; rebel.xml on SAP Commerce (Backoffice generation available)",
           "verdict": "partial",
           "source": {
             "key": "https://manuals.jrebel.com/jrebel/advanced/hybris.html#2e5a8fad9d02dad7"

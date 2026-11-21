@@ -29,6 +29,10 @@ async function setLang(lang) {
     langToggle.textContent = lang === 'en' ? 'TR' : 'EN';
     langToggle.setAttribute('aria-label', lang === 'en' ? 'Switch language to Turkish' : 'Switch language to English');
     document.documentElement.lang = lang;
+    document.querySelectorAll('[data-sap-setup]').forEach(link => {
+        link.setAttribute('href', lang === 'tr' ? '/tr/sap-commerce-kurulum/' : '/docs/sap-commerce/');
+        link.setAttribute('lang', lang);
+    });
 
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');

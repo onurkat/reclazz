@@ -185,7 +185,7 @@ def grouped_options(options,renderer):
     body='<section aria-labelledby="all-options"><h2 id="all-options">Startup options</h2>'
     intros={
         'Common':'In IntelliJ, open Settings → Tools → Reclazz for structural reload, exclusions and timing. Other keys use the startup argument below.',
-        'SAP Commerce':'In IntelliJ, open Settings → Tools → Reclazz. The SAP Commerce controls appear for a detected SAP project. Use its Install Agent action for server startup configuration.',
+        'SAP Commerce':'In IntelliJ, open Settings → Tools → Reclazz. The SAP Commerce controls appear for a detected SAP Commerce project. Use its Install Agent action for server startup configuration.',
         'Opt-in behaviour':'In IntelliJ, open Settings → Tools → Reclazz for JPA refresh, static initialization and reload timing. Custom cache-owner rules use the startup argument.',
         'Diagnostics':'In IntelliJ, open Settings → Tools → Reclazz for verbose logging and connection settings. Output, dump and session-log keys use the startup argument.'}
     examples={'Common':'startupDelaySec=30','SAP Commerce':'autoImpex=false','Opt-in behaviour':'jpaRefresh=false','Diagnostics':'verbose=true'}
@@ -273,7 +273,7 @@ def generate(revision='main'):
 <script type="application/ld+json">''' + json.dumps(schema).replace('<', '\\u003c') + '''</script>
 </head>
 <body class="docs-page''' + (' matrix-page' if slug == 'support-matrix' else '') + '''">
-''' + layout.header('docs') + '''
+''' + layout.header('setup' if slug == 'sap-commerce' else 'docs') + '''
 ''' + layout.mobile_navigation(nav) + '''
 <div class="docs-shell"><aside class="sidebar"><nav aria-label="Documentation">''' + nav + '''</nav><a class="sidebar-source" href="https://github.com/onurkat/reclazz"><span>Built in the open.</span><strong>Explore the source ↗</strong></a></aside>
 <main id="main" tabindex="-1"><div class="breadcrumb"><a href="/docs/">Documentation</a><span aria-hidden="true">/</span><span>''' + escape(page['group'] if page['group'] != 'Footer' else 'Project') + '''</span><span aria-hidden="true">/</span><span>''' + escape(page['title'] if slug else 'Overview') + '''</span></div><article><div class="article-eyebrow">''' + escape(page['eyebrow']) + '''</div>''' + heading + body + sources + pager + '''</article></main><aside class="page-toc"><nav aria-label="On this page">''' + toc + '''</nav><div class="toc-help"><span>Choosing an edit?</span><a href="/docs/support-matrix/">Check the reload matrix ↗</a></div></aside></div>
