@@ -1,7 +1,7 @@
 # SAP Commerce: what we test live
 
 Keep the server warm, then check the application. These scenarios save real
-files against a running SAP Commerce 2211 installation and check what SAP
+files against a running SAP Commerce 2211 installation and check what SAP Commerce
 actually returns: an HTTP response, persisted query result, rendered component
 or Backoffice view. A reload notification alone cannot pass them. Refusal cases
 must also prove that the last working behavior and protected data stay intact.
@@ -15,17 +15,17 @@ applying these results to your installation.
 ## How we run it
 
 We use a clean, licensed SAP Commerce 2211 installation with HSQLDB, standard
-SAP modules and synthetic test extensions. It is separate from customer systems.
+SAP Commerce modules and synthetic test extensions. It is separate from customer systems.
 The default suite now contains **65 scenarios, all required to PASS, with zero
 SKIPs**. The archived acceptance for the preceding 58-case membership ran five
 times on one server boot and once after a fresh boot: **six runs of 58/58 PASS**, with zero bean-refresh
 failures and unchanged fixture files. Since 13 November 2026 each accepted change
 runs the default suite twice, once on the same boot and once after a fresh boot;
 the latest acceptance was 65/65 in both runs. Hibernate ORM is tested separately in the agent
-regression suite; it is not a SAP live scenario.
+regression suite; it is not a SAP Commerce live scenario.
 
 The live tests run locally before relevant commits and releases. CI execution
-is manual; we do not run a licensed SAP server test on every push. Tests restore
+is manual; we do not run a licensed SAP Commerce server test on every push. Tests restore
 fixture bytes and verify their application baseline, use owned data and check
 cleanup. This test cleanup is not an automatic undo feature for your application.
 
@@ -117,7 +117,7 @@ controller calls (a Spring `Converter<String, Date>` bean).
 
 **The test proves:** The OCC response returns the edited parsed time, then the
 restored one; invalid input keeps its 400 status and a time/locale control stays
-unchanged. SAP's own `WsDateFormatter` and response serialization are not
+unchanged. SAP Commerce's own `WsDateFormatter` and response serialization are not
 covered by this case. See [OCC date parsing](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/OccDateParsingLiveTest.kt).
 
 ## Interceptors and mappings
@@ -125,7 +125,7 @@ covered by this case. See [OCC date parsing](../integration-test/src/main/kotlin
 **You edit:** A ValidateInterceptor, PrepareInterceptor, InitDefaultsInterceptor, LoadInterceptor or RemoveInterceptor body, add an XML
 interceptor mapping, or change its interceptor reference and type code.
 
-**Reclazz does:** Refreshes the interceptor and updates SAP's actual interceptor
+**Reclazz does:** Refreshes the interceptor and updates SAP Commerce's actual interceptor
 registry, preserving its native registry implementation.
 
 **The test proves:** Native model saves observe the changed validation behavior
@@ -171,7 +171,7 @@ and [mapping edits](../integration-test/src/main/kotlin/com/onurkat/reclazz/intt
 
 | Default scenario | Verified behavior |
 |---|---|
-| Persisted validation constraints through ImpEx | The watcher reloads SAP's native validation engine after a constraint change; held and fresh validation see v2 and restored v1. Unrelated imports leave the engine unchanged. |
+| Persisted validation constraints through ImpEx | The watcher reloads SAP Commerce's native validation engine after a constraint change; held and fresh validation see v2 and restored v1. Unrelated imports leave the engine unchanged. |
 
 Diagnostic and no-reload control runs of this scenario remain opt-in.
 
@@ -182,13 +182,13 @@ the prepared class.
 
 **The test proves:** The existing validator/factory returns the changed violation
 message or accepts a value after its limit changes. Invalid and valid controls
-remain checked. This does not cover stored SAP validation-engine constraints.
+remain checked. This does not cover stored SAP Commerce validation-engine constraints.
 See [validator scenarios](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/ValidatorLiveTest.kt).
 
 ## Native OCC exception error response
 
 `OccErrorResponseLiveTest` exercises an existing Java body reload path through
-SAP's native `RestExceptionResolver`, `DefaultWebserviceErrorFactory` and
+SAP Commerce's native `RestExceptionResolver`, `DefaultWebserviceErrorFactory` and
 `ExceptionConverter`. An owned service selects one of two preloaded exception
 types. Editing only its throw site must change the public HTTP400 error type
 First -> Second -> First; the exact parsed error document is checked each time.
@@ -199,7 +199,7 @@ endpoint and independent control exception stay unchanged, as do the serving
 context, service identity and JVM. An actual baseline response must fail the v2
 oracle before the edit; source-correlated compile/reload receipts are required
 in both directions. This is default case62 and coverage of existing behavior,
-not a new exception handler or a change to SAP's error policy. The focused native
+not a new exception handler or a change to SAP Commerce's error policy. The focused native
 result and recovery are recorded at handoff; full default repeatability belongs
 to the independent audit.
 
@@ -210,7 +210,7 @@ package covered by an already loaded plain XML component-scan. Each test run
 uses a new class, bean name and route.
 
 **Reclazz does:** Registers the new controller in the contexts that actually
-loaded the matching scan, then uses SAP's native MVC mapping lifecycle. A
+loaded the matching scan, then uses SAP Commerce's native MVC mapping lifecycle. A
 shared defining classloader does not place an OCC controller in the global
 context. Unsupported scan filters, custom scanner settings and unresolved
 package expressions do not establish a new scan owner.
@@ -240,11 +240,11 @@ and [Orika rollback](../integration-test/src/main/kotlin/com/onurkat/reclazz/int
 ## Native facade and dependent service
 
 **You edit:** Only the Java body of an owned service injected into a native
-`DefaultProductFacade` child bean. The service delegates product lookup to SAP's
+`DefaultProductFacade` child bean. The service delegates product lookup to SAP Commerce's
 native product DAO and changes the selected owned product.
 
 **The test proves:** Public HTTP returns `ProductData` from the native facade,
-using an isolated SAP populating converter with native `ProductBasicPopulator`.
+using an isolated SAP Commerce populating converter with native `ProductBasicPopulator`.
 The selected product name changes v1 -> v2 -> v1; other converted fields and an
 independent facade endpoint remain stable. Exact persisted product identities,
 names, bean collaborators and JVM identity stay unchanged. All three owned
@@ -300,7 +300,7 @@ and [refusal](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/te
 
 `ImpexUpdateMacrosLiveTest` adds default case63 to the existing auto-import
 coverage. A run-owned watched file uses a resolved UPDATE header macro, a
-column macro and code/value macros. SAP's native import changes the owned
+column macro and code/value macros. SAP Commerce's native import changes the owned
 Title target from v0 to v1; detached database reads retain exact PKs, German
 values and an independent control row.
 
@@ -365,7 +365,7 @@ property pair, from INFO to DEBUG and back.
 
 **Reclazz does:** Finds the existing Log4j2 context owning the named logger,
 changes only its explicit configuration and reads back the live logger level
-before reporting success. A saved SAP alias can authorize several owners only
+before reporting success. A saved SAP Commerce alias can authorize several owners only
 when every owner has the same alias/name/level declaration in its verified
 in-memory property source. Each member is updated and read back; undeclared,
 file/XML, unknown or oversized sources refuse the group. Plain level maps and
@@ -439,7 +439,7 @@ removes the owned processes, tasks, task logs and context parameters.
 The initial direct-field probe failed after reload with `IllegalAccessError`.
 Companion field access now links through the original class lookup; the focused
 native case passes with the direct field, including the held process and source
-restoration. This proves this inherited SAP helper field in the tested subclass,
+restoration. This proves this inherited SAP Commerce helper field in the tested subclass,
 not every protected-member or classloader shape.
 
 Retry, error and split branches are outside this case. The case takes about
@@ -449,7 +449,7 @@ Retry, error and split branches are outside this case. The case takes about
 
 **You edit:** The content of one owned Groovy `Script` through a watched ImpEx
 UPDATE, from v1 to v2 and back. The same `model://` URI is resolved through
-SAP's native `ScriptingLanguagesService.getExecutableByURI()` and executed
+SAP Commerce's native `ScriptingLanguagesService.getExecutableByURI()` and executed
 with a distinct binding in each phase.
 
 **The test proves:** After two initial URI resolutions, withholding
@@ -459,7 +459,7 @@ control script stays unchanged, with the same service, JVM and retained target
 reference throughout. No restart or manual cache flush occurs between phases.
 Owned target/control rows and all their revisions are removed afterward.
 
-SAP already handles this database-script invalidation; no agent adapter was
+SAP Commerce already handles this database-script invalidation; no agent adapter was
 added. The initially retained compiled executable continues returning v1 even
 when a fresh lookup returns v2. The test records that distinction; it does not
 claim retained objects are retargeted. File and classpath script repositories
@@ -473,14 +473,14 @@ six-run acceptance above. See [stored script execution](../integration-test/src/
 back. The renderer type is Velocity; output stays in an in-memory writer.
 No email is sent.
 
-**The test proves:** SAP's native `RendererService` renders the exact
+**The test proves:** SAP Commerce's native `RendererService` renders the exact
 subject and body text with a new binding in each phase. Withholding the save
 keeps v1. The first render after the completed v2 import returns v2, and the
 first after restoration returns v1. An independent control template stays
 unchanged. The same service and JVM handle every phase without restart or
 manual cache flush. Owned templates and their media are removed afterward.
 
-This records SAP's existing default-content media behavior; no agent adapter
+This records SAP Commerce's existing default-content media behavior; no agent adapter
 was added. At the explicit English locale, UTF-8 text and literal `<&>` in the
 plain-text binding are checked exactly. This does not establish HTML escaping,
 localized template selection, physical `.vm` file reload, or email delivery.
@@ -488,22 +488,22 @@ See [native Velocity template rendering](../integration-test/src/main/kotlin/com
 
 ## CronJobs and native events
 
-**You edit:** A JobPerformable body or an existing SAP event listener body.
+**You edit:** A JobPerformable body or an existing SAP Commerce event listener body.
 
 **Reclazz does:** Reloads the prepared native consumer.
 
 **The test proves:** CronJobService execution returns the edited version once,
-with SUCCESS/FINISHED and owned job rows cleaned up. A published native SAP
+with SUCCESS/FINISHED and owned job rows cleaned up. A published native SAP Commerce
 event reaches the edited listener once, with nonce-isolated control results.
 The CronJobService case invokes the job synchronously. The separate native
-Trigger case persists one owned CronJob and three one-shot Triggers. SAP
+Trigger case persists one owned CronJob and three one-shot Triggers. SAP Commerce
 creates and dispatches each linked TriggerTask; its actual firing observes
 v1, the saved v2 body, then restored v1, each once with SUCCESS/FINISHED.
 Task identity and timestamp ordering are checked; the native scheduling offset
 is recorded rather than overridden. Owned tasks, triggers, job/history/log
 rows and probe observations are removed. In the default suite the case takes
-about 71 s, because SAP schedules each one-shot task after its activation time.
-This records existing body reload through SAP scheduling; it adds no scheduler
+about 71 s, because SAP Commerce schedules each one-shot task after its activation time.
+This records existing body reload through SAP Commerce scheduling; it adds no scheduler
 adapter. Listener registration lifecycle remains open. See
 [native Trigger firing](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/TriggerFiringLiveTest.kt),
 [CronJob](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/CronJobLiveTest.kt)
@@ -560,7 +560,7 @@ See [Solr profile](../integration-test/src/main/kotlin/com/onurkat/reclazz/intte
 
 ## CMS component rendering
 
-**You edit:** A Java marker in a controller using SAP's inherited CMS request
+**You edit:** A Java marker in a controller using SAP Commerce's inherited CMS request
 handling in the temporary CMS profile.
 
 **Reclazz does:** Reloads the Java change used by that render path.
@@ -570,11 +570,11 @@ component through JSP: HTTP 200, HTML content type and one proof element with
 the current nonce, edited marker and expected content. It does not save/edit
 JSP bytes or a complete storefront. A separate persisted-UID case
 creates one owned content catalog with two versions and four saved components.
-SAP's inherited controller resolves the same UID through the session catalog
+SAP Commerce's inherited controller resolves the same UID through the session catalog
 version, then renders JSP. Editing and reverting the selected component's Java
 marker changes its HTML while the other version and independent controls remain
 stable. Persisted identities stay unchanged, the previous session catalog scope
-is restored, and owned rows are removed through SAP's model service. This case
+is restored, and owned rows are removed through SAP Commerce's model service. This case
 is opt-in and does not increase the default 65-case suite. See the
 [request-component case](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/CmsComponentLiveTest.kt)
 and [persisted UID case](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/CmsUidLookupLiveTest.kt).
@@ -598,7 +598,7 @@ context must resolve that source file directly, and Jasper must use
 HTML follows each save in the same JVM, with unchanged Java bytes, Java
 markers, page/slot/component identities and an independent unchanged view.
 No build, copy, cache clear or restart occurs between saves. This covers
-existing SAP/Tomcat JSP serving with Reclazz present; it adds no JSP reload
+existing SAP Commerce/Tomcat JSP serving with Reclazz present; it adds no JSP reload
 mechanism to the agent. See the
 [JSP resource case](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/CmsJspResourceLiveTest.kt).
 
@@ -606,13 +606,13 @@ mechanism to the agent. See the
 
 **You edit:** The owned Java DAO query suffix, `one -> two -> one`.
 
-**Reclazz does:** Reloads the query method while SAP keeps applying native
+**Reclazz does:** Reloads the query method while SAP Commerce keeps applying native
 persisted `SearchRestriction` rows. No restriction cache or security bypass
 is added by Reclazz.
 
 **The test proves:** Two owned non-admin users each see their exact owned
 Product PK in each of two session catalog versions. The restrictions combine
-user-specific product codes with SAP's native `?session.catalogversions`
+user-specific product codes with SAP Commerce's native `?session.catalogversions`
 predicate. Changing and restoring the DAO query selects the expected second
 and first Product PKs. A native-admin query still sees all eight owned products,
 and an unrelated Title query stays unchanged. Product, user, catalog and
@@ -647,10 +647,10 @@ and the [live profile driver](../scripts/test-sap-backoffice-live.py).
 
 These changes were measured on a running SAP Commerce 2211 installation, but
 they are not part of the 65 default scenarios. In each case a native-only run
-(agent off, same save) first showed that SAP keeps the old behavior until a
+(agent off, same save) first showed that SAP Commerce keeps the old behavior until a
 restart. The agent run then showed the new behavior in the same JVM, and a
 deliberately disabled agent step made the focused tests fail. Repeatable local
-regressions use the installed SAP SDK classes; they start no server and change
+regressions use the installed SAP Commerce SDK classes; they start no server and change
 no installation.
 
 | You edit in Spring XML | What the running server shows | Repeatable regression |
@@ -658,18 +658,18 @@ no installation.
 | Append an ordinary singleton with `InitializingBean` or `init-method` | The bean is created once through Spring's own initialization; an identical save keeps the same instance | Agent tests (`XmlNewInitializingBeanTest`) |
 | A `project.properties` value used as an exact `${key}` bean property | The existing bean receives the new value and keeps its identity | Agent tests (`XmlPlaceholderPropertiesTest`) |
 | `add` or `remove` populator of an existing `ModifyPopulatorList` | The running converter uses the new populator list; the edit can be reverted | `scripts/test-sap-directives-sdk.py` |
-| Append a plain SAP `AbstractEventListener` bean | The new listener receives the next event once; failed creation removes it | `scripts/test-sap-events-xml-sdk.py` |
+| Append a plain SAP Commerce `AbstractEventListener` bean | The new listener receives the next event once; failed creation removes it | `scripts/test-sap-events-xml-sdk.py` |
 | The `converter` of an existing hot-folder converter mapping | The next ingested file is converted by the new converter | `scripts/test-sap-hotfolder-sdk.py` |
 | `filename-regex` or `fixed-rate` of an explicit-id file inbound adapter | The next poll uses the new pattern and rate; files already seen are not delivered again | Agent tests (`SpringIntegrationPollingAdapterReloadTest`) |
 | An access expression in a `security:http` group | The servlet filter chain enforces the new rule; failure keeps the old chain | Agent tests (`SpringSixXmlSecurityReloadTest`) |
 
 Conditions and limits for each case are in the [setup guide](sap-commerce.md)
-and [usage](usage.md#sap-populator-and-list-merge-directives). A failed SAP code
+and [usage](usage.md#sap-populator-and-list-merge-directives). A failed SAP Commerce code
 generation no longer blocks later class reloads; agent tests cover that case.
 
 Backoffice widget definitions and new widget folders were measured and are not
-supported: SAP reads them from the Backoffice jars built by `ant build`, and
-even with SAP's development switches F4 and Reset Everything did not show the
+supported: SAP Commerce reads them from the Backoffice jars built by `ant build`, and
+even with SAP Commerce's development switches F4 and Reset Everything did not show the
 change. Use the native build and redeploy, or restart. Widget controller Java
 bodies reload as ordinary classes.
 
@@ -693,7 +693,7 @@ that their application behavior has passed a live test.
 This is the current ordered research/build queue, not a release commitment or
 support claim. Each scope needs a concrete plan, native baseline, application
 oracle, cleanup and independent review before it can move into the tested list.
-If SAP already handles an edit, its test records that existing behavior.
+If SAP Commerce already handles an edit, its test records that existing behavior.
 
 1. Duplicate Backoffice F4 dispatch (a bug investigation)
 2. Nested/list DTO conversion slice
@@ -704,9 +704,9 @@ If SAP already handles an edit, its test records that existing behavior.
 7. One commerce service, then bounded remaining domains
 
 The other scopes of the earlier queue are either in the tested list above or
-were closed without new work: SAP already applies data changes made through
+were closed without new work: SAP Commerce already applies data changes made through
 ImpEx or Backoffice (saved queries, rules, Solr properties), AddOn staging is
-done by SAP's own `ant build`, and native region caches and Backoffice label
+done by SAP Commerce's own `ant build`, and native region caches and Backoffice label
 bundles did not justify a reload path.
 
 Later refinements include B2B approval, Adaptive Search, personalization,
@@ -741,7 +741,7 @@ relations, incompatible edits or arbitrary schema changes. No new dependency or
 production agent change is involved.
 
 The pre-generation negative control inspects class resources rather than trying
-to load a nonexistent class: SAP's enabled `CacheClassNotFoundRule` remembers
+to load a nonexistent class: SAP Commerce's enabled `CacheClassNotFoundRule` remembers
 failed class loads. After generation the profile requires the real generated
 Model/Jalo classes and rejects generic fallbacks. A class previously requested
 and negatively cached before generation is outside this bounded coverage.
@@ -755,7 +755,7 @@ supports the bounded one-to-many and many-to-many relation edit exercised here.
 warms their model classes, then adds both relations in one XML save. It requires
 new typed accessors on those same loaded classes and persisted asymmetric links
 re-read detached from both ends in a separate request. The one-to-many qualifier
-is `relationParent`; `owner` is inherited from SAP's base Item and is not a new
+is `relationParent`; `owner` is inherited from SAP Commerce's base Item and is not a new
 relation attribute. The many-to-many relation has its own deployment31995.
 
 Run `scripts/test-sap-items-live.py --new-relation --runs 1` with the same explicit
@@ -766,7 +766,7 @@ config and native outputs, original agent and extension links must all recover,
 then experimental types/tables/resources must be absent after a fresh normal
 boot. An inner PASS alone cannot pass the outer profile. Never run this inner
 profile directly or undo schema changes live. Future classes are inspected by
-resource lookup before generation to avoid seeding SAP's negative class cache.
+resource lookup before generation to avoid seeding SAP Commerce's negative class cache.
 
 This opt-in proof covers existing behavior and leaves default suite and normal
 fixture membership unchanged. It does not certify arbitrary, localized, ordered,

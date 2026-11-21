@@ -52,10 +52,14 @@ do not call it another refusal or silently expand the conclusion.
 Host: macOS aarch64. Both versions were compiled and run with their own JDK tools.
 The commands above completed successfully with these actual runtime versions:
 
+The table names the SapMachine distribution. The recorded `java.vm.name` was
+`OpenJDK 64-Bit Server VM` on both runs; this is the verbatim probe value. The
+version strings below are the recorded `java.runtime.version` values.
+
 | Runtime | Identical-byte redefine control | Direct superclass change | Prewired hidden delegation |
 | --- | --- | --- | --- |
-| SAP OpenJDK 17.0.16+8-LTS | Accepted | Rejected: attempted to change superclass or interfaces | Passed |
-| SAP OpenJDK 21.0.10.0.1+1-LTS | Accepted | Rejected: attempted to change superclass or interfaces | Passed |
+| SapMachine OpenJDK 17.0.16+8-LTS | Accepted | Rejected: attempted to change superclass or interfaces | Passed |
+| SapMachine OpenJDK 21.0.10.0.1+1-LTS | Accepted | Rejected: attempted to change superclass or interfaces | Passed |
 
 JBR, enhanced-redefinition modes, other JVM builds and other operating systems
 were **not run in this reproduction**. Prior repository comments about other

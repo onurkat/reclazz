@@ -105,10 +105,10 @@ Observed locally on **2026-09-23**, macOS aarch64, Node22.20.0:
 
 | Consumer / runtime | Observed result | Scope |
 | --- | --- | --- |
-| Official SDK 1.30.0 / SAP JDK 17.0.16 | PASS | Eight tools, 18 invalid output mutations rejected, live reload/failure/recovery |
-| Official SDK 1.30.0 / SAP JDK 21.0.10.0.1 | PASS | Same acceptance against a separately launched JDK21 application and MCP process |
-| Gradle 8.10.2 / SAP JDK21 | PASS | Seven real two-module build scenarios using the existing fixture |
-| Maven 3.9.16 / SAP JDK21 | PASS | Seven real two-module build scenarios using the existing fixture |
+| Official SDK 1.30.0 / SapMachine JDK 17.0.16 | PASS | Eight tools, 18 invalid output mutations rejected, live reload/failure/recovery |
+| Official SDK 1.30.0 / SapMachine JDK 21.0.10.0.1 | PASS | Same acceptance against a separately launched JDK21 application and MCP process |
+| Gradle 8.10.2 / SapMachine JDK 21 | PASS | Seven real two-module build scenarios using the existing fixture |
+| Maven 3.9.16 / SapMachine JDK 21 | PASS | Seven real two-module build scenarios using the existing fixture |
 | SDK / Windows JDK17 | Not run locally | CI configured; no hosted result claimed here |
 | SDK / Linux JDK17 | Not run locally | CI configured; no hosted result claimed here |
 | Native build fixture / Windows | Not run | SDK acceptance does not imply native Gradle/Maven fixture acceptance |
@@ -124,14 +124,14 @@ certified by these tests. No external account or hosted service is needed for
 the local acceptance flow.
 
 On **2026-10-03**, the pause/resume extension passed locally on macOS aarch64,
-Node22.20.0, official SDK1.30.0 and SAP JDK17.0.16: nine tools, 23 invalid
+Node22.20.0, official SDK1.30.0 and SapMachine JDK 17.0.16: nine tools, 23 invalid
 output mutations rejected, paused output retained through SCAN, then exact-byte
 verification and changed behavior after resume in the same JVM/instance.
 This additional run does not establish hosted CI or JDK21 acceptance for the
 new control tool.
 
 On **2026-10-03**, explicit-project startup also passed the local macOS aarch64
-SDK1.30.0 / Node22.20.0 / SAP JDK17.0.16 acceptance: MCP ran from the jar install
+SDK1.30.0 / Node22.20.0 / SapMachine JDK 17.0.16 acceptance: MCP ran from the jar install
 directory while the app ran from the selected consumer project. All nine tools
 worked with startup defaults; seven evaluation scenarios passed with zero false
 completions or restarts. Hosted and Windows runs for this extension remain unrun.
