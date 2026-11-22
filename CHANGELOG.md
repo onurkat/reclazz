@@ -26,6 +26,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   stereotype. Verified native recreation rebuilds supported consumers, restores
   captured instances on failure, and retains precise restart concerns for
   unprovable holders or lifecycle shapes.
+- Captured Spring XML can update supported prototype recipes for future native
+  creation while preserving existing instances and consumers. Dependency/autowire
+  policy edits on uncreated singleton definitions take effect on first creation;
+  live singleton, selection metadata and unverified ownership/callback cases retain
+  their restart guards. Publication and merged-cache invalidation share the native
+  singleton lock; concurrent creation is reported for restart without destroying
+  application instances. Publication failures restore the original definition metadata.
 
 ### Fixed
 

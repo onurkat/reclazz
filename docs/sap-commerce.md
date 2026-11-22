@@ -154,6 +154,29 @@ suite. The focused SAP Commerce proof covers a precompiled InitializingBean and
 an existing consumer's lookup in the captured master request context; init-method
 is covered by focused Spring tests.
 
+## Changing future XML definitions
+
+An existing prototype recipe in an actually loaded local Spring XML resource can
+change without destroying or re-injecting an existing singleton consumer. Old
+prototype objects keep their values. Only a later native `getBean` constructs and
+initializes from the new recipe; a later creation failure leaves that accepted
+recipe in place until a corrected save. There is no atomic switch for in-flight
+requests, and prototype cleanup remains the caller's responsibility.
+
+For a singleton Spring records as uncreated, `depends-on` and `autowire` edits can
+change its first native creation policy without creating it during reload. Once
+created, these policy changes require restart and preserve the existing object
+and dependency graph. Primary/candidate/lazy flag edits retain their guards.
+
+Other removals retain their definitions and restart guidance when reference
+ownership is unverified. FactoryBean recipe changes still require restart;
+restoring factory/product identities alone does not undo destruction callbacks.
+
+The focused prototype and cold-policy SAP Commerce evidence uses Spring 6.2.12
+in the real core context with synthetic precompiled fixtures. Isolated tests also
+cover Spring 5.3.39, 6.1.14 and 7.0.10. These paths do not refresh the entire
+context or expand the live suite.
+
 ## Updating a simple XML configuration placeholder
 
 A SAP Commerce property-file save can update an already-created plain singleton

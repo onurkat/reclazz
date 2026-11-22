@@ -29,10 +29,11 @@ final class BeanDefinitionDiff {
     final List<PropertyChange> propertyChanges = new ArrayList<>();
     final List<UnsafeChange> unsafe = new ArrayList<>();
     final List<XmlBeanRecreator.Replacement> recreated = new ArrayList<>();
+    final List<XmlDefinitionTransaction.Edit> definitionEdits = new ArrayList<>();
     final List<SapPopulatorDirectives.Edit> directiveEdits = new ArrayList<>();
 
     boolean hasChanges() {
-        return !added.isEmpty() || !propertyChanges.isEmpty() || !unsafe.isEmpty() || !recreated.isEmpty() || !directiveEdits.isEmpty();
+        return !added.isEmpty() || !propertyChanges.isEmpty() || !unsafe.isEmpty() || !recreated.isEmpty() || !directiveEdits.isEmpty() || !definitionEdits.isEmpty();
     }
 
     static final class NewBean {

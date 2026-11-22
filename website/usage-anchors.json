@@ -1,7 +1,7 @@
 {
   "source": "docs/usage.md",
   "baseline": "3327bc6",
-  "source_sha256": "9e9cbddc7a8fa6b1fda2157d4a64957375a2420003522485a1351698266b7de1",
+  "source_sha256": "79ed86846790e6b64634e29b9438b4141935f35930f5531f6d9d1e5fb0aeb5c2",
   "headings": [
     {
       "key": "usage-guide",
@@ -102,7 +102,7 @@
       "level": 3,
       "title": "Loaded Spring XML resources",
       "id": "loaded-spring-xml-resources",
-      "body_sha256": "2e4737ed70b051bf6cc76a7280f35abb5a83c7185c2fdcb415e924a51c672608",
+      "body_sha256": "655c68a29575686de6709262053a6a37532f74f6d84d3c9bb5198e7257912b12",
       "heading": "### Loaded Spring XML resources\n"
     },
     {
@@ -180,7 +180,7 @@
       "level": 3,
       "title": "XML singleton recreation",
       "id": "xml-singleton-recreation",
-      "body_sha256": "911761d4c7ac8f716248339116d8c432cc6ee22393627863009990fc54aeeb2a",
+      "body_sha256": "38992860bbbd9ddf46b9bd20d0fda7c173fc3da13ffa7dcb6d370b06b7cee128",
       "heading": "### XML singleton recreation\n"
     },
     {

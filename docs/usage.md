@@ -2537,16 +2537,42 @@ metadata is updated without creating them, and invalid values can fail when Spri
 later creates the bean. Only that bean's cached merged definition is invalidated
 so native creation reads the requested metadata; other beans' caches stay intact.
 
-For existing ordinary XML beans, changes to `depends-on`, `primary`, `autowire`,
-`autowire-candidate` or the effective `lazy-init` flag require restart. Spring's
-parsed flag determines equivalence, including `default-lazy-init` and explicit
-defaults. Changing the flag does not create a cold bean or undo an already
-created instance. The affected bean's properties and
-raw definition stay unchanged, including for a lazy bean; supported changes to
-independent beans can still apply. Unchanged declarations continue to allow
-property edits. This diagnostic does not rebuild initialization order or reinject
-existing consumers; new beans retain Spring's native metadata handling and the
-existing guidance for consumers created before their addition.
+Existing prototype XML definitions can change for **future creation** without
+recreating their current consumers. A save publishes the supported standard
+recipe; existing prototype objects and singleton holders keep their identities
+and values. Native constructors, property injection and initialization run only
+on a later `getBean`. Unchanged declarations keep their raw and merged definition
+identities. Prototype cleanup remains the caller's responsibility.
+
+For a singleton Spring still records as uncreated, supported `depends-on` and
+`autowire` changes also publish only its future definition, including accompanying
+property values. Add/remove/retarget/order changes to `depends-on` take effect on
+first native creation. No dependency or target is created by the XML save.
+Already-created singletons, including ones subsequently destroyed, retain the
+restart guard for these policy edits. `primary`, `autowire-candidate` and the
+effective `lazy-init` flag still require restart for existing definitions.
+
+These definition-only paths require a captured successful XML reader, exact local
+resource ownership, standard definitions and the native `DefaultListableBeanFactory`
+of Spring 5.3.39, 6.1.14, 6.2.12 or 7.0.10. Custom definition suppliers,
+factory-method construction, FactoryBean recipe changes, method overrides and
+infrastructure types (including `ApplicationListener`) retain their guards. Parent changes invalidate affected
+merged descendants across captured contexts; a live singleton descendant blocks
+publication in every participating owner. Unknown merged-definition reset
+callbacks are refused before publication.
+
+A future constructor, dependency resolution or initialization failure is an
+application creation failure; it does not roll back an already accepted future
+definition or change an existing prototype. Correct the XML and retry. Definition
+publication failures restore the original raw/merged metadata; an incomplete
+restoration is reported for restart. If native creation races with publication,
+the save reports restart and leaves the native instance untouched while restoring
+definition metadata. Publication is not an atomic boundary for concurrent
+application requests.
+
+Removed definitions retain their original restart diagnostics and are not deleted
+by these future-creation paths. FactoryBean recipe changes retain their existing
+guards; neither feature is part of this support.
 
 Ordinary XML property values are compared by their declared configuration,
 including inner bean properties/constructor values and local versus parent bean
@@ -2602,9 +2628,9 @@ logical companion-only setters are not newly supported. Uninstantiated lazy
 beans retain native deferred creation/validation, and the lifecycle, FactoryBean,
 merge and explicit singleton recreation guards below still apply.
 
-Ordinary XML beans implementing Spring `InitializingBean`, `DisposableBean`,
-`BeanPostProcessor` or `BeanFactoryPostProcessor` require restart when their
-declarations change. Safety checks keep Spring's already-resolved merged class,
+Other changes to ordinary singleton XML beans implementing Spring
+`InitializingBean`, `DisposableBean`, `BeanPostProcessor` or
+`BeanFactoryPostProcessor` retain their restart guard. Safety checks keep Spring's already-resolved merged class,
 or resolve its name through the live factory's application loader, and also
 inspect an existing singleton's type,
 so application classes invisible to the watcher and lifecycle interfaces hidden
@@ -2615,7 +2641,7 @@ unchanged standard declarations stay quiet, and supported sibling edits can
 still apply. This does not replay lifecycle callbacks or extend the existing
 constructor/factory/explicit-lifecycle recreation rules below.
 
-Existing ordinary XML `FactoryBean` definition changes require restart before
+Existing ordinary XML `FactoryBean` recipe changes require restart before
 factory properties or definition metadata are updated. A setter on the factory
 does not refresh Spring's cached product or references already held by consumers.
 The refusal also covers unwarmed/lazy factories and nonsingleton products: Reclazz
@@ -2623,8 +2649,10 @@ does not infer that those products have no consumers. It does not query or creat
 the product to make this decision. Proven unchanged standard definitions remain
 quiet, new definitions retain native creation, and independent ordinary bean
 updates can still apply. Product eviction, factory close and consumer rewiring are
-outside this support; constructor/factory/lifecycle and prototype guards retain
-their existing restrictions.
+outside this support. Restoring cached object identities cannot undo a native
+destruction callback that already closed a product. This is a transaction boundary
+to verify before extending support; it is not a claim that FactoryBean reload is
+impossible. Prototype future-creation support retains the bounds above.
 
 An edited Spring Integration consumer endpoint in XML (`service-activator`,
 `transformer`, `filter`, `router` and similar) is replaced in place: the old

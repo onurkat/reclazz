@@ -253,6 +253,9 @@ public final class SpringXmlReloader {
             XmlAliasDiagnostics.classify(change.context, change.factory, change.temporary, xmlPath, change.diff,
                     change.endpoints.derivedAliases());
         }
+        var definitionOwners=changes.stream().map(change->new XmlDefinitionTransaction.Owner(change.context,change.factory,change.temporary,change.diff,change.observed)).toList();
+        var definitionCounts=XmlDefinitionTransaction.apply(definitionOwners,gatherCandidateContexts());
+        for(var change:changes)change.applied+=definitionCounts.getOrDefault(change.factory,0);
         boolean hybris;
         try { hybris = platformContext.getPlatformId() == PlatformContext.Platform.HYBRIS; }
         catch (RuntimeException unavailable) { hybris = false; }

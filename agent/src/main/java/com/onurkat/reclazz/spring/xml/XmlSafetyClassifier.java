@@ -59,6 +59,8 @@ final class XmlSafetyClassifier {
             if (newBd == null) continue;
 
             Object existing = SpringReflection.getBeanDefinition(liveFactory, beanName);
+            if (XmlDefinitionTransaction.classifyColdPolicy(liveFactory,tempFactory,beanName,existing,newBd,xmlPath,out)) continue;
+            if (XmlDefinitionTransaction.classifyPrototype(liveFactory,tempFactory,beanName,existing,newBd,xmlPath,out)) continue;
             String shapeReason = unsafeShapeReason(newBd, existing == null);
             boolean recreation = existing != null && XmlBeanRecreator.handles(existing, newBd);
             if (shapeReason != null && unchangedUnsupported(liveFactory, tempFactory, beanName, existing, newBd)) continue;

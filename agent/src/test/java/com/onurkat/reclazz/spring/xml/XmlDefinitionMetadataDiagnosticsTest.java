@@ -42,11 +42,12 @@ class XmlDefinitionMetadataDiagnosticsTest {
 
     @ParameterizedTest
     @CsvSource(value = {"~|a", "a|~", "a|b", "a,b|b,a"}, delimiter = '|')
-    void dependsOnAddRemoveRetargetAndOrderRequireRestart(String before, String after) throws Exception {
+    void coldDependsOnAddRemoveRetargetAndOrderUseFutureNativeCreation(String before, String after) throws Exception {
         try (var s = new Scope(depends(before), true)) {
             Object raw = s.raw(), merged = s.merged();
             s.reload(depends(after), "after", "after");
-            s.preserved(raw, merged); s.warning("depends-on");
+            assertNotSame(raw,s.raw()); assertNotSame(merged,s.merged()); s.noWarning();
+            assertEquals("after",((TypedStringValue)s.raw().getPropertyValues().get("label")).getValue());
             assertFalse(s.context.getBeanFactory().containsSingleton("settings"));
             assertFalse(s.context.getBeanFactory().containsSingleton("a"));
             assertFalse(s.context.getBeanFactory().containsSingleton("b"));
@@ -79,12 +80,12 @@ class XmlDefinitionMetadataDiagnosticsTest {
             assertFalse(s.events.stream().anyMatch(v -> v.contains("Spring property updated: settings.")), s.events.toString());
         }
     }
-    @Test void lazyInitializationKeepsOriginalDependencyOrder() throws Exception {
+    @Test void coldLazyInitializationUsesPublishedDependencyOrder() throws Exception {
         try (var s = new Scope("depends-on='a'", true)) {
             order.clear();
-            s.reload("depends-on='b'", "after", "after"); s.warning("depends-on");
+            s.reload("depends-on='b'", "after", "after"); s.noWarning();
             assertEquals(List.of(), order, "reload must not instantiate lazy target or dependencies");
-            assertEquals("before", s.bean().label); assertEquals(List.of("A", "T"), order);
+            assertEquals("after", s.bean().label); assertEquals(List.of("B", "T"), order);
         }
     }
     @Test void unchangedMetadataAllowsOrdinaryPropertyEditsAndNoOp() throws Exception {

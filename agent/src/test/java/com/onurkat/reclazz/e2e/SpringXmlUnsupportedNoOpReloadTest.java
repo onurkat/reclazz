@@ -31,7 +31,7 @@ class SpringXmlUnsupportedNoOpReloadTest {
                 long until = System.nanoTime() + Duration.ofSeconds(20).toNanos();
                 while (System.nanoTime() < until && warnings(app) < n - 3) Thread.sleep(25);
                 assertEquals(n - 3, warnings(app), app.tail());
-                assertTrue(app.output().stream().anyMatch(v -> v.contains("3 require restart")), app.tail());
+                assertTrue(app.output().stream().anyMatch(v -> v.contains("2 require restart")), app.tail());
             }
             Files.createFile(tmp.resolve("close")); app.awaitOrFail("CLOSED=1", "original lifecycle resource must close once");
         }
@@ -78,9 +78,9 @@ class SpringXmlUnsupportedNoOpReloadTest {
                     for (int n = 1; n <= 5; n++) {
                         while (!Files.exists(dir.resolve("probe" + n))) Thread.sleep(25);
                         boolean intact = resource == context.getBean("resource") && other == context.getBean("other")
-                            && templateDef == factory.getBeanDefinition("template") && protoDef == factory.getBeanDefinition("proto") && resourceDef == factory.getBeanDefinition("resource")
-                            && ((TypedStringValue) factory.getBeanDefinition("template").getPropertyValues().get("label")).getValue().equals("before")
-                            && ((TypedStringValue) factory.getBeanDefinition("proto").getPropertyValues().get("label")).getValue().equals("before");
+                            && templateDef == factory.getBeanDefinition("template") && resourceDef == factory.getBeanDefinition("resource")
+                            && ((TypedStringValue) factory.getBeanDefinition("template").getPropertyValues().get("label")).getValue().equals("before");
+                        // R30: a prototype edit is published for future creation; the existing prototype keeps its value.
                         System.out.println("PROBE" + n + "=" + intact + ":" + resource.label + ":" + proto.label + ":" + other.label + ":" + Resource.initialized + ":" + Resource.destroyed + ":" + Settings.created);
                     }
                     while (!Files.exists(dir.resolve("close"))) Thread.sleep(25);
