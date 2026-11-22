@@ -379,7 +379,7 @@ Recorded result excerpt:
 ```json
 {
   "attached": true,
-  "agent": "1.8.0",
+  "agent": "1.9.0",
   "protocol": 1
 }
 ```
@@ -415,7 +415,7 @@ Recorded attachment fields decoded from the resource's `contents[0].text`:
 ```json
 {
   "attached": true,
-  "agent": "1.8.0",
+  "agent": "1.9.0",
   "protocol": 1
 }
 ```

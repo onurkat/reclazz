@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [1.9.0] - 2026-11-22
+
 ### Added
 
 - Native enhanced-JVM record component edits use one record/caller cohort with

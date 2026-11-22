@@ -110,6 +110,15 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h3>1.9.0</h3>
+        <ul>
+            <li><b>Connect AI assistant</b> in Settings &gt; Tools &gt; Reclazz: the plugin now bundles its MCP server and sets it up for Claude Code, Cursor, VS Code or Codex. You see a preview first, other entries are kept, and an existing config is backed up before it is replaced.</li>
+            <li>Record component changes (add, remove or change the type of a component) now reload. On JetBrains Runtime they are redefined natively; on stock JDK 17, 21 and 25 Reclazz applies them after checking that the JVM supports its method. Existing objects keep their values and new components start at their defaults. Several changed records in one save, record header changes and long caller chains still ask for a restart.</li>
+            <li>SAP Commerce: <b>Check setup</b> in Settings shows a read-only report of launch properties, debug flags, jar and JDK versions and watched extensions, with a concrete fix for each problem.</li>
+            <li>SAP Commerce: watched extensions and runtime options apply on Apply/reconnect without a restart, and the status shows pending or conflicting changes.</li>
+            <li>Removing a logger level from a properties file restores the level it had before, for Logback, Log4j2, Spring Boot and SAP Commerce.</li>
+            <li>Fixes: constructor bodies keep updating after overloads are added; inherited added fields resolve through subclasses; Spring Data repositories stay usable while they are recreated; refused constructor and static-initializer edits keep a precise warning.</li>
+        </ul>
         <h3>1.8.0</h3>
         <ul>
             <li>SAP Commerce runtime options synchronize from Settings on Apply/reconnect. AutoCompile switches compiler/watch roots without restarting; runtime status shows effective options, pending changes and conflicts. Watch extensions still requires restart.</li>
