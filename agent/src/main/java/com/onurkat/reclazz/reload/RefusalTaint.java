@@ -193,6 +193,13 @@ public final class RefusalTaint {
         loaded.put(type, true);
         pending.remove(type); metadataPending.remove(type); RestartLedger.resolve(subject(type), REASON);
     }
+    /** Logical S admission has its own proof; it never certifies a physical constructor schema. */
+    public synchronized void stockAccepted(Class<?> type,byte[] raw) {
+        if(type==null||!type.isRecord()||RecordShapeCheck.changed(type,raw)
+                ||!KeepBaseline.hasVirtualRecordReceipt(type)||!KeepBaseline.recordLogicalConstructorBodiesUnchanged(type,raw))
+            throw new IllegalStateException("stock record logical schema was not admitted");
+        loaded.put(type,true);pending.remove(type);metadataPending.remove(type);RestartLedger.resolve(subject(type),REASON);
+    }
     public synchronized void nativeRefused(Map<Class<?>,byte[]> records) {
         records.forEach((type,raw)->{
             if(!RecordShapeCheck.changed(type,raw)&&KeepBaseline.recordMetadataChanged(type,raw))metadataPending.add(type);

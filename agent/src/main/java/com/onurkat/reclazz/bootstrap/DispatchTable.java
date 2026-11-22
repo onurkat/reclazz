@@ -36,7 +36,7 @@ public final class DispatchTable {
     private static final ClassValue<ClassDispatch> dispatches = new ClassValue<>() {
         @Override
         protected ClassDispatch computeValue(Class<?> type) {
-            return new ClassDispatch();
+            return new ClassDispatch(type);
         }
     };
 
@@ -61,7 +61,22 @@ public final class DispatchTable {
     }
 
     public static final class ClassDispatch {
+        private final Class<?> owner;
+        private ClassDispatch(Class<?> owner){this.owner=owner;}
         private final ReentrantLock lock = new ReentrantLock();
+        private static final class RecordBinding {
+            final RecordSchema.Slot slot;
+            final RecordSchema.CallerSite site;
+            boolean needsBaseline;
+            RecordBinding(RecordSchema.Slot slot,RecordSchema.CallerSite site,boolean needsBaseline){
+                this.slot=slot;this.site=site;this.needsBaseline=needsBaseline;
+            }
+        }
+        // Both metadata and handles are owned by the caller class, never by the record Slot.
+        private final Map<String,RecordBinding> recordBindings=new java.util.HashMap<>();
+        private RecordBinding versionBinding;
+        private RecordSchema.State versionAttempt;
+        private volatile MethodHandle recordVersion;
         private volatile int version = 0;
         private final ConcurrentHashMap<String, MutableCallSite> methodSites = new ConcurrentHashMap<>();
         private final ConcurrentHashMap<String, MutableCallSite> fieldGetSites = new ConcurrentHashMap<>();
@@ -124,6 +139,10 @@ public final class DispatchTable {
                 // so the first invocation goes to the latest companion method,
                 // not the v0 renamed one.
                 if (site == initial) {
+                    RecordBinding binding=recordBindings.get(key);
+                    if(binding!=null&&binding.needsBaseline) {
+                        binding.site.installBaseline(initial.getTarget());binding.needsBaseline=false;
+                    }
                     MethodHandle latest = latestMethodTargets.get(key);
                     if (latest != null) {
                         try {
@@ -149,7 +168,70 @@ public final class DispatchTable {
             return fieldSetSites.computeIfAbsent(key, k -> initial);
         }
 
-        public int getVersion() { return version; }
+        public int getVersion() {
+            MethodHandle selected=recordVersion;if(selected==null)return version;
+            try{return (int)selected.invokeExact();}
+            catch(Throwable failure){throw new IllegalStateException("Cannot select record caller version",failure);}
+        }
+        /** Called only through the preparation's trusted, synchronized stageDispatch entry. */
+        void stageRecord(RecordSchema.Preparation preparation,RecordSchema.Slot slot,Map<String,MethodHandle> targets) {
+            lock.lock();
+            try {
+                // Validate the complete map before exposing even an old-behaviour dispatcher.
+                for(var entry:targets.entrySet()) {
+                    if(owner.isRecord())RecordSchema.validateTargetOwner(owner,entry.getValue());
+                    RecordBinding binding=recordBindings.get(entry.getKey());
+                    if(binding!=null&&binding.slot!=slot&&binding.site.hasPending())
+                        throw new IllegalStateException("Caller already belongs to another pending record cohort");
+                    MethodHandle old=latestMethodTargets.get(entry.getKey());
+                    MutableCallSite site=methodSites.get(entry.getKey());
+                    if(old==null&&site!=null)old=site.getTarget();
+                    if(old!=null&&!old.type().equals(entry.getValue().type()))
+                        throw new IllegalArgumentException("Record caller target type changed: "+entry.getKey());
+                }
+                if(versionBinding!=null&&versionBinding.slot!=slot&&versionBinding.site.hasPending())
+                    throw new IllegalStateException("Caller version belongs to another pending record cohort");
+                var changed=new java.util.ArrayList<MutableCallSite>();
+                for(var entry:targets.entrySet()) {
+                    String key=entry.getKey();RecordBinding binding=recordBindings.get(key);
+                    if(binding==null||binding.slot!=slot) {
+                        MethodHandle before;boolean unresolved=false;
+                        if(binding!=null) {
+                            var selected=binding.site.selected();before=selected.target();
+                            unresolved=binding.needsBaseline&&selected.baseline();
+                        } else {
+                            before=latestMethodTargets.get(key);
+                            MutableCallSite existing=methodSites.get(key);
+                            if(before==null&&existing!=null)before=existing.getTarget();
+                            if(before==null){before=missing(entry.getValue().type(),key);unresolved=true;}
+                        }
+                        var selected=RecordSchema.callerSiteInternal(owner,slot,"dispatch:"+key,before);
+                        selected.rebase(before);
+                        binding=new RecordBinding(slot,selected,unresolved);recordBindings.put(key,binding);
+                    }
+                    preparation.stageTarget(binding.site,entry.getValue());
+                    MethodHandle dispatcher=binding.site.dispatcherInternal();
+                    latestMethodTargets.put(key,dispatcher);
+                    MutableCallSite site=methodSites.get(key);
+                    if(site!=null){site.setTarget(respectingOverrides(key,dispatcher));changed.add(site);}
+                }
+                if(versionAttempt!=preparation.attempt()) {
+                    int before=getVersion();
+                    if(versionBinding==null||versionBinding.slot!=slot) {
+                        var site=RecordSchema.callerSiteInternal(owner,slot,InjectedNames.DISPATCH_VERSION_KEY,MethodHandles.constant(int.class,before));
+                        site.rebase(MethodHandles.constant(int.class,before));versionBinding=new RecordBinding(slot,site,false);
+                    }
+                    preparation.stageTarget(versionBinding.site,MethodHandles.constant(int.class,before+1));
+                    recordVersion=versionBinding.site.dispatcherInternal();versionAttempt=preparation.attempt();
+                }
+                if(!changed.isEmpty())MutableCallSite.syncAll(changed.toArray(MutableCallSite[]::new));
+            } finally {lock.unlock();}
+        }
+        private static MethodHandle missing(java.lang.invoke.MethodType type,String key) {
+            var target=MethodHandles.throwException(type.returnType(),NoSuchMethodError.class)
+                    .bindTo(new NoSuchMethodError("Record caller baseline not bootstrapped: "+key));
+            return MethodHandles.dropArguments(target,0,type.parameterList());
+        }
 
         public void retarget(Map<String, MethodHandle> newTargets) {
             lock.lock();
@@ -162,6 +244,7 @@ public final class DispatchTable {
                     // bootstrap can install it instead of the v0 renamed handle.
                     MethodHandle target = respectingOverrides(entry.getKey(), entry.getValue());
                     latestMethodTargets.put(entry.getKey(), target);
+                    recordBindings.remove(entry.getKey());
                     MutableCallSite site = methodSites.get(entry.getKey());
                     if (site != null) {
                         site.setTarget(target);
@@ -176,7 +259,7 @@ public final class DispatchTable {
                     MutableCallSite.syncAll(trimmed);
                 }
 
-                version++;
+                version=getVersion()+1;recordVersion=null;versionBinding=null;versionAttempt=null;
             } finally {
                 lock.unlock();
             }

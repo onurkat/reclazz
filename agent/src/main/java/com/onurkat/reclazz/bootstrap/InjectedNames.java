@@ -52,6 +52,9 @@ public final class InjectedNames {
      */
     public static final String FIELD_INIT_PREFIX = PREFIX + "init$";
 
+    /** Caller-cohort publication slot for its dispatch version. */
+    public static final String DISPATCH_VERSION_KEY = PREFIX + "dispatchVersion";
+
     /** The opening of every renamed method body: {@code __reclazz$v0$}. */
     public static final String RENAMED_PREFIX = PREFIX + "v0$";
 

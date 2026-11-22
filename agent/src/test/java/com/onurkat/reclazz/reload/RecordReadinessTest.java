@@ -33,7 +33,7 @@ class RecordReadinessTest {
             assertEquals(List.of("record components of com.example.P changed (a JVM limit): restart to apply"),List.copyOf(refused.values()));
             assertEquals(1,owner.getRecordComponents().length);assertEquals(1,RestartLedger.size());
             assertTrue(RecordReloadPlan.ready(RecordReloadPlan.Route.NATIVE));
-            assertFalse(RecordReloadPlan.ready(RecordReloadPlan.Route.STOCK));
+            assertTrue(RecordReloadPlan.ready(RecordReloadPlan.Route.STOCK));
             assertFalse(RecordReloadPlan.canAdmitShape(owner, changed));
         } finally {RestartLedger.clear();}
     }

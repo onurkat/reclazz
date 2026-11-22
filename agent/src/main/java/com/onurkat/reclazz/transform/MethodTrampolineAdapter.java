@@ -38,6 +38,7 @@ public class MethodTrampolineAdapter extends ClassVisitor implements Opcodes {
     private java.util.Set<String> declaredInterfaces = java.util.Set.of();
     private boolean isInterface;
     private boolean isEnum;
+    private boolean isRecord;
     private boolean hasClinitMethod = false;
 
     // Collected method info for generating trampolines after visiting all methods
@@ -109,6 +110,7 @@ public class MethodTrampolineAdapter extends ClassVisitor implements Opcodes {
                 : java.util.Set.of(interfaces);
         this.isInterface = (access & ACC_INTERFACE) != 0;
         this.isEnum = (access & ACC_ENUM) != 0;
+        this.isRecord = (access & ACC_RECORD) != 0;
         super.visit(version, access, name, signature, superName, interfaces);
     }
 
@@ -145,7 +147,7 @@ public class MethodTrampolineAdapter extends ClassVisitor implements Opcodes {
         }
 
         // Check if this method should be skipped
-        if (TransformExclusions.shouldSkipMethod(className, name, descriptor, access)) {
+        if (TransformExclusions.shouldSkipMethod(className, name, descriptor, access,isRecord)) {
             MethodVisitor mv = super.visitMethod(access, name, descriptor, signature, exceptions);
             // Still apply call site and field access adapters within the body
             MethodVisitor fieldAdapter = new FieldAccessAdapter(mv, context, className, declaredFinalFieldKeys);

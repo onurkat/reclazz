@@ -111,6 +111,12 @@ public final class LookupCapture {
                 + (caller == null ? "" : "; asked for by " + caller.getName()));
     }
 
+    /** A public engine entry must check its requester as well as its own identity. */
+    public static void requireTrustedCaller(Class<?> requester, String action) {
+        requireTrusted(WALKER.getCallerClass(), action);
+        requireTrusted(requester, action);
+    }
+
     /** Remember a class's own full-privilege lookup. Last write wins; the
      *  value never changes for a given class, so that is a no-op in practice. */
     public static void store(Class<?> clazz, MethodHandles.Lookup lookup) {
@@ -119,6 +125,9 @@ public final class LookupCapture {
             captured.get(clazz).set(lookup);
         }
     }
+
+    /** Bootstrap-only ownership inspection; application classes cannot enter this runtime package. */
+    static MethodHandles.Lookup recordTargetLookup(Class<?> owner){return captured.get(owner).get();}
 
     /** The captured lookup, or null when nothing captured one for this class. */
     public static MethodHandles.Lookup get(Class<?> clazz) {

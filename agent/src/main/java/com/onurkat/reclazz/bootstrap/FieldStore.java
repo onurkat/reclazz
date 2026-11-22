@@ -62,6 +62,8 @@ public final class FieldStore {
 
     private static final class InitialiserRegistry {
         volatile InitialiserSnapshot current = new InitialiserSnapshot(java.util.Map.of());
+        volatile RecordSchema.CallerSite recordSelection;
+        RecordSchema.Slot recordSlot;
     }
 
     private static final class InitialiserSnapshot {
@@ -215,13 +217,46 @@ public final class FieldStore {
         InitialiserRegistry registry = initialisersByClass.get(owner);
         InitialiserSnapshot next = new InitialiserSnapshot(byKey);
         synchronized (registry) {
+            if(registry.recordSelection!=null)registry.recordSelection.cancelPending();
             registry.current = next;
+            registry.recordSelection = null;registry.recordSlot = null;
         }
+    }
+
+    static void stageRecordInitialisers(RecordSchema.Preparation preparation,RecordSchema.Slot slot,
+            Class<?> owner,java.util.Map<String,java.lang.invoke.MethodHandle> rawTargets) {
+        var erased=new java.util.LinkedHashMap<String,java.lang.invoke.MethodHandle>();
+        var expected=java.lang.invoke.MethodType.methodType(Object.class,owner);
+        for(var entry:rawTargets.entrySet()) {
+            if(entry.getKey().indexOf(':')<1||!entry.getValue().type().equals(expected))
+                throw new IllegalArgumentException("Record cohort field initializer key or type changed");
+            RecordSchema.validateTargetOwner(owner,entry.getValue());
+            erased.put(entry.getKey(),entry.getValue().asType(java.lang.invoke.MethodType.methodType(Object.class,Object.class)));
+        }
+        var next=new InitialiserSnapshot(erased);InitialiserRegistry registry=initialisersByClass.get(owner);
+        synchronized(registry) {
+            RecordSchema.CallerSite previous=registry.recordSelection;
+            if(previous!=null&&registry.recordSlot!=slot&&previous.hasPending())
+                throw new IllegalStateException("Caller has another pending record preparation");
+            InitialiserSnapshot baseline=selectedInitialisers(registry);
+            var site=RecordSchema.callerSiteInternal(owner,slot,InjectedNames.PREFIX+"fieldInitializers",
+                    java.lang.invoke.MethodHandles.constant(InitialiserSnapshot.class,baseline));
+            if(previous!=site||registry.recordSlot!=slot)
+                site.rebase(java.lang.invoke.MethodHandles.constant(InitialiserSnapshot.class,baseline));
+            preparation.stageTarget(site,java.lang.invoke.MethodHandles.constant(InitialiserSnapshot.class,next));
+            registry.recordSlot=slot;registry.recordSelection=site;
+        }
+    }
+
+    private static InitialiserSnapshot selectedInitialisers(InitialiserRegistry registry) {
+        var site=registry.recordSelection;if(site==null)return registry.current;
+        try{return (InitialiserSnapshot)site.selected().target().invokeExact();}
+        catch(Throwable impossible){throw new IllegalStateException("Record cohort field initializer selection failed",impossible);}
     }
 
     /** Whether an added instance field has an initialiser to run on first read. */
     public static boolean hasInstanceInitialiser(Class<?> owner, String fieldName, String desc) {
-        return owner != null && initialisersByClass.get(owner).current.handles.containsKey(fieldName + ":" + desc);
+        return owner != null && selectedInitialisers(initialisersByClass.get(owner)).handles.containsKey(fieldName + ":" + desc);
     }
 
     /**
@@ -246,7 +281,7 @@ public final class FieldStore {
         Class<?> owner = ownerOf(instance.getClass(), className);
         if (owner == null) return null;
         InitialiserRegistry registry = initialisersByClass.get(owner);
-        InitialiserSnapshot snapshot = registry.current;
+        InitialiserSnapshot snapshot = selectedInitialisers(registry);
         java.lang.invoke.MethodHandle initialiser = snapshot.handles.get(fieldName + ":" + desc);
         if (initialiser == null) return null;
 
@@ -284,9 +319,13 @@ public final class FieldStore {
                 // Coordinate only publication with registration. No application
                 // code runs here, and registration never takes an instance lock.
                 synchronized (registry) {
-                    if (registry.current != snapshot) return null;
-                    extField.set(instance, setField(extArray, index,
-                            computed == null ? WRITTEN_NULL : computed));
+                    var selection=registry.recordSelection;
+                    Object commitLock=selection==null?registry:selection.publicationLock();
+                    synchronized(commitLock) {
+                        if (selectedInitialisers(registry) != snapshot) return null;
+                        extField.set(instance, setField(extArray, index,
+                                computed == null ? WRITTEN_NULL : computed));
+                    }
                 }
                 return computed instanceof FailedInitialisation ? null : computed;
             }

@@ -117,6 +117,7 @@ public class ReclazzTransformer implements ClassFileTransformer {
             context.markTransformed(loader,className);
             byte[] stable = StaticFieldPreparation.stableSchema(loader, className, classfileBuffer);
             TransformedClassCache.put(className, stable);
+            if(classBeingRedefined!=null)PhysicalDefinitions.emitted(classBeingRedefined,stable);
             return stable == classfileBuffer ? null : stable;
         }
 
@@ -204,8 +205,10 @@ public class ReclazzTransformer implements ClassFileTransformer {
                 StaticFieldPreparation.recordDefinition(loader, className, classfileBuffer, config.isResetStatics());
                 com.onurkat.reclazz.transform.KeepBaseline.capture(loader, className, classfileBuffer);
                 AdmittedBytes.defined(loader,className,classfileBuffer);
+                if(RecordCohortCandidates.retain(loader,className))PhysicalDefinitions.defined(loader,className,transformed);
             }
 
+            if(classBeingRedefined!=null)PhysicalDefinitions.emitted(classBeingRedefined,transformed);
             return transformed;
         } catch (Exception e) {
             StatusReporter.error("Transform failed for " + className + ": " + Failures.describe(e));
@@ -270,7 +273,7 @@ public class ReclazzTransformer implements ClassFileTransformer {
                 writer, context, AnnotationSignatures.of(classfileBuffer), originalUid, loader);
         adapter.setOperationDescriptors(AnnotationSignatures.operationDescriptors(classfileBuffer));
 
-        reader.accept(ConstructorCallRewriter.visitor(adapter,context::isWatched), ClassReader.EXPAND_FRAMES);
+        reader.accept(ConstructorCallRewriter.visitor(adapter,context::isWatched,loader), ClassReader.EXPAND_FRAMES);
 
         return writer.toByteArray();
     }

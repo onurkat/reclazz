@@ -180,6 +180,25 @@ public final class UnsafeAccess {
         InternalUnsafe.putInt(target, field, value);
     }
 
+    /** Typed final record component writes; only a logical construction frame reaches this. */
+    static void putValue(Object target,Field field,Object value) {
+        if(firstDoorOpen())try {
+            long offset=UNSAFE.objectFieldOffset(field);Class<?> kind=field.getType();
+            if(!kind.isPrimitive())UNSAFE.putObject(target,offset,value);
+            else if(kind==boolean.class)UNSAFE.putBoolean(target,offset,(Boolean)value);
+            else if(kind==byte.class)UNSAFE.putByte(target,offset,(Byte)value);
+            else if(kind==short.class)UNSAFE.putShort(target,offset,(Short)value);
+            else if(kind==char.class)UNSAFE.putChar(target,offset,(Character)value);
+            else if(kind==int.class)UNSAFE.putInt(target,offset,(Integer)value);
+            else if(kind==long.class)UNSAFE.putLong(target,offset,(Long)value);
+            else if(kind==float.class)UNSAFE.putFloat(target,offset,(Float)value);
+            else if(kind==double.class)UNSAFE.putDouble(target,offset,(Double)value);
+            else throw new IllegalArgumentException("Not a field type: "+kind);
+            return;
+        }catch(Throwable failure){fellBack(failure);}
+        InternalUnsafe.putValue(target,field,value);
+    }
+
     /** The array an EnumMap or EnumSet captured when it was built. */
     static Object getObject(Object target, Field field) {
         if (firstDoorOpen()) {

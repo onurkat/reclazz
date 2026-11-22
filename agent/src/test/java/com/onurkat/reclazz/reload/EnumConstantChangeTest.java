@@ -95,8 +95,8 @@ class EnumConstantChangeTest {
                 "src/main/java/com/onurkat/reclazz/agent/ClassReloader.java"));
 
         int checkAt = classReloader.indexOf("EnumConstantChange.check(existingClass, newBytecode)");
-        int redefineAt = classReloader.indexOf("instrumentation.redefineClasses(definition)");
-        assertTrue(checkAt > 0, "the JetBrains Runtime path is the one that was silent");
+        int redefineAt = classReloader.indexOf("PhysicalDefinitions.redefine(instrumentation, definition)");
+        assertTrue(checkAt > 0 && redefineAt > 0, "both the check and actual redefine wrapper must be present");
         assertTrue(checkAt < redefineAt,
                 "checking after the redefine hides it on exactly the VM that accepts it");
     }

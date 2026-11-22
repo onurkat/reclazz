@@ -168,6 +168,13 @@ public final class KeepBaseline {
         }catch(RuntimeException|LinkageError unavailable){return false;}
     }
 
+    /** Route later body-only saves through the already-admitted logical record schema. */
+    public static synchronized boolean hasVirtualRecordReceipt(Class<?> type) {
+        if(type==null||!type.isRecord())return false;
+        Entry entry=owners(type.getClassLoader(),false).get(type.getName().replace('.','/'));
+        return entry!=null&&entry.logicalRecordConstructors!=null;
+    }
+
     /** Consult only a committed virtual record receipt; ordinary physical checks keep their old semantics. */
     public static synchronized boolean recordLogicalConstructorBodiesUnchanged(Class<?> type,byte[] raw) {
         if(type==null)return false;

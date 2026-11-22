@@ -113,7 +113,7 @@ public class ClassReloader {
 
             // Redefine the existing class
             ClassDefinition definition = new ClassDefinition(existingClass, newBytecode);
-            instrumentation.redefineClasses(definition);
+            com.onurkat.reclazz.transform.PhysicalDefinitions.redefine(instrumentation, definition);
             com.onurkat.reclazz.reload.StaticInitializerReset.afterReload(existingClass, newBytecode, resetStatics);
             if (existingClass.isRecord() && !com.onurkat.reclazz.transform.KeepBaseline.witnessedLoad(existingClass)) {
                 StatusReporter.warn("Native record body was installed; pre-watch record metadata has no witnessed baseline. Restart to verify record metadata: " + className);

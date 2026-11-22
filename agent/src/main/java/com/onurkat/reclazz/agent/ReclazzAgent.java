@@ -148,6 +148,9 @@ public class ReclazzAgent {
     }
     private static volatile boolean recordCodecHooksInstalled;
     private static volatile JvmCapabilityProbe.RecordCapability nativeRecordCapability;
+    private static volatile RecordStockSelfCheck.Result stockRecordCapability;
+    private static final RecordStockSelfCheck.Result fatalStockRecordCapability=new RecordStockSelfCheck.Result(false,"fatal VM error during stock record capability check; restart to apply");
+    private static final java.util.concurrent.atomic.AtomicInteger stockRecordVersion=new java.util.concurrent.atomic.AtomicInteger();
     private static final Map<Class<?>,Map<String,String>> nativeRecordRepairConcerns = new java.util.WeakHashMap<>();
     private static final Map<Class<?>,Map<String,String>> nativeFrameworkRepairConcerns = new java.util.WeakHashMap<>();
     private static void nativeFrameworkFailure(Class<?> type,String surface,String reason) {
@@ -179,7 +182,8 @@ public class ReclazzAgent {
     private static final ThreadLocal<NativeRecordSave> nativeRecordSave = new ThreadLocal<>();
     private static final ThreadLocal<Map<String,String>> compiledSaveRefusals = new ThreadLocal<>();
     private static final class NativeRecordSave {
-        com.onurkat.reclazz.reload.RecordNativeBatch batch;
+        com.onurkat.reclazz.reload.RecordBatch batch;
+        final boolean stock;
         com.onurkat.reclazz.reload.RecordNativeRepairs repairs;
         final Map<String, java.util.function.Supplier<ClassReloader.ReloadResult>> aftermath = new java.util.LinkedHashMap<>();
         final Map<String, ClassReloader.ReloadResult> results = new java.util.LinkedHashMap<>();
@@ -187,7 +191,8 @@ public class ReclazzAgent {
         final java.util.Set<String> aftermathFailures = new java.util.HashSet<>();
         String preflightFailure;
         boolean applied;
-        NativeRecordSave(com.onurkat.reclazz.reload.RecordNativeBatch batch) { this.batch = batch; }
+        NativeRecordSave(com.onurkat.reclazz.reload.RecordNativeBatch batch) { this.batch = batch; this.stock = false; }
+        NativeRecordSave(com.onurkat.reclazz.reload.RecordStockBatch batch) { this.batch = batch; this.stock = true; }
         java.util.Set<String> eligible() {
             return preflightFailure == null && batch.refusals().isEmpty() ? batch.names() : java.util.Set.of();
         }
@@ -239,7 +244,9 @@ public class ReclazzAgent {
                     for (var change : batch.changes()) {
                         String dependentFailure = SwitchMapRefresh.dependencyFailure(change.owner(), structuralReloader);
                         if (dependentFailure != null) { preflightFailure = dependentFailure; break; }
-                        aftermath.put(change.name(), reloader.prepareNativeAftermath(change.owner(), change.bytes()));
+                        aftermath.put(change.name(), stock
+                                ? structuralReloader.prepareRecordAftermath(change.owner(),change.bytes(),reloader)
+                                : reloader.prepareNativeAftermath(change.owner(), change.bytes()));
                     }
                 } catch (RuntimeException | LinkageError failure) {
                     preflightFailure = "native record aftermath preflight failed: " + Failures.describe(failure);
@@ -261,9 +268,12 @@ public class ReclazzAgent {
                 }
                 var outcome = batch.commit(change -> {
                     if (!batch.recordNames().contains(change.name())) return;
-                    if (!com.onurkat.reclazz.transform.KeepBaseline.recordNativeSchemaApplied(change.owner(), change.bytes()))
-                        throw new IllegalStateException("physical native record constructor receipt failed readback");
-                    recordRefusals.nativeAccepted(change.owner(), change.bytes());
+                    if(stock)recordRefusals.stockAccepted(change.owner(),change.bytes());
+                    else {
+                        if (!com.onurkat.reclazz.transform.KeepBaseline.recordNativeSchemaApplied(change.owner(), change.bytes()))
+                            throw new IllegalStateException("physical native record constructor receipt failed readback");
+                        recordRefusals.nativeAccepted(change.owner(), change.bytes());
+                    }
                 });
                 if (!outcome.committed()) {
                     recordRefusals.nativeRefused(batch.changes().stream().filter(c -> batch.recordNames().contains(c.name()))
@@ -274,7 +284,7 @@ public class ReclazzAgent {
                         results.put(change.name(), ClassReloader.ReloadResult.failure(outcome.reason(), true));
                     }
                 } else {
-                    outcome.repairFailures().forEach((surface, reason) -> failure("physical constructor receipt " + surface, reason));
+                    outcome.repairFailures().forEach((surface, reason) -> failure((stock?"record proof ":"physical constructor receipt ") + surface, reason));
                     for (var change : batch.changes()) {
                         SwitchMapRefresh.result(change.owner(), true);
                         try { results.put(change.name(), aftermath.get(change.name()).get()); }
@@ -290,6 +300,11 @@ public class ReclazzAgent {
             }
             return results.get(name);
         }
+    }
+
+    private static void closeRecordSave() {
+        NativeRecordSave save=nativeRecordSave.get();
+        try {if(save!=null)save.batch.close();}finally{nativeRecordSave.remove();}
     }
 
     private static volatile StructuralReloader structuralReloader;
@@ -331,6 +346,13 @@ public class ReclazzAgent {
     private static void trustEngineCallers() {
         LookupCapture.trust(com.onurkat.reclazz.transform.ReflectionMethodTransformer.class);
         LookupCapture.trust(com.onurkat.reclazz.reload.ConstructorInitializerFactory.class);
+        LookupCapture.trust(com.onurkat.reclazz.reload.RecordMemberSnapshot.class);
+        LookupCapture.trust(com.onurkat.reclazz.reload.RecordCompanion.class);
+        LookupCapture.trust(com.onurkat.reclazz.reload.RecordCallerCompanion.class);
+        LookupCapture.trust(com.onurkat.reclazz.reload.RecordStockBatch.class);
+        LookupCapture.trust(ReclazzAgent.class);
+        LookupCapture.trust(RecordStockSelfCheck.class);
+        LookupCapture.trust(NativeRecordSave.class);
         LookupCapture.trust(
                 ReflectionRootFilter.class);
         LookupCapture.trust(
@@ -801,7 +823,7 @@ public class ReclazzAgent {
                         public ReloadQueue.SavePlan prepare(java.util.List<ChangeEvent> captured) {
                             return prepareSwitchMaps(captured);
                         }
-                        public void complete() { try { SwitchMapRefresh.end(); } finally { nativeRecordSave.remove(); } }
+                        public void complete() { try { SwitchMapRefresh.end(); } finally { closeRecordSave(); } }
                     });
 
             reloadQueue.setVerification(verification);
@@ -1316,22 +1338,46 @@ public class ReclazzAgent {
     }
 
     private static NativeRecordSave prepareNativeRecords(Map<String, byte[]> incoming, Class<?>[] census) {
-        if (!com.onurkat.reclazz.reload.RecordReloadPlan.ready(com.onurkat.reclazz.reload.RecordReloadPlan.Route.NATIVE)
-                || structuralReloader != null || transformContext == null) return null;
+        boolean stock=structuralReloader!=null;
+        if(transformContext==null||!com.onurkat.reclazz.reload.RecordReloadPlan.ready(stock
+                ?com.onurkat.reclazz.reload.RecordReloadPlan.Route.STOCK:com.onurkat.reclazz.reload.RecordReloadPlan.Route.NATIVE))return null;
         boolean shape = false; java.util.Set<String> pendingRepairs = new java.util.HashSet<>();
         for (Class<?> type : census) {
             byte[] raw = incoming.get(type.getName());
             if (raw == null || !type.isRecord()) continue;
             if (nativeRepairPending(type)) { pendingRepairs.add(type.getName()); shape = true; }
             if (com.onurkat.reclazz.reload.RecordShapeCheck.changed(type, raw)
-                    || com.onurkat.reclazz.transform.KeepBaseline.recordMetadataChanged(type, raw)) shape = true;
+                    || com.onurkat.reclazz.transform.KeepBaseline.recordMetadataChanged(type, raw)
+                    || stock&&com.onurkat.reclazz.transform.KeepBaseline.hasVirtualRecordReceipt(type)) shape = true;
         }
         if (!shape) return null;
-        JvmCapabilityProbe.RecordCapability capability = nativeRecordCapability;
-        if (capability == null) nativeRecordCapability = capability = JvmCapabilityProbe.probeRecordSchema(instrumentation);
-        if (!capability.nativeSchema()) return null; // Keep the existing explicit R20 fallback unchanged.
-        NativeRecordSave save = new NativeRecordSave(com.onurkat.reclazz.reload.RecordNativeBatch.prepare(incoming, census,
-                name -> transformContext.isWatched(name.replace('.', '/')), capability, instrumentation, pendingRepairs));
+        NativeRecordSave save;
+        if(stock) {
+            RecordStockSelfCheck.Result capability=stockRecordCapability;
+            if(capability==null) {
+                try{stockRecordCapability=capability=RecordStockSelfCheck.run(instrumentation);}
+                catch(Throwable failure){
+                    if(failure instanceof VirtualMachineError fatal){stockRecordCapability=fatalStockRecordCapability;throw fatal;}
+                    stockRecordCapability=capability=new RecordStockSelfCheck.Result(false,Failures.describe(failure));
+                }
+                if(!capability.usable()) {
+                    String restartReason="Stock record capability check failed; record shape changes still require restart: "+capability.reason();
+                    RestartLedger.note("stock record component reload",restartReason);
+                    StatusReporter.warn(restartReason);
+                }
+            }
+            if(!capability.usable())return null;
+            save=new NativeRecordSave(com.onurkat.reclazz.reload.RecordStockBatch.prepare(incoming,census,
+                    name->transformContext.isWatched(name.replace('.','/')),instrumentation,transformContext,stockRecordVersion.incrementAndGet(),pendingRepairs));
+            // S already owns pending sites. Every later preflight failure must reach the save cleanup.
+            nativeRecordSave.set(save);
+        }else {
+            JvmCapabilityProbe.RecordCapability capability = nativeRecordCapability;
+            if (capability == null) nativeRecordCapability = capability = JvmCapabilityProbe.probeRecordSchema(instrumentation);
+            if (!capability.nativeSchema()) return null; // Keep the existing explicit R20 fallback unchanged.
+            save = new NativeRecordSave(com.onurkat.reclazz.reload.RecordNativeBatch.prepare(incoming, census,
+                    name -> transformContext.isWatched(name.replace('.', '/')), capability, instrumentation, pendingRepairs));
+        }
         if (save.batch.refusals().isEmpty()) {
             try {
                 if (!recordCodecHooksInstalled) throw new IllegalStateException("Jackson snapshot hooks were not installed");
@@ -1339,7 +1385,7 @@ public class ReclazzAgent {
                         .map(com.onurkat.reclazz.reload.RecordNativeBatch.Change::owner).toList(),
                         platformContext == null ? java.util.List.of() : platformContext.getAllApplicationContexts());
             } catch (Exception | LinkageError failure) {
-                save.preflightFailure = "native record repair preflight failed: " + Failures.describe(failure);
+                save.preflightFailure = (stock?"stock":"native")+" record repair preflight failed: " + Failures.describe(failure);
             }
         }
         return save;
@@ -1349,7 +1395,7 @@ public class ReclazzAgent {
         return save != null && save.batch.names().contains(name);
     }
     private static void finishNativePreflight(NativeRecordSave save, java.util.Set<String> accepted) {
-        if (save == null) { nativeRecordSave.remove(); return; }
+        if (save == null) { closeRecordSave(); return; }
         save.batch = save.batch.requireComplete(accepted);
         save.refusals(); // A late refusal must establish the same record provenance as an early one.
         nativeRecordSave.set(save);
@@ -1826,7 +1872,7 @@ public class ReclazzAgent {
                     Map<String,byte[]> attempted = new java.util.LinkedHashMap<>(compiledClasses); attempted.putAll(prepared);
                     v.apply(attempted, sources, reload);
                 }
-            } finally { try { SwitchMapRefresh.end(); } finally { nativeRecordSave.remove(); compiledSaveRefusals.remove(); } }
+            } finally { try { SwitchMapRefresh.end(); } finally { closeRecordSave(); compiledSaveRefusals.remove(); } }
         };
         if (agentConfig != null && agentConfig.isRequestBoundary()) RequestReloadBoundary.run(apply);
         else apply.run();

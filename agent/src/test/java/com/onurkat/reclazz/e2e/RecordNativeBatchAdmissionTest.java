@@ -1,5 +1,6 @@
 /* Copyright 2026 Onur Kat. SPDX-License-Identifier: Apache-2.0 */
 package com.onurkat.reclazz.e2e;
+import com.onurkat.reclazz.e2e.harness.JavaLauncher;
 
 import com.fasterxml.jackson.databind.*;
 import com.onurkat.reclazz.e2e.harness.WatchedApp;
@@ -23,20 +24,26 @@ class RecordNativeBatchAdmissionTest {
     @TempDir Path dir;
     private final ObjectMapper json = new ObjectMapper();
     private int serial;
+    private boolean stock;
     private static String record(boolean changed) { return "package app;public record P(int a"+(changed?",String b":"")+"){}"; }
     private static String caller(boolean changed) { return "package app;public class Caller {public static int version(){return "+(changed?1:0)+";}public static Object make(){return new P(7"+(changed?",\"new\"":"")+");}}"; }
-    private WatchedApp start(boolean auto, String mode) throws Exception {
-        String java = System.getProperty("reclazz.record.java");
+    private WatchedApp start(boolean auto,String mode)throws Exception{return start(auto,mode,false);}
+    private WatchedApp start(boolean auto, String mode,boolean stock) throws Exception {
+        this.stock=stock;
+        String java = System.getProperty(stock?"reclazz.record.stock.java":"reclazz.record.java");
         assumeTrue(java != null && !java.isBlank(), "configure reclazz.record.java for the enhanced native witness");
+        java=JavaLauncher.resolve(Path.of(java)).toString();
         assertTrue(Files.isExecutable(Path.of(java)), "configured record child JVM is not executable");
         String jackson = Path.of(ObjectMapper.class.getProtectionDomain().getCodeSource().getLocation().toURI()).toString();
         String core = Path.of(com.fasterxml.jackson.core.JsonFactory.class.getProtectionDomain().getCodeSource().getLocation().toURI()).toString();
         String annotations = Path.of(com.fasterxml.jackson.annotation.JsonProperty.class.getProtectionDomain().getCodeSource().getLocation().toURI()).toString();
         var builder = WatchedApp.in(dir).javaExecutable(Path.of(java)).classpath(String.join(File.pathSeparator,jackson,core,annotations))
                 .agentArgs("startupDelaySec=1,debounceMs=250,verbose=true,autoCompile="+auto+",portFile="+dir.resolve("agent.port"))
-                .jvmArgs("-XX:+AllowEnhancedClassRedefinition","-Dprobe.dir="+dir,"-Dprobe.mode="+mode)
-                .with("P",record(false)).with("Caller",mode.equals("chain") ? chainCaller(0) : caller(false)).with("Factory",factory(false)).with("N","package app;public record N(String value){}").with("Noise","package app;public class Noise {public static int version(){return 0;}}")
+                .jvmArgs("-Dprobe.dir="+dir,"-Dprobe.mode="+mode,"-Dprobe.stock="+stock)
+                .with("P",stock&&mode.equals("preloaded")?record(false).replace("{}","{public static int body(){return 0;}}") :record(false)).with("Caller",mode.equals("chain") ? chainCaller(0) : caller(false)).with("Factory",factory(false)).with("N","package app;public record N(String value){}").with("Noise","package app;public class Noise {public static int version(){return 0;}}")
                 .with("App",APP);
+        if(!stock)builder.jvmArgs("-XX:+AllowEnhancedClassRedefinition");
+        if(stock&&Boolean.getBoolean("reclazz.record.unsafe.deny"))builder.jvmArgs("--sun-misc-unsafe-memory-access=deny","-Dreclazz.record.unsafe.deny=true");
         if(mode.equals("preloaded")) builder.jvmArgs("-javaagent:"+preloadAgent());
         if(mode.equals("batchFail")) writeBatchFailureClass();
         if(mode.startsWith("poison"))writeCallerObserverClass();
@@ -66,8 +73,9 @@ class RecordNativeBatchAdmissionTest {
             assertFalse(app.output().stream().anyMatch(l->l.contains("Reloaded app.P ") || l.contains("Reloaded app.Caller ")),app.tail());
         } finally { remember(app,"native-rejected"); }
     }
-    @Test void afterNativeRepairFailureIsUnverifiedNotRolledBack() throws Exception {
-        WatchedApp app=start(false,"poison");
+    @Test void afterNativeRepairFailureIsUnverifiedNotRolledBack()throws Exception{repairFailure(false);}
+    void repairFailure(boolean stock)throws Exception {
+        WatchedApp app=start(false,"poison",stock);
         try(app) {
             save(app,false,false); receipt(app,"P","unverified"); receipt(app,"Caller","unverified");
             observe(app,"partial");
@@ -81,8 +89,9 @@ class RecordNativeBatchAdmissionTest {
     private static String factory(boolean changed) { return "package app;public class Factory {public static Object make(){return new P(7"+(changed?",\"new\"":"")+");}"+(changed?"public static Object next(){return make();}":"")+"}"; }
     private static String chainCaller(int version) { return "package app;public class Caller {public static int version(){return "+version+";}public static Object make(){return Factory."+(version==0?"make()":"next()")+";}}"; }
     @ParameterizedTest @ValueSource(booleans={false,true})
-    void twoHopCallerAndFactoryPublishInOneNativeCohort(boolean auto) throws Exception {
-        WatchedApp app=start(auto,"chain");
+    void twoHopCallerAndFactoryPublishInOneNativeCohort(boolean auto)throws Exception{callerChain(auto,false);}
+    void callerChain(boolean auto,boolean stock)throws Exception {
+        WatchedApp app=start(auto,"chain",stock);
         try(app) {
             control("pause"); Map<String,String> changes=Map.of("P",record(true),"Factory",factory(true),"Caller",chainCaller(1));
             if(auto) for(var entry:changes.entrySet()) Files.writeString(dir.resolve("src/main/java/app/"+entry.getKey()+".java"),entry.getValue());
@@ -91,8 +100,9 @@ class RecordNativeBatchAdmissionTest {
             observe(app,"chain");assertTrue(app.latest("OBS|chain|").contains("|1|2|P[a=7, b=new]|P[a=7, b=null]|1|3|true|"),app.tail());
         } finally {remember(app,"native-chain-"+auto);}
     }
-    @Test void laterStaleCallerRefusedAndCurrentCallerCanApply() throws Exception {
-        WatchedApp app=start(false,"normal");
+    @Test void laterStaleCallerRefusedAndCurrentCallerCanApply()throws Exception{staleCaller(false);}
+    void staleCaller(boolean stock)throws Exception {
+        WatchedApp app=start(false,"normal",stock);
         try(app) {
             byte[] stale=Files.readAllBytes(app.classesDir().resolve("app/Caller.class"));
             save(app,false,false);receipt(app,"P","applied");receipt(app,"Caller","applied");
@@ -103,12 +113,13 @@ class RecordNativeBatchAdmissionTest {
             observe(app,"current");assertTrue(app.latest("OBS|current|").contains("|2|2|P[a=7, b=new]|P[a=7, b=null]|1|2|true|"),app.tail());
         } finally {remember(app,"native-later-stale-current");}
     }
-    @Test void preWatchBodyCanRunButCannotClaimVerifiedMetadataOrUpgradeOrigin() throws Exception {
-        WatchedApp app=start(false,"preloaded");
+    @Test void preWatchBodyCanRunButCannotClaimVerifiedMetadataOrUpgradeOrigin()throws Exception{preWatchBody(false);}
+    void preWatchBody(boolean stock)throws Exception {
+        WatchedApp app=start(false,"preloaded",stock);
         try(app) {
             app.rewrite("P",record(false).replace("{}","{public static int body(){return 1;}}"));receipt(app,"P","unverified");
             observe(app,"pre-watch-body");assertTrue(app.output().contains("PRE_WATCH_BODY=1"),app.tail());assertTrue(app.latest("OBS|pre-watch-body|").contains("|0|1|P[a=7]|P[a=7]|1|1|false|"),app.tail());
-            assertTrue(app.output().stream().anyMatch(l->l.contains("pre-watch record metadata has no witnessed baseline")),app.tail());
+            assertTrue(app.output().stream().anyMatch(l->l.contains(stock?"was loaded before Reclazz could instrument it":"pre-watch record metadata has no witnessed baseline")),app.tail());
             save(app,false,false);receipt(app,"P","failed");receipt(app,"Caller","failed");
             observe(app,"pre-watch-shape");assertTrue(app.latest("OBS|pre-watch-shape|").contains("|0|1|P[a=7]|P[a=7]|1|1|false|"),app.tail());
         }finally{remember(app,"native-pre-watch-body-then-shape");}
@@ -116,8 +127,9 @@ class RecordNativeBatchAdmissionTest {
     @Test void loadedBeforeWatchRemainsRefused() throws Exception { unsupportedScope("preloaded","not witnessed"); }
     @Test void actualRecordSelfCheckFailureKeepsFallback() throws Exception { unsupportedScope("probeFail","record components of app.P changed"); }
     @Test void duplicateDefiningLoadersRemainRefused() throws Exception { unsupportedScope("ambiguous","not uniquely loaded"); }
-    private void unsupportedScope(String mode,String reason) throws Exception {
-        WatchedApp app=start(false,mode);
+    private void unsupportedScope(String mode,String reason)throws Exception{unsupportedScope(mode,reason,false);}
+    void unsupportedScope(String mode,String reason,boolean stock)throws Exception {
+        WatchedApp app=start(false,mode,stock);
         try(app) {
             save(app,false,false);receipt(app,"P","failed");receipt(app,"Caller","failed");observe(app,mode);
             assertTrue(app.latest("OBS|"+mode+"|").contains("|0|1|P[a=7]|P[a=7]|0|0|false|"),app.tail());
@@ -134,8 +146,9 @@ class RecordNativeBatchAdmissionTest {
             output.putNextEntry(new java.util.jar.JarEntry("preload/Preload.class"));output.write(Files.readAllBytes(classes.resolve("preload/Preload.class")));output.closeEntry();}
         return jar;
     }
-    @Test void nativeShapeThenRejectedBodyEditKeepsCanonicalReceipt() throws Exception {
-        WatchedApp app=start(false,"normal");
+    @Test void nativeShapeThenRejectedBodyEditKeepsCanonicalReceipt()throws Exception{rejectedBodyReceipt(false);}
+    void rejectedBodyReceipt(boolean stock)throws Exception {
+        WatchedApp app=start(false,"normal",stock);
         try(app) {
             save(app,false,false);receipt(app,"P","applied");receipt(app,"Caller","applied");
             Files.writeString(dir.resolve("reject-body"),"go");
@@ -153,8 +166,9 @@ class RecordNativeBatchAdmissionTest {
             assertFalse(app.output().stream().anyMatch(l->l.contains("Constructor bodies not refreshed for app.P")),app.tail());
         } finally {remember(app,"native-constructor-body-proof");}
     }
-    @Test void repeatedNativeBodySavesStayUnverifiedUntilPendingRepairsSucceed() throws Exception {
-        WatchedApp app=start(false,"poison");
+    @Test void repeatedNativeBodySavesStayUnverifiedUntilPendingRepairsSucceed()throws Exception{pendingRepairRetry(false);}
+    void pendingRepairRetry(boolean stock)throws Exception {
+        WatchedApp app=start(false,"poison",stock);
         try(app) {
             save(app,false,false);receipt(app,"P","unverified");receipt(app,"Caller","unverified");
             app.rewrite("P",record(true).replace("{}","{public static int body(){return 1;}}"));receipt(app,"P","unverified");
@@ -165,8 +179,9 @@ class RecordNativeBatchAdmissionTest {
             assertTrue(observation.contains("Nothing from this session needs a restart"),observation);
         } finally {remember(app,"native-pending-repair-retry");}
     }
-    @Test void springBatchCompletionFailureIsUnverifiedAfterNativeCommit() throws Exception {
-        WatchedApp app=start(false,"batchFail");
+    @Test void springBatchCompletionFailureIsUnverifiedAfterNativeCommit()throws Exception{batchCompletionFailure(false);}
+    void batchCompletionFailure(boolean stock)throws Exception {
+        WatchedApp app=start(false,"batchFail",stock);
         try(app) {
             save(app,false,false);receipt(app,"P","unverified");receipt(app,"Caller","unverified");observe(app,"batch-failure");
             assertTrue(app.output().contains("NATIVE_BATCH_FAILURE_REACHED"),app.tail());
@@ -176,8 +191,9 @@ class RecordNativeBatchAdmissionTest {
             assertFalse(app.output().stream().anyMatch(l->l.contains("Structural reload: app.P ")||l.contains("Reloaded app.P ")),app.tail());
         }finally{remember(app,"native-spring-batch-failure");}
     }
-    @Test void failedRecordRepairStillRefreshesCallerAndRecordOnlyRetryCannotClearCallerConcern()throws Exception {
-        WatchedApp app=start(false,"poisonCaller");
+    @Test void failedRecordRepairStillRefreshesCallerAndRecordOnlyRetryCannotClearCallerConcern()throws Exception{callerRepairRetry(false);}
+    void callerRepairRetry(boolean stock)throws Exception {
+        WatchedApp app=start(false,"poisonCaller",stock);
         try(app){
             save(app,false,false);receipt(app,"P","unverified");receipt(app,"Caller","unverified");
             assertTrue(app.output().contains("NATIVE_FRAMEWORK_REFRESH|app.Caller"),"caller's own refresh must run despite failed mapper repair\n"+app.tail());
@@ -221,8 +237,9 @@ class RecordNativeBatchAdmissionTest {
         end.visitMethodInsn(Opcodes.INVOKESPECIAL,"java/lang/IllegalStateException","<init>","(Ljava/lang/String;)V",false);end.visitInsn(Opcodes.ATHROW);
         end.visitMaxs(0,0);end.visitEnd();writer.visitEnd();Files.write(dir.resolve("batch-fault.class"),writer.toByteArray());
     }
-    @Test void nativeObjectMethodsPreserveWidthsNullArraysNestedValuesAndCustomMethods() throws Exception {
-        WatchedApp app=start(false,"wide");
+    @Test void nativeObjectMethodsPreserveWidthsNullArraysNestedValuesAndCustomMethods()throws Exception{objectMethods(false);}
+    void objectMethods(boolean stock)throws Exception {
+        WatchedApp app=start(false,"wide",stock);
         try(app) {
             control("pause");app.rewriteAll(Map.of("P","package app;public record P(int a,boolean z,byte b,short s,char c,long j,float f,double d,String text,int[] values,N nested){public String label(){return a+\":\"+z;}@Override public String toString(){return \"custom:\"+label();}}",
                     "Caller","package app;public class Caller {public static int version(){return 1;}public static Object make(){return new P(7,true,(byte)2,(short)3,'q',1234567890123L,1.25f,2.5d,null,new int[]{1,2},new N(\"n\"));}}"));
@@ -230,22 +247,25 @@ class RecordNativeBatchAdmissionTest {
             assertTrue(app.output().contains("WIDE_OBJECT_METHODS=true"),app.tail());
         }finally{remember(app,"native-wide-object-methods");}
     }
-    @Test void nativeConstructorViewRetiresOldCanonicalAndPreservesValidAuxiliary() throws Exception {
-        WatchedApp app=start(false,"auxiliary");
+    @Test void nativeConstructorViewRetiresOldCanonicalAndPreservesValidAuxiliary()throws Exception{constructorView(false);}
+    void constructorView(boolean stock)throws Exception {
+        WatchedApp app=start(false,"auxiliary",stock);
         try(app) {
             control("pause");app.rewriteAll(Map.of("P",record(true).replace("{}","{public P(String b){this(9,b);}}"),"Caller",caller(true)));
             scan();control("resume");receipt(app,"P","applied");receipt(app,"Caller","applied");observe(app,"auxiliary");
             assertTrue(app.output().contains("NATIVE_AUXILIARY=true"),app.tail());
         }finally{remember(app,"native-constructor-visibility");}
     }
-    @Test void nonRecordSaveKeepsPerClassPath() throws Exception {
-        WatchedApp app=start(false,"normal");
+    @Test void nonRecordSaveKeepsPerClassPath()throws Exception{ordinarySave(false);}
+    void ordinarySave(boolean stock)throws Exception {
+        WatchedApp app=start(false,"normal",stock);
         try(app) {
             control("pause"); app.rewriteAll(Map.of("Noise","package app;public class Noise {public static int version(){return 1;}}",
                     "Caller",caller(false).replace("return 0;","return 2;"))); scan(); control("resume");
             receipt(app,"Noise","applied"); receipt(app,"Caller","applied"); observe(app,"ordinary");
             assertTrue(app.latest("OBS|ordinary|").contains("|2|1|P[a=7]|P[a=7]|0|0|true|"),app.tail());
-            assertTrue(app.latest("OBS|ordinary|").contains("|nativeWidths=[1, 1]|1"),app.tail());
+            assertTrue(app.latest("OBS|ordinary|").contains(stock?"|nativeWidths=[2]|1":"|nativeWidths=[1, 1]|1"),app.tail());
+            if(stock)assertTrue(app.latest("OBS|ordinary|").contains("|ordinaryRecordCohort=false"),app.tail());
         } finally { remember(app,"native-non-record-isolation"); }
     }
     private void save(WatchedApp app,boolean auto,boolean invalid) throws Exception {
@@ -286,7 +306,8 @@ class RecordNativeBatchAdmissionTest {
         fail("No terminal receipt for "+type+": "+result+"\n"+app.tail());
     }
     private void remember(WatchedApp app,String name) throws Exception {
-        Path output=Path.of("build","record-native-evidence",name);Files.createDirectories(output);Files.write(output.resolve("child.log"),app.output());
+        Path output=stock?Path.of(System.getProperty("reclazz.record.evidenceDir",Path.of("build","record-stock-evidence").toString()),name.replace("native-","stock-"))
+                :Path.of("build","record-native-evidence",name);Files.createDirectories(output);Files.write(output.resolve("child.log"),app.output());
     }
     private static final String APP="""
         package app;
@@ -294,7 +315,7 @@ class RecordNativeBatchAdmissionTest {
         import com.fasterxml.jackson.databind.*;import java.util.concurrent.ConcurrentHashMap;
         public class App {
           static Class<?> frameworkObserver;
-          static volatile boolean armed;static int calls,width;static final java.util.List<Object> duplicates=new java.util.ArrayList<>();static final java.util.List<Integer> nativeWidths=new java.util.ArrayList<>();
+          static volatile boolean armed;static boolean ordinaryRecordCohort;static int calls,width;static final java.util.List<Object> duplicates=new java.util.ArrayList<>();static final java.util.List<Integer> nativeWidths=new java.util.ArrayList<>();
           public static class Poison extends ConcurrentHashMap<Object,Object> {
             @Override public void clear(){if(armed)throw new IllegalStateException("test retained mapper flush failure");super.clear();}
           }
@@ -304,6 +325,13 @@ class RecordNativeBatchAdmissionTest {
           public static void main(String[] args)throws Exception {
             Path dir=Path.of(System.getProperty("probe.dir"));while(!Files.exists(dir.resolve("load")))Thread.sleep(20);
             Class<?> p=Class.forName("app.P"),caller=Class.forName("app.Caller"),noise=Class.forName("app.Noise");Object held=caller.getMethod("make").invoke(null);
+            byte[] originalPhysical=Files.readAllBytes(Path.of(p.getProtectionDomain().getCodeSource().getLocation().toURI()).resolve("app/P.class"));
+            if(Boolean.getBoolean("probe.stock")){
+              var arguments=java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments();
+              if(arguments.stream().anyMatch(a->a.contains("AllowEnhancedClassRedefinition")))throw new AssertionError("stock witness used enhanced flag");
+              if(Boolean.getBoolean("reclazz.record.unsafe.deny")&&!arguments.contains("--sun-misc-unsafe-memory-access=deny"))throw new AssertionError("missing actual deny flag");
+              System.out.println("STOCK_SHARED_RUNTIME|runtime="+Runtime.version()+" unsafeDeny="+Boolean.getBoolean("reclazz.record.unsafe.deny"));System.out.flush();
+            }
             if(System.getProperty("probe.mode").equals("wide"))Class.forName("app.N");
             java.util.Map<Object,String> heldKeys=new java.util.HashMap<>();heldKeys.put(held,"before");int heldHash=held.hashCode();
             if(System.getProperty("probe.mode").equals("ambiguous")) {
@@ -326,6 +354,9 @@ class RecordNativeBatchAdmissionTest {
               }
               boolean cohort=m.getName().equals("redefineClasses") && Arrays.stream((ClassDefinition[])a[0]).anyMatch(d->d.getDefinitionClass()==p);
               if(cohort){calls++;width=((ClassDefinition[])a[0]).length;}
+              if(Boolean.getBoolean("probe.stock")&&System.getProperty("probe.mode").equals("normal")&&m.getName().equals("redefineClasses")&&Arrays.stream((ClassDefinition[])a[0]).anyMatch(d->d.getDefinitionClass().getName().startsWith("app."))){
+                Field save=agent.getDeclaredField("nativeRecordSave");save.setAccessible(true);ordinaryRecordCohort|=((ThreadLocal<?>)save.get(null)).get()!=null;
+              }
               if(m.getName().equals("redefineClasses")&&Arrays.stream((ClassDefinition[])a[0]).anyMatch(d->d.getDefinitionClass().getName().startsWith("app.")))nativeWidths.add(((ClassDefinition[])a[0]).length);
               if(cohort && Files.exists(dir.resolve("reject-body")))throw new UnmodifiableClassException("test native record body refusal");
               // Exercise the real native API's defined unmodifiable-class rejection, without malformed class files.
@@ -337,6 +368,11 @@ class RecordNativeBatchAdmissionTest {
               try{Object result=m.invoke(real,a);if(cohort && System.getProperty("probe.mode").startsWith("poison")&&!Files.exists(dir.resolve("clear-poison")))armed=true;return result;}
               catch(InvocationTargetException failure){throw failure.getCause();}
             });f.set(null,observed);
+            if(Boolean.getBoolean("probe.stock")){
+              Field structural=agent.getDeclaredField("structuralReloader");structural.setAccessible(true);Object active=structural.get(null);
+              if(active==null)throw new AssertionError("stock structural engine not selected");
+              Field instrumentation=active.getClass().getDeclaredField("instrumentation");instrumentation.setAccessible(true);instrumentation.set(active,observed);
+            }
             Field queueField=agent.getDeclaredField("reloadQueue");queueField.setAccessible(true);Object queue=queueField.get(null);
             Field handlerField=queue.getClass().getDeclaredField("handler");handlerField.setAccessible(true);Object handler=handlerField.get(queue);int capturedReloaders=0;
             for(Field captured:handler.getClass().getDeclaredFields()){captured.setAccessible(true);Object value=captured.get(handler);
@@ -392,8 +428,10 @@ class RecordNativeBatchAdmissionTest {
                 System.out.println("NATIVE_AUXILIARY=true");System.out.flush();
               }
               byte[] bytes=Files.readAllBytes(Path.of(p.getProtectionDomain().getCodeSource().getLocation().toURI()).resolve("app/P.class"));
-              boolean baseline=(Boolean)agent("com.onurkat.reclazz.transform.KeepBaseline","constructorBodiesUnchanged",new Class<?>[]{Class.class,byte[].class},p,bytes);
-              System.out.println("OBS|"+token+"|"+caller.getMethod("version").invoke(null)+"|"+p.getRecordComponents().length+"|"+fresh+"|"+held+"|"+calls+"|"+width+"|"+baseline+"|"+agent("com.onurkat.reclazz.ui.RestartLedger","digest",new Class<?>[0])+"|nativeWidths="+nativeWidths+"|"+noise.getMethod("version").invoke(null));System.out.flush();
+              boolean logical=Boolean.getBoolean("probe.stock")&&(Boolean)agent("com.onurkat.reclazz.transform.KeepBaseline","hasVirtualRecordReceipt",new Class<?>[]{Class.class},p);
+              boolean baseline=(Boolean)agent("com.onurkat.reclazz.transform.KeepBaseline",logical?"recordLogicalConstructorBodiesUnchanged":"constructorBodiesUnchanged",new Class<?>[]{Class.class,byte[].class},p,bytes);
+              if(logical&&!(Boolean)agent("com.onurkat.reclazz.transform.KeepBaseline","constructorBodiesUnchanged",new Class<?>[]{Class.class,byte[].class},p,originalPhysical))throw new AssertionError("S changed original physical constructor proof");
+              System.out.println("OBS|"+token+"|"+caller.getMethod("version").invoke(null)+"|"+p.getRecordComponents().length+"|"+fresh+"|"+held+"|"+calls+"|"+width+"|"+baseline+"|"+agent("com.onurkat.reclazz.ui.RestartLedger","digest",new Class<?>[0])+"|nativeWidths="+nativeWidths+"|"+noise.getMethod("version").invoke(null)+"|ordinaryRecordCohort="+ordinaryRecordCohort);System.out.flush();
             }}Thread.sleep(20);}
           }
         }

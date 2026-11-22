@@ -108,4 +108,24 @@ class LambdaTest extends TransformTestBase {
         );
         assertEquals(15, invokeStatic(defineAndLoad(classes, "T"), "run"));
     }
+    @Test
+    void unwatchedConstructorReferenceKeepsItsNativeMetafactory() {
+        var classes=compileAndTransform(new SourceFile("NativeReference", """
+            import java.util.function.Supplier;
+            public class NativeReference {
+                public static int run() {Supplier<StringBuilder> value=StringBuilder::new;return value.get().append("ok").length();}
+            }
+            """));
+        var node=new org.objectweb.asm.tree.ClassNode();
+        new org.objectweb.asm.ClassReader(classes.get("NativeReference")).accept(node,0);
+        var sites=node.methods.stream().flatMap(m->java.util.Arrays.stream(m.instructions.toArray()))
+                .filter(org.objectweb.asm.tree.InvokeDynamicInsnNode.class::isInstance)
+                .map(org.objectweb.asm.tree.InvokeDynamicInsnNode.class::cast)
+                .filter(i->i.bsmArgs.length>1&&i.bsmArgs[1] instanceof org.objectweb.asm.Handle h&&h.getName().equals("<init>"))
+                .toList();
+        assertEquals(1,sites.size());
+        assertEquals("java/lang/invoke/LambdaMetafactory",sites.get(0).bsm.getOwner());
+        assertEquals(2,invokeStatic(defineAndLoad(classes,"NativeReference"),"run"));
+    }
+
 }

@@ -16,7 +16,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   Jackson hot paths avoid shared registry monitors and repeated failed-generation repairs.
   Post-native repair failures retain
   the installed schema and report an unverified receipt with precise restart concerns.
-  Stock, pre-watch, ambiguous-owner and ordinary-class/record kind changes remain refused.
+  Pre-watch, ambiguous-owner and ordinary-class/record kind changes remain refused.
+- Stock-JVM record component edits use stable physical admission and one logical
+  record/caller publication after a real runtime self-check. Retained constructors
+  and watched constructor references follow accepted descriptors; old objects keep
+  compatible values and use defaults for added/retyped components. Jackson 2/3 and
+  live Boot configuration records share the repair and unverified-receipt rules.
+  Stock saves with multiple changed records or physical record/caller header changes
+  remain refused. Stock callers require concrete ordinary classes with initial record
+  linkage through at most two watched links; deeper chains, exhausted preparation
+  budgets and acquiring a first record dependency later require restart. Unrelated
+  ordinary constructor references retain their native lambda path. Existing hash
+  collection keys are not migrated.
 
 - The IntelliJ plugin bundles its matching MCP server and offers **Connect AI assistant**
   in Settings for Claude Code, Cursor, VS Code and Codex. Project setup is the default;

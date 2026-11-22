@@ -14,10 +14,23 @@ public final class MethodForge {
     private static MethodHandle accessorSetter;
     private static MethodHandle nativeParameters;
     private static MethodHandle nativeTypeAnnotations;
-    private record Entry(MethodHandle target, Executable metadata) { }
-    private static final ClassValue<java.util.concurrent.ConcurrentHashMap<Executable,Entry>> entries=new ClassValue<>() {
-        @Override protected java.util.concurrent.ConcurrentHashMap<Executable,Entry> computeValue(Class<?> owner){return new java.util.concurrent.ConcurrentHashMap<>();}
+    private static final class Entry {
+        final MethodHandle target;final Executable metadata;volatile RecordHeader.MemberView generic;
+        Entry(MethodHandle target,Executable metadata){this.target=target;this.metadata=metadata;}
+    }
+    private static final class Entries {
+        final java.util.concurrent.ConcurrentHashMap<Executable,Entry> normal=new java.util.concurrent.ConcurrentHashMap<>();
+        volatile boolean snapshots;
+    }
+    private static final ClassValue<Entries> entries=new ClassValue<>() {
+        @Override protected Entries computeValue(Class<?> owner){return new Entries();}
     };
+    private record SnapshotAccessor(Entry entry,InvocationHandler delegate) implements InvocationHandler {
+        @Override public Object invoke(Object proxy,Method called,Object[] args)throws Throwable {
+            return delegate.invoke(proxy,called,args);
+        }
+    }
+    private static MethodHandle methodRoot,constructorRoot,methodCopy,constructorCopy,methodAccessorGetter,constructorAccessorGetter;
     private static MethodHandle parameterConstructor, realParameters, verifyAccess, specialCallerCheck;
     private static Class<?> accessorType;
     private static VarHandle declaredAnnotations;
@@ -35,6 +48,13 @@ public final class MethodForge {
                     Class.class,String.class,Class[].class,Class.class,Class[].class,int.class,int.class,
                     String.class,byte[].class,byte[].class,byte[].class));
             accessorSetter=lookup.findSetter(Method.class,"methodAccessor",accessorType);
+            methodRoot=lookup.findVirtual(Method.class,"getRoot",MethodType.methodType(Method.class));
+            methodCopy=lookup.findVirtual(Method.class,"copy",MethodType.methodType(Method.class));
+            methodAccessorGetter=lookup.findGetter(Method.class,"methodAccessor",accessorType);
+            var ctorLookup=MethodHandles.privateLookupIn(Constructor.class,MethodHandles.lookup());
+            constructorRoot=ctorLookup.findVirtual(Constructor.class,"getRoot",MethodType.methodType(Constructor.class));
+            constructorCopy=ctorLookup.findVirtual(Constructor.class,"copy",MethodType.methodType(Constructor.class));
+            constructorAccessorGetter=ctorLookup.findGetter(Constructor.class,"constructorAccessor",Class.forName("jdk.internal.reflect.ConstructorAccessor"));
             declaredAnnotations=MethodHandles.privateLookupIn(Executable.class,MethodHandles.lookup())
                     .findVarHandle(Executable.class,"declaredAnnotations",java.util.Map.class);
             var executable=MethodHandles.privateLookupIn(Executable.class,MethodHandles.lookup());
@@ -67,11 +87,69 @@ public final class MethodForge {
 
     public static Method forgeMethod(Class<?> owner,String name,Class<?>[] parameters,Class<?> result,
                                      int modifiers,MethodHandle target,String signature,Class<?>[] exceptions) {
+        return createMethod(owner,name,parameters,result,modifiers,target,signature,exceptions,null);
+    }
+    /** A private prepared root owns its metadata; equal live roots are never re-registered. */
+    public static Method snapshotMethod(Class<?> owner,Method metadata,MethodHandle target,String signature) {
+        LookupCapture.requireTrusted(StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass(),"preparing record method roots");
+        MethodType expected=MethodType.methodType(metadata.getReturnType(),metadata.getParameterTypes());
+        if(!Modifier.isStatic(metadata.getModifiers()))expected=expected.insertParameterTypes(0,owner);
+        if(!expected.equals(target.type()))throw new IllegalArgumentException("Prepared method target type changed");
+        RecordSchema.validateRecordMember(owner,metadata,target);
+        return createMethod(owner,metadata.getName(),metadata.getParameterTypes(),metadata.getReturnType(),
+                metadata.getModifiers(),target,signature,metadata.getExceptionTypes(),metadata);
+    }
+    /** Owned raw target proof is checked before internally binding the record's live dispatch site. */
+    public static Method recordDispatchMethod(Class<?> owner,Method metadata,MethodHandle rawTarget,String key,String signature) {
+        LookupCapture.requireTrusted(StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass(),"preparing record dispatch roots");
+        if(!owner.isRecord())throw new IllegalArgumentException("Record dispatch root requires a record");
+        MethodType expected=MethodType.methodType(metadata.getReturnType(),metadata.getParameterTypes());
+        if(!Modifier.isStatic(metadata.getModifiers()))expected=expected.insertParameterTypes(0,owner);
+        if(!expected.equals(rawTarget.type()))throw new IllegalArgumentException("Record dispatch target type changed");
+        RecordSchema.validateRecordMember(owner,metadata,rawTarget);
+        MethodHandle target=new RecordMethodTarget(owner,key,rawTarget.asFixedArity()).dispatcher();
+        return createMethod(owner,metadata.getName(),metadata.getParameterTypes(),metadata.getReturnType(),
+                metadata.getModifiers(),target,signature,metadata.getExceptionTypes(),metadata);
+    }
+    /** Caller-owned roots use the cohort dispatch without publishing a method site during assembly. */
+    public static Method callerDispatchMethod(Class<?> owner,Method metadata,MethodHandle rawTarget,String key,String signature) {
+        LookupCapture.requireTrusted(StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass(),"preparing record-cohort caller dispatch roots");
+        Class<?> carrier=metadata.getDeclaringClass();
+        if(owner.isRecord()||carrier!=owner&&!(carrier.isHidden()&&carrier.getClassLoader()==owner.getClassLoader()&&carrier.getNestHost()==owner.getNestHost()))
+            throw new IllegalArgumentException("Caller dispatch metadata belongs to another owner");
+        MethodType expected=MethodType.methodType(metadata.getReturnType(),metadata.getParameterTypes());
+        if(!Modifier.isStatic(metadata.getModifiers()))expected=expected.insertParameterTypes(0,owner);
+        if(!expected.equals(rawTarget.type()))throw new IllegalArgumentException("Caller dispatch target type changed");
+        RecordSchema.validateTargetOwner(owner,rawTarget);
+        MethodHandle target=new RecordMethodTarget(owner,key,rawTarget.asFixedArity()).dispatcher();
+        return createMethod(owner,metadata.getName(),metadata.getParameterTypes(),metadata.getReturnType(),metadata.getModifiers(),target,signature,metadata.getExceptionTypes(),metadata);
+    }
+    private static final class RecordMethodTarget {
+        private static final MethodHandle INVOKER;
+        static {
+            try{INVOKER=MethodHandles.lookup().findVirtual(RecordMethodTarget.class,"invoker",MethodType.methodType(MethodHandle.class));}
+            catch(ReflectiveOperationException failure){throw new ExceptionInInitializerError(failure);}
+        }
+        private final Class<?> owner;private final String key;private final MethodHandle fallback;
+        private volatile MethodHandle invocation;
+        RecordMethodTarget(Class<?> owner,String key,MethodHandle fallback){this.owner=owner;this.key=java.util.Objects.requireNonNull(key);this.fallback=fallback;}
+        MethodHandle dispatcher(){return MethodHandles.foldArguments(MethodHandles.exactInvoker(fallback.type()),INVOKER.bindTo(this));}
+        private MethodHandle invoker() {
+            MethodHandle found=invocation;if(found!=null)return found;
+            synchronized(this) {
+                if(invocation==null)invocation=DispatchTable.getOrCreate(owner)
+                        .getOrCreateMethodSite(key,new MutableCallSite(fallback)).dynamicInvoker();
+                return invocation;
+            }
+        }
+    }
+    private static Method createMethod(Class<?> owner,String name,Class<?>[] parameters,Class<?> result,
+            int modifiers,MethodHandle target,String signature,Class<?>[] exceptions,Method metadata) {
         if (!available || target==null) return null;
         try {
             Method method=(Method)constructor.invoke(owner,name.intern(),parameters.clone(),result,
                     exceptions.clone(),modifiers,-1,signature,null,null,null);
-            Object accessor=Proxy.newProxyInstance(null,new Class<?>[]{accessorType},(proxy,called,args)->{
+            InvocationHandler invoke=(proxy,called,args)->{
                 if (!called.getName().equals("invoke")) {
                     return switch(called.getName()) {
                         case "equals" -> proxy==args[0];
@@ -92,18 +170,66 @@ public final class MethodForge {
                 for(int i=0;i<values.length;i++)actual.add(JacksonBridge.checkedValue(parameters[i],values[i]));
                 try {return target.invokeWithArguments(actual);}
                 catch(Throwable failure){throw new InvocationTargetException(failure);}
-            });
+            };
+            Object accessor=metadata==null?Proxy.newProxyInstance(null,new Class<?>[]{accessorType},invoke)
+                    :snapshotAccessor(owner,target,metadata,accessorType,invoke);
             accessorSetter.invoke(method,accessor);
-            entries.get(owner).put(method,new Entry(target,null));
+            if(metadata==null)entries.get(owner).normal.put(method,new Entry(target,null));
+            else copyAnnotations(method,metadata);
             return method;
         } catch(Throwable unsupported) { return null; }
     }
 
     static boolean isForged(Executable method) { return entry(method)!=null; }
-    private static Entry entry(Executable method){return entries.get(method.getDeclaringClass()).get(method);}
+    static Executable metadataSource(Executable method){Entry entry=entry(method);return entry==null?null:entry.metadata;}
+    static RecordHeader.MemberView genericView(Executable method){Entry entry=entry(method);return entry==null?null:entry.generic;}
+    static void bindGenericView(Executable method,RecordHeader.MemberView view){Entry entry=snapshotEntry(method);if(entry==null||entry.generic!=null)throw new IllegalArgumentException("Missing or already bound snapshot root");entry.generic=view;}
+
+    private static Entry entry(Executable method){
+        Entries owned=entries.get(method.getDeclaringClass());
+        if(owned.snapshots){Entry snapshot=snapshotEntry(method);if(snapshot!=null)return snapshot;}
+        return owned.normal.get(method);
+    }
+    private static Executable root(Executable method)throws Throwable {
+        Executable current=method;
+        for(;;){Executable parent=(Executable)(current instanceof Method?methodRoot:constructorRoot).invoke(current);
+            if(parent==null)return current;current=parent;}
+    }
+    private static Entry snapshotEntry(Executable method) {
+        try {
+            Executable root=root(method);
+            Object accessor=(root instanceof Method?methodAccessorGetter:constructorAccessorGetter).invoke(root);
+            if(accessor!=null&&Proxy.isProxyClass(accessor.getClass())
+                    &&Proxy.getInvocationHandler(accessor) instanceof SnapshotAccessor snapshot)return snapshot.entry;
+            return null;
+        }catch(Throwable failure){throw new IllegalStateException("Cannot resolve prepared member root",failure);}
+    }
+    static MethodHandle snapshotTarget(Executable method) {
+        if(!entries.get(method.getDeclaringClass()).snapshots)return null;
+        Entry entry=snapshotEntry(method);return entry==null?null:entry.target;
+    }
+    static Object snapshotAccessor(Class<?> owner,MethodHandle target,Executable metadata,Class<?> type,InvocationHandler invoke) {
+        entries.get(owner).snapshots=true;
+        return Proxy.newProxyInstance(null,new Class<?>[]{type},new SnapshotAccessor(new Entry(target,metadata),invoke));
+    }
+    /** Class's public API copies roots; a component accessor must never expose the shared root. */
+    public static Field reflectionCopy(Field field) {
+        return MemberForge.reflectionCopy(field);
+    }
+    public static Method reflectionCopy(Method method) {
+        try{return (Method)methodCopy.invoke(root(method));}
+        catch(Throwable failure){throw new IllegalStateException("Cannot copy method root",failure);}
+    }
+    public static Constructor<?> reflectionCopy(Constructor<?> constructor) {
+        try{return (Constructor<?>)constructorCopy.invoke(root(constructor));}
+        catch(Throwable failure){throw new IllegalStateException("Cannot copy constructor root",failure);}
+    }
 
     public static void metadata(Executable logical,Executable source,MethodHandle target) {
-        entries.get(logical.getDeclaringClass()).put(logical,new Entry(target,source));
+        entries.get(logical.getDeclaringClass()).normal.put(logical,new Entry(target,source));
+        copyAnnotations(logical,source);
+    }
+    static void copyAnnotations(Executable logical,Executable source) {
         var map=new java.util.LinkedHashMap<Class<? extends java.lang.annotation.Annotation>,java.lang.annotation.Annotation>();
         for(var value:source.getDeclaredAnnotations())map.put(value.annotationType(),value);
         declaredAnnotations.setVolatile(logical,java.util.Map.copyOf(map));
@@ -136,16 +262,16 @@ public final class MethodForge {
         return entry==null?null:entry.metadata==null?new java.lang.annotation.Annotation[method.getParameterCount()][0]:entry.metadata.getParameterAnnotations();
     }
     public static AnnotatedType annotatedReturn(Executable method) {
-        Entry entry=entry(method);return entry==null || entry.metadata==null?null:ReflectionTypes.wrap(entry.metadata.getAnnotatedReturnType(),entry.metadata,method);
+        Entry entry=entry(method);return entry==null || entry.metadata==null?null:ReflectionTypes.wrap(entry.metadata.getAnnotatedReturnType(),entry.metadata,method,entry.generic==null?null:entry.generic::resolve);
     }
     public static AnnotatedType[] annotatedParameters(Executable method) {
-        Entry entry=entry(method);return entry==null || entry.metadata==null?null:ReflectionTypes.wrap(entry.metadata.getAnnotatedParameterTypes(),entry.metadata,method);
+        Entry entry=entry(method);return entry==null || entry.metadata==null?null:ReflectionTypes.wrap(entry.metadata.getAnnotatedParameterTypes(),entry.metadata,method,entry.generic==null?null:entry.generic::resolve);
     }
     public static AnnotatedType[] annotatedExceptions(Executable method) {
-        Entry entry=entry(method);return entry==null || entry.metadata==null?null:ReflectionTypes.wrap(entry.metadata.getAnnotatedExceptionTypes(),entry.metadata,method);
+        Entry entry=entry(method);return entry==null || entry.metadata==null?null:ReflectionTypes.wrap(entry.metadata.getAnnotatedExceptionTypes(),entry.metadata,method,entry.generic==null?null:entry.generic::resolve);
     }
     public static AnnotatedType annotatedReceiver(Executable method) {
-        Entry entry=entry(method);return entry==null || entry.metadata==null?null:ReflectionTypes.wrap(entry.metadata.getAnnotatedReceiverType(),entry.metadata,method);
+        Entry entry=entry(method);return entry==null || entry.metadata==null?null:ReflectionTypes.wrap(entry.metadata.getAnnotatedReceiverType(),entry.metadata,method,entry.generic==null?null:entry.generic::resolve);
     }
 
     /** Apply the same JDK member/mode/module check without resolving an invented VM slot. */

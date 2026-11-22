@@ -1270,72 +1270,102 @@ versions and accessor-generating extensions such as Afterburner remain unverifie
 
 <a id="record-component-edits"></a>
 
-**Record component edits.** On a native enhanced JVM that passes Reclazz's actual
-record-schema check, watched records can add, remove, retype and reorder components.
-Compile affected watched callers in the same save. The record and that save's
-changed caller chain go through one native redefinition; a preflight or native
-rejection changes none of that cohort and produces a failed `VERIFY` receipt.
-Unrelated non-record saves keep their existing per-class path.
+**Record component edits.** Supported native enhanced and stock JVMs can add,
+remove, retype and reorder watched record components after an actual runtime
+self-check. Compile affected watched callers in the same save. The record and
+that save's changed caller chain are admitted together. A preflight or native
+rejection produces a failed `VERIFY` receipt and leaves their previous behaviour
+in place. Other saves keep their existing reload path.
 
 | Runtime or ownership | Component edit |
 |---|---|
-| Native enhanced VM, successful record self-check, record first loaded under the watch, unique defining owner | Applied after cohort preflight and framework/retained-codec repair |
-| Stock JVM | Restart; companion record-schema admission is not enabled |
+| Native enhanced VM, successful record self-check, record first loaded under the watch, unique defining owner | One native record/caller cohort; applied after framework and retained-codec repair |
+| Supported stock JVM, successful private record/metadata/construction self-check, witnessed watched load and unique owner | One record plus its changed watched caller chain; stable physical admission, then one logical publication |
+| Stock save containing multiple changed records, or changing physical record/caller interfaces or class modifiers | Refused as a whole; restart for the unsupported combined change |
 | Record loaded before watch installation, even if a later body save succeeded | Restart |
 | Ambiguous owners across defining loaders | Refused; restart with an unambiguous owner |
 | Ordinary class changed to a record, or a record changed to an ordinary class | Restart |
 
-The native matrix is measured on JBR 25.0.2+10-b329.72 with Boot 2.7.18, 3.3.5 and
-4.1.2. Boot 3 runs Jackson 2.23.0 without Jackson 3; Boot 4 also exercises Jackson
-3.3.0. These checks cover real HTTP configuration, request bodies and model binding,
-configuration-record replacement and existing singleton holders. Configuration
-values bind and validate before replacement; a failed bind keeps the old bean and
-its dependents alive. Successful replacement heals the same running holders,
-without destroying or restarting them. Retained typed
+The native matrix is measured on JBR 25.0.2+10-b329.72. Stock checks cover SapMachine
+17/21/25, including JDK 25 with unsafe memory access denied. A VM name or flag is
+not proof: an unsuccessful runtime self-check keeps the restart fallback, before
+application classes are changed. Stock admission preserves the real physical
+record layout and Record attribute. Private companions and a record-owned logical
+member snapshot provide the new components, constructors, metadata and bodies.
+Stock caller preparation covers direct watched callers and one further watched
+caller layer, through at most two typed links to the record at the initial load.
+Deeper caller chains and graphs whose initial preparation budget is exhausted
+require restart. Unrelated ordinary constructor
+references keep their native lambda path. If a previously unrelated class first
+acquires a record dependency later, its original constructor references and
+physical payload were not prepared for that cohort: restart for that combined
+change. An unavailable resource is conservatively treated as a candidate.
+Cohort callers currently require concrete ordinary classes. A record, interface,
+enum, annotation or abstract class that calls the changed record is refused with
+a restart reason. Caller-owned targets become current at the same publication point. An activation
+race discards the pending logical change; it never reports a partially activated
+caller as applied. This does not extend debugger/JDI views or every arbitrary
+serialization/reflection integration.
+
+Real container checks cover Boot 2.7.18, 3.3.5 and 4.1.2. Boot 3 runs Jackson 2.23.0
+without Jackson 3; Boot 4 also exercises Jackson 3.3.0. These checks include HTTP
+configuration, request bodies and model binding, configuration-record replacement
+and existing singleton holders. Values bind and validate before replacement; a
+failed bind keeps the old bean and its dependents alive. Successful replacement
+heals the same running holders without destroying or restarting them. Retained
 readers/writers follow direct record, `List<P>`, `Map<K,P>`, `Optional<P>`, array and
 nested-bean roots. Existing view/locale copies and mapping iterators retain their
-configuration and receive the current snapshots. Other library/runtime versions
-need their own acceptance; a VM name or launch flag alone is not a capability proof.
+configuration and receive current snapshots. Other library/runtime versions need
+their own acceptance. In-flight operations during publication and cache repair
+are not a transaction; rely on the final receipt for completed repair.
 
 The normal Jackson path takes no shared registry monitor before any record edit;
-unchanged roots also keep their snapshots after an unrelated record edit. If a
-retained snapshot cannot be repaired, its concern is reported once for that
-generation. Uses retain Jackson's raw snapshot behavior (and may raise Jackson's
-own error), rather than repeatedly throwing a bridge exception. A later successful
-repair or collection resolves the individual late-codec concern.
+unchanged roots keep their snapshots after an unrelated record edit. A retained
+snapshot repair failure is reported once for that generation. Uses retain
+Jackson's raw snapshot behaviour, which may raise its own error, instead of
+repeated bridge exceptions. A later successful repair or collection resolves the
+individual late-codec concern.
 
-Same-erasure generic and component-annotation edits also use this native repair
-path: `List<String>` changing to `List<Integer>` cannot be recognized from the JVM
-descriptor alone. Recompile affected callers together. Existing collection contents
-are not converted to the new generic type. A record loaded before watch installation
-has no witnessed metadata baseline: an ordinary body save can execute, but its
-receipt stays `unverified`; it does not enable a later record-schema edit.
+Same-erasure generic and component-annotation edits use this record path too:
+`List<String>` changing to `List<Integer>` is not visible in the JVM descriptor.
+Existing collection contents are not converted. A record loaded before watch
+installation has no witnessed metadata baseline: an ordinary body save can
+execute, but its receipt stays `unverified` and does not enable schema edits.
 
-Existing native objects keep compatible component values. Added or retyped values
-use their type defaults; removed components disappear. Accessors, record metadata,
-constructors and generated or custom ObjectMethods use the installed class. A
-record's hash can change: existing hash-map/set keys are not rehashed automatically.
-Unchanged stale callers and pre-existing reflective/handle snapshots that refer to
-removed members are outside this repair; recompile the callers or restart.
+Existing objects keep compatible component values. Added or retyped values use
+their type defaults; removed components disappear. Current accessors, record
+metadata, constructors and generated or custom ObjectMethods follow the accepted
+shape. A record's hash can change: existing hash-map/set keys are not rehashed.
+New collections use the new equality/hash contract.
 
-After native success, a framework, codec or configuration repair failure leaves the
-new schema installed. Its precise surface is recorded in the restart ledger and
-`VERIFY` is `unverified`; this is not a rollback. The concern names the record to
-save again: a later compiled save of that record retries its repairs; unrelated
-saves do not. An independently failed caller refresh names that caller, and only
-its own successful refresh/publication resolves it. Retry by making and compiling
-a change to the named class, or restart. A successful retry resolves only its own
-surface concerns. Reloads with unchanged record metadata and no outstanding repairs retain
-the ordinary method/constructor checks.
+On the stock path, supported retained constructor objects,
+`findConstructor`/`unreflectConstructor` handles and watched constructor references follow the current body for the same
+descriptor; a retired descriptor throws `NoSuchMethodError`. Constructor
+references preserve their serializable/marker and serialized identity rules.
+Held reflection metadata stays a snapshot; a new lookup returns current metadata.
+These stock guarantees do not promise to repair every pre-existing
+MethodHandle/VarHandle, native enhanced-VM obsolete snapshot or unwatched stale caller. Recompile callers that still name removed members, or
+restart. Later body-only saves and successive shape edits use the accepted
+logical schema. A failed later save advances neither its logical constructor
+receipt nor the real physical constructor proof.
 
-On the stock/fallback path, the
+After publication, a framework, codec, configuration or receipt-repair failure
+leaves the new schema installed. Its precise surface is recorded in the restart
+ledger and `VERIFY` is `unverified`; this is not a rollback. The concern names the
+record to save again. A later compiled save of that record retries its repairs;
+unrelated saves do not. An independently failed caller refresh names that caller,
+and only its own successful refresh/publication resolves it. Retry by making and
+compiling a change to the named class, or restart. Each successful retry resolves
+only its own surface concerns.
+
+Where admission remains refused, the
 [JVM redefinition limit](https://docs.oracle.com/en/java/javase/17/docs/specs/jvmti.html)
-continues to prevent a Record-attribute replacement. Refusal is tracked by defining
-loader across later saves. Restoring and successfully admitting the original shape
-clears the record's PENDING note; stale callers and refused factories still have to
-reference members that exist. A class literal combined with reflective member or
-record-component lookup is conservatively refused for a tainted owner. Reflection
-using names or values supplied elsewhere is outside that bytecode check.
+still applies. Refusal provenance is tracked by defining loader across saves.
+Restoring and successfully admitting a valid shape clears that record's PENDING
+note; stale callers and refused factories still have to reference existing
+members. A class literal combined with reflective member or record-component
+lookup is conservatively refused for a tainted owner. Reflection using names or
+values supplied elsewhere is outside that bytecode check.
 
 ## Spring service methods, scheduling and events
 

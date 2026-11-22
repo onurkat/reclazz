@@ -10,7 +10,7 @@ public final class RecordReloadPlan {
     public static boolean ready(Route route) {
         return switch(java.util.Objects.requireNonNull(route)) {
             case NATIVE -> true;
-            case STOCK -> false;
+            case STOCK -> true;
         };
     }
     static boolean canAdmitShape(Class<?> owner,byte[] incoming) {

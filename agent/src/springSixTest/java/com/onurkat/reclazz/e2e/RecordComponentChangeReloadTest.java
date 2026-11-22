@@ -11,6 +11,8 @@ import java.util.*;
 import java.io.File;
 import static org.junit.jupiter.api.Assertions.*;
 
+/** R20 fallback acceptance. The private stock probe is deliberately ineffective; enabled S is
+ * covered independently by RecordStock* admission, sequence, scope and caller-chain tests. */
 class RecordComponentChangeReloadTest {
     @TempDir Path dir;
     @Test void addComponentWithCallerSameSave() throws Exception { shape("add"); }
@@ -30,6 +32,7 @@ class RecordComponentChangeReloadTest {
             app.awaitOrFail("READY","record held before save");app.awaitOrFail("] Watching 1 directory","watcher ready");
             app.rewriteAll(Map.of("Greeting",record(after),"Caller",caller(1,newArgs)));
             assertTrue(app.awaits("record components of app.Greeting changed",15),"record shape must be refused before publication; see owned child log");
+            fallbackReached(app);
             Files.writeString(signal,"go");
             String text=edit.equals("remove")?"Greeting[text=before, marker=seed]":"Greeting[text=before]";
             String json=edit.equals("remove")?"{\"text\":\"before\",\"marker\":\"seed\"}":"{\"text\":\"before\"}";
@@ -52,8 +55,12 @@ class RecordComponentChangeReloadTest {
     }
     static void fresh(WatchedApp app,int start,String needle)throws Exception {
         long end=System.nanoTime()+20_000_000_000L;
-        while(System.nanoTime()<end){var out=app.output();if(out.subList(Math.min(start,out.size()),out.size()).stream().anyMatch(s->s.contains(needle)))return;Thread.sleep(50);}
+        while(System.nanoTime()<end){var out=app.output();if(out.subList(Math.min(start,out.size()),out.size()).stream().anyMatch(s->s.contains(needle))){if(needle.equals("record components of app.Greeting changed"))fallbackReached(app);return;}Thread.sleep(50);}
         fail("Expected new child evidence: "+needle+"; full child log is retained");
+    }
+    private static void fallbackReached(WatchedApp app){
+        assertTrue(app.output().contains("R20_PRIVATE_STOCK_PROBE_NATIVE_NOOP"),"actual private stock probe boundary reached");
+        assertTrue(app.output().stream().anyMatch(s->s.contains("Stock record capability check failed")),"actual failed self-check retains R20 fallback");
     }
     void prove(WatchedApp app,String token,int version,String freshText)throws Exception {
         String request=token+":"+version;Files.writeString(dir.resolve("signal"),request);
@@ -148,9 +155,13 @@ class RecordComponentChangeReloadTest {
             var instField=reloader.getClass().getDeclaredField("instrumentation");instField.setAccessible(true);var real=(java.lang.instrument.Instrumentation)instField.get(reloader);
             var fault=Path.of(System.getProperty("r20.signal")).resolveSibling("fail-native");
             var proxy=java.lang.reflect.Proxy.newProxyInstance(App.class.getClassLoader(),new Class<?>[]{java.lang.instrument.Instrumentation.class},(p,m,a)->{
+              if(m.getName().equals("redefineClasses")&&java.util.Arrays.stream((java.lang.instrument.ClassDefinition[])a[0]).anyMatch(d->d.getDefinitionClass().getName().startsWith("com.example.reclazzprobe.Stock"))){
+                System.out.println("R20_PRIVATE_STOCK_PROBE_NATIVE_NOOP");System.out.flush();return null;
+              }
               if(m.getName().equals("redefineClasses")&&Files.exists(fault))for(var definition:(java.lang.instrument.ClassDefinition[])a[0])if(definition.getDefinitionClass().getName().equals("app.Greeting"))throw new ClassFormatError("test R20 native restore failure");
               try{return m.invoke(real,a);}catch(java.lang.reflect.InvocationTargetException e){throw e.getCause();}
             });instField.set(reloader,proxy);
+            var stockInstrumentation=agent.getDeclaredField("instrumentation");stockInstrumentation.setAccessible(true);stockInstrumentation.set(null,proxy);
             Object held=Caller.make();Class<?> duplicate=null;Object duplicateHeld=null;
             if(Boolean.getBoolean("r20.other")){
               Path root=Path.of(System.getProperty("r20.signal")).resolveSibling("other-loader");Files.createDirectories(root.resolve("app"));

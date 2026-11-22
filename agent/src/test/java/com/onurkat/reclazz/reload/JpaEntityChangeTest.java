@@ -122,7 +122,7 @@ class JpaEntityChangeTest {
                 "src/main/java/com/onurkat/reclazz/agent/ClassReloader.java"));
 
         int checkAt = classReloader.indexOf("JpaEntityChange.check(existingClass, newBytecode)");
-        int redefineAt = classReloader.indexOf("instrumentation.redefineClasses(definition)");
+        int redefineAt = classReloader.indexOf("PhysicalDefinitions.redefine(instrumentation, definition)");
         assertTrue(checkAt > 0 && redefineAt > 0, "both calls have to be there");
         assertTrue(checkAt < redefineAt,
                 "checking after the redefine makes the warning disappear on exactly "

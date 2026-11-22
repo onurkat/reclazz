@@ -11,9 +11,12 @@ import java.util.function.Predicate;
 public final class ConstructorCallRewriter implements Opcodes {
     private static final String MEMBER="com/onurkat/reclazz/bootstrap/MemberForge";
     private ConstructorCallRewriter() { }
-    public static ClassVisitor visitor(ClassVisitor output,Predicate<String> watched) {
+    public static ClassVisitor visitor(ClassVisitor output,Predicate<String> watched){return visitor(output,watched,null);}
+    public static ClassVisitor visitor(ClassVisitor output,Predicate<String> watched,ClassLoader loader){return visitor(output,watched,loader,false);}
+    public static ClassVisitor visitor(ClassVisitor output,Predicate<String> watched,ClassLoader loader,boolean companion) {
         return new ClassNode(ASM9){@Override public void visitEnd(){
-            super.visitEnd();for(var method:methods)rewrite(name,method,watched);accept(output);
+            super.visitEnd();RecordCohortCandidates.observe(loader,this,watched);
+            ConstructorReferenceRewriter.rewrite(this,watched,owner->RecordCohortCandidates.candidate(loader,owner,watched),companion);for(var method:methods)rewrite(name,method,watched);accept(output);
         }};
     }
     private record Pair(TypeInsnNode allocation,AbstractInsnNode duplicate,MethodInsnNode call) { }

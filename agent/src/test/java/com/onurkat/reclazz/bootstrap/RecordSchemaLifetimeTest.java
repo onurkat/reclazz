@@ -18,6 +18,12 @@ class RecordSchemaLifetimeTest {
         Child(){super(RecordSchema.class.getClassLoader());}
         Class<?> define(){
             var writer=new ClassWriter(0);writer.visit(Opcodes.V17,Opcodes.ACC_PUBLIC,"com/example/RecordCaller",null,"java/lang/Object",null);
+            writer.visitField(Opcodes.ACC_PUBLIC,"__reclazz$ext","[Ljava/lang/Object;",null,null).visitEnd();
+            var ctor=writer.visitMethod(Opcodes.ACC_PUBLIC,"<init>","()V",null,null);
+            ctor.visitCode();ctor.visitVarInsn(Opcodes.ALOAD,0);ctor.visitMethodInsn(Opcodes.INVOKESPECIAL,"java/lang/Object","<init>","()V",false);
+            ctor.visitInsn(Opcodes.RETURN);ctor.visitMaxs(1,1);ctor.visitEnd();
+            var initializer=writer.visitMethod(Opcodes.ACC_PUBLIC|Opcodes.ACC_STATIC,"initializer","(Lcom/example/RecordCaller;)Ljava/lang/Object;",null,null);
+            initializer.visitCode();initializer.visitLdcInsn("field");initializer.visitInsn(Opcodes.ARETURN);initializer.visitMaxs(1,1);initializer.visitEnd();
             for(String name:new String[]{"before","after"}) {
                 var method=writer.visitMethod(Opcodes.ACC_PUBLIC|Opcodes.ACC_STATIC,name,"()Ljava/lang/String;",null,null);
                 method.visitCode();method.visitLdcInsn(name);method.visitInsn(Opcodes.ARETURN);method.visitMaxs(1,0);method.visitEnd();
@@ -32,6 +38,32 @@ class RecordSchemaLifetimeTest {
         var site=RecordSchema.callerSite(caller,slot,"view()",before);
         try(var next=slot.prepare(slot.current().members())){next.stage(site,after);assertTrue(next.commit());}
         assertEquals("after",(String)site.dispatcher().invokeExact());return new WeakReference<>(loader);
+    }
+    private static WeakReference<ClassLoader> stageChildDispatch(RecordSchema.Slot slot,boolean commit)throws Throwable {
+        var loader=new Child();Class<?> caller=loader.define();
+        MethodHandle before=MethodHandles.publicLookup().findStatic(caller,"before",MethodType.methodType(String.class));
+        MethodHandle after=MethodHandles.publicLookup().findStatic(caller,"after",MethodType.methodType(String.class));
+        var dispatch=DispatchTable.getOrCreate(caller);
+        var site=dispatch.getOrCreateMethodSite("view",new java.lang.invoke.MutableCallSite(before));
+        try(var next=slot.prepare(slot.current().members())) {
+            next.stageDispatch(caller,Map.of("view",after));
+            assertEquals("before",(String)site.dynamicInvoker().invokeExact());
+            if(commit)assertTrue(next.commit());
+        }
+        assertEquals(commit?"after":"before",(String)site.dynamicInvoker().invokeExact());
+        assertEquals(commit?1:0,dispatch.getVersion());
+        return new WeakReference<>(loader);
+    }
+    @Test void recordDoesNotRetainCommittedOrAbortedRealDispatchCallers()throws Throwable {
+        var slot=RecordSchema.slot(ParentRecord.class);var base=slot.current().members();
+        var logical=new RecordSchema.Members(base.components(),base.methods(),List.of(ParentRecord.class.getDeclaredField("value")),
+                base.constructors(),base.constructorTargets(),base.initializerTargets(),base.objectMethods());
+        try(var activate=slot.prepareVirtual(logical)){assertTrue(activate.commit());}
+        var committed=stageChildDispatch(slot,true);var aborted=stageChildDispatch(slot,false);
+        for(int i=0;i<80&&(committed.get()!=null||aborted.get()!=null);i++){System.gc();Thread.sleep(20);}
+        assertNull(committed.get(),"real committed DispatchTable targets stay caller-owned");
+        assertNull(aborted.get(),"abort must release preparation's caller ownership too");
+        assertNotNull(slot.current());
     }
     private static RecordSchema.Members withTarget(RecordSchema.Slot slot,int group,MethodHandle target) {
         var base=slot.current().members();Map<String,MethodHandle> handle=Map.of("probe",target);
@@ -52,6 +84,11 @@ class RecordSchemaLifetimeTest {
                 jdk.asType(MethodType.methodType(String.class,caller)))) {
             var members=withTarget(slot,0,opaque);
             assertThrows(IllegalArgumentException.class,()->{try(var bad=slot.prepare(members)){bad.commit();}},"JDK declaration alone cannot prove ownership of captured data or an adapted signature");
+            assertSame(before,slot.current());
+        }
+        try(var next=slot.prepare(slot.current().members())) {
+            assertThrows(IllegalArgumentException.class,()->next.stageDispatch(ParentRecord.class,Map.of("foreign",foreign)),
+                    "record-owned dispatch cannot retain a disposable caller's direct handle");
             assertSame(before,slot.current());
         }
         return new WeakReference<>(loader);
@@ -91,4 +128,23 @@ class RecordSchemaLifetimeTest {
         assertNull(weak.get(),"the live parent record must not retain the disposable caller through a target table");
         assertNotNull(slot.current());assertEquals(ParentRecord.class,slot.physicalComponents().get(0).accessor().getDeclaringClass());
     }
+    private static WeakReference<ClassLoader> stageChildFields(RecordSchema.Slot slot,boolean commit)throws Throwable {
+        var loader=new Child();Class<?> caller=loader.define();Object receiver=caller.getConstructor().newInstance();
+        var target=MethodHandles.publicLookup().findStatic(caller,"initializer",MethodType.methodType(Object.class,caller));
+        try(var next=slot.prepare(slot.current().members())) {
+            next.stageFieldInitializers(caller,Map.of("added:Ljava/lang/String;",target));
+            assertFalse(FieldStore.hasInstanceInitialiser(caller,"added","Ljava/lang/String;"));
+            if(commit)assertTrue(next.commit());
+        }
+        assertEquals(commit?"field":null,FieldStore.getExtField(receiver,caller.getName(),"added","Ljava/lang/String;"));
+        return new WeakReference<>(loader);
+    }
+    @Test void recordDoesNotRetainCommittedOrAbortedCallerFieldInitializers()throws Throwable {
+        var slot=RecordSchema.slot(ParentRecord.class);var committed=stageChildFields(slot,true);var aborted=stageChildFields(slot,false);
+        for(int i=0;i<80&&(committed.get()!=null||aborted.get()!=null);i++){System.gc();Thread.sleep(20);}
+        assertNull(committed.get(),"committed initializer handles stay on the caller ClassValue");
+        assertNull(aborted.get(),"aborted initializer handles do not stay on the parent record");
+        assertNotNull(slot.current());
+    }
+
 }

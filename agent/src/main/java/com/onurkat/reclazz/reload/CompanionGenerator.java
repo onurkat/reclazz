@@ -113,6 +113,11 @@ public class CompanionGenerator implements Opcodes {
     public static CompanionResult generate(String originalClassName,byte[] newBytecode,
                                             StructuralAnalyzer.StructuralDiff diff,int version,Set<String> staticsToInitialise,
                                             Set<String> skipMethods,TransformContext context,Set<String> constructors) {
+        return generate(originalClassName,newBytecode,diff,version,staticsToInitialise,skipMethods,context,constructors,null);
+    }
+    public static CompanionResult generate(String originalClassName,byte[] newBytecode,
+                                            StructuralAnalyzer.StructuralDiff diff,int version,Set<String> staticsToInitialise,
+                                            Set<String> skipMethods,TransformContext context,Set<String> constructors,ClassLoader loader) {
         ClassReader reader = new ClassReader(newBytecode);
         String companionName = originalClassName + "$$Reclazz$v" + version;
 
@@ -146,7 +151,7 @@ public class CompanionGenerator implements Opcodes {
         CompanionMethodExtractor extractor = new CompanionMethodExtractor(
                 writer, originalClassName, companionName, addedFieldKeys, methodHandleKeys,
                 diff, skipMethods, context);
-        reader.accept(context==null?extractor:com.onurkat.reclazz.transform.ConstructorCallRewriter.visitor(extractor,context::isWatched), ClassReader.EXPAND_FRAMES);
+        reader.accept(context==null?extractor:com.onurkat.reclazz.transform.ConstructorCallRewriter.visitor(extractor,context::isWatched,loader,true), ClassReader.EXPAND_FRAMES);
 
         // The initial value of an added static field. The slice is written
         // through the same adapter as every other companion method, so a
@@ -191,7 +196,7 @@ public class CompanionGenerator implements Opcodes {
         }
 
         var constructorSource=new org.objectweb.asm.tree.ClassNode();
-        reader.accept(constructorSource,ClassReader.EXPAND_FRAMES);
+        reader.accept(context==null?constructorSource:com.onurkat.reclazz.transform.ConstructorCallRewriter.visitor(constructorSource,context::isWatched,loader,true),ClassReader.EXPAND_FRAMES);
         for(var constructor:constructorSource.methods)if(constructor.name.equals("<init>")) {
             MethodVisitor factory=writer.visitMethod(ACC_PUBLIC|ACC_STATIC,AddedConstructorGenerator.name(constructor.desc),
                     AddedConstructorGenerator.descriptor(originalClassName,constructor.desc),null,constructor.exceptions.toArray(String[]::new));
@@ -264,6 +269,7 @@ public class CompanionGenerator implements Opcodes {
         private final StructuralAnalyzer.StructuralDiff diff;
         private final Set<String> skipMethods;
         private final TransformContext context;
+        private boolean record;
 
         CompanionMethodExtractor(ClassWriter writer, String originalClass, String companionName,
                                   Set<String> addedFields, Map<String, String> methodHandleKeys,
@@ -278,6 +284,11 @@ public class CompanionGenerator implements Opcodes {
             this.diff = diff;
             this.skipMethods = skipMethods;
             this.context = context;
+        }
+
+        @Override public void visit(int version,int access,String name,String signature,String superName,String[] interfaces) {
+            record=(access&ACC_RECORD)!=0;
+            super.visit(version,access,name,signature,superName,interfaces);
         }
 
         @Override
@@ -297,7 +308,7 @@ public class CompanionGenerator implements Opcodes {
             // named a companion method that was never emitted).
             boolean lambdaBody = name.startsWith("lambda$");
             if (!lambdaBody
-                    && TransformExclusions.shouldSkipMethod(originalClass, name, descriptor, access)) {
+                    && TransformExclusions.shouldSkipMethod(originalClass, name, descriptor, access,record)) {
                 return null;
             }
             if (lambdaBody && (access & (ACC_NATIVE | ACC_ABSTRACT)) != 0) {
@@ -445,6 +456,7 @@ public class CompanionGenerator implements Opcodes {
             for (int i = 0; i < args.length; i++) {
                 if (!(args[i] instanceof Handle handle)) continue;
                 if (!handle.getOwner().equals(originalClass)) continue;
+                if(handle.getTag()==H_NEWINVOKESPECIAL||handle.getName().equals("<init>"))continue;
                 boolean isLambdaBody = handle.getName().startsWith("lambda$");
                 boolean isAddedMethod = addedMethods.contains(
                         handle.getName() + ":" + handle.getDesc());

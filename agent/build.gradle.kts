@@ -934,3 +934,9 @@ tasks.withType<Test>().configureEach {
 for (name in listOf("test", "unitTest", "e2eTest", "springSixTest", "springSevenTest")) tasks.named<Test>(name) {
     providers.systemProperty("reclazz.record.java").orNull?.let { systemProperty("reclazz.record.java", it) }
 }
+
+// Stock record fixtures choose an isolated child and keep full evidence outside console output.
+tasks.withType<Test>().configureEach {
+    for (key in listOf("reclazz.record.stock.java", "reclazz.record.evidenceDir", "reclazz.record.unsafe.deny"))
+        providers.systemProperty(key).orNull?.let { systemProperty(key, it) }
+}

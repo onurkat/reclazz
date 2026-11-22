@@ -20,6 +20,11 @@ public final class TransformExclusions {
      * Check if a method should be skipped during trampoline transformation.
      */
     public static boolean shouldSkipMethod(String owner, String name, String desc, int access) {
+        return shouldSkipMethod(owner,name,desc,access,false);
+    }
+
+    /** Records can declare values()/valueOf(String); those are real bodies, not enum helpers. */
+    public static boolean shouldSkipMethod(String owner,String name,String desc,int access,boolean record) {
         // Native methods cannot be trampolined
         if ((access & Opcodes.ACC_NATIVE) != 0) return true;
 
@@ -30,8 +35,8 @@ public final class TransformExclusions {
         if ("<clinit>".equals(name)) return true;
 
         // Enum synthetic methods
-        if ("values".equals(name) && desc.startsWith("()")) return true;
-        if ("valueOf".equals(name) && desc.startsWith("(Ljava/lang/String;)")) return true;
+        if (!record && "values".equals(name) && desc.startsWith("()")) return true;
+        if (!record && "valueOf".equals(name) && desc.startsWith("(Ljava/lang/String;)")) return true;
 
         // Synthetic access bridges (inner class access)
         if (name.startsWith("access$")) return true;

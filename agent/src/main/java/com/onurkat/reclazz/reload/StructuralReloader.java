@@ -79,6 +79,54 @@ public class StructuralReloader {
                 }
             };
 
+    // Logical S reporting metadata must never replace the startup physical rewrite baseline.
+    private final ClassValue<java.util.concurrent.atomic.AtomicReference<TransformContext.ClassMetadata>> recordPublishedMetadata =
+            new ClassValue<>() {
+                @Override protected java.util.concurrent.atomic.AtomicReference<TransformContext.ClassMetadata> computeValue(Class<?> type) {
+                    return new java.util.concurrent.atomic.AtomicReference<>();
+                }
+            };
+
+    /** Prepare bookkeeping without invoking the ordinary eager publication/redefinition path. */
+    public java.util.function.Supplier<ClassReloader.ReloadResult> prepareRecordAftermath(Class<?> owner,byte[] incoming,ClassReloader reloader) {
+        LookupCapture.requireTrustedCaller(StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass(),"preparing stock record aftermath");
+        byte[] bytes=incoming.clone();String name=owner.getName().replace('.','/');
+        TransformContext.ClassMetadata previous=recordPublishedMetadata.get(owner).get();
+        if(previous==null)previous=context.getMetadata(name);
+        if(previous==null)throw new IllegalArgumentException("Stock aftermath requires watched physical metadata");
+        var diff=StructuralAnalyzer.analyze(previous,bytes);
+        boolean structural=diff.isStructural()||RecordShapeCheck.changed(owner,bytes);
+        var source=new org.objectweb.asm.tree.ClassNode();new org.objectweb.asm.ClassReader(bytes).accept(source,org.objectweb.asm.ClassReader.SKIP_CODE);
+        var metadata=new TransformContext.ClassMetadata(diff.getNewMethods(),diff.getNewFields(),0,diff.getNewSuperName(),diff.getNewAnnotations(),Set.copyOf(source.interfaces))
+                .withOperationDescriptors(diff.getNewOperationDescriptors());
+        MethodHandles.Lookup lookup=LookupCapture.get(owner);if(lookup==null)throw new IllegalArgumentException("Stock aftermath requires captured lookup");
+        var ordinaryAftermath=reloader.prepareNativeAftermath(owner,bytes);
+        return () -> {
+            // The CAS already installed the source. Keep the reporting fact even if a later cache repair fails.
+            recordPublishedMetadata.get(owner).set(metadata);publishedMethods.get(owner).set(List.copyOf(diff.getNewMethods()));
+            try {
+                com.onurkat.reclazz.transform.ReflectionMethodTransformer.invalidate(instrumentation,owner);
+                var targets=new LinkedHashMap<String,MethodHandle>();
+                for(var method:owner.getDeclaredMethods())if(!InjectedNames.isInjected(method.getName()))
+                    targets.put(InjectedNames.siteKey(method.getName(),CallSiteAdapter.descHash(org.objectweb.asm.Type.getMethodDescriptor(method)),Modifier.isStatic(method.getModifiers())),lookup.unreflect(method));
+                com.onurkat.reclazz.spring.SpringAddedOperations.publish(owner,bytes,lookup,platformContext==null?List.of():platformContext.getAllApplicationContexts());
+                JacksonAddedGetters.publish(owner,bytes,lookup,targets);
+                com.onurkat.reclazz.bootstrap.OrikaBridge.reloaded(owner,com.onurkat.reclazz.bootstrap.JacksonBridge.hasGetters(owner)?bytes:null);
+                AddedExceptionHandlers.publish(owner,bytes,lookup,targets);AddedMvcBindingMethods.publish(owner,bytes,lookup,targets);
+                JacksonEnumCaches.flush();SpringValidatorReloader.flush();JaxbContextCaches.evict(owner);
+                ClassReloader.ReloadResult nativeResult=ordinaryAftermath.get();
+                ClassReloader.ReloadResult result=ClassReloader.ReloadResult.structuralSuccess(nativeResult.isSpringBean(),nativeResult.isInterceptor(),structural);
+                result.setAnnotationsChanged(diff.isAnnotationsChanged());result.setPreviousOperationDescriptors(diff.getPreviousOperationDescriptors());
+                result.setMethodsAdded(!diff.getAddedMethods().isEmpty());result.setAddedMethodSigs(diff.getAddedMethods());result.setNewBytecode(bytes);
+                if(structural)result.setShape(diff.getSummary());return result;
+            }catch(Throwable failure){
+                if(failure instanceof ThreadDeath death)throw death;
+                if(failure instanceof VirtualMachineError fatal)throw fatal;
+                throw new IllegalStateException("Stock record aftermath did not finish: "+Failures.describe(failure),failure);
+            }
+        };
+    }
+
     private List<TransformContext.MethodSig> previousPublishedMethods(Class<?> owner) {
         List<TransformContext.MethodSig> previous = new ArrayList<>(publishedMethods.get(owner).get());
         // Also covers a held logical Method published by another reloader instance.
@@ -1017,7 +1065,7 @@ public class StructuralReloader {
             }
 
             var definition = new java.lang.instrument.ClassDefinition(existingClass, newBytecode);
-            instrumentation.redefineClasses(definition);
+            com.onurkat.reclazz.transform.PhysicalDefinitions.redefine(instrumentation, definition);
             com.onurkat.reclazz.transform.KeepBaseline.constructorBodiesApplied(existingClass,rawAdmission);
             StaticInitializerReset.afterReload(existingClass, newBytecode, config.isResetStatics());
             // Repository interfaces deliberately have no companion metadata.
@@ -1076,7 +1124,7 @@ public class StructuralReloader {
             for(var method:constructorShape.methods)if(method.name.equals("<init>") && !physicalConstructors.contains(method.desc))reflectionConstructors.add(method.desc);
             CompanionGenerator.CompanionResult companion = AddedStatics.generating(loadedClass, com.onurkat.reclazz.util.ClassLookup.loadedClasses(instrumentation), () -> CompanionGenerator.generate(
                     internalName, newBytecode, diff, version, staticsNeedingValue,
-                    pinnedMethods.keySet(), context,reflectionConstructors));
+                    pinnedMethods.keySet(), context,reflectionConstructors,loadedClass.getClassLoader()));
 
             // Get Lookup from the target class's __reclazz$lookup field
             Class<?> targetClass = findLoadedClass(className);
@@ -1768,7 +1816,7 @@ public class StructuralReloader {
 
     private RedefineOutcome redefineOne(Class<?> target, byte[] payload) {
         try {
-            instrumentation.redefineClasses(new java.lang.instrument.ClassDefinition(target, payload));
+            com.onurkat.reclazz.transform.PhysicalDefinitions.redefine(instrumentation, new java.lang.instrument.ClassDefinition(target, payload));
             return RedefineOutcome.ok();
         } catch (UnsupportedOperationException refused) {
             return RedefineOutcome.refusedByTheJvm(refused);
@@ -1795,7 +1843,7 @@ public class StructuralReloader {
                         pending.get(i).target(), pending.get(i).payload());
             }
             try {
-                instrumentation.redefineClasses(definitions);
+                com.onurkat.reclazz.transform.PhysicalDefinitions.redefine(instrumentation, definitions);
                 for (PendingRedefinition each : pending) {
                     publishOutcome(each.target(), each.then(), RedefineOutcome.ok());
                 }

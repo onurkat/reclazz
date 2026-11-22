@@ -37,6 +37,11 @@ public final class ReflectionBridge {
         boolean previous=physicalScan.get();physicalScan.set(true);
         try{return owner.getRecordComponents();}finally{physicalScan.set(previous);}
     }
+    /** Class.getRecordComponents already performed the JDK's access and record-kind checks. */
+    public static java.lang.reflect.RecordComponent[] mergeRecordComponents(java.lang.reflect.RecordComponent[] original,Class<?> owner) {
+        if(physicalScan.get()||original==null)return original;
+        var logical=RecordSchema.reflectionComponents(owner);return logical==null?original:logical;
+    }
     public static Field[] physicalDeclaredFields(Class<?> owner) {
         boolean previous=physicalScan.get();physicalScan.set(true);
         try{return owner.getDeclaredFields();}finally{physicalScan.set(previous);}
@@ -47,6 +52,11 @@ public final class ReflectionBridge {
     }
     public static Field[] mergeFieldRoots(Field[] original,Class<?> owner,boolean publicOnly) {
         if(physicalScan.get())return original;
+        var caller=RecordCaller.current(owner);
+        if(caller!=null)return caller.fields.stream().filter(m->!isInternal(m.getName())&&(!publicOnly||java.lang.reflect.Modifier.isPublic(m.getModifiers()))).toArray(Field[]::new);
+        var record=RecordSchema.virtualMembers(owner);
+        if(record!=null)return record.fields().stream().filter(f->!isInternal(f.getName())
+                &&(!publicOnly||java.lang.reflect.Modifier.isPublic(f.getModifiers()))).toArray(Field[]::new);
         var added=stateFor(owner).addedFields;if(added.isEmpty())return original;
         var result=new ArrayList<Field>(java.util.Arrays.asList(original));
         for(Field field:added)if(!hiddenField(field) && (!publicOnly || java.lang.reflect.Modifier.isPublic(field.getModifiers())) && !result.contains(field))result.add(field);
@@ -54,18 +64,28 @@ public final class ReflectionBridge {
     }
     public static java.lang.reflect.Constructor<?>[] mergeConstructorRoots(java.lang.reflect.Constructor<?>[] original,Class<?> owner,boolean publicOnly) {
         if(physicalScan.get())return original;
+        var caller=RecordCaller.current(owner);
+        if(caller!=null)return caller.constructors.stream().filter(m->!isInternal(m.getName())&&(!publicOnly||java.lang.reflect.Modifier.isPublic(m.getModifiers()))).toArray(java.lang.reflect.Constructor[]::new);
+        var record=RecordSchema.virtualMembers(owner);
+        if(record!=null)return record.constructors().stream().filter(c->!publicOnly
+                ||java.lang.reflect.Modifier.isPublic(c.getModifiers())).toArray(java.lang.reflect.Constructor<?>[]::new);
         var added=stateFor(owner).addedConstructors;if(added.isEmpty())return original;
         var result=new ArrayList<java.lang.reflect.Constructor<?>>(java.util.Arrays.asList(original));
         for(var ctor:added)if((!publicOnly || java.lang.reflect.Modifier.isPublic(ctor.getModifiers())) && !result.contains(ctor))result.add(ctor);
         return result.toArray(java.lang.reflect.Constructor<?>[]::new);
     }
     public static Field[] publicFieldCache(Field[] cached,Class<?> owner) {
-        return states.get(owner).dynamicPublicMethods?null:cached;
+        return RecordSchema.virtualMembers(owner)!=null||states.get(owner).dynamicPublicMethods?null:cached;
     }
 
     /** Class.privateGetDeclaredMethods returns roots; the JDK copies them for its public API. */
     public static Method[] mergeDeclaredRoots(Method[] original,Class<?> owner,boolean publicOnly) {
         if(physicalScan.get())return original;
+        var caller=RecordCaller.current(owner);
+        if(caller!=null)return caller.methods.stream().filter(m->!isInternal(m.getName())&&(!publicOnly||java.lang.reflect.Modifier.isPublic(m.getModifiers()))).toArray(Method[]::new);
+        var record=RecordSchema.virtualMembers(owner);
+        if(record!=null)return record.methods().stream().filter(m->!isInternal(m.getName())
+                &&(!publicOnly||java.lang.reflect.Modifier.isPublic(m.getModifiers()))).toArray(Method[]::new);
         Members state=stateFor(owner);
         if(state.addedMethods.isEmpty())return original;
         var result=new ArrayList<Method>(java.util.Arrays.asList(original));
@@ -117,7 +137,7 @@ public final class ReflectionBridge {
 
     /** A cached public array must not cross the application/physical reflection views. */
     public static Method[] publicMethodCache(Method[] cached,Class<?> owner) {
-        return states.get(owner).dynamicPublicMethods ? null : cached;
+        return RecordSchema.virtualMembers(owner)!=null || states.get(owner).dynamicPublicMethods ? null : cached;
     }
 
     /** Existing subtypes are marked on publication; future subtypes inherit this mode. */
@@ -218,6 +238,7 @@ public final class ReflectionBridge {
     }
 
     private static boolean hiddenMethod(Method m) {
+        var caller=RecordCaller.current(m.getDeclaringClass());if(caller!=null)return isInternal(m.getName())||!caller.method(m);
         if (isInternal(m.getName())
                 || REMOVED_NAMES.get(m.getDeclaringClass())[1].contains(m.getName())) return true;
         java.util.Set<String> overloads = REMOVED_OVERLOADS.get(m.getDeclaringClass());
@@ -294,12 +315,15 @@ public final class ReflectionBridge {
     static boolean hiddenName(Class<?> clazz, String name, boolean field) {
         if (isInternal(name)) return true;
         for (Class<?> c = clazz; c != null; c = c.getSuperclass()) {
+            var caller=RecordCaller.current(c);
+            if(caller!=null){if(caller.name(name,field))return false;else continue;}
             if (REMOVED_NAMES.get(c)[field ? 0 : 1].contains(name)) return true;
         }
         return false;
     }
 
     private static boolean hiddenField(Field f) {
+        var caller=RecordCaller.current(f.getDeclaringClass());if(caller!=null)return isInternal(f.getName())||!caller.field(f);
         return isInternal(f.getName())
                 || REMOVED_NAMES.get(f.getDeclaringClass())[0].contains(f.getName());
     }
@@ -525,8 +549,14 @@ public final class ReflectionBridge {
      * looks.
      */
     private static Members stateFor(Class<?> clazz) {
+        if(!physicalScan.get()) {
+            Members record=RecordSchema.reflectionMembers(clazz);if(record!=null)return record;
+            var caller=RecordCaller.current(clazz);if(caller!=null)return caller.reflection;
+        }
         return states.get(clazz).members;
     }
+
+    static void armRecordCaller(Class<?> owner){states.get(owner).dynamicPublicMethods=true;}
 
     /**
      * Atomically replace all added members for a class.
@@ -537,6 +567,7 @@ public final class ReflectionBridge {
         replaceClassState(owner,methods,fields,List.of());
     }
     public static void replaceClassState(Class<?> owner,List<Method> methods,List<Field> fields,List<java.lang.reflect.Constructor<?>> constructors) {
+        RecordCaller.ordinaryReplacement(owner);
         ClassReflectionState state=states.get(owner);
         if(!methods.isEmpty() || !fields.isEmpty())state.dynamicPublicMethods=true;
         state.members = new Members(methods, fields,constructors);

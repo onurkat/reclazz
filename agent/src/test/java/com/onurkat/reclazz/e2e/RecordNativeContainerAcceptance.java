@@ -1,5 +1,6 @@
 /* Copyright 2026 Onur Kat. SPDX-License-Identifier: Apache-2.0 */
 package com.onurkat.reclazz.e2e;
+import com.onurkat.reclazz.e2e.harness.JavaLauncher;
 
 import com.onurkat.reclazz.e2e.harness.WatchedApp;
 import com.fasterxml.jackson.databind.*;
@@ -24,8 +25,11 @@ public final class RecordNativeContainerAcceptance {
         "generic",new Edit("java.util.List<java.lang.String> a","java.util.List<java.lang.Integer> a","{\"a\":[\"old\"]}","{\"a\":[2]}","java.util.List.of(\"old\")","java.util.List.of(2)"),
         "annotations",new Edit("@app.ComponentTag(\"before\") int a","@app.ComponentTag(\"after\") @com.fasterxml.jackson.annotation.JsonIgnore int a","{\"a\":1}","{}","1","0"));
     public static void run(Path dir,String shape) throws Exception { run(dir,shape,false); }
-    public static void run(Path dir,String shape,boolean configFailure) throws Exception {
-        String java=System.getProperty("reclazz.record.java");assumeTrue(java!=null&&!java.isBlank(),"configure enhanced record child");assertTrue(Files.isExecutable(Path.of(java)));
+    public static void run(Path dir,String shape,boolean configFailure) throws Exception {run(dir,shape,configFailure,false);}
+    public static void runStock(Path dir,String shape,boolean configFailure) throws Exception {run(dir,shape,configFailure,true);}
+    private static void run(Path dir,String shape,boolean configFailure,boolean stock) throws Exception {
+        String java=System.getProperty(stock?"reclazz.record.stock.java":"reclazz.record.java");
+        assumeTrue(java!=null&&!java.isBlank(),"configure "+(stock?"stock":"enhanced")+" record child");java=JavaLauncher.resolve(Path.of(java)).toString();assertTrue(Files.isExecutable(Path.of(java)));
         Class<?> boot=Class.forName("org.springframework.boot.SpringBootVersion");String version=(String)boot.getMethod("getVersion").invoke(null);
         boolean jackson3;
         try{Class.forName("tools.jackson.databind.ObjectMapper");jackson3=true;}catch(ClassNotFoundException absent){jackson3=false;}
@@ -34,13 +38,16 @@ public final class RecordNativeContainerAcceptance {
         Edit edit=edits.get(shape);String app=APP.replace("OLDJSON",literal(edit.oldJson)).replace("NEWJSON",literal(edit.newJson))
                 .replace("EXPECTEDCOMPONENTS",literal(shape.equals("generic")?"List a":shape.equals("annotations")?"int a":edit.after))
                 .replace("EXPECTEDGENERIC",literal(shape.equals("generic")?"java.util.List<java.lang.Integer>":""))
-                .replace("EXPECTEDTAG",literal(shape.equals("annotations")?"after":"")).replace("EXPECTJACKSON3",Boolean.toString(jackson3)).replace("FAULT_CONFIG",Boolean.toString(configFailure));
+                .replace("EXPECTEDTAG",literal(shape.equals("annotations")?"after":"")).replace("EXPECTJACKSON3",Boolean.toString(jackson3)).replace("FAULT_CONFIG",Boolean.toString(configFailure))
+                .replace("STOCK_ROUTE",Boolean.toString(stock)).replace("CONSTRUCTOR_PROOF",stock?"recordLogicalConstructorBodiesUnchanged":"constructorBodiesUnchanged");
         var builder=WatchedApp.in(dir).javaExecutable(Path.of(java)).classpath(frameworkClasspath())
                 .agentArgs("startupDelaySec=1,debounceMs=250,verbose=true,autoCompile=false,portFile="+dir.resolve("agent.port"))
-                .jvmArgs("-XX:+AllowEnhancedClassRedefinition","-Dprobe.dir="+dir)
+                .jvmArgs("-Dprobe.dir="+dir)
                 .with("App",WRAPPER).with("ContainerRunner",app)
                 .with("ComponentTag","package app;@java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME) @java.lang.annotation.Target(java.lang.annotation.ElementType.RECORD_COMPONENT) public @interface ComponentTag{String value();}")
                 .with("P",record(edit.before,version)).with("Caller",caller(edit.oldArgs,0));
+        if(!stock)builder.jvmArgs("-XX:+AllowEnhancedClassRedefinition");
+        if(stock&&Boolean.getBoolean("reclazz.record.unsafe.deny"))builder.jvmArgs("--sun-misc-unsafe-memory-access=deny","-Dreclazz.record.unsafe.deny=true");
         WatchedApp child=builder.start();
         try(child) {
             child.awaitOrFail("] Watching 1 director","watcher before Boot loads record");Files.writeString(dir.resolve("load"),"go");
@@ -73,7 +80,9 @@ public final class RecordNativeContainerAcceptance {
             assertTrue(checks.contains("CHECK|ordinaryConfigPrepare|OK|declined"),child.tail());
             assertFalse(child.output().stream().anyMatch(l->l.contains("Constructor bodies not refreshed for app.P")),child.tail());
         } finally {
-            Path output=Path.of("build","record-native-evidence","boot-"+version+"-"+shape+(configFailure?"-config-failure":""));Files.createDirectories(output);Files.write(output.resolve("child.log"),child.output());
+            Path output=stock?Path.of(System.getProperty("reclazz.record.evidenceDir",Path.of("build","record-stock-evidence").toString()),"boot-"+version+"-"+shape+(configFailure?"-config-failure":""))
+                    :Path.of("build","record-native-evidence","boot-"+version+"-"+shape+(configFailure?"-config-failure":""));
+            Files.createDirectories(output);Files.write(output.resolve("child.log"),child.output());
         }
     }
     private static String literal(String value){return "\""+value.replace("\\","\\\\").replace("\"","\\\"")+"\"";}
@@ -150,6 +159,12 @@ public final class RecordNativeContainerAcceptance {
           static void same(Object expected,Object actual){if(!Objects.equals(expected,actual))throw new AssertionError(actual+" != "+expected);}
           public static void main(String[]args)throws Exception {
             Path dir=Path.of(System.getProperty("probe.dir"));String oldJson=OLDJSON,newJson=NEWJSON;
+            if(STOCK_ROUTE)check("stockRuntime",()->{
+              var arguments=java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments();
+              if(arguments.stream().anyMatch(a->a.contains("AllowEnhancedClassRedefinition")))throw new AssertionError("stock route used enhanced redefinition flag");
+              if(Boolean.getBoolean("reclazz.record.unsafe.deny")&&!arguments.contains("--sun-misc-unsafe-memory-access=deny"))throw new AssertionError("missing actual deny JVM flag");
+              return "runtime="+Runtime.version()+" unsafeDeny="+Boolean.getBoolean("reclazz.record.unsafe.deny");
+            });
             var legacy=new com.fasterxml.jackson.databind.ObjectMapper().registerModule(new com.fasterxml.jackson.datatype.jdk8.Jdk8Module());Map<String,Object> properties=new LinkedHashMap<>();
             ((Map<String,Object>)parse(legacy,oldJson)).forEach((k,v)->properties.put("p."+k,v));
             var boot=new SpringApplication(BootConfig.class);boot.setWebApplicationType(WebApplicationType.NONE);
@@ -157,6 +172,7 @@ public final class RecordNativeContainerAcceptance {
             // The live environment source is mutable and owned by this fixture.
             root.getEnvironment().getPropertySources().addFirst(new org.springframework.core.env.MapPropertySource("recordAcceptance",properties));
             P originalConfig=root.getBean(P.class);Holder originalHolder=root.getBean(Holder.class);Caller.version();
+            byte[] originalPhysical=Files.readAllBytes(Path.of(P.class.getProtectionDomain().getCodeSource().getLocation().toURI()).resolve("app/P.class"));
             Map<String,Class<?>> originalTypes=new LinkedHashMap<>();Map<String,Object> originalValues=new LinkedHashMap<>();
             for(RecordComponent component:P.class.getRecordComponents()){originalTypes.put(component.getName(),component.getType());originalValues.put(component.getName(),component.getAccessor().invoke(originalConfig));}
             var tomcat=new org.apache.catalina.startup.Tomcat();tomcat.setBaseDir(Files.createDirectories(dir.resolve("tomcat")).toString());tomcat.setPort(0);tomcat.getConnector().setProperty("address","127.0.0.1");
@@ -199,7 +215,8 @@ public final class RecordNativeContainerAcceptance {
             if(FAULT_CONFIG){
               check("nativeCommitted",()->{same(1,Caller.version());same(EXPECTEDCOMPONENTS,String.join(",",Arrays.stream(P.class.getRecordComponents()).map(c->c.getType().getSimpleName()+" "+c.getName()).toList()));return true;});
               check("configurationFailureLedger",()->{Object digest=agent("com.onurkat.reclazz.ui.RestartLedger","digest",new Class<?>[0]);if(!digest.toString().contains("configuration-properties")||!digest.toString().contains("Failed to bind")&&!digest.toString().contains("not-an-int"))throw new AssertionError(digest);return true;});
-              check("constructorReceipt",()->{byte[] raw=Files.readAllBytes(Path.of(P.class.getProtectionDomain().getCodeSource().getLocation().toURI()).resolve("app/P.class"));same(true,agent("com.onurkat.reclazz.transform.KeepBaseline","constructorBodiesUnchanged",new Class<?>[]{Class.class,byte[].class},P.class,raw));return true;});
+              check("constructorReceipt",()->{byte[] raw=Files.readAllBytes(Path.of(P.class.getProtectionDomain().getCodeSource().getLocation().toURI()).resolve("app/P.class"));same(true,agent("com.onurkat.reclazz.transform.KeepBaseline","CONSTRUCTOR_PROOF",new Class<?>[]{Class.class,byte[].class},P.class,raw));return true;});
+              if(STOCK_ROUTE)check("physicalConstructorReceipt",()->{same(true,agent("com.onurkat.reclazz.transform.KeepBaseline","constructorBodiesUnchanged",new Class<?>[]{Class.class,byte[].class},P.class,originalPhysical));return true;});
               check("failedBindPreservesConfigAndLifecycle",()->{same(originalConfig,root.getBean(P.class));if(originalHolder!=root.getBean(Holder.class)||web.getBean(Endpoint.class).holder!=originalHolder||!originalHolder.running||originalHolder.destroyed!=0)throw new AssertionError("failed bind changed/stopped dependent");return true;});
               check("oldInstanceCallable",()->originalConfig.toString());
               System.out.println("FAULT_DONE|"+count);System.out.flush();tomcat.stop();tomcat.destroy();web.close();root.close();return;
@@ -228,7 +245,8 @@ public final class RecordNativeContainerAcceptance {
             for(Object[] row:derived){Object mapper=row[0];if(row.length==2){check("iterator/"+mapper.getClass().getName(),()->{Object value=row[1].getClass().getMethod("nextValue").invoke(row[1]);same(parse(mapper,newJson),parse(mapper,write(call(mapper,"writerFor",Class.class,P.class),value)));row[1].getClass().getMethod("close").invoke(row[1]);return true;});}
               else{check("derived-reader/"+mapper.getClass().getName()+"/"+row[5],()->{if(config(row[1])!=row[3])throw new AssertionError("derived reader config");same(parse(mapper,newJson),parse(mapper,write(row[2],read(row[1],newJson))));return true;});
                 check("derived-writer/"+mapper.getClass().getName()+"/"+row[5],()->{if(config(row[2])!=row[4])throw new AssertionError("derived writer config");Object fresh=read(call(mapper,"readerFor",Class.class,P.class),newJson);same(parse(mapper,newJson),parse(mapper,write(row[2],fresh)));return true;});}}
-            check("constructorReceipt",()->{byte[] raw=Files.readAllBytes(Path.of(P.class.getProtectionDomain().getCodeSource().getLocation().toURI()).resolve("app/P.class"));same(true,agent("com.onurkat.reclazz.transform.KeepBaseline","constructorBodiesUnchanged",new Class<?>[]{Class.class,byte[].class},P.class,raw));return true;});
+            check("constructorReceipt",()->{byte[] raw=Files.readAllBytes(Path.of(P.class.getProtectionDomain().getCodeSource().getLocation().toURI()).resolve("app/P.class"));same(true,agent("com.onurkat.reclazz.transform.KeepBaseline","CONSTRUCTOR_PROOF",new Class<?>[]{Class.class,byte[].class},P.class,raw));return true;});
+            if(STOCK_ROUTE)check("physicalConstructorReceipt",()->{same(true,agent("com.onurkat.reclazz.transform.KeepBaseline","constructorBodiesUnchanged",new Class<?>[]{Class.class,byte[].class},P.class,originalPhysical));return true;});
             check("restartLedger",()->{Object digest=agent("com.onurkat.reclazz.ui.RestartLedger","digest",new Class<?>[0]);if(!digest.toString().contains("Nothing from this session"))throw new AssertionError(digest);return true;});
             System.out.println("DONE|"+count);System.out.flush();tomcat.stop();tomcat.destroy();web.close();root.close();
           }

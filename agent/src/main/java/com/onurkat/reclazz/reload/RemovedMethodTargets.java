@@ -87,7 +87,7 @@ final class RemovedMethodTargets {
             // ACC_SYNTHETIC 0x1000 and ACC_BRIDGE 0x0040: compiler-generated,
             // renumbered on ordinary edits and never named by the developer.
             if ((m.access() & 0x1040) != 0
-                    || TransformExclusions.shouldSkipMethod(internalName, m.name(), m.descriptor(), m.access())) {
+                    || TransformExclusions.shouldSkipMethod(internalName, m.name(), m.descriptor(), m.access(),owner.isRecord())) {
                 continue;
             }
             boolean isStatic = (m.access() & Modifier.STATIC) != 0;

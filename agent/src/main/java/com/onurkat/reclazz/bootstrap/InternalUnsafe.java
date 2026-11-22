@@ -171,6 +171,25 @@ final class InternalUnsafe {
         }
     }
 
+    // Resolve additional primitive writers only for record construction, never as a new
+    // prerequisite for the existing enum fallback.
+    private static final java.util.concurrent.ConcurrentHashMap<Class<?>,Method> primitiveWriters=new java.util.concurrent.ConcurrentHashMap<>();
+    static void putValue(Object target,Field field,Object value) {
+        if(!field.getType().isPrimitive()){putObject(target,field,value);return;}
+        if(field.getType()==int.class){putInt(target,field,(Integer)value);return;}
+        try {
+            Class<?> kind=field.getType();Method writer=primitiveWriters.get(kind);
+            if(writer==null) {
+                String name=kind==boolean.class?"putBoolean":kind==byte.class?"putByte":kind==short.class?"putShort"
+                        :kind==char.class?"putChar":kind==long.class?"putLong":kind==float.class?"putFloat":kind==double.class?"putDouble":null;
+                if(name==null)throw new IllegalArgumentException("Not a field primitive: "+kind);
+                writer=method(unsafe.getClass(),name,Object.class,long.class,kind);
+                Method previous=primitiveWriters.putIfAbsent(kind,writer);if(previous!=null)writer=previous;
+            }
+            writer.invoke(unsafe,target,objectFieldOffset.invoke(unsafe,field),value);
+        }catch(Throwable failure){throw UnsafeAccess.refused(failure);}
+    }
+
     static void storeFence() {
         try {
             storeFence.invoke(unsafe);
