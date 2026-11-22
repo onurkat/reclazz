@@ -1292,6 +1292,10 @@ not proof: an unsuccessful runtime self-check keeps the restart fallback, before
 application classes are changed. Stock admission preserves the real physical
 record layout and Record attribute. Private companions and a record-owned logical
 member snapshot provide the new components, constructors, metadata and bodies.
+A body-only edit of an already reloaded record also counts as a record change.
+If several such records change in one stock-JVM save, save them separately or
+restart to apply the combined change.
+
 Stock caller preparation covers direct watched callers and one further watched
 caller layer, through at most two typed links to the record at the initial load.
 Deeper caller chains and graphs whose initial preparation budget is exhausted

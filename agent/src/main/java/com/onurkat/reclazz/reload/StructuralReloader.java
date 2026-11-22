@@ -1946,6 +1946,7 @@ public class StructuralReloader {
         var methods = new ArrayList<java.lang.reflect.Method>();
         var fields = new ArrayList<java.lang.reflect.Field>();
         var constructors = new ArrayList<java.lang.reflect.Constructor<?>>();
+        var initializers = new LinkedHashMap<String,MethodHandle>();
         var metadataWriter = new org.objectweb.asm.ClassWriter(org.objectweb.asm.ClassWriter.COMPUTE_MAXS);
         metadataWriter.visit(org.objectweb.asm.Opcodes.V17,org.objectweb.asm.Opcodes.ACC_PUBLIC,
                 source.name+"$__reclazz$Reflection",JacksonAddedGetters.typeParameters(source.signature),"java/lang/Object",null);
@@ -1974,7 +1975,7 @@ public class StructuralReloader {
                 if(method.name.equals("<init>")) {
                     var factoryType=MethodType.fromMethodDescriptorString(AddedConstructorGenerator.descriptor(source.name,method.desc),targetClass.getClassLoader());
                     MethodHandle factory=companionLookup.findStatic(companionClass,AddedConstructorGenerator.name(method.desc),factoryType);
-                    com.onurkat.reclazz.bootstrap.MemberForge.initializer(targetClass,method.desc,factory);
+                    initializers.put(method.desc,factory);
                     if(physicalConstructors.contains(method.desc))continue;
                     constructors.add(com.onurkat.reclazz.bootstrap.MemberForge.constructor(targetClass,metadata.getDeclaredConstructor(type.parameterArray()),method.access,method.signature,factory));
                     continue;
@@ -1990,6 +1991,7 @@ public class StructuralReloader {
                 if(forged!=null){MethodForge.metadata(forged,carrier,handle);methods.add(forged);}
             }
         }catch(ReflectiveOperationException failure){throw new IllegalStateException(failure);}
+        com.onurkat.reclazz.bootstrap.MemberForge.initializers(targetClass,initializers);
         ReflectionBridge.replaceClassState(targetClass,methods,fields,constructors);
         com.onurkat.reclazz.transform.ReflectionMethodTransformer.invalidate(instrumentation,targetClass);
     }

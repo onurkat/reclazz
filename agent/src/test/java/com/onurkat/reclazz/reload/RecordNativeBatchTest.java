@@ -118,7 +118,11 @@ class RecordNativeBatchTest {
             var constructor=saveType.getDeclaredConstructor(RecordNativeBatch.class);constructor.setAccessible(true);Object save=constructor.newInstance(batch);
             var fail=saveType.getDeclaredMethod("failure",String.class,String.class);fail.setAccessible(true);
             var complete=saveType.getDeclaredMethod("repairsCompleted");complete.setAccessible(true);
-            try{fail.invoke(save,"retained Jackson codecs","synthetic failure");assertTrue(com.onurkat.reclazz.ui.RestartLedger.digest().stream().anyMatch(line->line.contains("save "+P+" again to retry")));}
+            try{
+                fail.invoke(save,"retained Jackson codecs","synthetic failure");
+                assertTrue(com.onurkat.reclazz.ui.RestartLedger.digest().stream().anyMatch(line->line.contains("save "+P+" again to retry")));
+                assertTrue(com.onurkat.reclazz.ui.RestartLedger.digest().stream().anyMatch(line->line.startsWith("  "+P+" / retained Jackson codecs: Record shape changes are installed; retained Jackson codecs repair did not finish: synthetic failure; save "+P+" again to retry")),"mode-neutral reason preserves the record concern subject");
+            }
             finally{complete.invoke(save);}
         }
     }
@@ -146,6 +150,9 @@ class RecordNativeBatchTest {
                 complete.invoke(null,caller,false);assertFalse(com.onurkat.reclazz.ui.RestartLedger.digest().stream().anyMatch(line->line.contains("synthetic framework")));
                 assertTrue(com.onurkat.reclazz.ui.RestartLedger.digest().stream().anyMatch(line->line.contains("synthetic receipt")));
                 complete.invoke(null,caller,true);assertFalse(com.onurkat.reclazz.ui.RestartLedger.digest().stream().anyMatch(line->line.contains("synthetic receipt")));
+                fail.invoke(null,caller,"native aftermath "+CALLER,"synthetic aftermath");
+                assertTrue(com.onurkat.reclazz.ui.RestartLedger.digest().stream().anyMatch(line->line.startsWith("  "+CALLER+" / native aftermath "+CALLER+": Changes are installed; record aftermath "+CALLER+" did not finish: synthetic aftermath; save "+CALLER+" again to retry")),"legacy subject stays stable while the displayed repair reason is mode-neutral");
+                complete.invoke(null,caller,true);assertFalse(com.onurkat.reclazz.ui.RestartLedger.digest().stream().anyMatch(line->line.contains("synthetic aftermath")));
             }finally{complete.invoke(null,caller,true);}
         }
     }

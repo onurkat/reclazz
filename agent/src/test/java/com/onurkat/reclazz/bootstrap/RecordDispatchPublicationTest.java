@@ -184,4 +184,18 @@ class RecordDispatchPublicationTest {
         }finally{release.countDown();holder.join(5000);}
     }
 
+    static class OrdinaryDuringPending { }
+    @Test void ordinaryRetargetCancelsTheOwnersPendingCohort()throws Throwable {
+        var dispatch=DispatchTable.getOrCreate(OrdinaryDuringPending.class);var current=site(OrdinaryDuringPending.class);
+        try(var pending=prepare(First.class)) {
+            stage(pending,OrdinaryDuringPending.class,"prepared");
+            dispatch.retarget(Map.of("view",target("ordinary")));
+            assertFalse(pending.commit(),"ordinary retarget must abort its uncommitted cohort");
+            assertEquals("ordinary",call(current));assertEquals(1,dispatch.getVersion());
+        }
+        try(var retry=prepare(First.class)) {
+            stage(retry,OrdinaryDuringPending.class,"later-record");assertTrue(retry.commit());
+        }
+        assertEquals("later-record",call(current));assertEquals(2,dispatch.getVersion());
+    }
 }

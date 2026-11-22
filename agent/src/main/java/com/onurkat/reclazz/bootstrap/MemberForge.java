@@ -50,8 +50,17 @@ public final class MemberForge {
     }
     public static void initializer(Class<?> owner,String descriptor,MethodHandle target) {
         LookupCapture.requireTrusted(StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass(),"registering constructor initializers");
+        installInitializers(owner,Map.of(descriptor,target));
+    }
+    /** Publish every ordinary constructor target before leaving its prior caller cohort. */
+    public static void initializers(Class<?> owner,Map<String,MethodHandle> targets) {
+        LookupCapture.requireTrusted(StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass(),"registering constructor initializers");
+        installInitializers(owner,targets);
+    }
+    private static void installInitializers(Class<?> owner,Map<String,MethodHandle> targets) {
+        var installed=initializers.get(owner);
+        for(var entry:targets.entrySet())installed.put(entry.getKey(),entry.getValue());
         RecordCaller.ordinaryReplacement(owner);
-        initializers.get(owner).put(descriptor,target);
     }
     private static Object construct(Class<?> owner,MethodHandle initializer,Object[] values) throws Throwable {
         if(Modifier.isAbstract(owner.getModifiers()))throw new InstantiationException(owner.getName());

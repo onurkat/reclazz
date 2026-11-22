@@ -82,7 +82,7 @@ class RecordNativeBatchAdmissionTest {
             String observation=app.latest("OBS|partial|");
             assertTrue(observation.contains("|1|2|P[a=7, b=new]|P[a=7, b=null]|1|2|true|"),app.tail());
             assertTrue(observation.contains("Jackson mapper"),observation);
-            assertTrue(app.output().stream().anyMatch(l->l.contains("Native record changes are installed") && l.contains("mapper")),app.tail());
+            assertTrue(app.output().stream().anyMatch(l->l.contains("Record shape changes are installed") && l.contains("mapper")),app.tail());
             assertFalse(app.output().stream().anyMatch(l->l.contains("Reloaded app.P ")),app.tail());
         } finally { remember(app,"native-repair-failure"); }
     }

@@ -105,6 +105,12 @@ public final class RecordSchema {
             return site;
         }
     }
+    /** Snapshot registry links before acquiring any Slot monitor. Ordinary writers are serialised. */
+    static void cancelPendingForOwner(Class<?> owner) {
+        var owned=callers.get(owner);var pending=new ArrayList<CallerSite>();
+        synchronized(owned){for(var sites:owned.values())pending.addAll(sites.values());}
+        for(var site:pending)site.cancelPending();
+    }
     static void validateRecordMember(Class<?> owner,java.lang.reflect.Executable metadata,MethodHandle target) {
         if(!owner.isRecord())return;
         validateCarrier(owner,metadata.getDeclaringClass());

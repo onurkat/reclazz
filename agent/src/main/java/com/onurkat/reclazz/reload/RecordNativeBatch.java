@@ -95,7 +95,7 @@ public final class RecordNativeBatch implements RecordBatch {
             }
         } while (progress);
         if(nativeRoute&&!capability.nativeSchema())refusal="native record capability unavailable: "+capability.reason()+"; restart to apply";
-        if(instrumentation==null||!instrumentation.isRedefineClassesSupported())refusal="native record redefinition is unavailable; restart to apply";
+        if(instrumentation==null||!instrumentation.isRedefineClassesSupported())refusal="record redefinition is unavailable in this JVM session; restart to apply";
         List<Change> changes=new ArrayList<>();
         for(String name:cohort) {
             List<Class<?>> matches=loaded.getOrDefault(name,List.of());

@@ -234,6 +234,8 @@ public final class DispatchTable {
         }
 
         public void retarget(Map<String, MethodHandle> newTargets) {
+            // A preparation takes Slot before dispatch. Cancel outside our lock to keep that order.
+            RecordSchema.cancelPendingForOwner(owner);
             lock.lock();
             try {
                 int count = 0;

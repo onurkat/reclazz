@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Record reload diagnostics describe stock-JVM failures without native-mode wording
+  and explain multi-record saves and restart once. Ordinary caller replacement
+  installs every constructor initializer before leaving its record cohort; ordinary
+  dispatch retargeting cancels a pending cohort for the same owner.
+
 ## [1.9.0] - 2026-11-22
 
 ### Added

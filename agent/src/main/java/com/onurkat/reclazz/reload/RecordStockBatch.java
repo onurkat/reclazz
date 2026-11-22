@@ -37,7 +37,7 @@ public final class RecordStockBatch implements RecordBatch {
         LookupCapture.requireTrustedCaller(WALKER.getCallerClass(),"preparing stock record cohort");
         var scope=RecordNativeBatch.stockScope(incoming,census,watched,instrumentation,repairPending);
         String refusal=scope.refusals().isEmpty()?null:scope.refusals().values().iterator().next();
-        if(refusal==null&&scope.records().size()>1)refusal="stock record cohort requires unproven overlapping record publication; restart to apply";
+        if(refusal==null&&scope.records().size()>1)refusal="Several records changed in one save; save them separately or restart to apply";
         if(scope.records().isEmpty()||refusal!=null)return new RecordStockBatch(instrumentation,scope,refusal,null,new ClassDefinition[0]);
         RecordSchema.Preparation pending=null;boolean transferred=false;
         try {
@@ -68,7 +68,8 @@ public final class RecordStockBatch implements RecordBatch {
             var prepared=new RecordStockBatch(instrumentation,scope,null,pending,definitions.toArray(ClassDefinition[]::new));
             transferred=true;return prepared;
         }catch(ReflectiveOperationException|RuntimeException|LinkageError failure) {
-            return new RecordStockBatch(instrumentation,scope,"stock record preparation refused: "+Failures.describe(failure)+"; restart to apply",null,new ClassDefinition[0]);
+            String detail=Failures.describe(failure);
+            return new RecordStockBatch(instrumentation,scope,"stock record preparation refused: "+detail+(detail.contains("restart to apply")?"":"; restart to apply"),null,new ClassDefinition[0]);
         }finally{if(!transferred&&pending!=null)pending.close();}
     }
     private static MethodHandles.Lookup ownLookup(Class<?> owner)throws IllegalAccessException {
@@ -111,7 +112,7 @@ public final class RecordStockBatch implements RecordBatch {
             return outcome=new RecordNativeBatch.Outcome(true,true,"stock record cohort admitted",failures);
         }catch(Exception|LinkageError failure) {
             if(outcome!=null&&outcome.committed())throw new IllegalStateException("Committed record repair escaped its surface boundary",failure);
-            return outcome=new RecordNativeBatch.Outcome(true,false,"stock record native admission refused: "+Failures.describe(failure),Map.of());
+            return outcome=new RecordNativeBatch.Outcome(true,false,"stock record admission refused: "+Failures.describe(failure),Map.of());
         }finally{closePrepared();}
     }
     private void closePrepared(){if(preparation!=null)preparation.close();closed=true;}

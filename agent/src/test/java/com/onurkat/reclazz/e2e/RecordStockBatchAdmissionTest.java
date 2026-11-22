@@ -98,9 +98,11 @@ class RecordStockBatchAdmissionTest {
                         case "interfaces","visibility" -> "physical record header changed";
                         case "callerFinal","callerVisibility" -> "physical caller header changed";
                         case "unpreparedCaller" -> "caller was not prepared for record cohorts at initial load";
-                        default -> "native admission refused";
+                        case "multipleRecords" -> "Several records changed in one save; save them separately or restart to apply";
+                        default -> "record admission refused";
                     };
                     assertTrue(result.path("detail").asText().contains(reason),result.toString());
+                    if(mode.equals("unpreparedCaller"))assertEquals(1,result.path("detail").asText().split("restart to apply",-1).length-1,"one restart instruction: "+result);
                 }
                 return;
             }Thread.sleep(50);

@@ -153,9 +153,12 @@ public class ReclazzAgent {
     private static final java.util.concurrent.atomic.AtomicInteger stockRecordVersion=new java.util.concurrent.atomic.AtomicInteger();
     private static final Map<Class<?>,Map<String,String>> nativeRecordRepairConcerns = new java.util.WeakHashMap<>();
     private static final Map<Class<?>,Map<String,String>> nativeFrameworkRepairConcerns = new java.util.WeakHashMap<>();
+    private static String repairSurface(String surface) {
+        return surface.startsWith("native aftermath ")?"record aftermath "+surface.substring("native aftermath ".length()):surface;
+    }
     private static void nativeFrameworkFailure(Class<?> type,String surface,String reason) {
         if(type==null)return;
-        String concern="Native changes are installed; "+surface+" did not finish: "+reason+"; save "+type.getName()+" again to retry";
+        String concern="Changes are installed; "+repairSurface(surface)+" did not finish: "+reason+"; save "+type.getName()+" again to retry";
         String previous;
         synchronized(nativeFrameworkRepairConcerns){previous=nativeFrameworkRepairConcerns.computeIfAbsent(type,key->new java.util.LinkedHashMap<>()).put(surface,concern);}
         String subject=type.getName()+" / "+surface;
@@ -211,10 +214,10 @@ public class ReclazzAgent {
             for(var change:batch.changes()) {
                 if(surface.equals("framework refresh "+change.name())||surface.equals("receipt publication "+change.name())
                         ||surface.equals("native aftermath "+change.name())) {
-                    nativeFrameworkFailure(change.owner(),surface,reason);StatusReporter.warn("Native changes are installed; "+surface+" did not finish: "+reason);return;
+                    nativeFrameworkFailure(change.owner(),surface,reason);StatusReporter.warn("Changes are installed; "+repairSurface(surface)+" did not finish: "+reason);return;
                 }
             }
-            String message = "Native record changes are installed; " + surface + " repair did not finish: " + reason;
+            String message = "Record shape changes are installed; " + repairSurface(surface) + " repair did not finish: " + reason;
             for (var change : batch.changes()) {
                 if (!batch.recordNames().contains(change.name())) continue;
                 String previous;
@@ -249,7 +252,7 @@ public class ReclazzAgent {
                                 : reloader.prepareNativeAftermath(change.owner(), change.bytes()));
                     }
                 } catch (RuntimeException | LinkageError failure) {
-                    preflightFailure = "native record aftermath preflight failed: " + Failures.describe(failure);
+                    preflightFailure = "record aftermath preflight failed: " + Failures.describe(failure);
                 }
                 if (preflightFailure != null) {
                     for (var change : batch.changes()) {
@@ -712,7 +715,7 @@ public class ReclazzAgent {
                     recordCodecHooksInstalled = true;
                 } catch (Exception | LinkageError failure) {
                     recordCodecHooksInstalled = false;
-                    StatusReporter.warn("Native record snapshot hooks unavailable: " + Failures.describe(failure));
+                    StatusReporter.warn("Record snapshot hooks unavailable: " + Failures.describe(failure));
                 }
             }
 
@@ -1953,7 +1956,7 @@ public class ReclazzAgent {
                             boolean installed = nativeSave.batch.names().contains(work.className);
                             if(installed)nativeFrameworkFailure(findLoadedClass(work.className),"Spring batch completion "+work.className,why);
                             recordOutcome(work.className, installed, installed
-                                    ? "native record changes are installed; Spring batch completion did not finish: " + why
+                                    ? "record shape changes are installed; Spring batch completion did not finish: " + why
                                     : "framework batch completion did not finish: " + why, work.source);
                         }
                     }
