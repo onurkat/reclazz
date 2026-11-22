@@ -53,12 +53,46 @@ final class OperationMetadataInspection {
         }
         return List.copyOf(out);
     }
+    static Map<Object,Boolean> operationSources(Object[] advisors,ClassLoader loader)throws Exception {
+        return operationSources(advisors,loader,false);
+    }
+    /** Creation preflight may inspect native pointcuts without resolving their lazy advice bean. */
+    static Map<Object,Boolean> operationSources(Object[] advisors,ClassLoader loader,boolean creationPreflight)throws Exception {
+        var sources=new IdentityHashMap<Object,Boolean>();Class<?> contract=Class.forName("org.springframework.aop.Advisor",false,loader);
+        Class<?> tx=null,cache=null;
+        try{tx=Class.forName("org.springframework.transaction.interceptor.TransactionInterceptor",false,loader);}catch(ClassNotFoundException absent){}
+        try{cache=Class.forName("org.springframework.cache.interceptor.CacheInterceptor",false,loader);}catch(ClassNotFoundException absent){}
+        for(Object item:advisors) {
+            Object advice=item;
+            if(contract.isInstance(item)) {
+                advice=com.onurkat.reclazz.util.Reflect.readField(item,"advice");
+                if(advice==null) {
+                    String kind=item.getClass().getName();
+                    boolean nativeTransaction=kind.equals("org.springframework.transaction.interceptor.BeanFactoryTransactionAttributeSourceAdvisor");
+                    boolean nativeCache=kind.equals("org.springframework.cache.interceptor.BeanFactoryCacheOperationSourceAdvisor");
+                    if(creationPreflight&&nativeCache)throw new UnsupportedOperationException("cold cache advice initialization is not verified: "+kind);
+                    if(creationPreflight&&nativeTransaction) {
+                        Object pointcut=item.getClass().getMethod("getPointcut").invoke(item);
+                        Object source=com.onurkat.reclazz.util.Reflect.readField(pointcut,nativeTransaction?"transactionAttributeSource":"cacheOperationSource");
+                        if(source!=null){sources.put(source,nativeTransaction);continue;}
+                    }
+                    if(item.getClass().getName().startsWith("org.springframework.aop.aspectj."))continue; // Aspect descriptors contain no native transaction/cache interceptor.
+                    throw new UnsupportedOperationException("configured advisor advice is unavailable without creating a cold bean: "+item.getClass().getName());
+                }
+            }
+            if(tx!=null&&tx.isInstance(advice))sources.put(advice.getClass().getMethod("getTransactionAttributeSource").invoke(advice),true);
+            if(cache!=null&&cache.isInstance(advice))sources.put(advice.getClass().getMethod("getCacheOperationSource").invoke(advice),false);
+        }
+        return sources;
+    }
     /** Same source class can still have custom parsers or global rollback defaults. */
-    static String sourceConfiguration(Object source,boolean tx) {
+    static String sourceConfiguration(Object source,boolean tx) {return sourceConfiguration(source,tx,false);}
+    /** Only a verified newly-created proxy graph can admit native non-public source resolution. */
+    static String sourceConfiguration(Object source,boolean tx,boolean nativeRecreated) {
         try {
             Field publicOnly=source.getClass().getDeclaredField("publicMethodsOnly");
             if(publicOnly.getType()!=boolean.class||!publicOnly.trySetAccessible())return "source configuration inspection unavailable";
-            if(!publicOnly.getBoolean(source))return "non-public operation resolution";
+            if(!publicOnly.getBoolean(source)&&!nativeRecreated)return "non-public operation resolution";
             Field parsers=source.getClass().getDeclaredField("annotationParsers");
             if(!parsers.trySetAccessible()||!(parsers.get(source) instanceof Set<?> configured))return "parser configuration inspection unavailable";
             Set<String> supported=tx?Set.of("org.springframework.transaction.annotation.SpringTransactionAnnotationParser",
@@ -94,10 +128,12 @@ final class OperationMetadataInspection {
                 Class<?> target=(Class<?>)advised.getMethod("getTargetClass").invoke(bean);
                 if(target==null||!owner.isAssignableFrom(target))continue;
                 ownsClass=true;
-                Object targetSource=advised.getMethod("getTargetSource").invoke(bean);
-                if(!targetSource.getClass().getName().equals("org.springframework.aop.target.SingletonTargetSource"))unsupported="dynamic or custom proxy target";
+                var chain=SpringProxyReferences.chain(bean);
+                if(chain.target()==null)unsupported="dynamic or custom proxy target";
+                for(Object layer:chain.proxies()) {
+                Class<?> layerTarget=(Class<?>)advised.getMethod("getTargetClass").invoke(layer);
                 boolean found=false;
-                for(Class<?> c=bean.getClass();c!=Object.class&&c!=null;c=c.getSuperclass()) {
+                for(Class<?> c=layer.getClass();c!=Object.class&&c!=null;c=c.getSuperclass()) {
                     for(Field field:c.getDeclaredFields())if(Modifier.isStatic(field.getModifiers())&&field.getType()==Method.class) {
                         if(!field.trySetAccessible())throw new UnsupportedOperationException("retained Method inaccessible");
                         Method held=(Method)field.get(null);
@@ -105,10 +141,11 @@ final class OperationMetadataInspection {
                         Method fresh;
                         try {fresh=owner.getMethod(held.getName(),held.getParameterTypes());}catch(NoSuchMethodException absent){continue;}
                         if(fresh.getReturnType()!=held.getReturnType()||fresh.getDeclaringClass()==Object.class)continue;
-                        found=true;methods.add(new Lookup(held,target));methods.add(new Lookup(held,bean.getClass()));
+                        found=true;methods.add(new Lookup(held,layerTarget));methods.add(new Lookup(held,layer.getClass()));
                     }
                 }
                 if(!found)unsupported="retained proxy Methods unavailable";
+                }
             }
         }catch(Throwable failure){unsupported="proxy inspection: "+failure.getClass().getSimpleName();}
         return new Proxies(List.copyOf(methods),unsupported,ownsClass);

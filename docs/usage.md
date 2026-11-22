@@ -500,6 +500,42 @@ Changes to annotations on existing fields, methods or constructor parameters
 also take the recreate path; annotations on newly added members are evaluated
 with those additions.
 
+**First proxy for a plain singleton.** Adding `@Transactional`, `@Cacheable`,
+`@Async` or `@Validated` can make a previously plain singleton require a Spring
+proxy. On the verified Spring 6.1.14, 6.2.12 and 7.0.10 layouts, Reclazz recreates
+it through Spring's own bean creation path, verifies the proxy, and rebuilds its
+supported constructor, field and setter consumers. Standard providers and lazy
+references resolve the replacement; named MVC handlers are refreshed too. This
+also covers XML and `@Bean` services without `@Service`. State follows the bean's
+creation recipe rather than being copied from the old object. A corrected save
+can retry a failed first-proxy rebuild, including a business-body-only save.
+
+Only an inspected graph of already-created singletons is rebuilt. Destroy
+callbacks, registered callback/advice owners, framework-held direct references,
+static or opaque/container holders,
+manually registered consumers, unverified subclasses, custom operation sources
+and unsupported factory layouts keep the original graph and name the obstacle
+in the restart concern. A cold native transaction advisor can use its inspected
+pointcut source without creating advice during preflight. A cold cache advisor
+whose cache initialization is not verified requires a restart. Prototype,
+request and session behavior is unchanged.
+A failed rebuild restores the captured singleton identities and dependency links
+while the context remains open; factory, constructor and initialization side
+effects are not undone. A closing context or incomplete rollback remains
+unverified. The class itself may already be reloaded even if Spring wiring needs
+a restart.
+
+Inspection covers managed references, supported native lazy/provider paths and
+watched static holders. Direct managed-bean references are checked even in
+unwatched native classes. Recursive custom-wrapper checks use the watched-class
+census; framework/native registries and unwatched wrapper internals are outside
+it. Known native singleton/lazy targets and standard JDK containers retain
+explicit checks.
+It does not rewrite arbitrary external registries,
+thread-local data, stack variables or retained unmanaged copies. Reacquire such
+references from Spring or restart. Calls already in flight can finish on the old
+objects; publication is not an atomic request transition.
+
 For stereotype-annotated beans (for example `@Service` or `@Component`),
 inherited property setters, Aware callbacks and lifecycle methods from unwatched
 platform or library classes do not prevent retention. Every watched superclass
@@ -510,9 +546,10 @@ save. This conservative rule also applies when the ancestor reload changed only
 a business method; it does not automatically recreate subclasses at that earlier
 helper save.
 
-Unannotated XML beans already keep their identity across business-body saves
-through the helper reload path. This change does not add generic XML bean
-classification or creation/lifecycle refresh to that path.
+Unannotated XML beans keep their identity across ordinary business-body saves
+through the helper reload path. The first-proxy transition above is a guarded
+exception; unrelated helper saves do not gain generic XML bean recreation or
+lifecycle refresh.
 
 This retention covers plain singletons and supported static proxy targets.
 A CGLIB proxy gaining a public method recreates. Configuration classes,
@@ -1141,9 +1178,10 @@ programmatically reach this path even without `@Component`.
 
 The supported shape is a mutable JDK or CGLIB singleton proxy with a direct
 `SingletonTargetSource`, and one standard
-`AnnotationAwareAspectJAutoProxyCreator` in that context. Previously unproxied
-singletons cannot acquire a proxy in place; matching beans are named in the log
-and restart ledger. Frozen, opaque, nested and dynamic/custom-target proxies,
+`AnnotationAwareAspectJAutoProxyCreator` in that context. A previously unproxied
+singleton uses the guarded [native recreation path](#singleton-state-across-class-saves)
+when supported; its object and consumer state follow normal creation. Unsupported
+matching beans are named in the log and restart ledger. Frozen, opaque, nested and dynamic/custom-target proxies,
 custom/multiple auto-proxy creators, per-clause aspects and introductions are
 outside this path. The scan does not instantiate lazy/prototype service beans;
 already-issued prototype/scoped instances and FactoryBean products are not
@@ -1161,7 +1199,8 @@ when applicable, retains its existing lifecycle effects.
 
 Verified with Spring Framework 5.3.39, AspectJ 1.9.22.1 and a stock JDK 21 using
 real JDK/CGLIB proxies and HTTP calls across four aspect saves. Other Spring/
-AspectJ versions and a JDK 17 runtime were not exercised for this feature.
+AspectJ versions and a JDK 17 runtime were not exercised for those existing-chain
+cases. First-proxy recreation has separate native Spring 6/7 and Boot 3/4 checks.
 AspectJ is only a test dependency of Reclazz; the production agent ships neither
 Spring nor AspectJ and does not enable AspectJ weaving.
 

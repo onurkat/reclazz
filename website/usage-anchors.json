@@ -1,7 +1,7 @@
 {
   "source": "docs/usage.md",
   "baseline": "3327bc6",
-  "source_sha256": "3782d4c7b342ba2ac9b2099b6537c5991d3da8ef5ce745a82719b540eb616dd6",
+  "source_sha256": "9e9cbddc7a8fa6b1fda2157d4a64957375a2420003522485a1351698266b7de1",
   "headings": [
     {
       "key": "usage-guide",
@@ -187,7 +187,7 @@
       "level": 3,
       "title": "Singleton state across class saves",
       "id": "singleton-state-across-class-saves",
-      "body_sha256": "2f6cdf680837737b70f4c2318d1f3f94afc664617fed8140a487c098fd83bd63",
+      "body_sha256": "34356332f5d369da76292afb90f58ab9eafbabda6d386951a3b0dd58baca8586",
       "heading": "### Singleton state across class saves\n",
       "key": "singleton-state-across-class-saves",
       "identity": [
@@ -389,7 +389,7 @@
       "level": 3,
       "title": "Edited aspect pointcuts",
       "id": "edited-aspect-pointcuts",
-      "body_sha256": "11772537281ba08dd0b1b80c2e2264520c2a7b41a7291eaecc6b3d5f82e2905d",
+      "body_sha256": "0ba48d46c6a4f5681f39fb9f3e2d7a566f3d733f6179162fd31774094fcdad3e",
       "heading": "### Edited aspect pointcuts\n"
     },
     {

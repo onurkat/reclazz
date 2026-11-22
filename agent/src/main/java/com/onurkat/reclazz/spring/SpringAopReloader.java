@@ -18,6 +18,11 @@ import com.onurkat.reclazz.ui.Failures;
 public class SpringAopReloader {
 
     private final PlatformContext platformContext;
+    private java.util.function.Supplier<Class<?>[]> loadedClasses=()->null;
+    private com.onurkat.reclazz.platform.PreservedSingletons preserved=com.onurkat.reclazz.platform.PreservedSingletons.NONE;
+    public void setLoadedClasses(java.util.function.Supplier<Class<?>[]> census){loadedClasses=java.util.Objects.requireNonNull(census);}
+    public void setPreservedSingletons(com.onurkat.reclazz.platform.PreservedSingletons hook){preserved=java.util.Objects.requireNonNull(hook);}
+
 
     public SpringAopReloader(PlatformContext platformContext) {
         this.platformContext = platformContext;
@@ -78,7 +83,7 @@ public class SpringAopReloader {
                 return cleared;
             }
             cleared = true;
-            int updated = SpringAopProxyRefresh.refresh(factory, proxyCreator, reloadedClass);
+            int updated = SpringAopProxyRefresh.refresh(factory, proxyCreator, reloadedClass,platformContext.getAllApplicationContexts(),appContext,loadedClasses,preserved);
             ReloadEffects.note("aspect advice re-read");
             if (updated > 0) ReloadEffects.note("AOP proxies updated");
             StatusReporter.detail("AOP advice re-read for aspect " + reloadedClass.getName()

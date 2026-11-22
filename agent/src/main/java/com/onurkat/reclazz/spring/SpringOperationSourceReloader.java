@@ -15,6 +15,21 @@ import com.onurkat.reclazz.util.Reflect;
 /** Bounded best-effort operation repair. A concurrent request can publish after either pass. */
 public class SpringOperationSourceReloader {
 
+    private boolean nativeUsesSource(Class<?> owner,Object source) {
+        if(!onlyFreshNativeProxies(owner))return true; // Existing proxies retain the original inspection boundary.
+        try {
+            Class<?> advised=Class.forName("org.springframework.aop.framework.Advised",false,owner.getClassLoader());
+            for(var receipt:nativeProxies.get(owner)) {
+                Object proxy=receipt.proxy().get();if(proxy==null)return true;
+                var chain=SpringProxyReferences.chain(proxy);if(chain.target()==null)return true;
+                for(Object layer:chain.proxies()) {
+                    Object[] advisors=(Object[])advised.getMethod("getAdvisors").invoke(layer);
+                    if(OperationMetadataInspection.operationSources(advisors,layer.getClass().getClassLoader()).containsKey(source))return true;
+                }
+            }
+            return false;
+        }catch(Exception|LinkageError unavailable){return true;}
+    }
     /** The types whose beans carry an {@code attributeCache} worth clearing. */
     private static final String[] SOURCE_TYPES = {
             "org.springframework.transaction.interceptor.TransactionAttributeSource",
@@ -22,6 +37,30 @@ public class SpringOperationSourceReloader {
     };
 
     private final PlatformContext platformContext;
+    private final java.util.Map<Class<?>,java.util.List<SpringProxyRecreation.Receipt>> nativeProxies=new java.util.WeakHashMap<>();
+    synchronized void beginReload(Class<?> owner,boolean metadataChanged){if(metadataChanged)nativeProxies.remove(owner);}
+    synchronized void nativeRecreated(Class<?> owner,java.util.List<SpringProxyRecreation.Receipt> receipts) {
+        if(!receipts.isEmpty())nativeProxies.put(owner,java.util.List.copyOf(receipts));
+    }
+    private boolean onlyFreshNativeProxies(Class<?> owner) {
+        var receipts=nativeProxies.get(owner);if(receipts==null||receipts.isEmpty())return false;
+        boolean found=false;
+        try {
+            Class<?> advised=Class.forName("org.springframework.aop.framework.Advised",false,owner.getClassLoader());
+            for(Object context:platformContext.getAllApplicationContexts()) {
+                Object factory=SpringBeans.getBeanFactory(context);if(factory==null)continue;
+                for(String name:(String[])OperationMetadataInspection.call(factory,"getSingletonNames")) {
+                    Object bean=factory.getClass().getMethod("getSingleton",String.class).invoke(factory,name);if(bean==null)continue;
+                    if(!advised.isInstance(bean)){if(owner.isInstance(bean))return false;continue;}
+                    Class<?> target=(Class<?>)advised.getMethod("getTargetClass").invoke(bean);if(target==null||!owner.isAssignableFrom(target))continue;
+                    found=true;
+                    if(receipts.stream().noneMatch(r->r.factory().get()==factory&&r.name().equals(name)&&r.proxy().get()==bean))return false;
+                }
+            }
+            return found;
+        }catch(Exception|LinkageError unavailable){return false;}
+    }
+
     private final java.util.Map<Class<?>, Pending> pending = new java.util.WeakHashMap<>();
     // Clearing a source for B also removes A's entries. Remember edited classes
     // weakly so a later batch repopulates those entries too, before an old proxy does.
@@ -57,7 +96,7 @@ public class SpringOperationSourceReloader {
     public synchronized void close() {
         closed=true;generation++;
         if(cancel!=null)cancel.run();cancel=null;
-        pending.clear();affected.clear();ownerContexts.clear();unsupportedReported.clear();ledgerConcerns.clear();reloaded.clear();timer=null;admission=null;
+        nativeProxies.clear();pending.clear();affected.clear();ownerContexts.clear();unsupportedReported.clear();ledgerConcerns.clear();reloaded.clear();timer=null;admission=null;
     }
     public int reloadOperationSources(Class<?> owner,boolean annotationsChanged) {
         return reloadOperationSources(owner,annotationsChanged,null,null);
@@ -205,21 +244,23 @@ public class SpringOperationSourceReloader {
                         catch(ClassNotFoundException absent){continue;}
                         if(!api.isInstance(source))continue;
                         visited.add(source);boolean tx=kind.contains("transaction");String label=tx?"transaction":"cache";
+                        var sourceClasses=classes.stream().filter(c->nativeUsesSource(c,source)).toList();
+                        if(!classes.isEmpty()&&sourceClasses.isEmpty())continue;
                         java.lang.reflect.Method ask=api.getMethod(tx?"getTransactionAttribute":"getCacheOperations",java.lang.reflect.Method.class,Class.class);
                         try {
                             Map<?,?> cache=metadataMap(source);
                             if(cache==null)throw new UnsupportedOperationException("metadata map unavailable");
                             if(!cache.isEmpty())cleared++;cache.clear();
-                            for(Class<?> c:classes) {
+                            for(Class<?> c:sourceClasses) {
                                 OperationMetadataInspection.Proxies proxies=allMethods.get(c);
                                 for(OperationMetadataInspection.Lookup lookup:proxies.lookups()) {
                                     java.lang.reflect.Method fresh=c.getMethod(lookup.method().getName(),lookup.method().getParameterTypes());
                                     ask.invoke(source,fresh,lookup.target());
                                 }
                             }
-                            for(Class<?> c:classes)inspect(source,ask,allMethods.get(c),c,tx,label);
+                            for(Class<?> c:sourceClasses)inspect(source,ask,allMethods.get(c),c,tx,label);
                         }catch(Throwable failure) {
-                            for(Class<?> c:classes)if(pending.get(c).inspect())diagnostic(c,label,"repair failed: "+failure.getClass().getSimpleName(),false);
+                            for(Class<?> c:sourceClasses)if(pending.get(c).inspect())diagnostic(c,label,"repair failed: "+failure.getClass().getSimpleName(),false);
                         }
                     }
                 }
@@ -239,7 +280,7 @@ public class SpringOperationSourceReloader {
             if(state.reportUnsupported())diagnostic(owner,kind,"custom operation source",true);
             return;
         }
-        String configuration=OperationMetadataInspection.sourceConfiguration(source,tx);
+        String configuration=OperationMetadataInspection.sourceConfiguration(source,tx,onlyFreshNativeProxies(owner));
         if(configuration!=null) {
             passConcerns.computeIfAbsent(owner,k->new java.util.HashSet<>()).add(kind);
             if(state.reportUnsupported())diagnostic(owner,kind,configuration,true);

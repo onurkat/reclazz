@@ -375,6 +375,7 @@ public class ReclazzAgent {
         LookupCapture.trust(com.onurkat.reclazz.spring.AddedRabbitListenerAdapter.class);
         LookupCapture.trust(com.onurkat.reclazz.spring.AddedLifecycleAdapter.class);
         com.onurkat.reclazz.bootstrap.BootLoggingBaselineRecorder.install(LoggingReloader::captureBootLevel);
+        LookupCapture.trust(com.onurkat.reclazz.spring.SpringProxyReferences.class);
         LookupCapture.seal();
     }
 
@@ -749,6 +750,8 @@ public class ReclazzAgent {
             SpringReloadOrchestrator springOrchestrator = new SpringReloadOrchestrator(platformContext);
             activeSpringOrchestrator=springOrchestrator;
             springOrchestrator.setPreservedSingletons(modules::preservedSingletons);
+            springOrchestrator.setLoadedClasses(()->java.util.Arrays.stream(instrumentation.getAllLoadedClasses())
+                    .filter(type->transformContext.isWatched(type.getName().replace('.','/'))).toArray(Class<?>[]::new));
             springOrchestrator.setRefreshOwnersOnHelper(config.getRefreshOwnersOnHelper());
 
             // Set up XML reloader, parses *-spring.xml changes into a

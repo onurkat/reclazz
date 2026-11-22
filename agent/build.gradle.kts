@@ -337,6 +337,8 @@ val springSixTests = sourceSets.create("springSixTest") {
 dependencies {
     add(springSixTests.implementationConfigurationName, "org.junit.jupiter:junit-jupiter:5.10.2")
     add(springSixTests.implementationConfigurationName, "org.springframework:spring-context:6.1.14")
+    // First-proxy aspect regression; same existing test-only version, never packaged.
+    add(springSixTests.implementationConfigurationName, "org.aspectj:aspectjweaver:1.9.27")
     add(springSixTests.implementationConfigurationName, "org.springframework.boot:spring-boot:3.3.5")
     // Real Jakarta MVC async lifecycle and local HTTP tests; never packaged.
     add(springSixTests.implementationConfigurationName, "org.springframework:spring-webmvc:6.1.14")
@@ -394,6 +396,7 @@ val springSevenTests = sourceSets.create("springSevenTest") {
 dependencies {
     add(springSevenTests.implementationConfigurationName, "org.junit.jupiter:junit-jupiter:6.0.3")
     add(springSevenTests.implementationConfigurationName, "org.springframework:spring-context:7.0.10")
+    add(springSevenTests.implementationConfigurationName, "org.aspectj:aspectjweaver:1.9.27")
     add(springSevenTests.implementationConfigurationName, "org.springframework.boot:spring-boot:4.1.2")
     // Real Jakarta MVC async lifecycle and local HTTP tests; never packaged.
     add(springSevenTests.implementationConfigurationName, "org.springframework:spring-webmvc:7.0.10")

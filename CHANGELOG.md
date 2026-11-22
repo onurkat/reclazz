@@ -15,6 +15,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   histories, ModifyPopulatorList target changes and unsupported directive forms
   keep restart diagnostics; failed publication restores list, directive and definition.
 
+- Previously plain Spring singletons can gain their first standard proxy after
+  annotation or aspect changes, including XML/factory services without a
+  stereotype. Verified native recreation rebuilds supported consumers, restores
+  captured instances on failure, and retains precise restart concerns for
+  unprovable holders or lifecycle shapes.
+
 ### Fixed
 
 - Record reload diagnostics describe stock-JVM failures without native-mode wording

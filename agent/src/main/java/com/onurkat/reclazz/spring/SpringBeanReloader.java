@@ -8,6 +8,7 @@ import com.onurkat.reclazz.transform.KeepBaseline;
 
 import com.onurkat.reclazz.platform.PlatformContext;
 import com.onurkat.reclazz.ui.ReloadEffects;
+import com.onurkat.reclazz.ui.RestartLedger;
 import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.reflect.Method;
@@ -25,6 +26,12 @@ import com.onurkat.reclazz.util.Reflect;
 public class SpringBeanReloader {
 
     private final PlatformContext platformContext;
+    private final java.util.List<SpringProxyRecreation.Receipt> nativeProxyReceipts=new java.util.ArrayList<>();
+    java.util.List<SpringProxyRecreation.Receipt> nativeProxyReceipts(){return java.util.List.copyOf(nativeProxyReceipts);}
+
+    private java.util.function.Supplier<Class<?>[]> loadedClasses=()->null;
+    public void setLoadedClasses(java.util.function.Supplier<Class<?>[]> census){loadedClasses=java.util.Objects.requireNonNull(census);}
+
     private com.onurkat.reclazz.platform.PreservedSingletons preservedSingletons =
             com.onurkat.reclazz.platform.PreservedSingletons.NONE;
 
@@ -42,6 +49,26 @@ public class SpringBeanReloader {
 
     public SpringBeanReloader(PlatformContext platformContext) {
         this.platformContext = platformContext;
+    }
+
+    /** XML/@Bean products without a stereotype enter only the verified first-proxy path. */
+    void refreshPlainProxy(Class<?> type) {
+        nativeProxyReceipts.clear();
+        var contexts=platformContext.getAllApplicationContexts();
+        var seen=java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<Object,Boolean>());
+        var handled=java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<Object,Boolean>());
+        for(Object context:contexts)try {
+            Object factory=SpringBeans.getBeanFactory(context);if(factory==null||!seen.add(factory))continue;
+            for(String name:findBeanNamesByType(context,type)) {
+                Object current=factory.getClass().getMethod("getSingleton",String.class).invoke(factory,name);
+                if(current==null||handled.contains(current))continue;
+                if(!SpringProxyRecreation.annotated(type)&&!SpringProxyRecreation.pending(factory,name))continue;
+                var outcome=SpringProxyRecreation.refresh(contexts,context,name,type,loadedClasses,preservedSingletons);
+                if(outcome.applied()){handled.addAll(outcome.replacements().values());nativeProxyReceipts.addAll(outcome.receipts());}
+            }
+        }catch(Exception|LinkageError failure){
+            String reason="first-proxy inspection unavailable: "+Failures.describe(failure);RestartLedger.note(type.getName(),reason);StatusReporter.warn(type.getName()+": "+reason);
+        }
     }
 
     /**
@@ -70,6 +97,7 @@ public class SpringBeanReloader {
 
     void refreshBean(String className, Class<?> reloadedClass, SpringAddedBeanReloader.PreparedRawConfigs raw,
                      KeepBaseline.Input keepInput, boolean listenerOwner) {
+        nativeProxyReceipts.clear();
         try {
             // Iterate every live context (global + web contexts): the bean
             // may be defined in any of them, or in several.
@@ -87,7 +115,8 @@ public class SpringBeanReloader {
             // Remember old→new instance pairs for reference healing below.
             java.util.LinkedHashSet<String> refreshedNames = new java.util.LinkedHashSet<>();
             java.util.IdentityHashMap<Object, Object> replacements = new java.util.IdentityHashMap<>();
-            int totalRefreshed = 0, preservedRaw = 0, kept = 0;
+            var nativeHandled=java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<Object,Boolean>());
+            int totalRefreshed = 0, preservedRaw = 0, kept = 0, proxyRefused = 0;
             SpringMvcSingletons mvcBefore = batchDepth > 0 ? batchMvcBefore : null;
             var seenFactories = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<Object, Boolean>());
             int ownerIndex = 0;
@@ -100,11 +129,22 @@ public class SpringBeanReloader {
                             ? findBeanNamesByType(appContext, reloadedClass)
                             : findBeanNamesByClass(appContext, className);
                     for (String beanName : beanNames) {
+                        Object current=localFactory.getClass().getMethod("getSingleton",String.class).invoke(localFactory,beanName);
+                        if(nativeHandled.contains(current))continue;
                         if (raw != null && raw.preserves(appContext, beanName,
                                 localFactory.getClass().getMethod("getSingleton", String.class).invoke(localFactory, beanName))) {
                             ReloadEffects.note("raw configuration " + beanName + " preserved");
                             preservedRaw++;
                             continue;
+                        }
+                        if(keepInput==null||!SingletonKeepPolicy.forBean(localFactory,beanName,reloadedClass,keepInput).keep()
+                                ||SpringProxyRecreation.annotated(reloadedClass)||SpringProxyRecreation.pending(localFactory,beanName)) {
+                            var proxyTransition=SpringProxyRecreation.refresh(contexts,appContext,beanName,reloadedClass,loadedClasses,preservedSingletons);
+                            if(proxyTransition.handled()) {
+                                if(proxyTransition.applied()){replacements.putAll(proxyTransition.replacements());nativeHandled.addAll(proxyTransition.replacements().values());nativeProxyReceipts.addAll(proxyTransition.receipts());totalRefreshed++;}
+                                else proxyRefused++;
+                                continue; // The native transaction owns its consumers; never run a second destructive cascade.
+                            }
                         }
                         if (mvcBefore == null) {
                             mvcBefore = SpringMvcSingletons.capture(contexts);
@@ -149,7 +189,7 @@ public class SpringBeanReloader {
             }
 
             if (totalRefreshed == 0 && kept == 0) {
-                if (preservedRaw == 0) StatusReporter.info("No Spring bean found for class: " + className);
+                if (preservedRaw == 0 && proxyRefused == 0) StatusReporter.info("No Spring bean found for class: " + className);
                 return;
             }
 

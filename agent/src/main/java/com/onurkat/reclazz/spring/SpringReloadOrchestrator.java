@@ -95,8 +95,14 @@ public class SpringReloadOrchestrator {
 
     private final SpringNewBeanRegistrar newBeanRegistrar;
 
+    public void setLoadedClasses(java.util.function.Supplier<Class<?>[]> census) {
+        beanReloader.setLoadedClasses(census);
+        aopReloader.setLoadedClasses(census);
+    }
+
     public void setPreservedSingletons(com.onurkat.reclazz.platform.PreservedSingletons hook) {
         beanReloader.setPreservedSingletons(hook);
+        aopReloader.setPreservedSingletons(hook);
     }
 
     /**
@@ -150,6 +156,10 @@ public class SpringReloadOrchestrator {
                                  boolean addedMethods, java.util.Set<String> addedMethodSigs,
                                  byte[] newBytecode) {
         if (type == null) return;
+        operationSourceReloader.beginReload(type,isStructural||annotationsChanged);
+        if((isStructural||annotationsChanged)&&SpringProxyRecreation.annotated(type))injectionMetadataReloader.reload();
+        beanReloader.refreshPlainProxy(type);
+        operationSourceReloader.nativeRecreated(type,beanReloader.nativeProxyReceipts());
         if (addedMethods) classesWithAddedMembers.add(className);
         ReloadSteps.runAll(java.util.List.of(new ReloadSteps.Step("Cache eviction",
                         r -> cacheReloader.reloadCaches(r.type())),
@@ -272,6 +282,7 @@ public class SpringReloadOrchestrator {
                                 boolean addedMethods, java.util.Set<String> addedMethodSigs,
                                 byte[] newBytecode, KeepBaseline.Input keepInput) {
         if (reloadedClass == null) return;
+        operationSourceReloader.beginReload(reloadedClass,isStructural||annotationsChanged);
         if (addedMethods) classesWithAddedMembers.add(className);
 
         SpringAddedBeanReloader.PreparedRawConfigs raw;
@@ -279,6 +290,11 @@ public class SpringReloadOrchestrator {
         catch (Throwable failure) {
             String reason = "Added @Bean needs a restart: " + com.onurkat.reclazz.ui.Failures.describe(failure);
             RestartLedger.note(className, reason); StatusReporter.warn(reason); return;
+        }
+        if(!isSpringBean(reloadedClass)) {
+            if((isStructural||annotationsChanged)&&SpringProxyRecreation.annotated(reloadedClass))injectionMetadataReloader.reload();
+            beanReloader.refreshPlainProxy(reloadedClass);
+            operationSourceReloader.nativeRecreated(reloadedClass,beanReloader.nativeProxyReceipts());
         }
         if (isSpringBean(reloadedClass)) {
             schedulerReloader.beforeBeanRefresh(reloadedClass);
@@ -307,7 +323,10 @@ public class SpringReloadOrchestrator {
             if (!lifecycle.install()) return;
             // Repository products have one refresh owner, including when their
             // interface also carries the ordinary Spring @Repository stereotype.
-            if (!SpringDataReloader.isRepository(reloadedClass)) beanReloader.refreshBean(className, reloadedClass, raw, keepInput, listenerOwner);
+            if (!SpringDataReloader.isRepository(reloadedClass)) {
+                beanReloader.refreshBean(className, reloadedClass, raw, keepInput, listenerOwner);
+                operationSourceReloader.nativeRecreated(reloadedClass,beanReloader.nativeProxyReceipts());
+            }
 
             // 2. MVC re-scan. Structural changes need it because the set of
             // handler methods moved; annotation changes need it because the

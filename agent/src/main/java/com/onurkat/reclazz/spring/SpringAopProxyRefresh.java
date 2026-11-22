@@ -20,6 +20,11 @@ final class SpringAopProxyRefresh {
     private SpringAopProxyRefresh() {}
 
     static int refresh(Object factory, Object creator, Class<?> aspect) throws Exception {
+        return refresh(factory,creator,aspect,List.of(),null,()->null,com.onurkat.reclazz.platform.PreservedSingletons.NONE);
+    }
+
+    static int refresh(Object factory,Object creator,Class<?> aspect,List<Object> contexts,Object context,
+                       java.util.function.Supplier<Class<?>[]> census,com.onurkat.reclazz.platform.PreservedSingletons preserved)throws Exception {
         if (!creator.getClass().getName().equals(CREATOR)) {
             skipped(aspect.getName(), "custom auto-proxy creator " + creator.getClass().getName());
             return 0;
@@ -61,6 +66,7 @@ final class SpringAopProxyRefresh {
             }
         }
         var changes = new ArrayList<Change>();
+        int recreated=0;
         String[] names = (String[]) factory.getClass().getMethod("getSingletonNames").invoke(factory);
         Method singleton = factory.getClass().getMethod("getSingleton", String.class);
         for (String name : names) {
@@ -80,7 +86,10 @@ final class SpringAopProxyRefresh {
             boolean hadAspect = Arrays.stream(old).anyMatch(a -> belongs(a, precedence, aspectName, aspectNames));
             if (!hadAspect && fresh.isEmpty()) continue;
             if (!proxy) {
-                skipped(name, "previously unproxied singleton");
+                if(context==null){skipped(name,"previously unproxied singleton");continue;}
+                var transition=SpringProxyRecreation.refresh(contexts,context,name,targetClass,census,preserved);
+                if(transition.applied())recreated++;
+                else if(!transition.handled())skipped(name,"previously unproxied singleton; native creation could not verify the newly matching advisor");
                 continue;
             }
             if ((boolean) advised.getMethod("isFrozen").invoke(bean)) {
@@ -115,8 +124,9 @@ final class SpringAopProxyRefresh {
         // invalidates warmed method chains; this is not an atomic transaction with in-flight calls.
         Method remove = advised.getMethod("removeAdvisor", int.class);
         Method add = advised.getMethod("addAdvisor", int.class, advisorType);
-        int updated = 0;
+        int updated = recreated;
         for (Change change : changes) {
+            if(singleton.invoke(factory,change.name())!=change.bean())continue; // A closed native recreation may have replaced this consumer.
             try {
                 replace(change.bean(), change.next(), getAdvisors, remove, add);
                 updated++;
