@@ -165,6 +165,58 @@ class StaticInitializerResetTest extends TransformTestBase {
                 bytes("public static final Map<String,String> CODES="+expression+";"+extra),true));
         assertSame(old,o.value("CODES"));assertTrue(log.contains("initializer changed, not reset:"),log);
     }
+    /** Pure JDK value factories and JDK constants: old expression, new expression, expected new value. */
+    @ParameterizedTest @org.junit.jupiter.params.provider.CsvSource(delimiter='|', value={
+        "java.time.Duration.ofSeconds(30)|java.time.Duration.ofSeconds(45)|PT45S",
+        "java.time.Duration.ofMillis(500)|java.time.Duration.parse(\"PT2M\")|PT2M",
+        "java.time.Period.ofDays(1)|java.time.Period.of(1,2,3)|P1Y2M3D",
+        "java.time.LocalDate.of(2026,1,1)|java.time.LocalDate.of(2026,11,22)|2026-11-22",
+        "java.util.UUID.fromString(\"00000000-0000-0000-0000-000000000001\")|java.util.UUID.fromString(\"00000000-0000-0000-0000-000000000002\")|00000000-0000-0000-0000-000000000002",
+        "java.util.Locale.US|java.util.Locale.forLanguageTag(\"tr-TR\")|tr_TR",
+        "java.util.concurrent.TimeUnit.SECONDS|java.util.concurrent.TimeUnit.MINUTES|MINUTES",
+        "java.nio.charset.StandardCharsets.UTF_8|java.nio.charset.StandardCharsets.ISO_8859_1|ISO-8859-1",
+        "BigDecimal.ZERO|BigDecimal.valueOf(125,2)|1.25",
+        "Map.of(\"unit\", java.time.temporal.ChronoUnit.DAYS)|Map.of(\"unit\", java.time.temporal.ChronoUnit.HOURS)|{unit=Hours}",
+        "java.util.Optional.empty()|java.util.Optional.of(\"x\")|Optional[x]",
+        "java.util.Collections.emptyList()|List.of(java.time.Duration.ofMinutes(1), java.time.Duration.ZERO)|[PT1M, PT0S]"
+    }) void pureJdkFactoriesAndConstantsAreReset(String before, String after, String expected) throws Exception {
+        var o=owner("public static final Object VALUE="+before+";",true);
+        o.reload("public static final Object VALUE="+after+";");
+        assertEquals(expected,String.valueOf(o.value("VALUE")));
+    }
+    /** Eleven elements make javac pass a fresh Duration[] to the varargs List.of; it must reset like ten. */
+    @Test void varargsListOfNewJdkValuesIsReset() throws Exception {
+        String before=String.join(",",java.util.Collections.nCopies(11,"java.time.Duration.ofSeconds(1)"));
+        String after=String.join(",",java.util.Collections.nCopies(11,"java.time.Duration.ofSeconds(2)"));
+        var o=owner("public static final Object VALUE=List.of("+before+");",true);
+        o.reload("public static final Object VALUE=List.of("+after+");");
+        assertEquals(java.util.Collections.nCopies(11,java.time.Duration.ofSeconds(2)),o.value("VALUE"));
+        o.reload("public static final Object VALUE=List.of("+after.replace("ofSeconds(2)","ofMinutes(3)").replaceFirst("java.time.Duration.ofMinutes\\(3\\)","java.util.concurrent.TimeUnit.MINUTES")+");");
+        assertEquals(java.util.concurrent.TimeUnit.MINUTES,((List<?>)o.value("VALUE")).get(0),"mixed JDK value types in one fresh Object[]");
+    }
+    @Test void compiledPatternIsReset() throws Exception {
+        var o=owner("public static final java.util.regex.Pattern P=java.util.regex.Pattern.compile(\"a+\");",true);
+        o.reload("public static final java.util.regex.Pattern P=java.util.regex.Pattern.compile(\"b+\", java.util.regex.Pattern.CASE_INSENSITIVE);");
+        var p=(java.util.regex.Pattern)o.value("P");assertEquals("b+",p.pattern());assertTrue(p.matcher("BB").matches());
+    }
+    @Test void invalidPatternKeepsOldValue() throws Exception {
+        var o=owner("public static final java.util.regex.Pattern P=java.util.regex.Pattern.compile(\"a+\");",true);Object old=o.value("P");
+        String log=capture(()->o.reload("public static final java.util.regex.Pattern P=java.util.regex.Pattern.compile(\"(\");"));
+        assertSame(old,o.value("P"));assertTrue(log.contains("evaluation-failed"),log);
+    }
+    @ParameterizedTest @ValueSource(strings={
+        "java.time.Duration.ofSeconds(Long.getLong(\"x\", 5L))",
+        "java.time.Duration.ofSeconds(30).plusSeconds(1)",
+        "java.time.LocalDate.now()",
+        "java.util.UUID.randomUUID()",
+        "java.util.Locale.getDefault()",
+        "java.time.Duration.ofSeconds(StaticTable.SECONDS)"
+    }) void impureOrApplicationDependentJdkExpressionsStillRefuse(String expression) throws Exception {
+        String extra="public static long SECONDS=5L;";
+        var o=owner("public static final Object VALUE=java.time.Duration.ofSeconds(1);"+extra,true);Object old=o.value("VALUE");
+        String log=capture(()->o.reload("public static final Object VALUE="+expression+";"+extra));
+        assertSame(old,o.value("VALUE"));assertTrue(log.contains("initializer changed, not reset:"),log);
+    }
     @ParameterizedTest @ValueSource(strings={
         "for(int i=0;i<2;i++) CODES=Map.of(\"key\",\"new\");",
         "try { CODES=Map.of(\"key\",\"new\"); } catch(RuntimeException e) { CODES=Map.of(); }",

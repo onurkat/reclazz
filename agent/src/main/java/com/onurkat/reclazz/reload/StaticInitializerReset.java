@@ -246,6 +246,8 @@ public final class StaticInitializerReset implements Opcodes {
     private static final class Refused extends Exception { Refused(String reason) { super(reason); } }
     private static Refused refuse(String reason) { return new Refused(reason); }
     private record Literal(Object literal) implements Expression { public Object value() { return literal; } }
+    /** A public static final JDK constant from the fixed JDK_CONSTANTS list; read at evaluation, never at admission. */
+    private record JdkConstant(MethodHandle getter) implements Expression { public Object value() throws Throwable { return getter.invoke(); } }
     private static final class Construction implements Expression {
         final String type; Expression argument;
         Construction(String type) { this.type = type; }
@@ -292,7 +294,12 @@ public final class StaticInitializerReset implements Opcodes {
                 if (!(ldc.cst instanceof String || ldc.cst instanceof Integer || ldc.cst instanceof Long
                         || ldc.cst instanceof Float || ldc.cst instanceof Double)) throw refuse("unsupported-literal");
                 stack.add(new Literal(ldc.cst));
-            } else if (op == GETSTATIC) throw refuse("static-dependency");
+            } else if (op == GETSTATIC) {
+                FieldInsnNode get = (FieldInsnNode) insn;
+                MethodHandle getter = JDK_CONSTANTS.get(get.owner + "." + get.name + ":" + get.desc);
+                if (getter == null) throw refuse("static-dependency");
+                stack.add(new JdkConstant(getter));
+            }
             else if (op == NEW) {
                 String type = ((TypeInsnNode)insn).desc;
                 if (!type.equals("java/math/BigDecimal") && !type.equals("java/math/BigInteger")) throw refuse("unapproved-call");
@@ -363,7 +370,14 @@ public final class StaticInitializerReset implements Opcodes {
             "java/io/Serializable", "java/lang/Comparable", "java/lang/constant/Constable", "java/lang/constant/ConstantDesc",
             "java/lang/String", "java/lang/Integer", "java/lang/Long", "java/lang/Short", "java/lang/Byte",
             "java/lang/Character", "java/lang/Boolean", "java/lang/Double", "java/lang/Float",
-            "java/math/BigDecimal", "java/math/BigInteger");
+            "java/math/BigDecimal", "java/math/BigInteger",
+            // Element types of the admitted JDK value factories and constants, so a varargs List.of/Set.of of them
+            // (javac's fresh array above ten elements) is evaluated like the fixed-arity forms.
+            "java/time/Duration", "java/time/Period", "java/time/LocalDate", "java/time/LocalTime",
+            "java/util/regex/Pattern", "java/util/UUID", "java/util/Locale", "java/util/Optional",
+            "java/util/concurrent/TimeUnit", "java/time/temporal/ChronoUnit", "java/time/temporal/TemporalUnit",
+            "java/time/DayOfWeek", "java/time/Month", "java/math/RoundingMode", "java/nio/charset/Charset",
+            "java/lang/Enum", "java/time/temporal/TemporalAmount");
     private static Map<String, MethodHandle> calls() {
         Map<String,MethodHandle> calls = new HashMap<>();
         for (Class<?> type : List.of(List.class, Set.class, Map.class)) {
@@ -379,7 +393,55 @@ public final class StaticInitializerReset implements Opcodes {
         Class<?>[] wrappers = {Integer.class, Long.class, Short.class, Byte.class, Character.class, Boolean.class, Double.class, Float.class};
         Class<?>[] primitives = {int.class, long.class, short.class, byte.class, char.class, boolean.class, double.class, float.class};
         for (int i=0; i<wrappers.length; i++) allow(calls, wrappers[i], "valueOf", wrappers[i], primitives[i]);
+        // Pure JDK value factories common in static configuration: same arguments, equal immutable value,
+        // no application code, no I/O and no global state. A failure (bad pattern, bad text) is reported
+        // as evaluation-failed and keeps the old value.
+        for (String unit : List.of("ofDays", "ofHours", "ofMinutes", "ofSeconds", "ofMillis", "ofNanos"))
+            allow(calls, java.time.Duration.class, unit, java.time.Duration.class, long.class);
+        allow(calls, java.time.Duration.class, "ofSeconds", java.time.Duration.class, long.class, long.class);
+        allow(calls, java.time.Duration.class, "parse", java.time.Duration.class, CharSequence.class);
+        for (String unit : List.of("ofDays", "ofWeeks", "ofMonths", "ofYears"))
+            allow(calls, java.time.Period.class, unit, java.time.Period.class, int.class);
+        allow(calls, java.time.Period.class, "of", java.time.Period.class, int.class, int.class, int.class);
+        allow(calls, java.time.LocalDate.class, "of", java.time.LocalDate.class, int.class, int.class, int.class);
+        allow(calls, java.time.LocalTime.class, "of", java.time.LocalTime.class, int.class, int.class);
+        allow(calls, java.time.LocalTime.class, "of", java.time.LocalTime.class, int.class, int.class, int.class);
+        allow(calls, java.util.regex.Pattern.class, "compile", java.util.regex.Pattern.class, String.class);
+        allow(calls, java.util.regex.Pattern.class, "compile", java.util.regex.Pattern.class, String.class, int.class);
+        allow(calls, UUID.class, "fromString", UUID.class, String.class);
+        allow(calls, Locale.class, "forLanguageTag", Locale.class, String.class);
+        allow(calls, BigDecimal.class, "valueOf", BigDecimal.class, long.class);
+        allow(calls, BigDecimal.class, "valueOf", BigDecimal.class, double.class);
+        allow(calls, BigDecimal.class, "valueOf", BigDecimal.class, long.class, int.class);
+        allow(calls, BigInteger.class, "valueOf", BigInteger.class, long.class);
+        allow(calls, Optional.class, "empty", Optional.class);
+        allow(calls, Optional.class, "of", Optional.class, Object.class);
+        allow(calls, Optional.class, "ofNullable", Optional.class, Object.class);
+        for (String name : List.of("emptyList", "emptySet", "emptyMap"))
+            allow(calls, Collections.class, name, name.equals("emptyList") ? List.class : name.equals("emptySet") ? Set.class : Map.class);
         return Map.copyOf(calls);
+    }
+
+    // Public static final constants of bootstrap JDK types only, keyed owner.name:desc. Application
+    // statics stay static-dependency: their value may change at runtime and their owner may not be reset.
+    private static final Map<String, MethodHandle> JDK_CONSTANTS = jdkConstants();
+    private static Map<String, MethodHandle> jdkConstants() {
+        Map<String,MethodHandle> constants = new HashMap<>();
+        List<Class<?>> owners = List.of(java.nio.charset.StandardCharsets.class, java.util.concurrent.TimeUnit.class,
+                java.time.temporal.ChronoUnit.class, java.time.DayOfWeek.class, java.time.Month.class,
+                java.math.RoundingMode.class, BigDecimal.class, BigInteger.class, Boolean.class,
+                java.time.Duration.class, java.time.Period.class, Locale.class);
+        for (Class<?> owner : owners) for (var field : owner.getFields()) {
+            int mod = field.getModifiers();
+            if (!Modifier.isStatic(mod) || !Modifier.isFinal(mod) || field.getType().isPrimitive()) continue;
+            if (owner != field.getType() && !(owner == java.nio.charset.StandardCharsets.class
+                    && field.getType() == java.nio.charset.Charset.class)) continue;
+            try {
+                constants.put(owner.getName().replace('.', '/') + "." + field.getName() + ":" + field.getType().descriptorString(),
+                        MethodHandles.publicLookup().unreflectGetter(field));
+            } catch (IllegalAccessException failure) { throw new ExceptionInInitializerError(failure); }
+        }
+        return Map.copyOf(constants);
     }
     private static void allow(Map<String,MethodHandle> calls, Class<?> owner, String name, Class<?> result, Class<?>... args) {
         try {

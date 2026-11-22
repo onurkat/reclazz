@@ -3785,11 +3785,21 @@ static block is replayed. A straight-line static-block assignment is equivalent
 to a declaration when their bytecode is identical.
 
 Admission requires one isolated, straight-line write, no branches/loops/handlers,
-no static reads (including enum constants or the owner's own fields), no ambient
+no reads of application statics (including the owner's own fields), no ambient
 or application calls, and no application receivers. Allowed expressions consist
 recursively of string/number literals, the eight primitive wrapper `valueOf`
 methods, `new BigDecimal(String)` / `new BigInteger(String)` with literal strings,
-and `List.of`, `Set.of`, `Map.of`, `Map.ofEntries`, `Map.entry`. Fixed arities and
+`List.of`, `Set.of`, `Map.of`, `Map.ofEntries`, `Map.entry`, and these pure JDK
+value factories: `Duration.ofDays/ofHours/ofMinutes/ofSeconds/ofMillis/ofNanos`
+and `Duration.parse`, `Period.of/ofDays/ofWeeks/ofMonths/ofYears`, `LocalDate.of`,
+`LocalTime.of`, `Pattern.compile`, `UUID.fromString`, `Locale.forLanguageTag`,
+`BigDecimal.valueOf`, `BigInteger.valueOf`, `Optional.empty/of/ofNullable` and
+`Collections.emptyList/emptySet/emptyMap`. Public JDK constants of `StandardCharsets`,
+`TimeUnit`, `ChronoUnit`, `DayOfWeek`, `Month`, `RoundingMode`, `BigDecimal`,
+`BigInteger`, `Boolean`, `Duration`, `Period` and `Locale` may be read. Methods
+called on a value (for example `Duration.ofSeconds(30).plusSeconds(1)` or
+`DayOfWeek.MONDAY.name()`), `now()`, `randomUUID()` and `Locale.getDefault()` are
+refused. Fixed arities and
 fresh varargs arrays (up to 65,535 elements) are supported. Null factory inputs or duplicate keys can
 throw; the old value and its baseline then remain. Mutable collections, lambdas,
 streams, arbitrary constructors and side effects are refused. Unsupported shapes

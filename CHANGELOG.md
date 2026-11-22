@@ -8,6 +8,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- With `resetStatics=true`, changed static initializers built from pure JDK value
+  factories (`Duration`, `Period`, `LocalDate`, `LocalTime`, `Pattern.compile`,
+  `UUID.fromString`, `Locale.forLanguageTag`, `BigDecimal`/`BigInteger.valueOf`,
+  `Optional`, empty collections) and public JDK constants (`StandardCharsets`,
+  `TimeUnit`, `ChronoUnit` and similar) are reset too. Application statics, calls on
+  values and ambient calls such as `now()` still keep the old value with a reason.
 - SAP Commerce XML reload replays exact eager ListMergeDirective addition and
   bean-name position edits with a uniquely reversible old effect and no other
   directive targeting the list. Converter publication preserves complete reader
