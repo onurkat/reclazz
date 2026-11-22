@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added
+
+- SAP Commerce XML reload replays exact eager ListMergeDirective addition and
+  bean-name position edits with a uniquely reversible old effect and no other
+  directive targeting the list. Converter publication preserves complete reader
+  snapshots; direct lists are not cleared, and intervening list changes are retained. Ambiguous
+  histories, ModifyPopulatorList target changes and unsupported directive forms
+  keep restart diagnostics; failed publication restores list, directive and definition.
+
 ### Fixed
 
 - Record reload diagnostics describe stock-JVM failures without native-mode wording

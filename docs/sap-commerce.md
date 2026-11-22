@@ -28,6 +28,24 @@ For application-level proof, see [what we test live on SAP Commerce](sap-commerc
 64 default scenarios, separate opt-in profiles, their repeatability and the
 areas that still need live acceptance.
 
+## Reload populator directive XML
+
+An existing exact, eager `ModifyPopulatorList` can replay same-target `add`/`remove`
+edits. Changing its `list` target still needs restart: SAP records no original
+removal position, even when its remove-null operation removed a null element.
+The old converter's list cannot be reconstructed exactly from that directive.
+
+An exact, eager `ListMergeDirective` with literal local bean references can change its added bean and its
+`beforeBeanNames`/`afterBeanNames` positions for one fixed `depends-on` target,
+either an already-created List singleton or a converter's `populators` property. The existing addition
+must be uniquely identifiable, and no other list-merge or modify directive may
+target that list. A shared list keeps the restart concern naming the other directive.
+An already-present candidate or unsupported target
+keeps the restart concern. Subclasses, inherited/lazy directives, FactoryBean list products, target metadata
+changes, field/nested targets and value/class-based positions remain restart-only.
+The SDK has no separate `remove` property on this directive; deleting the directive
+is not covered. See [the detailed limits](usage.md#sap-populator-and-list-merge-directives).
+
 ## Check setup before troubleshooting
 
 In IntelliJ, open **Settings → Tools → Reclazz → Check setup**. The read-only

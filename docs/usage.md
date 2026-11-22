@@ -3334,13 +3334,32 @@ that comes back this way is appended, so when several directives touch one list
 its order can differ from a fresh start. If the edit cannot be applied, the list
 and the directive stay as they were and the save reports a restart.
 
-Other edits to existing `ModifyPopulatorList` and `ListMergeDirective` XML
-definitions require restart: a changed `list` target, subclasses, inherited or
-lazy directives, and every `ListMergeDirective` edit. Reclazz rejects these
-before changing the live definition or directive and reports that the effective
-target lists were not refreshed. This includes property,
-ordering and `depends-on` edits, inherited definitions and subclasses. Lazy directives
-are not instantiated by the check, and unchanged definitions do not generate a warning.
+Changing a `ModifyPopulatorList` target still requires restart. SAP removes one
+matching element even when `remove` is null, and the directive records neither
+the removed element's old position nor its prior absence. Moving its effect to a
+new converter cannot reconstruct that old list exactly from the directive alone.
+
+For an exact, eager `ListMergeDirective` with literal local bean references, edits to `add`, `beforeBeanNames` and
+`afterBeanNames` can be replayed for one fixed `depends-on` list target: either an already-created
+List singleton or a converter's `populators` property. The old addition must be uniquely
+present, and the new addition must not already occur elsewhere in that list.
+No other list-merge or modify directive may target the same list: otherwise the save
+reports a restart and names the other directive, because replaying one directive
+can change the order compared with a fresh start.
+Reclazz removes the old addition and follows the installed SDK's own ordering
+rules for the edited addition. Failure preserves the prior list, directive and
+raw definition and reports a restart concern. If resolving the edited beans changes
+that live list, the reload leaves the intervening change intact and reports a restart.
+Converter readers retain a complete old or new list during publication. A direct
+List singleton keeps its identity and is updated without clearing or resizing it;
+concurrent readers may see intermediate ordering during that update.
+
+Subclasses, inherited or lazy directives, ambiguous/missing additions, FactoryBean list products, custom
+list implementations, merge target/`depends-on` changes, field/nested-property
+targets and positions expressed through values/classes retain restart diagnostics.
+`ListMergeDirective` has no `remove` property; directive deletion is not replayed.
+Lazy directives are not instantiated by the check, and unchanged definitions do
+not generate a warning.
 
 Unrelated ordinary XML edits in the same resource can still apply. Newly added
 directives retain the existing bean-addition behavior; this diagnostic does not

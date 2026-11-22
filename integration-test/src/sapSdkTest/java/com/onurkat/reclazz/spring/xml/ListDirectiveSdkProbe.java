@@ -48,7 +48,7 @@ public class ListDirectiveSdkProbe {
             String shared=variant.equals("shared") ? (merge
                     ? "<bean id='shared' class='"+ListMergeDirective.class.getName()+"' depends-on='converter'><property name='listPropertyDescriptor' value='populators'/><property name='add' ref='C'/></bean>"
                     : "<bean id='shared' class='"+ModifyPopulatorList.class.getName()+"'><property name='list' ref='converter'/><property name='add' ref='C'/></bean>") : "";
-            Path base=dir.resolve("base.xml");Files.writeString(base,HEAD+mark("A")+mark("B")+mark("C")+converter("converter")+converter("unrelated")+template+shared+"</beans>");
+            Path base=dir.resolve("base.xml");Files.writeString(base,HEAD+mark("A")+mark("B")+mark("C")+mark("D")+converter("converter")+converter("unrelated")+template+shared+"</beans>");
             try(var ctx=new GenericApplicationContext()) {
                 var reader=new XmlBeanDefinitionReader(ctx);reader.setValidating(false);reader.loadBeanDefinitions(new FileSystemResource(base));var resource=new FileSystemResource(file);reader.loadBeanDefinitions(resource);SpringXmlResources.record(reader,resource);
                 var modify=new ModifyPopulatorListBeanPostProcessor();modify.setBeanFactory(ctx.getBeanFactory());
@@ -98,10 +98,30 @@ public class ListDirectiveSdkProbe {
                     System.out.println(variant+" MODIFY edit applied to the live list: "+output(ctx));
                     continue;
                 }
+                if(merge && variant.equals("normal")) {
+                    boolean sharedList=variant.equals("shared");
+                    Files.writeString(file,xml(true,"D",variant));reloader.reloadLoaded(file);
+                    require(com.onurkat.reclazz.ui.RestartLedger.digest().equals(List.of("Nothing from this session needs a restart.")),"merge replacement applies");
+                    equal(sharedList?"DAC":"DA",output(ctx));require(ctx.getBeanFactory().getSingleton("directive")==directive,"merge identity unchanged");
+                    Files.writeString(file,xml(true,"D",variant).replace("beforeBeanNames","afterBeanNames"));reloader.reloadLoaded(file);
+                    require(com.onurkat.reclazz.ui.RestartLedger.digest().equals(List.of("Nothing from this session needs a restart.")),"merge position applies");equal(sharedList?"ACD":"AD",output(ctx));
+                    Files.writeString(file,xml(true,"B",variant));reloader.reloadLoaded(file);equal(original,output(ctx));
+                    String blocked=sharedList?xml(true,"C",variant):xml(true,"A",variant);
+                    com.onurkat.reclazz.ui.RestartLedger.clear();Files.writeString(file,blocked);reloader.reloadLoaded(file);
+                    require(com.onurkat.reclazz.ui.RestartLedger.digest().stream().anyMatch(line->line.contains("SAP list directive edit requires restart")),"ambiguous addition retains diagnostic");equal(original,output(ctx));
+                    require(directive.getClass().getMethod("getAdd").invoke(directive)==ctx.getBean("B"),"refused merge leaves directive intact");
+                    com.onurkat.reclazz.ui.RestartLedger.clear();Files.writeString(file,xml(true,"B",variant).replace("depends-on='converter'","depends-on='unrelated'"));reloader.reloadLoaded(file);
+                    require(com.onurkat.reclazz.ui.RestartLedger.digest().stream().anyMatch(line->line.contains("SAP list directive edit requires restart")),"merge target metadata remains diagnostic");equal(original,output(ctx));
+                    com.onurkat.reclazz.ui.RestartLedger.clear();Files.writeString(file,xml(true,"B",variant).replace("value='plain'","value='updated'"));reloader.reloadLoaded(file);
+                    require(com.onurkat.reclazz.ui.RestartLedger.digest().equals(List.of("Nothing from this session needs a restart.")),"restored merge and unrelated edit apply");
+                    var out=new StringBuilder();((Mark)ctx.getBean("plain")).populate(new Object(),out);equal("updated",out);equal(original,output(ctx));equal("A",((AbstractPopulatingConverter)ctx.getBean("unrelated")).convert(new Object()));
+                    System.out.println(variant+" MERGE edit/position/revert applied: "+output(ctx));continue;
+                }
                 for(String changed:List.of(xml(merge,"C",variant), xml(merge,"C",variant))) {
                     com.onurkat.reclazz.ui.RestartLedger.clear();
                     Files.writeString(file,changed);reloader.reloadLoaded(file);
                     require(com.onurkat.reclazz.ui.RestartLedger.digest().stream().anyMatch(s -> s.contains("SAP list directive edit requires restart")), "missing directive restart diagnostic");
+                    if(merge&&variant.equals("shared"))require(com.onurkat.reclazz.ui.RestartLedger.digest().stream().anyMatch(s->s.contains("shared")),"restart names the other directive");
                     require(ctx.getBeanFactory().getSingleton("directive")==directive, "directive identity/lazy state changed");
                     if(directive!=null) require(directive.getClass().getMethod("getAdd").invoke(directive)==ctx.getBean("B"), "live directive must not mutate");
                     require(definition.equals(ctx.getBeanFactory().getBeanDefinition("directive")), "original definition must not mutate");

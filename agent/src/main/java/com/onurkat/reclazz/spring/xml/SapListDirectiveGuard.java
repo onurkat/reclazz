@@ -31,8 +31,15 @@ final class SapListDirectiveGuard {
                 return true;
             }
             if (!normalized(previous).equals(normalized(candidate))) {
-                diff.unsafe.add(new BeanDefinitionDiff.UnsafeChange(name,
-                        "SAP list directive edit requires restart; effective target lists were not refreshed"));
+                String reason="SAP list directive edit requires restart; effective target lists were not refreshed";
+                Object live=SpringReflection.getExistingSingleton(factory,name);
+                if(live!=null&&SapListMergeDirectives.TYPE.equals(live.getClass().getName())) {
+                    try {
+                        String other=SapListMergeDirectives.sharedDirective(factory,name,previous,live);
+                        if(other!=null)reason+="; shared target with directive "+other;
+                    }catch(Exception unverifiable){/* Preserve the conservative restart fallback. */}
+                }
+                diff.unsafe.add(new BeanDefinitionDiff.UnsafeChange(name,reason));
             }
             return true;
         } catch (ReflectiveOperationException failure) {

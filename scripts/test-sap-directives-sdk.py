@@ -9,6 +9,7 @@ import tempfile
 parser = argparse.ArgumentParser()
 parser.add_argument('hybris_home', type=Path)
 parser.add_argument('--disable-guard', action='store_true', help='negative control: restart assertions must fail')
+parser.add_argument('--scenario', choices=['all', 'existing', 'modify-target', 'merge', 'boundaries', 'shared-order', 'publish-no-empty', 'snapshot-mutation'], default='all')
 args = parser.parse_args()
 repo = Path(__file__).resolve().parents[1]
 sdk = args.hybris_home.resolve()
@@ -33,7 +34,7 @@ def run(command):
 
 with tempfile.TemporaryDirectory(prefix='reclazz-directives-sdk-') as temporary:
     out = Path(temporary)
-    sources = [str(source)]
+    sources = [str(source), str(source.with_name("R28DirectiveSdkProbe.java")), str(source.with_name("R28PublicationSdkProbe.java"))]
     if args.disable_guard:
         production = repo / 'agent/src/main/java/com/onurkat/reclazz/spring/xml/XmlSafetyClassifier.java'
         text = production.read_text()
@@ -46,7 +47,10 @@ with tempfile.TemporaryDirectory(prefix='reclazz-directives-sdk-') as temporary:
     run(['javac', '-proc:none', '-cp', classpath, '-d', temporary, *sources])
     logging = out / 'log4j2.xml'
     logging.write_text('<Configuration><Appenders/><Loggers><Root level="off"/></Loggers></Configuration>')
-    run(['java',
-         '-Dlog4j.configurationFactory=org.apache.logging.log4j.core.config.xml.XmlConfigurationFactory',
-         '-Dlog4j.configurationFile=' + str(logging), '-cp', os.pathsep.join([temporary, classpath]),
-         'com.onurkat.reclazz.spring.xml.ListDirectiveSdkProbe', str(out / 'fixture')])
+    java = ['java',
+            '-Dlog4j.configurationFactory=org.apache.logging.log4j.core.config.xml.XmlConfigurationFactory',
+            '-Dlog4j.configurationFile=' + str(logging), '-cp', os.pathsep.join([temporary, classpath])]
+    scenarios = ['existing', 'modify-target', 'merge', 'boundaries', 'shared-order', 'publish-no-empty', 'snapshot-mutation'] if args.scenario == 'all' else [args.scenario]
+    for scenario in scenarios:
+        run(java + ['com.onurkat.reclazz.spring.xml.' + ('ListDirectiveSdkProbe' if scenario == 'existing' else 'R28PublicationSdkProbe' if scenario in ['shared-order', 'publish-no-empty', 'snapshot-mutation'] else 'R28DirectiveSdkProbe'),
+                    str(out / scenario), *([] if scenario == 'existing' else [scenario])])

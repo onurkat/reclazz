@@ -7,22 +7,11 @@ package com.onurkat.reclazz.spring.xml;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.LinkedHashMap;
+import java.util.Objects;
 
-/**
- * Applies an edited SAP {@code ModifyPopulatorList} directive to its live target list.
- *
- * <p>SAP's {@code ModifyPopulatorListBeanPostProcessor} runs once, when the directive bean
- * is created: it removes {@code remove} from the target converter's populators and appends
- * {@code add}. Changing {@code add} or {@code remove} in XML later has no effect until a
- * restart. For an exact, eagerly created {@code ModifyPopulatorList} whose only edited
- * properties are {@code add}/{@code remove} references, the directive's own effect is
- * reversed (the old {@code add} is taken out, the old {@code remove} is put back) and the
- * new one is applied the same way SAP does. On failure the target list, the directive and
- * the live definition are left exactly as they were.
- *
- * <p>Anything else (a {@code list} target change, subclasses, inherited or lazy
- * directives, {@code ListMergeDirective}) keeps the restart diagnostic.
- */
+/** Replays verified eager SAP list directives; ambiguous inverse histories retain restart fallback. */
 final class SapPopulatorDirectives {
     private SapPopulatorDirectives() { }
 
@@ -32,23 +21,25 @@ final class SapPopulatorDirectives {
     /** An accepted edit, applied after new beans of the same save are registered. */
     record Edit(String beanName, Object next) { }
 
-    /** True when only add/remove refs of an exact, eager, created directive changed. */
+    /** Only verified edits of an exact, eager, created directive are admitted. */
     static boolean supported(Object factory, String name, Object previous, Object next) {
         try {
             if (previous == null || next == null) return false;
-            if (!MODIFY.equals(SpringReflection.getBeanClassName(previous))
-                    || !MODIFY.equals(SpringReflection.getBeanClassName(next))) return false;
+            String type=SpringReflection.getBeanClassName(previous);
+            if (!type.equals(SpringReflection.getBeanClassName(next))
+                    || !(MODIFY.equals(type)||SapListMergeDirectives.TYPE.equals(type))) return false;
             if (SpringReflection.getParentName(previous) != null || SpringReflection.getParentName(next) != null) return false;
             if (Boolean.TRUE.equals(call(previous, "isLazyInit")) || Boolean.TRUE.equals(call(next, "isLazyInit"))) return false;
             Object live = SpringReflection.getExistingSingleton(factory, name);
-            if (live == null || !MODIFY.equals(live.getClass().getName())) return false;
+            if (live == null || !type.equals(live.getClass().getName())) return false;
+            if (SapListMergeDirectives.TYPE.equals(type))return SapListMergeDirectives.supported(factory,name,previous,next,live);
             for (String property : EDITABLE) {
                 Object value = rawValue(next, property);
-                if (value != null && !value.getClass().getName().endsWith("RuntimeBeanReference")) return false;
+                if (value != null && !localReference(value)) return false;
             }
             XmlRawValueComparator comparator = new XmlRawValueComparator(next.getClass().getClassLoader());
             return comparator.verifiedStandardDefinition(withEditable(previous, next))
-                    .equals(comparator.verifiedStandardDefinition(next));
+                    .equals(comparator.verifiedStandardDefinition(withEditable(next,next)));
         } catch (Exception | LinkageError unverifiable) {
             return false;
         }
@@ -58,65 +49,129 @@ final class SapPopulatorDirectives {
     static void apply(Object factory, Edit edit) throws Exception {
         Object directive = SpringReflection.getExistingSingleton(factory, edit.beanName());
         if (directive == null) throw new IllegalStateException("directive is not created");
-        Object target = call(directive, "getList");
-        @SuppressWarnings("unchecked")
-        List<Object> populators = (List<Object>) call(target, "getPopulators");
-        Object oldAdd = call(directive, "getAdd"), oldRemove = call(directive, "getRemove");
-        Object newAdd = resolve(factory, rawValue(edit.next(), "add"));
-        Object newRemove = resolve(factory, rawValue(edit.next(), "remove"));
-        List<Object> before = new ArrayList<>(populators);
-        try {
-            if (oldAdd != null) populators.remove(oldAdd);
-            if (oldRemove != null && !populators.contains(oldRemove)) populators.add(oldRemove);
-            if (newRemove != null) populators.remove(newRemove);
-            if (newAdd != null) populators.add(newAdd);
-            set(directive, "setAdd", newAdd);
-            set(directive, "setRemove", newRemove);
-            Object definition = SpringReflection.getBeanDefinition(factory, edit.beanName());
-            Object values = call(definition, "getPropertyValues");
-            for (String property : EDITABLE) {
-                Object value = rawValue(edit.next(), property);
-                if (value == null) call(values, "removePropertyValue", property);
-                else call(values, "add", property, value);
-            }
-            call(factory, "clearMetadataCache");
-        } catch (Exception | Error failure) {
-            populators.clear();
-            populators.addAll(before);
-            set(directive, "setAdd", oldAdd);
-            set(directive, "setRemove", oldRemove);
-            throw failure;
+        if (SapListMergeDirectives.TYPE.equals(directive.getClass().getName())) {SapListMergeDirectives.apply(factory,edit,directive);return;}
+        TargetSnapshot snapshot=new TargetSnapshot(()->call(directive,"getList"),false);
+        Object oldAdd=call(directive,"getAdd"),oldRemove=call(directive,"getRemove");
+        Object newAdd=resolve(factory,rawValue(edit.next(),"add")),newRemove=resolve(factory,rawValue(edit.next(),"remove"));
+        List<Object> applied=snapshot.copy();
+        if(oldAdd!=null)applied.remove(oldAdd);
+        if(oldRemove!=null&&!applied.contains(oldRemove))applied.add(oldRemove);
+        if(newRemove!=null)applied.remove(newRemove);
+        if(newAdd!=null)applied.add(newAdd);
+        var properties=new LinkedHashMap<String,Object>();properties.put("add",newAdd);properties.put("remove",newRemove);
+        publish(factory,edit,directive,properties,snapshot,applied);
+    }
+
+    @FunctionalInterface interface TargetLookup { Object get() throws Exception; }
+
+    /** Capture before any candidate bean resolution, and never erase intervening changes. */
+    static final class TargetSnapshot {
+        private final TargetLookup lookup;
+        private final Object owner;
+        private final boolean direct;
+        private final List<Object> original, before;
+        @SuppressWarnings("unchecked") TargetSnapshot(TargetLookup lookup,boolean direct)throws Exception {
+            this.lookup=lookup;this.direct=direct;owner=lookup.get();
+            original=direct?(List<Object>)owner:populators(owner);
+            if(direct)requireWritable(original);
+            before=new ArrayList<>(original);
+        }
+        List<Object> copy(){return new ArrayList<>(before);}
+        void verify()throws Exception {
+            if(lookup.get()!=owner||(!direct&&populators(owner)!=original)||original.size()!=before.size())changed();
+            for(int i=0;i<before.size();i++)if(original.get(i)!=before.get(i))changed();
+        }
+        private static void changed(){throw new IllegalStateException("live directive target list changed during reload");}
+        void publish(List<Object> desired)throws Exception {
+            if(direct) {
+                if(desired.size()!=before.size())throw new IllegalArgumentException("direct list publication requires unchanged cardinality");
+                // No structural change: an existing reader never sees a cleared/empty list.
+                for(int i=0;i<desired.size();i++)original.set(i,desired.get(i));
+            } else set(owner,"setPopulators",new ArrayList<>(desired));
+        }
+        void restore()throws Exception {
+            if(direct)for(int i=0;i<before.size();i++)original.set(i,before.get(i));
+            else set(owner,"setPopulators",original);
         }
     }
 
-    private static Object resolve(Object factory, Object reference) throws Exception {
+    /** Publish the calculated list, directive and raw metadata, restoring on setter/cache failure. */
+    static void publish(Object factory,Edit edit,Object directive,Map<String,Object> properties,
+                        TargetSnapshot snapshot,List<Object> desired)throws Exception {
+        Object definition=SpringReflection.getBeanDefinition(factory,edit.beanName());
+        Object backup=call(definition,"cloneBeanDefinition");
+        var oldProperties=new LinkedHashMap<String,Object>();
+        for(String property:properties.keySet())oldProperties.put(property,call(directive,"get"+capital(property)));
+        // This is outside rollback: an external edit belongs to its writer, not this reload.
+        snapshot.verify();
+        try {
+            snapshot.publish(desired);
+            for(var entry:properties.entrySet())set(directive,"set"+capital(entry.getKey()),entry.getValue());
+            Object values=call(definition,"getPropertyValues");
+            for(String property:properties.keySet()) {
+                Object value=rawValue(edit.next(),property);
+                if(value==null)call(values,"removePropertyValue",property);else call(values,"add",property,value);
+            }
+            call(factory,"clearMetadataCache");
+        } catch(Exception|Error failure) {
+            try{snapshot.restore();}catch(Exception|Error rollback){failure.addSuppressed(rollback);}
+            for(var entry:oldProperties.entrySet())try{set(directive,"set"+capital(entry.getKey()),entry.getValue());}catch(Exception|Error rollback){failure.addSuppressed(rollback);}
+            try{call(definition,"setPropertyValues",call(backup,"getPropertyValues"));}catch(Exception|Error rollback){failure.addSuppressed(rollback);}
+            throw failure;
+        }
+    }
+    private static String capital(String name){return Character.toUpperCase(name.charAt(0))+name.substring(1);}
+    @SuppressWarnings("unchecked") static List<Object> populators(Object target)throws Exception{return (List<Object>)call(target,"getPopulators");}
+    static void requireWritable(List<?> list){if(list==null||list.getClass()!=ArrayList.class)throw new IllegalArgumentException("target list implementation cannot be restored exactly");}
+    static int uniqueAddition(List<?> list,Object addition) {
+        if(addition==null)throw new IllegalArgumentException("old addition is unavailable");
+        int found=-1;
+        for(int i=0;i<list.size();i++)if(Objects.equals(list.get(i),addition)) {
+            if(found!=-1||list.get(i)!=addition)throw new IllegalArgumentException("old addition is ambiguous");found=i;
+        }
+        if(found<0)throw new IllegalArgumentException("old addition is missing");return found;
+    }
+
+    static boolean localReference(Object reference)throws Exception {
+        if(reference==null||!reference.getClass().getName().equals("org.springframework.beans.factory.config.RuntimeBeanReference"))return false;
+        Object name=call(reference,"getBeanName");
+        return name instanceof String text&&!text.isBlank()&&!text.contains("${")&&!text.contains("#{")
+                &&!Boolean.TRUE.equals(call(reference,"isToParent"))&&call(reference,"getBeanType")==null;
+    }
+    static Object resolve(Object factory, Object reference) throws Exception {
         if (reference == null) return null;
         return call(factory, "getBean", (String) call(reference, "getBeanName"));
     }
 
-    private static Object withEditable(Object previous, Object next) throws Exception {
+    static Object withEditable(Object previous, Object next) throws Exception {
+        return withEditable(previous,next,EDITABLE);
+    }
+    static Object withEditable(Object previous,Object next,List<String> editable)throws Exception {
         Object copy = call(previous, "cloneBeanDefinition");
         Object values = call(copy, "getPropertyValues");
-        for (String property : EDITABLE) {
-            Object value = rawValue(next, property);
-            if (value == null) call(values, "removePropertyValue", property);
-            else call(values, "add", property, value);
+        // These exact SDK setters assign independent fields. Canonicalize only their order;
+        // retain PropertyValue metadata/optional flags and every noneditable header/property.
+        for(String property:editable)call(values,"removePropertyValue",property);
+        Object nextValues=call(next,"getPropertyValues");
+        for(String property:editable) {
+            Object holder=call(nextValues,"getPropertyValue",property);
+            if(holder!=null)call(values,"addPropertyValue",holder);
         }
         return copy;
     }
 
-    private static Object rawValue(Object definition, String property) throws Exception {
+    static Object rawValue(Object definition, String property) throws Exception {
         Object holder = call(call(definition, "getPropertyValues"), "getPropertyValue", property);
         return holder == null ? null : call(holder, "getValue");
     }
 
-    private static void set(Object target, String setter, Object value) throws Exception {
+    static void set(Object target, String setter, Object value) throws Exception {
         for (Method method : target.getClass().getMethods())
             if (method.getName().equals(setter) && method.getParameterCount() == 1) { method.invoke(target, value); return; }
         throw new NoSuchMethodException(setter);
     }
 
-    private static Object call(Object target, String name, Object... args) throws Exception {
+    static Object call(Object target, String name, Object... args) throws Exception {
         for (Method method : target.getClass().getMethods()) {
             if (!method.getName().equals(name) || method.getParameterCount() != args.length) continue;
             Class<?>[] types = method.getParameterTypes();
