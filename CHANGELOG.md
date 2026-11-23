@@ -16,6 +16,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Gson sees fields added to a watched class after startup: an existing Gson instance
+  serializes and deserializes them on a stock JVM, and drops them again when they are
+  removed. Live Gson instances clear their type adapter cache after such a reload.
+- Getters, setters and fields added after startup are seen by Spring `BeanWrapper` and
+  `BeanUtils`, SpEL, JSP/JSF EL, Velocity, commons-beanutils, and SAP Commerce
+  `ConversionHelper` and OCC `fields=FULL`, even when those had already cached the
+  class. Levels configured in XML for OCC stay as they are.
 - Editing `spring.config.import` in a Spring Boot config file applies without a
   restart: imports are added, removed and reordered exactly as a restart would load
   them, including nested imports, relative, classpath and directory locations,

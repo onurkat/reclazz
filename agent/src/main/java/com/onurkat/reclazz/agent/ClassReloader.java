@@ -110,6 +110,7 @@ public class ClassReloader {
                     JpaEntityChange.check(existingClass, newBytecode);
             var enumChange =
                     EnumConstantChange.check(existingClass, newBytecode);
+            boolean membersChange = com.onurkat.reclazz.reload.LibraryCaches.membersChange(existingClass, newBytecode);
 
             // Redefine the existing class
             ClassDefinition definition = new ClassDefinition(existingClass, newBytecode);
@@ -133,6 +134,9 @@ public class ClassReloader {
             // leaves it null, so success here is exactly where it needs saying.
             EnumConstantAppender.applyOrExplain(
                     className, existingClass, newBytecode, enumChange, instrumentation);
+
+            // R35: libraries that cached this class's members (Gson, BeanWrapper, SpEL, EL, Velocity, OCC) see the new ones.
+            if (membersChange) com.onurkat.reclazz.reload.LibraryCaches.flushAfter(existingClass);
 
             // Invalidate caches, class may have gained/lost annotations
             springBeanCache.remove(className);

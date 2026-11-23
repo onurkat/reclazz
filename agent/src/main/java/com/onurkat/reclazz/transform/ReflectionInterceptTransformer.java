@@ -28,6 +28,11 @@ public class ReflectionInterceptTransformer implements ClassFileTransformer {
 
     private static final String BRIDGE = "com/onurkat/reclazz/bootstrap/ReflectionBridge";
     private static final String SPRING_UTILS = "org/springframework/util/ReflectionUtils";
+    private static final java.util.Set<String> BEAN_PROPERTIES = java.util.Set.of(
+            "org/springframework/beans/CachedIntrospectionResults", "org/springframework/beans/PropertyDescriptorUtils",
+            "org/springframework/beans/GenericTypeAwarePropertyDescriptor", "org/springframework/beans/ExtendedBeanInfoFactory",
+            "org/springframework/beans/StandardBeanInfoFactory",
+            "org/springframework/expression/spel/support/ReflectivePropertyAccessor");
     private static final String SPRING_VIEW = "com/onurkat/reclazz/bootstrap/SpringReflectionView";
 
     @Override
@@ -53,7 +58,9 @@ public class ReflectionInterceptTransformer implements ClassFileTransformer {
             // identical stack effects, so frames are unchanged. COMPUTE_FRAMES would require
             // a SafeClassWriter and is too expensive for this broad (all-class) transform.
             ClassWriter writer = new ClassWriter(reader, ClassWriter.COMPUTE_MAXS);
-            ClassVisitor visitor = new ReflectionRewriteVisitor(writer, spring);
+            // R35: bean-property discovery is not a lifecycle scan; it sees added getters and setters like the JDK's
+            // Introspector does (BeanWrapper form binding, BeanUtils.copyProperties, SAP Commerce ConversionHelper).
+            ClassVisitor visitor = new ReflectionRewriteVisitor(writer, spring && !BEAN_PROPERTIES.contains(className));
 
             reader.accept(visitor, ClassReader.EXPAND_FRAMES);
 

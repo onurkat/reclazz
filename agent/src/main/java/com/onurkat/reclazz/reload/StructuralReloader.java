@@ -110,7 +110,7 @@ public class StructuralReloader {
                 for(var method:owner.getDeclaredMethods())if(!InjectedNames.isInjected(method.getName()))
                     targets.put(InjectedNames.siteKey(method.getName(),CallSiteAdapter.descHash(org.objectweb.asm.Type.getMethodDescriptor(method)),Modifier.isStatic(method.getModifiers())),lookup.unreflect(method));
                 com.onurkat.reclazz.spring.SpringAddedOperations.publish(owner,bytes,lookup,platformContext==null?List.of():platformContext.getAllApplicationContexts());
-                JacksonAddedGetters.publish(owner,bytes,lookup,targets);
+                JacksonAddedGetters.publish(owner,bytes,lookup,targets);LibraryCaches.flushIfMembersChanged(owner);
                 com.onurkat.reclazz.bootstrap.OrikaBridge.reloaded(owner,com.onurkat.reclazz.bootstrap.JacksonBridge.hasGetters(owner)?bytes:null);
                 AddedExceptionHandlers.publish(owner,bytes,lookup,targets);AddedMvcBindingMethods.publish(owner,bytes,lookup,targets);
                 JacksonEnumCaches.flush();SpringValidatorReloader.flush();JaxbContextCaches.evict(owner);
@@ -1330,6 +1330,7 @@ public class StructuralReloader {
             afterSwitch(className, "making added properties available to Jackson", () -> {
                 jacksonGetters.addAll(JacksonAddedGetters.publish(targetClass, newBytecode,
                         getterLookup, newTargets));
+                LibraryCaches.flushIfMembersChanged(targetClass);
                 com.onurkat.reclazz.bootstrap.OrikaBridge.reloaded(targetClass,
                         com.onurkat.reclazz.bootstrap.JacksonBridge.hasGetters(targetClass) ? newBytecode : null);
             });
@@ -1509,7 +1510,7 @@ public class StructuralReloader {
             // correctly is not news. The enum path keeps its own sentence,
             // because there the constant was failing outright.
             if (isStructural || diff.isAnnotationsChanged() || hadJacksonGetters || !jacksonGetters.isEmpty()) {
-                int mappers = JacksonEnumCaches.flush();
+                int mappers = JacksonEnumCaches.flush(); GsonCaches.flush();
 
                 // Bean Validation resolves a class's constraints once and keeps
                 // them, so adding @NotBlank to a field of a request body

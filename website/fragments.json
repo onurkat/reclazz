@@ -376,6 +376,8 @@
     "edited-aspect-pointcuts",
     "jackson-getters-added-after-startup",
     "jackson-properties-added-after-startup",
+    "gson-fields-added-after-startup",
+    "bean-properties-added-after-startup",
     "scheduled-methods-added-after-startup",
     "event-listener-methods-added-after-startup",
     "transaction-and-cache-advice-on-added-callbacks",

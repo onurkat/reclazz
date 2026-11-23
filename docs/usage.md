@@ -1415,6 +1415,50 @@ members. A class literal combined with reflective member or record-component
 lookup is conservatively refused for a tainted owner. Reflection using names or
 values supplied elsewhere is outside that bytecode check.
 
+### Gson fields added after startup
+
+A field added to a watched class is serialized and deserialized by every Gson
+instance, including one created before the change that already cached an
+adapter for the class. On a stock JVM the added field lives outside the JVM
+class; inside Gson only, field discovery and field reads and writes go through
+the same added-member metadata Jackson uses, and each live Gson clears its type
+adapter cache after a reload that changes fields or enum constants. Removing the
+field again removes it from the JSON. Gson's own rules still apply (`transient`,
+`@Expose` with `excludeFieldsWithoutExposeAnnotation`, naming policies, exclusion
+strategies). A `TypeAdapter` your code obtained and kept keeps the fields it was
+built with; get a new one for the new shape. The hook must load before Gson does,
+so it covers `-javaagent` starts, not an attach after Gson was loaded.
+
+Covered by `AddedGsonFieldReloadTest` on Gson 2.11.0, stock JDK.
+
+### Bean properties added after startup in other libraries
+
+A getter/setter pair or field added to a watched class is seen by these
+libraries after the reload, even when they had already cached the class:
+
+- Spring `BeanWrapper` and `BeanUtils` (form binding, `copyProperties`), Spring
+  5.3 and 6. Spring's lifecycle scans (init and destroy callbacks, event
+  listeners, scheduling) still see only the original methods; bean-property
+  discovery is the one exception.
+- SpEL property access (`#{dto.added}`, `@Value`, Thymeleaf-Spring) through an
+  existing evaluation context.
+- JSP and JSF EL (`${dto.added}`), Tomcat's Jakarta and javax implementations,
+  which SAP Commerce uses, and GlassFish's javax implementation.
+- Velocity templates (SAP Commerce emails, CMS and ImpEx translators).
+- commons-beanutils `PropertyUtils`.
+- SAP Commerce `ConversionHelper.copyProperties` and OCC `fields=FULL` (and
+  `BASIC`/`DEFAULT` when they are computed). Levels configured in XML through
+  `FieldSetLevelMapping` beans stay as configured.
+
+Removing the member again removes it everywhere. Each library is covered by its
+own `Added*ReloadTest`; the SAP Commerce and Velocity ones use the jars of a local
+SAP Commerce installation. Only a save that adds or removes fields or methods
+clears these caches; a body-only save leaves them warm. The hooks must load before
+the library does, so an agent attached later covers only instances created after
+the attach. Groovy (HAC console, script jobs) and SAP Commerce's
+`DefaultValidationService` metadata are not covered: a restart shows added members
+to them.
+
 ## Spring service methods, scheduling and events
 
 Read the [service operation](#operations-on-added-service-methods), scheduling and event reference sections below.
@@ -3774,16 +3818,19 @@ doesn't allow). This has one consequence worth knowing:
   invocation is rewritten through the companion via `invokedynamic`
 - Hot-compiled Java code within the owner or another reloaded watched class that reads/writes a new instance field; see the [cross-class scope](#cross-class-access-to-added-instance-fields)
 - Jackson JSON input/output through the [added property adapter](#jackson-properties-added-after-startup)
+- SAP Commerce `ModelService` attribute dispatch for added getters and setters
+  on watched model classes, through the supported Spring `ReflectionUtils`
+  adapter. This does not add the method to the original `Class` object.
 - Hybris Jalo-layer property access (`jaloItem.setProperty(...)`)
 - Flexible search with new attribute columns (after HAC
   `updatesystem` for items.xml changes)
 
 **Needs server restart on standard JVMs (works immediately on JBR/DCEVM):**
 - `Class.getMethod("setNewThing", ...)` on the original class
-- Reflective consumers without a supported adapter (Hybris `ModelService`'s
-  attribute dispatch, Gson, and Jackson use outside the property adapter's scope)
-- Groovy console reflection that reaches through
-  `ModelService.setAttributeValue` / `getAttributeValue`
+- Reflective consumers without a supported adapter (Jackson use outside the
+  property adapter's scope; Gson is covered for fields, not getters)
+- Direct Groovy console reflection that asks the original class for an added
+  method instead of using `ModelService` attribute dispatch
 
 **Removed methods:** a caller that still uses a method the save removed,
 a class nobody recompiled or a framework holding its `Method`, gets what it

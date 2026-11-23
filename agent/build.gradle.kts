@@ -195,6 +195,9 @@ dependencies {
     testImplementation("org.yaml:snakeyaml:1.30")
     // Real DTO serialization regressions; never included in the agent jar.
     testImplementation("com.fasterxml.jackson.core:jackson-databind:2.23.0")
+    testImplementation("com.google.code.gson:gson:2.11.0")
+    // R35: commons-beanutils 1 descriptor cache; logging comes from spring-jcl on the test classpath.
+    testImplementation("commons-beanutils:commons-beanutils:1.9.4") { exclude(group = "commons-logging") }
     // Optional<P> retained native-record codecs; test-only, absent from agent artifacts.
     testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.23.0")
     testImplementation("org.hibernate.validator:hibernate-validator:6.2.5.Final")
@@ -345,6 +348,7 @@ dependencies {
     // Real Jakarta MVC async lifecycle and local HTTP tests; never packaged.
     add(springSixTests.implementationConfigurationName, "org.springframework:spring-webmvc:6.1.14")
     add(springSixTests.implementationConfigurationName, "org.springframework:spring-test:6.1.14")
+    add(springSixTests.implementationConfigurationName, "org.apache.tomcat.embed:tomcat-embed-el:10.1.31")
     add(springSixTests.implementationConfigurationName, "org.apache.tomcat.embed:tomcat-embed-core:10.1.60") {
         // jakarta.annotation-api below already supplies these classes.
         exclude(group = "org.apache.tomcat", module = "tomcat-annotations-api")

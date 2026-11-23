@@ -13,7 +13,9 @@
         "registered-mvc-interceptors-current-singleton-routing",
         "binding-and-model-methods-added-after-startup",
         "edited-aspect-pointcuts",
-        "jackson-properties-added-after-startup"
+        "jackson-properties-added-after-startup",
+        "gson-fields-added-after-startup",
+        "bean-properties-added-after-startup"
       ]
     },
     {

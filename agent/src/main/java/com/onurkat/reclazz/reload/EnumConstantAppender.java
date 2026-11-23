@@ -89,7 +89,7 @@ public final class EnumConstantAppender {
             // The mapper caches still carry the removed constant: they would
             // keep serialising it and keep accepting its name.
             EnumConstantChange.accepted(loaded, newBytecode);
-            int mappers = JacksonEnumCaches.flush();
+            int mappers = JacksonEnumCaches.flush(); GsonCaches.flush();
             EnumConstantChange.reportTailRemoved(className, removedTail, mappers);
             if (implementsHybrisEnumValue(loaded)) {
                 StatusReporter.info("This is a SAP Commerce enumtype: the EnumerationValue "
@@ -179,7 +179,7 @@ public final class EnumConstantAppender {
         // on deserialise until they are flushed. Zero mappers means no Spring
         // or no Jackson, and the report stays silent about a repair that had
         // nothing to repair.
-        int mappers = JacksonEnumCaches.flush();
+        int mappers = JacksonEnumCaches.flush(); GsonCaches.flush();
 
         EnumConstantChange.reportAppended(className, outcome.appended(), tables, mappers);
         if (!inserted.isEmpty()) {

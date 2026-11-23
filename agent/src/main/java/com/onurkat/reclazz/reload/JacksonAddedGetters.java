@@ -35,9 +35,14 @@ final class JacksonAddedGetters {
             try {
                 Class.forName("tools.jackson.databind.ObjectMapper", false, owner.getClassLoader());
             } catch (ClassNotFoundException | LinkageError absent) {
+              try {
+                // R35: Gson reads the same added-field metadata (GsonAccessorTransformer).
+                Class.forName("com.google.gson.Gson", false, owner.getClassLoader());
+              } catch (ClassNotFoundException | LinkageError noGson) {
                 // Without either Jackson family, retain the ordinary visibility diagnostic.
                 JacksonBridge.replace(owner, null, Map.of());
                 return Set.of();
+              }
             }
         }
         ClassNode source = new ClassNode();

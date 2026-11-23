@@ -406,6 +406,32 @@
       "heading": "### Jackson properties added after startup\n"
     },
     {
+      "key": "gson-fields-added-after-startup",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Gson fields added after startup"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Gson fields added after startup",
+      "id": "gson-fields-added-after-startup",
+      "body_sha256": "0b9b6fbda336608545f9435354d4a183dd998ce0cd735a6bd182638c4ef35f4d",
+      "heading": "### Gson fields added after startup\n"
+    },
+    {
+      "key": "bean-properties-added-after-startup",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Bean properties added after startup in other libraries"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Bean properties added after startup in other libraries",
+      "id": "bean-properties-added-after-startup",
+      "body_sha256": "f94b55e499b65b18dd5ea6725968de0412744ae824afef6c793f524500355432",
+      "heading": "### Bean properties added after startup in other libraries\n"
+    },
+    {
       "key": "scheduled-methods-added-after-startup",
       "identity": [
         "Option 1: Manual Setup",
@@ -1069,7 +1095,7 @@
       "level": 3,
       "title": "Companion-class reflective visibility caveat",
       "id": "companion-class-reflective-visibility-caveat",
-      "body_sha256": "1af6301661b175f94899503f1b6f471b27446234240f3d694125666d25a8e7a5",
+      "body_sha256": "10e53eea7693f2fd45f07da620305f78b28e15eb866f5e7c92eb4631a10b598e",
       "heading": "### Companion-class reflective visibility caveat\n"
     },
     {

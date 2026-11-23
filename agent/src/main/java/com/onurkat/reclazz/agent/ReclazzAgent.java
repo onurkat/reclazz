@@ -628,6 +628,8 @@ public class ReclazzAgent {
                 // Jackson must take its specialised metadata route before the general
                 // reflection transformer rewrites these same Class calls.
                 instrumentation.addTransformer(new JacksonAccessorTransformer(), true);
+                instrumentation.addTransformer(new com.onurkat.reclazz.transform.GsonAccessorTransformer(), true);
+                instrumentation.addTransformer(new com.onurkat.reclazz.transform.CacheOwnerTransformer(), true);
                 instrumentation.addTransformer(new com.onurkat.reclazz.transform.OrikaPropertyTransformer(), true);
                 instrumentation.addTransformer(new com.onurkat.reclazz.transform.OrikaMappingPolicyTransformer(), true);
                 instrumentation.addTransformer(new com.onurkat.reclazz.transform.OrikaMapperCacheTransformer(), true);
