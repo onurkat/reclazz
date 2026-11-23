@@ -139,6 +139,34 @@ public final class StaticInitializerReset implements Opcodes {
         }
     }
 
+    /** Outcome of comparing an uninstrumented interface's static initialization with the last accepted version. */
+    public enum InterfaceInit { UNCHANGED, CHANGED, UNVERIFIED }
+
+    /**
+     * For an uninstrumented interface, before redefinition: compares the save's normalized {@code <clinit>} with the last
+     * accepted one. The JVM keeps initialized interface fields after redefinition, so a change is never applied. Without a
+     * first-load record (loaded before the agent) a save that has static initialization cannot be proven unchanged
+     * (audit round 2 F1a). Does not advance anything; call {@link #interfaceInitializationAccepted} after success (F1b).
+     */
+    public static InterfaceInit interfaceInitialization(Class<?> owner, byte[] next) {
+        try {
+            String clinit = clinitSymbols(read(next));
+            State state = BASELINES.get(owner);
+            synchronized (state.fields) {
+                if (!state.prepared) return clinit.equals("no-clinit") ? InterfaceInit.UNCHANGED : InterfaceInit.UNVERIFIED;
+                return state.observedClinit.equals(clinit) ? InterfaceInit.UNCHANGED : InterfaceInit.CHANGED;
+            }
+        } catch (RuntimeException | LinkageError unreadable) { return InterfaceInit.UNVERIFIED; }
+    }
+
+    /** After a successful redefinition only: the save's initialization becomes the comparison baseline. */
+    public static void interfaceInitializationAccepted(Class<?> owner, byte[] next) {
+        try {
+            State state = BASELINES.get(owner);
+            synchronized (state.fields) { if (state.prepared) state.observedClinit = clinitSymbols(read(next)); }
+        } catch (RuntimeException | LinkageError unreadable) { /* the next comparison stays conservative */ }
+    }
+
     private static void report(Class<?> owner, String key, String reason) {
         StatusReporter.warn("Static " + owner.getName() + "." + key.substring(0, key.indexOf(':'))
                 + " initializer changed, not reset: " + reason + "; restart to apply");

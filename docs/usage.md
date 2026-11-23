@@ -3795,6 +3795,13 @@ members visible on the original class. See the [versioned core evidence](feature
 
 ## Known Limitations
 
+Interfaces are not instrumented, because an interface cannot hold the private
+fields Reclazz adds to classes. Method body edits in an interface, including
+default and static method bodies, still reload on any JVM, with no warning.
+Adding, removing or changing the signature of an interface method or field is
+refused on a stock JVM with a restart reason that says so; JetBrains Runtime with
+enhanced class redefinition applies it.
+
 ### Changed Static Initializers
 
 Start the JVM with `resetStatics=true`, or enable **Re-run changed static

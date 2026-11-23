@@ -393,4 +393,26 @@ class StaticInitializerResetTest extends TransformTestBase {
         StaticInitializerReset.afterReload(o.type,next,true);
         assertNull(o.value("CODES"),"later saves must also leave that logical added field alone");
     }
+    /** R33 audit round 2 F1b: comparing does not accept; only a successful redefinition advances the baseline. */
+    @Test void interfaceInitializationIsAcceptedOnlyAfterSuccess() throws Exception {
+        String name = "com.example.InitIface";
+        java.util.function.Function<String,byte[]> iface = value -> compile(new SourceFile(name,
+                "package com.example; public interface InitIface { Object VALUE = java.util.List.of(\"" + value + "\"); }")).get(name.replace('.', '/'));
+        byte[] old = iface.apply("old"), changed = iface.apply("new");
+        var loader = new ClassLoader(StaticInitializerResetTest.class.getClassLoader()) {
+            Class<?> define(byte[] b) { return defineClass(name, b, 0, b.length); }
+        };
+        StaticFieldPreparation.recordDefinition(loader, name.replace('.', '/'), old, false);
+        Class<?> type = loader.define(old);
+        assertEquals(StaticInitializerReset.InterfaceInit.CHANGED, StaticInitializerReset.interfaceInitialization(type, changed));
+        assertEquals(StaticInitializerReset.InterfaceInit.CHANGED, StaticInitializerReset.interfaceInitialization(type, changed),
+                "a failed redefinition must not make the change look accepted");
+        StaticInitializerReset.interfaceInitializationAccepted(type, changed);
+        assertEquals(StaticInitializerReset.InterfaceInit.UNCHANGED, StaticInitializerReset.interfaceInitialization(type, changed));
+        var unrecorded = new ClassLoader(StaticInitializerResetTest.class.getClassLoader()) {
+            Class<?> define(byte[] b) { return defineClass(name, b, 0, b.length); }
+        }.define(old);
+        assertEquals(StaticInitializerReset.InterfaceInit.UNVERIFIED, StaticInitializerReset.interfaceInitialization(unrecorded, changed),
+                "without a first-load record a static initialization cannot be proven unchanged");
+    }
 }

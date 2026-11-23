@@ -232,14 +232,31 @@ public class StructuralReloader {
                     com.onurkat.reclazz.transform.RawClassSchema old=null;
                     try {old=com.onurkat.reclazz.transform.VmClassShape.read(loaded,instrumentation);}
                     catch(Exception|LinkageError unavailable){
-                        if(next.knownChangeFrom(loaded))return ClassReloader.ReloadResult.failure(
+                        if(next.knownChangeFrom(loaded))return loaded.isInterface() ? interfaceMembersChanged(className)
+                                : ClassReloader.ReloadResult.failure(
                                 className+" was loaded before Reclazz could instrument it; class members changed; restart to apply",false);
                         StatusReporter.detail("Loaded schema preflight unavailable; the JVM will check this edit atomically: "+className);
                     }
-                    if(old!=null && !old.equals(next))return ClassReloader.ReloadResult.failure(
+                    if(old!=null && !old.equals(next)){
+                        if(loaded.isInterface())return interfaceMembersChanged(className);
+                        return ClassReloader.ReloadResult.failure(
                             className+" was loaded before Reclazz could instrument it; class schema changed; restart to apply",false);
+                    }
                 }
-                return standardReload(className, newBytecode);
+                StaticInitializerReset.InterfaceInit interfaceInit=loaded!=null&&loaded.isInterface()
+                        ?StaticInitializerReset.interfaceInitialization(loaded,newBytecode):StaticInitializerReset.InterfaceInit.UNCHANGED;
+                ClassReloader.ReloadResult reloaded=standardReload(className, newBytecode);
+                if(reloaded.isSuccess()&&loaded!=null&&loaded.isInterface()) {
+                    if(interfaceInit!=StaticInitializerReset.InterfaceInit.UNCHANGED){
+                        String reason=interfaceInit==StaticInitializerReset.InterfaceInit.CHANGED
+                                ?"static initialization of interface changed; its static fields keep their first values on a running JVM"
+                                :"static initialization of interface could not be compared (loaded before Reclazz recorded it); its static fields keep their first values on a running JVM";
+                        StatusReporter.warn(className+": "+reason+"; restart to apply if you changed a static field. Method bodies reloaded.");
+                        RestartLedger.note(className,reason);
+                    }
+                    StaticInitializerReset.interfaceInitializationAccepted(loaded,newBytecode);
+                }
+                return reloaded;
             }
 
             // Analyze structural changes
@@ -1014,6 +1031,11 @@ public class StructuralReloader {
         // load-time transform, and that one is worth saying.
         if (loaded == null) return;
 
+        // Interfaces are left uninstrumented on purpose (they cannot hold the private fields the
+        // transform adds). Their method bodies, default methods included, reload completely, so a save
+        // that only edits bodies must not warn or leave a restart in the ledger. A member change is
+        // reported by interfaceMembersChanged when it actually happens.
+        if (loaded.isInterface()) return;
         if (uninstrumentedReported.add(className)) {
             // Two different reasons produce an uninstrumented class, and
             // guessing the common one would be telling this developer
@@ -1048,6 +1070,15 @@ public class StructuralReloader {
                     "was loaded before Reclazz could instrument it, so members cannot be "
                     + "added to it or removed from it");
         }
+    }
+
+    /** An interface whose methods or fields were added, removed or changed in signature: a restart on a stock JVM. */
+    private static ClassReloader.ReloadResult interfaceMembersChanged(String className) {
+        String reason = "an interface method or field was added, removed or changed in signature; a stock JVM applies only "
+                + "method body changes to an interface (default and static method bodies reload), and JetBrains Runtime "
+                + "with enhanced class redefinition applies member changes";
+        RestartLedger.note(className, reason);
+        return ClassReloader.ReloadResult.failure(className + ": " + reason + "; restart to apply", false);
     }
 
     private final java.util.Set<String> uninstrumentedReported =

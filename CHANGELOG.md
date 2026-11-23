@@ -36,6 +36,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Editing a default or static method body in an interface no longer warns that the
+  interface was loaded before instrumentation or records a pending restart: the edit
+  is fully applied. An added, removed or changed interface method now names the
+  actual reason (an interface member change on a stock JVM) instead of the
+  uninstrumented-class message.
 - Record reload diagnostics describe stock-JVM failures without native-mode wording
   and explain multi-record saves and restart once. Ordinary caller replacement
   installs every constructor initializer before leaving its record cohort; ordinary
