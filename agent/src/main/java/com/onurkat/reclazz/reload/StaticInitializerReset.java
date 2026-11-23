@@ -50,6 +50,10 @@ public final class StaticInitializerReset implements Opcodes {
     }
 
     public static void afterReload(Class<?> owner, byte[] original, boolean enabled, Set<String> addedFields) {
+        // Interface fields are final by the JVM specification, so they are never prepared; the interface reload path
+        // already names the unapplied static initialization once. A per-field "not-prepared" line on top of it said
+        // something untrue (remote gate ee78e927, Windows, resetStatics=true).
+        if (owner.isInterface()) return;
         try {
             // Reflection reports the declaration of the accepted source, not the first-load one (R31b audit F1).
             Set<String> stillFinal = new HashSet<>();

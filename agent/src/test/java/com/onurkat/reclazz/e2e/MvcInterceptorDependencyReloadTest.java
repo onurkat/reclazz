@@ -87,7 +87,9 @@ class MvcInterceptorDependencyReloadTest {
     }
 
     private long reloads(WatchedApp app, String name) {
-        return app.output().stream().filter(s -> s.contains("Reloaded app." + name + " ")
+        // A reload line names the class followed by " (12ms)" or, when no duration is reported, by ":" (ee78e927 WSL:
+        // "Reloaded app.Helper: bean helper re-created" was a real reload the old " "-only match did not count).
+        return app.output().stream().filter(s -> s.contains("Reloaded app." + name + " ") || s.contains("Reloaded app." + name + ":")
                 || s.contains("Structural reload: app." + name + " ")).count();
     }
     private void awaitReload(WatchedApp app, String name, int count) throws Exception {

@@ -54,6 +54,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Changing a static initializer in an interface with `resetStatics=true` no longer adds
+  a per-field "not-prepared" warning next to the interface message; interface fields
+  are final by definition and the interface message already names the restart.
+
 - Editing a default or static method body in an interface no longer warns that the
   interface was loaded before instrumentation or records a pending restart: the edit
   is fully applied. An added, removed or changed interface method now names the

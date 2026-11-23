@@ -53,7 +53,7 @@ class ComposedCacheOperationReloadTest {
         assertEquals(count, reloads(app, name), app.tail());
     }
     private static long reloads(WatchedApp app, String name) {
-        return app.output().stream().filter(s -> s.contains("Reloaded app." + name + " ")
+        return app.output().stream().filter(s -> s.contains("Reloaded app." + name + " ") || s.contains("Reloaded app." + name + ":")
                 || s.contains("Structural reload: app." + name + " ")).count();
     }
     private static String probe(boolean added) {

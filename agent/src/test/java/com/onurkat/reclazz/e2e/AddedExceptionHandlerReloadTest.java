@@ -69,7 +69,7 @@ class AddedExceptionHandlerReloadTest {
         }
     }
     private static long reloads(WatchedApp app, String name) {
-        return app.output().stream().filter(s -> s.contains("Reloaded app." + name + " ")
+        return app.output().stream().filter(s -> s.contains("Reloaded app." + name + " ") || s.contains("Reloaded app." + name + ":")
                 || s.contains("Structural reload: app." + name + " ")).count();
     }
     private static void check(HttpClient client, int port, String path, int status, String body) throws Exception {
