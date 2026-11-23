@@ -529,6 +529,12 @@
                 description="Reconnect to the Reclazz agent">
             <add-to-group group-id="ToolsMenu" anchor="last"/>
         </action>
+        <action id="Reclazz.SetupWizard"
+                class="com.onurkat.reclazz.plugin.setup.OpenSetupWizardAction"
+                text="Set Up Reclazz"
+                description="Set up Reclazz step by step, or check an existing setup">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+        </action>
         <action id="Reclazz.AttachToServer"
                 class="com.onurkat.reclazz.plugin.agent.AttachAction"
                 text="Attach Reclazz to Running Server"

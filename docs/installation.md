@@ -63,6 +63,25 @@ Finish with [your first reload](#your-first-reload).
    and restart the IDE if prompted. Alternatively, use **Install Plugin from
    Disk…** with a plugin ZIP from [GitHub Releases](https://github.com/onurkat/reclazz/releases).
    Choose a release that actually contains the ZIP; the agent JAR is not the IDE plugin.
+
+### Setup wizard
+
+After installing, click **Set Up Reclazz** on the notification, or open
+**Tools → Set Up Reclazz**. The wizard opens as the **Setup** tab of the Reclazz tool
+window. For a SAP Commerce project it has three steps:
+
+1. **Install Reclazz** adds the Reclazz Java agent to `tomcat.javaoptions` and
+   `tomcat.debugjavaoptions` in a marked block of `local.properties`. The exact lines
+   are shown before you click.
+2. **Run ant server** regenerates the launch configuration, with the output shown
+   live. Then restart your server the way you always do.
+3. **Connect your AI assistant** (optional) adds the Reclazz MCP server to Claude
+   Code, Cursor, VS Code or Codex for this project. You can skip it.
+
+For any other project the wizard turns Reclazz on (the IDE adds the Java agent to the
+Java run configurations you start) and offers the same optional AI assistant step.
+
+The manual steps below are what the wizard does for an IDE-started application.
 2. Open the project and enable **Settings → Tools → Reclazz → Enable Reclazz in this project**.
    It is off by default. This also works for non-SAP Commerce projects.
 3. Start a Java run configuration handled by the IDE. Reclazz supplies its bundled

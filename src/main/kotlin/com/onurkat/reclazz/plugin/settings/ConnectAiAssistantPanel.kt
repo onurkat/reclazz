@@ -26,14 +26,15 @@ import javax.swing.*
 class ConnectAiAssistantPanel internal constructor(
     private val project: Project,
     private val home: Path = Path.of(System.getProperty("user.home")),
-    private val stage: (McpLauncherStaging.Staged) -> McpLauncherStaging.Staged = { stageBundled(it) },
-    private val jsonEditor: () -> JsonMcpEditor? = { project.getService(JsonMcpEditor::class.java) },
-    private val tomlEditor: () -> TomlMcpEditor? = { project.getService(TomlMcpEditor::class.java) },
+    stage: (McpLauncherStaging.Staged) -> McpLauncherStaging.Staged = { AiAssistantConnector.stageBundled(it) },
+    jsonEditor: () -> JsonMcpEditor? = { project.getService(JsonMcpEditor::class.java) },
+    tomlEditor: () -> TomlMcpEditor? = { project.getService(TomlMcpEditor::class.java) },
     private val copy: (String)->Unit = { Toolkit.getDefaultToolkit().systemClipboard.setContents(StringSelection(it),null) },
-    private val plan: () -> McpLauncherStaging.Staged = ::planBundled,
-    private val detect: ((McpClient)->Boolean)? = null,
+    private val plan: () -> McpLauncherStaging.Staged = { AiAssistantConnector.planBundled() },
+    detect: ((McpClient)->Boolean)? = null,
     private val windows: Boolean = System.getProperty("os.name").startsWith("Windows")
 ) : JPanel(BorderLayout(8,8)) {
+    private val connector=AiAssistantConnector(project,home,stage,jsonEditor,tomlEditor,plan,detect,windows)
     internal val client=JComboBox(McpClient.values())
     internal val global=JCheckBox("Global (all projects)")
     internal val directory=JTextField(project.basePath.orEmpty())
@@ -61,9 +62,8 @@ class ConnectAiAssistantPanel internal constructor(
     private val before=JTextArea(12,35).apply { isEditable=false;lineWrap=true;wrapStyleWord=false;minimumSize=Dimension(0,0) }
     private val after=JTextArea(12,35).apply { isEditable=false;lineWrap=true;wrapStyleWord=false;minimumSize=Dimension(0,0) }
     private data class Selection(val client:McpClient,val global:Boolean,val directory:String)
-    private data class Prepared(val entry:McpEntry,val path:Path,val scope:McpClientConfigs.Scope,val staged:McpLauncherStaging.Staged)
-    private data class Connection(val prepared:Prepared,val config:McpClientConfigs.Preview)
-    private data class Copied(val prepared:Prepared,val text:String)
+    private data class Connection(val prepared:AiAssistantConnector.Prepared,val config:McpClientConfigs.Preview)
+    private data class Copied(val prepared:AiAssistantConnector.Prepared,val text:String)
     private var preview:Connection?=null
     private var pendingCopy:Copied?=null
     init {
@@ -109,16 +109,7 @@ class ConnectAiAssistantPanel internal constructor(
             val selected=selection();invalidatePreview()
             work({
                 val prepared=prepare(selected)
-                val config=McpClientConfigs.preview(prepared.path,prepared.scope) { text -> runReadAction {
-                    if(selected.client==McpClient.CODEX) {
-                        val editor=tomlEditor() ?: error("TOML support is unavailable. Use Copy config; no file was written.")
-                        editor.merge(text,prepared.entry)
-                    } else {
-                        val editor=jsonEditor() ?: error("JSON support is unavailable. Use Copy command / config; no file was written.")
-                        editor.merge(text,selected.client.serversKey!!,prepared.entry)
-                    }
-                } }
-                Connection(prepared,config)
+                Connection(prepared,connector.preview(selected.client,prepared))
             }) { result ->
                 preview=result
                 before.text=result.config.before?.toString(Charsets.UTF_8) ?: "(new file)";after.text=result.config.after
@@ -129,10 +120,7 @@ class ConnectAiAssistantPanel internal constructor(
             val result=preview ?: return@addActionListener
             preview=null
             work({
-                result.prepared.scope.validate(result.config.path)
-                publish(result.prepared)
-                McpLauncherStaging.rememberConfig(home,result.config.path)
-                result.config.confirm()
+                connector.connect(result.prepared,result.config)
             }) { backup ->
                 status.text="Saved ${result.config.path}. "+(backup?.let { "Backup: $it. " } ?: "New file. ")+"Reconnect the client; approve/trust the project there if requested."
             }
@@ -152,7 +140,7 @@ class ConnectAiAssistantPanel internal constructor(
                 pendingCopy=null
                 work({
                     pending.prepared.scope.validate(pending.prepared.path)
-                    publish(pending.prepared)
+                    connector.publish(pending.prepared)
                     McpLauncherStaging.rememberConfig(home,pending.prepared.path,pending.prepared.staged)
                     pending.text
                 }) { text -> copy(text);status.text="Copied setup; no client config was written. Its launcher version is protected from cleanup, including before you paste it." }
@@ -175,7 +163,7 @@ class ConnectAiAssistantPanel internal constructor(
             }
         }
         refreshControls()
-        work({ McpClient.values().associateWith { detect?.invoke(it) ?: detected(it) } }) { detectedClients=it;client.repaint() }
+        work({ McpClient.values().associateWith { detected(it) } }) { detectedClients=it;client.repaint() }
     }
     private fun selection()=Selection(client.selectedItem as McpClient,global.isSelected,directory.text)
     private fun refreshControls() {
@@ -210,63 +198,9 @@ class ConnectAiAssistantPanel internal constructor(
         }
     }
     internal fun close() { closed=true }
-    private fun publish(prepared:Prepared) {
-        require(stage(prepared.staged)==prepared.staged) { "Bundled MCP changed; preview again" }
-    }
-    private fun prepare(selected:Selection):Prepared {
-        val root=Path.of(selected.directory);require(root.isAbsolute) { "Choose an absolute project directory" }
-        val real=root.toRealPath()
-        val base=Path.of(requireNotNull(project.basePath) { "Open an IDE project first" }).toRealPath()
-        require(real.startsWith(base)) { "Choose this IDE project's directory or a directory inside it" }
-        val sap=runReadAction { HybrisProjectDetector.findHybrisHome(project)?.toRealPath() }
-        require(sap==null || sap.startsWith(real)) { "SAP Commerce home is outside the selected project. Choose its containing IDE project." }
-        val version=plan()
-        val args=mutableListOf("--project-dir",real.toString())
-        val configured=runReadAction { ReclazzSettings.getInstance(project).state.portFilePath }
-        val port=when {
-            configured.isNotBlank() -> real.resolve(configured).normalize()
-            sap!=null -> sap.resolve(".reclazz/agent.port")
-            else -> null
-        }
-        if(port!=null) {
-            require(port.startsWith(real)) { "Agent port file must be inside the selected project" }
-            args.addAll(listOf("--port-file",port.toString()))
-        }
-        val entry=McpEntry(version.launcher.toString(),args)
-        if(windows)entry.validateWindowsLauncher()
-        val file=selected.client.path(real,home.toRealPath(),selected.global).toAbsolutePath().normalize()
-        val scope=McpClientConfigs.Scope(if(selected.global)home.toRealPath() else real)
-        scope.validate(file)
-        if(!selected.global && selected.client.globalFile!=null) {
-            val globalPath=home.toRealPath().resolve(selected.client.globalFile).normalize()
-            require(file!=globalPath) { "This is the global config. Select Global (all projects) explicitly." }
-        }
-        return Prepared(entry,file,scope,version)
-    }
-    private fun detected(client:McpClient):Boolean {
-        val config=client.path(Path.of(project.basePath ?: "."),home,false)
-        if(Files.exists(config) || client.globalFile?.let { Files.exists(home.resolve(it)) }==true)return true
-        val executable=when(client) { McpClient.CLAUDE->"claude";McpClient.CURSOR->"cursor";McpClient.VSCODE->"code";McpClient.CODEX->"codex" }
-        val paths=System.getenv("PATH").orEmpty().split(java.io.File.pathSeparator).filter { it.isNotBlank() }
-        if(paths.any { Files.isExecutable(Path.of(it).resolve(executable)) || Files.isExecutable(Path.of(it).resolve("$executable.exe")) })return true
-        return when(client) {
-            McpClient.CLAUDE -> Files.isExecutable(home.resolve(".local/bin/claude"))
-            McpClient.CURSOR -> Files.isDirectory(Path.of("/Applications/Cursor.app"))
-            McpClient.VSCODE -> Files.isDirectory(Path.of("/Applications/Visual Studio Code.app"))
-            McpClient.CODEX -> false
-        }
-    }
+    private fun prepare(selected:Selection)=connector.prepare(selected.client,selected.global,selected.directory)
+    private fun detected(client:McpClient)=connector.detected(client)
     companion object {
-        private fun isWindows()=System.getProperty("os.name").startsWith("Windows")
-        private fun bundled(expected:McpLauncherStaging.Staged?):McpLauncherStaging.Staged {
-            val plugin=requireNotNull(PluginPresence.enabledDescriptor(AgentJarLocator.RECLAZZ_PLUGIN_ID.idString)) { "Reclazz plugin metadata is unavailable" }
-            val path=plugin.pluginPath
-            val java=Path.of(System.getProperty("java.home"),"bin",if(isWindows())"java.exe" else "java")
-            return if(expected==null) McpLauncherStaging.plan(path.resolve("mcp/reclazz-mcp.jar"),path.resolve("agent/reclazz-agent.jar"),plugin.version,java)
-                else McpLauncherStaging.stage(path.resolve("mcp/reclazz-mcp.jar"),path.resolve("agent/reclazz-agent.jar"),plugin.version,java,expected=expected)
-        }
-        private fun planBundled()=bundled(null)
-        private fun stageBundled(expected:McpLauncherStaging.Staged)=bundled(expected)
         fun show(project:Project) {
             object:DialogWrapper(project,false) {
                 private val content=ConnectAiAssistantPanel(project)

@@ -71,7 +71,7 @@ object AgentJarLocator {
      * still reach it.
      */
     /** Where the server-facing copy lives, independent of the IDE install. */
-    private fun stableAgentPath() =
+    internal fun stableAgentPath() =
         Paths.get(System.getProperty("user.home"), ".reclazz", "agent", "reclazz-agent.jar")
 
     /**

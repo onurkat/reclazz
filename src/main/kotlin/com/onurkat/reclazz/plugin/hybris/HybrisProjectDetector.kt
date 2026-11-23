@@ -23,6 +23,12 @@ object HybrisProjectDetector {
 
     fun isHybrisProject(project: Project): Boolean = findHybrisHome(project) != null
 
+    /** Uncached: the setup wizard's "Check again" must see a hybris directory that appeared a moment ago. */
+    fun findHybrisHomeNow(project: Project): Path? {
+        project.basePath?.let { hybrisHomeCache.remove(it) }
+        return findHybrisHome(project)
+    }
+
     fun findHybrisHome(project: Project): Path? {
         val basePath = project.basePath ?: return null
         val cached = hybrisHomeCache[basePath]

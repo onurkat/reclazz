@@ -41,6 +41,7 @@ class SettingsContractTest {
         "portFilePath" to "",
         "agentPort" to 0,
         "supportLineDismissed" to false,
+        "setupSkips" to "",
     )
 
     @Test

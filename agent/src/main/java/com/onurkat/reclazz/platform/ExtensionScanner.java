@@ -197,22 +197,45 @@ public class ExtensionScanner {
      * link degrades to a partial index instead of aborting the scan.
      */
     private void scanExtensionDirectory(Path root, Map<String, Path> index) {
-        try (Stream<Path> stream = Files.walk(root, FileVisitOption.FOLLOW_LINKS)) {
-            stream.filter(p -> Files.isRegularFile(p) && p.getFileName().toString().equals("extensioninfo.xml"))
-                    .forEach(extInfoFile -> {
-                        Path extDir = extInfoFile.getParent();
-                        try {
-                            String name = extractExtensionName(extInfoFile);
-                            if (name != null) {
-                                index.put(name, extDir);
-                            }
-                        } catch (Exception e) {
-                            // Skip unparseable extensions
-                        }
-                    });
-        } catch (IOException | UncheckedIOException e) {
+        for (Path extInfoFile : extensionInfoFiles(root, Integer.MAX_VALUE)) {
+            Path extDir = extInfoFile.getParent();
+            try {
+                String name = extractExtensionName(extInfoFile);
+                if (name != null) {
+                    index.put(name, extDir);
+                }
+            } catch (Exception e) {
+                // Skip unparseable extensions
+            }
+        }
+    }
+
+    /**
+     * Every extensioninfo.xml under {@code root}, following symlinks. A Files.walk stream stops at the first symlink
+     * cycle, which lost every extension not yet visited (measured 2026-11-23: one looping link under bin/custom hid
+     * reclazztest, so nothing in it was watched). Here a cycle or an unreadable entry is skipped, named once, and the walk
+     * goes on.
+     */
+    static java.util.List<Path> extensionInfoFiles(Path root, int maxDepth) {
+        java.util.List<Path> found = new java.util.ArrayList<>();
+        java.util.List<String> skipped = new java.util.ArrayList<>();
+        try {
+            Files.walkFileTree(root, java.util.EnumSet.of(FileVisitOption.FOLLOW_LINKS), maxDepth, new java.nio.file.SimpleFileVisitor<>() {
+                @Override public java.nio.file.FileVisitResult visitFile(Path file, java.nio.file.attribute.BasicFileAttributes attrs) {
+                    if (attrs.isRegularFile() && file.getFileName().toString().equals("extensioninfo.xml")) found.add(file);
+                    return java.nio.file.FileVisitResult.CONTINUE;
+                }
+                @Override public java.nio.file.FileVisitResult visitFileFailed(Path file, IOException failure) {
+                    skipped.add(file + " (" + failure.getClass().getSimpleName() + ")");
+                    return java.nio.file.FileVisitResult.CONTINUE;
+                }
+            });
+        } catch (IOException e) {
             StatusReporter.warn("Extension scan incomplete under " + root + ": " + Failures.describe(e));
         }
+        if (!skipped.isEmpty())
+            StatusReporter.warn("Extension scan skipped " + skipped + " under " + root + "; the other extensions were found");
+        return found;
     }
 
     private static final java.util.regex.Pattern SAFE_EXTENSION_NAME =
@@ -308,22 +331,17 @@ public class ExtensionScanner {
 
     private void scanCustomExtensions(Path customDir, Map<String, ExtensionInfo> extensions,
                                        Map<String, Path> allExtensions) {
-        try (Stream<Path> stream = Files.walk(customDir, 3, FileVisitOption.FOLLOW_LINKS)) {
-            stream.filter(p -> Files.isRegularFile(p) && p.getFileName().toString().equals("extensioninfo.xml"))
-                    .forEach(extInfoFile -> {
-                        try {
-                            String name = extractExtensionName(extInfoFile);
-                            if (name != null && !extensions.containsKey(name)) {
-                                Path extDir = extInfoFile.getParent();
-                                ExtensionInfo info = parseExtensionInfo(name, extDir, allExtensions);
-                                if (info != null) {
-                                    extensions.put(name, info);
-                                }
-                            }
-                        } catch (Exception ignored) {}
-                    });
-        } catch (IOException | UncheckedIOException e) {
-            StatusReporter.warn("Custom extension scan incomplete under " + customDir + ": " + Failures.describe(e));
+        for (Path extInfoFile : extensionInfoFiles(customDir, 3)) {
+            try {
+                String name = extractExtensionName(extInfoFile);
+                if (name != null && !extensions.containsKey(name)) {
+                    Path extDir = extInfoFile.getParent();
+                    ExtensionInfo info = parseExtensionInfo(name, extDir, allExtensions);
+                    if (info != null) {
+                        extensions.put(name, info);
+                    }
+                }
+            } catch (Exception ignored) {}
         }
     }
 

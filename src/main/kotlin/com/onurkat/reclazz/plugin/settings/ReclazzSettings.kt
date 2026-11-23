@@ -54,7 +54,9 @@ class ReclazzSettings : PersistentStateComponent<ReclazzSettings.State> {
          * been dismissed. Reclazz never nags: this is the only place it is
          * mentioned in the UI, and dismissing it is permanent.
          */
-        var supportLineDismissed: Boolean = false
+        var supportLineDismissed: Boolean = false,
+        /** Setup wizard: optional steps the user skipped (";"-separated step ids). */
+        var setupSkips: String = ""
     )
 
     private var state = State()

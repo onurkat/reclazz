@@ -15,7 +15,6 @@ import com.onurkat.reclazz.plugin.hybris.HybrisAgentInstaller
 import com.onurkat.reclazz.plugin.reload.ReloadManager
 import com.onurkat.reclazz.plugin.hybris.JdkInfo
 import com.onurkat.reclazz.plugin.hybris.JdkVendor
-import com.onurkat.reclazz.plugin.ReclazzActivation
 import com.onurkat.reclazz.plugin.settings.ReclazzSettings
 import com.onurkat.reclazz.plugin.ui.WelcomeDialog
 
@@ -100,16 +99,16 @@ object ReloadNotifications {
         // for this project", which the IDE renders in the status bar as its
         // title and body joined: "Reclazz: Reclazz is off for this project."
         val content = if (isHybris) {
-            "SAP Commerce project detected. Enable it to hot-reload this project's classes."
+            "SAP Commerce project detected. The setup takes you through it step by step."
         } else {
-            "Enable it to hot-reload this project's classes without restarting."
+            "The setup takes you through it step by step."
         }
         NotificationGroupManager.getInstance()
             .getNotificationGroup(GROUP_ID)
             .createNotification("Reclazz is off for this project", content,
                 NotificationType.INFORMATION)
-            .addAction(NotificationAction.createSimpleExpiring("Enable Reclazz") {
-                ReclazzActivation.enable(project)
+            .addAction(NotificationAction.createSimpleExpiring("Set Up Reclazz") {
+                com.onurkat.reclazz.plugin.setup.SetupWizard.open(project)
             })
             .notify(project)
     }
@@ -157,11 +156,10 @@ object ReloadNotifications {
      */
     fun welcome(project: Project, isHybris: Boolean, alreadyEnabled: Boolean = false) {
         val next = if (isHybris) {
-            "SAP Commerce project detected. Enabling installs the agent into your " +
-            "platform properties; it applies after the next ant server and restart."
+            "SAP Commerce project detected. Setup installs the Reclazz Java agent and runs " +
+            "ant server; it applies after your next server restart."
         } else {
-            "Enabling lets Reclazz inject its agent into the run configurations you " +
-            "start from the IDE."
+            "Setup turns Reclazz on and can connect your AI assistant."
         }
         NotificationGroupManager.getInstance()
             .getNotificationGroup(WELCOME_GROUP_ID)
@@ -178,10 +176,8 @@ object ReloadNotifications {
             )
             .apply {
                 if (!alreadyEnabled) {
-                    addAction(NotificationAction.createSimpleExpiring(
-                        if (isHybris) "Install Agent" else "Enable Reclazz"
-                    ) {
-                        ReclazzActivation.enable(project)
+                    addAction(NotificationAction.createSimpleExpiring("Set Up Reclazz") {
+                        com.onurkat.reclazz.plugin.setup.SetupWizard.open(project)
                     })
                 }
             }

@@ -16,43 +16,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
-- With `resetStatics=true`, changed static initializers built from pure JDK value
-  factories (`Duration`, `Period`, `LocalDate`, `LocalTime`, `Pattern.compile`,
-  `UUID.fromString`, `Locale.forLanguageTag`, `BigDecimal`/`BigInteger.valueOf`,
-  `Optional`, empty collections) and public JDK constants (`StandardCharsets`,
-  `TimeUnit`, `ChronoUnit` and similar) are reset too. Application statics, calls on
-  values and ambient calls such as `now()` still keep the old value with a reason.
-- An enum constant inserted between existing constants reloads: it is added after
-  the existing constants so no ordinal moves, and existing EnumMap/EnumSet and switch
-  tables keep working. Until a restart it has the next free ordinal and sorts last.
-  In a JVM that uses JPA the insert still needs a restart, because ordinal storage
-  cannot be ruled out; the message names the entity field or the JPA type. Reorders and removals before the last constant still
-  need a restart.
-- On Spring 7.0.10, a raw full configuration that has instance fields, constructor
-  parameters or `@PostConstruct`/`@PreDestroy` methods from startup can gain its first
-  added `@Bean` factory, which reads the injected values. A save that changes those
-  fields, constructors or callbacks still needs a restart.
-- SAP Commerce XML reload replays exact eager ListMergeDirective addition and
-  bean-name position edits with a uniquely reversible old effect and no other
-  directive targeting the list. Converter publication preserves complete reader
-  snapshots; direct lists are not cleared, and intervening list changes are retained. Ambiguous
-  histories, ModifyPopulatorList target changes and unsupported directive forms
-  keep restart diagnostics; failed publication restores list, directive and definition.
-
-- Previously plain Spring singletons can gain their first standard proxy after
-  annotation or aspect changes, including XML/factory services without a
-  stereotype. Verified native recreation rebuilds supported consumers, restores
-  captured instances on failure, and retains precise restart concerns for
-  unprovable holders or lifecycle shapes.
-- Captured Spring XML can update supported prototype recipes for future native
-  creation while preserving existing instances and consumers. Dependency/autowire
-  policy edits on uncreated singleton definitions take effect on first creation;
-  live singleton, selection metadata and unverified ownership/callback cases retain
-  their restart guards. Publication and merged-cache invalidation share the native
-  singleton lock; concurrent creation is reported for restart without destroying
-  application instances. Publication failures restore the original definition metadata.
-
-### Fixed
+- A setup wizard in the IntelliJ plugin (Setup tab of the Reclazz tool window, also
+  Tools > Set Up Reclazz and the first-run notification). For SAP Commerce it is three
+  steps: install the Reclazz Java agent into local.properties (the exact lines are shown
+  first), run `ant server` with live output, and optionally connect an AI assistant
+  (Claude Code, Cursor, VS Code, Codex) to the Reclazz MCP server. Other projects turn
+  Reclazz on and optionally connect an AI assistant.
+- The agent's SAP Commerce extension scan no longer stops at a symlink cycle under
+  bin/custom; the looping entry is skipped and named, and every other extension is
+  still found and watched.
 
 - Changing a static initializer in an interface with `resetStatics=true` no longer adds
   a per-field "not-prepared" warning next to the interface message; interface fields

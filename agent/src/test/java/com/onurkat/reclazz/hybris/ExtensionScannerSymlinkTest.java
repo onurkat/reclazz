@@ -76,6 +76,26 @@ class ExtensionScannerSymlinkTest {
                 "resolved path must reach the real src dir");
     }
 
+    /**
+     * The 2026-11-23 setup-wizard live run: two working copies whose extension directories link into each other formed a
+     * cycle, and the scan stopped at it, so an extension visited after the cycle was reported "not found" and never watched.
+     */
+    @Test
+    void aSymlinkCycleIsSkippedAndEveryOtherExtensionIsStillFound() throws IOException {
+        java.util.List<String> names = java.util.List.of("aaaext", "mmmext", "zzzext");
+        for (String name : names) {
+            Path ext = tmp.resolve("workingcopy/" + name);
+            writeExtension(ext, name);
+            Files.createSymbolicLink(ext.resolve(name), ext); // a link back to its own directory, as the stray one was
+            Files.createSymbolicLink(customDir.resolve(name), ext);
+        }
+        writeLocalExtensions(names.toArray(String[]::new));
+
+        Map<String, ExtensionInfo> extensions = new ExtensionScanner(platformHome, configDir).scanExtensions();
+
+        for (String name : names) assertNotNull(extensions.get(name), name + " must be found despite the cycles");
+    }
+
     @Test
     void plainDirectoryExtensionStillDiscovered() throws IOException {
         Path ext = customDir.resolve("plainext");

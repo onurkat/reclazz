@@ -100,6 +100,30 @@ object HybrisAgentInstaller {
 
     fun install(project: Project): Result = install(project, AgentJarLocator::stableAgentJar)
 
+    /**
+     * Exactly what [install] would write, without writing or staging anything: the target file and the two managed
+     * property lines. Null when there is no SAP Commerce installation to write into.
+     */
+    fun preview(project: Project): String? {
+        HybrisProjectDetector.findHybrisHome(project) ?: return null
+        val configDir = configDir(project) ?: return null
+        val platformHome = platformHome(project) ?: return null
+        val settings = ReclazzSettings.getInstance(project).state
+        var agentArg = agentArgument("${AgentJarLocator.stableAgentPath().toAbsolutePath()}=" +
+                AgentJarLocator.buildAgentArgs(project, settings, includeHybrisHome = false))
+        val platformJdk = platformJdkFeature(platformHome)
+        if (platformJdk != null && platformJdk >= 24) agentArg = "$agentArg $UNSAFE_ACCESS_FLAG"
+        outsideAgentConflict(platformHome, configDir)?.let { return "Install would stop without changing anything: $it" }
+        val target = HybrisPropertyFiles.targetFile(configDir)
+        val javaOptions = HybrisPropertyFiles.effectiveValue(platformHome, configDir, JAVA_OPTIONS)
+        val debugOptions = HybrisPropertyFiles.effectiveValue(platformHome, configDir, DEBUG_JAVA_OPTIONS)
+        return buildString {
+            append(if (Files.exists(target)) "Adds a marked block to " else "Creates ").append(target).append(":\n")
+            append("$JAVA_OPTIONS=${joinOptions(javaOptions, agentArg)}\n")
+            append("$DEBUG_JAVA_OPTIONS=${joinOptions(debugOptions, agentArg)}")
+        }
+    }
+
     internal fun install(project: Project, stageAgent: () -> java.io.File?): Result {
         val hybrisHome = HybrisProjectDetector.findHybrisHome(project)
             ?: return Result.Error("Hybris home not found. This action only works for SAP Commerce projects.")

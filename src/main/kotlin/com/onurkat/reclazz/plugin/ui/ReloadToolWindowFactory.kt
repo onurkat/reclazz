@@ -20,10 +20,14 @@ import com.onurkat.reclazz.plugin.settings.ReclazzSettings
 class ReloadToolWindowFactory : ToolWindowFactory, DumbAware {
 
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
+        com.onurkat.reclazz.plugin.setup.SetupWizard.addTab(project, toolWindow)
         val logPanel = ReloadLogPanel(project)
         val content = ContentFactory.getInstance().createContent(logPanel.component, "Reload Log", false)
         Disposer.register(content, logPanel)
         toolWindow.contentManager.addContent(content)
+        // Already set up: open on the log; the Setup tab stays first for anyone still setting up.
+        if (ReclazzSettings.getInstance(project).state.enabled && !com.onurkat.reclazz.plugin.setup.SetupWizard.isOpen(project))
+            toolWindow.contentManager.setSelectedContent(content)
 
         // Add export log action to the tool window title bar
         toolWindow.setTitleActions(listOf(
@@ -58,6 +62,6 @@ class ReloadToolWindowFactory : ToolWindowFactory, DumbAware {
     }
 
     override fun shouldBeAvailable(project: Project): Boolean {
-        return ReclazzSettings.getInstance(project).state.enabled
+        return ReclazzSettings.getInstance(project).state.enabled || com.onurkat.reclazz.plugin.setup.SetupWizard.isOpen(project)
     }
 }

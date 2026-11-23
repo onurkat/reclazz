@@ -55,6 +55,6 @@ object ReclazzSurfaces {
         // is still handled because a headless IDE registers nothing.
         ToolWindowManager.getInstance(project)
             .getToolWindow(TOOL_WINDOW_ID)
-            ?.setAvailable(enabled)
+            ?.setAvailable(enabled || com.onurkat.reclazz.plugin.setup.SetupWizard.isOpen(project))
     }
 }
