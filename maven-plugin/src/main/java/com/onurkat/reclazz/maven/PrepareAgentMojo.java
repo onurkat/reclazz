@@ -66,7 +66,7 @@ public class PrepareAgentMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException {
         if (skip) {
-            getLog().info("Reclazz agent not attached (reclazz.skip=true).");
+            getLog().info("Reclazz Java agent not attached (reclazz.skip=true).");
             return;
         }
         File agentJar = findAgentJar();
@@ -82,12 +82,12 @@ public class PrepareAgentMojo extends AbstractMojo {
                         + propertyName + "'. Keep one argument with the same jar path and options as "
                         + "prepare-agent, or remove the manual Reclazz argument and let the goal supply it.");
             }
-            getLog().info("Reusing the existing Reclazz agent on property '" + propertyName + "'.");
+            getLog().info("Reusing the existing Reclazz Java agent on property '" + propertyName + "'.");
             return;
         }
         String value = (existing == null || existing.isBlank()) ? arg : arg + " " + existing;
         project.getProperties().setProperty(propertyName, value);
-        getLog().info("Reclazz agent set on property '" + propertyName + "': " + arg);
+        getLog().info("Reclazz Java agent set on property '" + propertyName + "': " + arg);
     }
 
     /**

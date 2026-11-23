@@ -141,7 +141,7 @@ internal object SetupFlow {
                 "Update the installation to write it again.", listOf(SetupAction.Update))
             jar?.level == SetupCheck.Level.FAIL -> StepStatus.NeedsAction("The Java agent file your properties point to is missing or unreadable. " +
                 "Update the installation to copy it again.", listOf(SetupAction.Update))
-            jar?.level == SetupCheck.Level.WARN && jar.message.startsWith("Agent jar version") ->
+            jar?.level == SetupCheck.Level.WARN && jar.message.startsWith("Java agent jar version") ->
                 StepStatus.NeedsAction("The installed Java agent is older than this plugin (${f.pluginVersion}).", listOf(SetupAction.Update))
             jdk?.level == SetupCheck.Level.FAIL && jdk.message.contains("Unsafe") -> StepStatus.NeedsAction("Your server's JDK needs one more " +
                 "launch flag for the Java agent. Update the installation to add it.", listOf(SetupAction.Update))

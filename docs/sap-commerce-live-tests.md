@@ -21,7 +21,7 @@ SKIPs**. The archived acceptance for the preceding 58-case membership ran five
 times on one server boot and once after a fresh boot: **six runs of 58/58 PASS**, with zero bean-refresh
 failures and unchanged fixture files. Since 13 November 2026 each accepted change
 runs the default suite twice, once on the same boot and once after a fresh boot;
-the latest acceptance was 65/65 in both runs. Hibernate ORM is tested separately in the agent
+the latest acceptance was 65/65 in both runs. Hibernate ORM is tested separately in the Java agent
 regression suite; it is not a SAP Commerce live scenario.
 
 The live tests run locally before relevant commits and releases. CI execution
@@ -77,7 +77,7 @@ and [new beans](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/
 A separate focused check on 13 November 2026 confirmed existing local XML import
 support: adding an import to a loaded file made a plain singleton available, then
 editing the imported file updated the same singleton in the same JVM. Without the
-agent, the import save left the bean absent. The child file was prepared before
+Java agent, the import save left the bean absent. The child file was prepared before
 boot to isolate the import edit; live child-file creation, remote imports and
 unloading were not measured. This adds no profile or default-suite membership.
 
@@ -254,7 +254,7 @@ response rejects the withheld v2 oracle before the edit.
 This is default case 60. It covers the dedicated native basic converter, not the
 full storefront URL/image converter, cart/checkout, or arbitrary facade paths.
 It adds a native facade/service consumer to existing populator/OCC coverage;
-no new agent reload mechanism is claimed. Full default repeatability belongs
+no new Java agent reload mechanism is claimed. Full default repeatability belongs
 to independent audit. See
 [the facade scenario](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/FacadeChainLiveTest.kt).
 
@@ -338,11 +338,11 @@ the service, and then of the controller, serves the new code while both
 objects keep their identity and the counter and the map keep counting from
 where they were. Each file is restored and the original code is verified
 again. Constructor, injection and lifecycle changes still recreate the bean;
-those cases are covered in the agent regression suite. A third body save edits an XML
+those cases are covered in the Java agent regression suite. A third body save edits an XML
 `@Service` bean whose XML parent is `abstractBusinessService`, inheriting the platform's
 property setters and lifecycle callbacks. Its injected platform dependencies
 remain configured, its identity and map continue, and the controller and plain
-service keep their state too. The agent event after that save explicitly confirms
+service keep their state too. The Java agent event after that save explicitly confirms
 `bean reclazzKeepStateInheritedService kept, state preserved`. The scenario count remains 65.
 
 ## Localization and properties
@@ -372,7 +372,7 @@ file/XML, unknown or oversized sources refuse the group. Plain level maps and
 other ambiguous owners remain refused. Partial failure triggers verified
 rollback; failed rollback reports an error and a restart concern. Several
 contexts without a unique owner remain refused.
-Removing a pair undoes the agent's earlier level edit, including a previous
+Removing a pair undoes the Java agent's earlier level edit, including a previous
 console override. For a pair present at server startup, removal requires the
 verified unique in-memory property declaration and removes its exact logger
 configuration, restoring inheritance. Renaming a pair resets its old logger.
@@ -459,7 +459,7 @@ control script stays unchanged, with the same service, JVM and retained target
 reference throughout. No restart or manual cache flush occurs between phases.
 Owned target/control rows and all their revisions are removed afterward.
 
-SAP Commerce already handles this database-script invalidation; no agent adapter was
+SAP Commerce already handles this database-script invalidation; no Java agent adapter was
 added. The initially retained compiled executable continues returning v1 even
 when a fresh lookup returns v2. The test records that distinction; it does not
 claim retained objects are retargeted. File and classpath script repositories
@@ -480,7 +480,7 @@ first after restoration returns v1. An independent control template stays
 unchanged. The same service and JVM handle every phase without restart or
 manual cache flush. Owned templates and their media are removed afterward.
 
-This records SAP Commerce's existing default-content media behavior; no agent adapter
+This records SAP Commerce's existing default-content media behavior; no Java agent adapter
 was added. At the explicit English locale, UTF-8 text and literal `<&>` in the
 plain-text binding are checked exactly. This does not establish HTML escaping,
 localized template selection, physical `.vm` file reload, or email delivery.
@@ -599,7 +599,7 @@ HTML follows each save in the same JVM, with unchanged Java bytes, Java
 markers, page/slot/component identities and an independent unchanged view.
 No build, copy, cache clear or restart occurs between saves. This covers
 existing SAP Commerce/Tomcat JSP serving with Reclazz present; it adds no JSP reload
-mechanism to the agent. See the
+mechanism to the Java agent. See the
 [JSP resource case](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/CmsJspResourceLiveTest.kt).
 
 ## Search restrictions and session catalog visibility
@@ -627,7 +627,7 @@ See the [native restriction case](../integration-test/src/main/kotlin/com/onurka
 ## Backoffice configuration and widgets
 
 **You edit:** Backoffice config XML, or add/edit/remove a one-parameter public
-non-static `@SocketEvent` handler in an agent-prepared default MVC widget class.
+non-static `@SocketEvent` handler in a default MVC widget class prepared by the Java agent.
 
 **Reclazz does:** A config save calls the active cockpit configuration service's
 native `resetToDefaults()`, equivalent to the F4 config reset. Prepared Java
@@ -647,25 +647,25 @@ and the [live profile driver](../scripts/test-sap-backoffice-live.py).
 
 These changes were measured on a running SAP Commerce 2211 installation, but
 they are not part of the 65 default scenarios. In each case a native-only run
-(agent off, same save) first showed that SAP Commerce keeps the old behavior until a
-restart. The agent run then showed the new behavior in the same JVM, and a
-deliberately disabled agent step made the focused tests fail. Repeatable local
+(Java agent off, same save) first showed that SAP Commerce keeps the old behavior until a
+restart. The run with the Java agent then showed the new behavior in the same JVM, and a
+deliberately disabled Java agent step made the focused tests fail. Repeatable local
 regressions use the installed SAP Commerce SDK classes; they start no server and change
 no installation.
 
 | You edit in Spring XML | What the running server shows | Repeatable regression |
 |---|---|---|
-| Append an ordinary singleton with `InitializingBean` or `init-method` | The bean is created once through Spring's own initialization; an identical save keeps the same instance | Agent tests (`XmlNewInitializingBeanTest`) |
-| A `project.properties` value used as an exact `${key}` bean property | The existing bean receives the new value and keeps its identity | Agent tests (`XmlPlaceholderPropertiesTest`) |
+| Append an ordinary singleton with `InitializingBean` or `init-method` | The bean is created once through Spring's own initialization; an identical save keeps the same instance | Java agent tests (`XmlNewInitializingBeanTest`) |
+| A `project.properties` value used as an exact `${key}` bean property | The existing bean receives the new value and keeps its identity | Java agent tests (`XmlPlaceholderPropertiesTest`) |
 | `add` or `remove` populator of an existing `ModifyPopulatorList` | The running converter uses the new populator list; the edit can be reverted | `scripts/test-sap-directives-sdk.py` |
 | Append a plain SAP Commerce `AbstractEventListener` bean | The new listener receives the next event once; failed creation removes it | `scripts/test-sap-events-xml-sdk.py` |
 | The `converter` of an existing hot-folder converter mapping | The next ingested file is converted by the new converter | `scripts/test-sap-hotfolder-sdk.py` |
-| `filename-regex` or `fixed-rate` of an explicit-id file inbound adapter | The next poll uses the new pattern and rate; files already seen are not delivered again | Agent tests (`SpringIntegrationPollingAdapterReloadTest`) |
-| An access expression in a `security:http` group | The servlet filter chain enforces the new rule; failure keeps the old chain | Agent tests (`SpringSixXmlSecurityReloadTest`) |
+| `filename-regex` or `fixed-rate` of an explicit-id file inbound adapter | The next poll uses the new pattern and rate; files already seen are not delivered again | Java agent tests (`SpringIntegrationPollingAdapterReloadTest`) |
+| An access expression in a `security:http` group | The servlet filter chain enforces the new rule; failure keeps the old chain | Java agent tests (`SpringSixXmlSecurityReloadTest`) |
 
 Conditions and limits for each case are in the [setup guide](sap-commerce.md)
 and [usage](usage.md#sap-populator-and-list-merge-directives). A failed SAP Commerce code
-generation no longer blocks later class reloads; agent tests cover that case.
+generation no longer blocks later class reloads; Java agent tests cover that case.
 
 Backoffice widget definitions and new widget folders were measured and are not
 supported: SAP Commerce reads them from the Backoffice jars built by `ant build`, and
@@ -730,7 +730,7 @@ Select the disposable install with `RECLAZZ_SAP_HOME` and `RECLAZZ_SAP_BASE`.
 The manifest contains the exact normal fixture source membership from the shared suite contract, including any
 reviewed edits. The mode takes eight complete stopped snapshots, including
 concrete generated Jalo sources, and restores the database, config, bootstrap,
-native outputs, fixtures, original agent and links. It then proves the new
+native outputs, fixtures, original Java agent setup and links. It then proves the new
 type/table/classes absent in a fresh normal boot. Inner PASS with failed recovery
 is FAIL. Never run the inner profile alone or undo its XML on a live server.
 Native HAC credentials are read only from the disposable install's local config;
@@ -738,7 +738,7 @@ the recovery checks use read-only native metadata and class observations.
 
 Default suite membership is unchanged by this mode. This bounded profile does not certify enums,
 relations, incompatible edits or arbitrary schema changes. No new dependency or
-production agent change is involved.
+production Java agent change is involved.
 
 The pre-generation negative control inspects class resources rather than trying
 to load a nonexistent class: SAP Commerce's enabled `CacheClassNotFoundRule` remembers
@@ -762,7 +762,7 @@ Run `scripts/test-sap-items-live.py --new-relation --runs 1` with the same expli
 `--fixture-manifest`, `--restore-repo` and `--lock` arguments as the new-item-type
 mode. Set `RECLAZZ_SAP_HOME` and `RECLAZZ_SAP_BASE` to the disposable installation.
 The eight-root stopped recovery is shared: database, generated sources/classes,
-config and native outputs, original agent and extension links must all recover,
+config and native outputs, original Java agent setup and extension links must all recover,
 then experimental types/tables/resources must be absent after a fresh normal
 boot. An inner PASS alone cannot pass the outer profile. Never run this inner
 profile directly or undo schema changes live. Future classes are inspected by
@@ -770,6 +770,6 @@ resource lookup before generation to avoid seeding SAP Commerce's negative class
 
 This opt-in proof covers existing behavior and leaves default suite and normal
 fixture membership unchanged. It does not certify arbitrary, localized, ordered,
-cascading or incompatible relation edits. No production agent change or new
+cascading or incompatible relation edits. No production Java agent change or new
 dependency is involved. Source membership comes from the shared suite contract;
 do not copy a historical fixture/test count into new profile checks.

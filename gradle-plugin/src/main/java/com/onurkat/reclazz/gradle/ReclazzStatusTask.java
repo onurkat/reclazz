@@ -17,7 +17,7 @@ import org.gradle.work.DisableCachingByDefault;
  * inner loop: {@code ./gradlew reclazzStatus}. It reads the loopback status
  * socket and asks nothing of the agent beyond its own state.
  */
-@DisableCachingByDefault(because = "Each invocation queries the current live agent state")
+@DisableCachingByDefault(because = "Each invocation queries the current live Java agent state")
 public abstract class ReclazzStatusTask extends DefaultTask {
 
     private String portFile;
@@ -25,12 +25,12 @@ public abstract class ReclazzStatusTask extends DefaultTask {
     private String hybrisHome;
     private String timeoutMs;
 
-    @Option(option = "port-file", description = "Path to the agent's port file.")
+    @Option(option = "port-file", description = "Path to the Java agent's port file.")
     public void setPortFile(String portFile) {
         this.portFile = portFile;
     }
 
-    @Option(option = "port", description = "Connect directly to this agent status port.")
+    @Option(option = "port", description = "Connect directly to this Java agent status port.")
     public void setPort(String port) {
         this.port = port;
     }
@@ -40,7 +40,7 @@ public abstract class ReclazzStatusTask extends DefaultTask {
         this.hybrisHome = hybrisHome;
     }
 
-    @Option(option = "timeout-ms", description = "How long to wait for the agent to answer.")
+    @Option(option = "timeout-ms", description = "How long to wait for the Java agent to answer.")
     public void setTimeoutMs(String timeoutMs) {
         this.timeoutMs = timeoutMs;
     }

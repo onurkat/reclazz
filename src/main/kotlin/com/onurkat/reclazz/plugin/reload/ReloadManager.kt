@@ -57,7 +57,7 @@ class ReloadManager(private val project: Project) : Disposable {
         private set
 
     private val connectionGeneration = java.util.concurrent.atomic.AtomicLong(0)
-    @Volatile var liveSettingsStatus: String = "No running agent connected; saved settings will be sent on reconnect."
+    @Volatile var liveSettingsStatus: String = "No running Java agent connected; saved settings will be sent on reconnect."
         private set
     private val liveSettingsTimer = Executors.newSingleThreadScheduledExecutor { task ->
         Thread(task, "Reclazz-LiveSettings").apply { isDaemon = true }
@@ -125,7 +125,7 @@ class ReloadManager(private val project: Project) : Disposable {
                         isConnected = false
                         pauseState = null
                         stopPausePoll()
-                        notifyListeners(AgentEvent("DISCONNECTED", "Agent disconnected", ""))
+                        notifyListeners(AgentEvent("DISCONNECTED", "Java agent disconnected", ""))
                         scheduleReconnect()
                     }
                 )

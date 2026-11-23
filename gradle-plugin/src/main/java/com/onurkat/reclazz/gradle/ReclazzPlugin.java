@@ -108,7 +108,7 @@ public class ReclazzPlugin implements Plugin<Project> {
 
         project.getTasks().register("reclazzStatus", ReclazzStatusTask.class, task -> {
             task.setGroup("reclazz");
-            task.setDescription("Print, as JSON, whether the Reclazz agent is attached and how it is doing.");
+            task.setDescription("Print, as JSON, whether the Reclazz Java agent is attached and how it is doing.");
         });
     }
 

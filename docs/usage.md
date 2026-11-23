@@ -12,8 +12,8 @@ Reclazz supports four modes of operation. You can use them independently or comb
 | Server runs from IntelliJ, compile with `ant build` | [IntelliJ Auto + ant build](#workflow-with-ant-build) |
 | Server runs from IntelliJ, want instant feedback | [IntelliJ Auto + AutoCompile](#workflow-with-intellij-build-autocompile-mode) |
 | Rapid iteration on single files | [Auto-Build on Idle](#option-3-auto-build-on-idle-optional) |
-| Server already running without agent | [Attach to Running Server](#option-4-attach-to-running-server) |
-| CI/CD or headless environments | [Manual Setup](#option-1-manual-setup) with standalone agent |
+| Server already running without the Java agent | [Attach to Running Server](#option-4-attach-to-running-server) |
+| CI/CD or headless environments | [Manual Setup](#option-1-manual-setup) with standalone Java agent |
 
 ---
 
@@ -29,10 +29,10 @@ When you launch a Run/Debug configuration in IntelliJ IDEA, the Reclazz plugin:
 2. **Injects** the `-javaagent` flag into the JVM arguments automatically
 3. **Detects** your JDK version (17 or 21) and whether you are using JetBrains Runtime
 4. **Adds** recommended JVM flags (e.g., `-XX:+AllowEnhancedClassRedefinition` for JBR)
-5. **Connects** to the agent after the server starts
+5. **Connects** to the Java agent after the server starts
 6. **Watches** for file changes and shows reload status in the IDE
 
-You do not need to edit any properties files or manage the agent JAR path.
+You do not need to edit any properties files or manage the Java agent JAR path.
 
 ### Setup
 
@@ -41,12 +41,12 @@ You do not need to edit any properties files or manage the agent JAR path.
 
 ### Project settings and managed SAP Commerce startup<a id="project-settings-and-managed-sap-startup"></a>
 
-**Settings > Tools > Reclazz** stores agent choices per project. On **Apply** and
+**Settings > Tools > Reclazz** stores Java agent choices per project. On **Apply** and
 on reconnect, the plugin synchronizes supported runtime options with the connected
-agent: AutoCompile, ImpEx import, Allow REMOVE, Backoffice configuration reset,
-Update Running System and Solr reindex. This also works when the agent's startup
-line was written by hand. The status line reports what the running agent actually
-uses, or a pending/error result; older agents require an updated agent or a restart
+Java agent: AutoCompile, ImpEx import, Allow REMOVE, Backoffice configuration reset,
+Update Running System and Solr reindex. This also works when the Java agent's startup
+line was written by hand. The status line reports what the running Java agent actually
+uses, or a pending/error result; older Java agents require an updated one or a restart
 with the saved startup settings.
 
 AutoCompile changes wait for an active build, manual pause or generated-output
@@ -62,29 +62,29 @@ receive structural reload support. Removing an extension stops watching its file
 without unloading its classes or undoing applied changes. Status reports loaded
 raw classes and directories that could not be watched.
 
-The agent line remains the startup default; runtime changes do not rewrite it.
+The Java agent line remains the startup default; runtime changes do not rewrite it.
 To persist defaults for a server that starts without an IDE connection, use
-**Install Agent** or **Reinstall**, regenerate the server config and restart as the
+**Install Java Agent** or **Reinstall**, regenerate the server config and restart as the
 installation message describes. Other startup-only options still use that path.
 
 | Control | Default | Scope |
 |---|---|---|
-| Also attach the agent to IDE test runs (JUnit, TestNG) | Off | IDE-managed JUnit, TestNG and Spock only; delegated Gradle/Maven builds keep their separate settings |
+| Also attach the Java agent to IDE test runs (JUnit, TestNG) | Off | IDE-managed JUnit, TestNG and Spock only; delegated Gradle/Maven builds keep their separate settings |
 | Import ImpEx files on save | Off | SAP Commerce; imports a saved watched ImpEx file |
 | Allow REMOVE statements | Off | Available only when ImpEx import on save is on; permits live row deletion on save |
 | Reset Backoffice configuration on save | On | SAP Commerce; the native F4 reset, which also resets configuration made in the Backoffice UI. Off sends `backofficeConfigReset=false` |
 | Update the running system after items.xml changes | Off | SAP Commerce development only; opt-in schema additions and keyed localization writes to the live database |
 | Update Solr documents after a provider reloads | Off | SAP Commerce development only; bounded native updates with normal listeners/bookkeeping, no proof of field freshness |
-| Apply reloads | Immediately | At the next request boundary requires the agent at JVM startup; dynamic attach explicitly warns and applies immediately |
+| Apply reloads | Immediately | At the next request boundary requires the Java agent at JVM startup; dynamic attach explicitly warns and applies immediately |
 | Reload added and removed members (Advanced) | On | Off limits reloads to method bodies |
 | Re-run changed static initializers (Advanced) | Off | Applies on the next launch; eligible static finals become non-final. Existing captured copies retain the old object |
-| Exclude classes (Advanced) | Empty | Semicolon-separated class-name globs the agent never instruments |
+| Exclude classes (Advanced) | Empty | Semicolon-separated class-name globs the Java agent never instruments |
 | Ignore files (Advanced) | Empty | Semicolon-separated globs; matching changed files are not reloaded |
 
 **Pause Automatic Reload** (Tools menu and the Reclazz tool window) holds
-automatic reload in the running agent. Saves made while paused are kept and
+automatic reload in the running Java agent. Saves made while paused are kept and
 applied on resume; the status bar shows `Paused` and the number of waiting
-changes until then. It is a session switch, not a stored setting, and an agent
+changes until then. It is a session switch, not a stored setting, and a Java agent
 older than 1.4.0 does not answer it.
 
 Existing JPA refresh remains opt-in. Its scope includes new entities on stock
@@ -93,7 +93,7 @@ See the [JPA scope](#new-jpa-entities-with-a-prepared-schema).
 
 The installer regenerates only its marked block from Settings; manual edits
 inside it are overwritten. Unrelated JVM options outside the block are retained.
-An existing Reclazz agent outside the managed block or in another properties
+An existing Reclazz Java agent outside the managed block or in another properties
 layer is refused with its file and line before writing; remove that manual
 option before installing through Settings. This also applies to normal and debug
 startup options. A failed verification restores the previous managed file rather
@@ -101,7 +101,7 @@ than deleting a prior installation. A project without an optional config
 directory uses `local.properties` with its managed block excluded from base-value
 verification.
 
-The log retains the agent's raw INFO lines for Solr FINISHED,
+The log retains the Java agent's raw INFO lines for Solr FINISHED,
 FINISHED_UNVERIFIED and FAILED outcomes. Unverified indexing outcomes receive
 bold amber warning emphasis; failed indexing outcomes use the IDE's error colour.
 Ordinary WARN lines share the visible warning style. Solr outcomes do not change
@@ -112,12 +112,12 @@ Platform/home/watch-directory/port discovery remains automatic. Diagnostic
 `platform`, `wrapOutput`, `transformDumpDir`, `verifyTransform`, `sessionLog` and
 structured `refreshOwnersOnHelper` arguments remain manual expert options (see
 [Agent Arguments](#agent-arguments)); the IDE does not expose fields for them.
-The custom port/file controls choose which agent the IDE connects to, while its
+The custom port/file controls choose which Java agent the IDE connects to, while its
 own launches use an automatically assigned port and project port file.
 
 ### Workflow with `ant build`
 
-This is the default and safest workflow. The IntelliJ plugin injects the agent, but compilation is still handled by `ant`:
+This is the default and safest workflow. The IntelliJ plugin injects the Java agent, but compilation is still handled by `ant`:
 
 ```
 1. Start the SAP Commerce server from IntelliJ (Run/Debug)
@@ -177,7 +177,7 @@ Do not run AutoCompile and an external compiler against the same output tree
 at the same time.
 
 Each successful output file is replaced through a temporary file and rename.
-If publication fails partway through, no agent reload starts, but earlier
+If publication fails partway through, no Java agent reload starts, but earlier
 replacements remain on disk. The error names the failed file; fixing the I/O
 problem and saving again retries the package. Class loaders can observe mixed
 old and new files during publication. Reload and framework operations still
@@ -195,7 +195,7 @@ existing file-watching behavior continues.
 
 - **Status bar widget:** Bottom-right corner shows connection status and reload count
   - `Reclazz: Idle`, Plugin enabled, server not running
-  - `Reclazz: Connected`, Agent connected, watching for changes
+  - `Reclazz: Connected`, Java agent connected, watching for changes
   - `Reclazz: 5 reloads`, Number of successful hot-swaps in this session
   - `Reclazz: Error`, Last reload failed (check tool window for details)
 
@@ -228,11 +228,11 @@ Use this option when you run the SAP Commerce server **outside of IntelliJ** (e.
 
 ### How It Works
 
-You add the `-javaagent` flag to your Hybris Tomcat configuration. The agent loads inside the SAP Commerce JVM, watches for compiled `.class` files, and hot-swaps them when you run `ant build`.
+You add the `-javaagent` flag to your Hybris Tomcat configuration. The Java agent loads inside the SAP Commerce JVM, watches for compiled `.class` files, and hot-swaps them when you run `ant build`.
 
 ### Setup
 
-Edit `hybris/config/local.properties` and add the agent to `tomcat.javaoptions`, preserving any existing options in that value:
+Edit `hybris/config/local.properties` and add the Java agent to `tomcat.javaoptions`, preserving any existing options in that value:
 
 **Any JDK 17+ (works for structural reloads too):**
 
@@ -240,7 +240,7 @@ Edit `hybris/config/local.properties` and add the agent to `tomcat.javaoptions`,
 tomcat.javaoptions=-javaagent:/path/to/reclazz-agent.jar
 ```
 
-`hybrisHome=` is optional under `hybrisserver.sh`: the agent reads SAP Commerce's
+`hybrisHome=` is optional under `hybrisserver.sh`: the Java agent reads SAP Commerce's
 own `HYBRIS_BIN_DIR` startup property. Use the explicit override when starting the
 JVM another way or deliberately selecting a different installation. The detected
 source is logged; a conflicting explicit home warns and still wins. Managed
@@ -266,7 +266,7 @@ Enhanced redefinition applies structural changes to the original
 `Class` object itself, so reflection and reflective caches see new
 members without restart.
 
-> **Tip:** If you already have debug options configured, you can append the agent to `tomcat.debugjavaoptions` instead. This property is applied when you start the server in debug mode:
+> **Tip:** If you already have debug options configured, you can append the Java agent to `tomcat.debugjavaoptions` instead. This property is applied when you start the server in debug mode:
 >
 > ```properties
 > tomcat.debugjavaoptions=-javaagent:/path/to/reclazz-agent.jar -Xdebug -Xnoagent -Xrunjdwp:transport=dt_socket,server=y,address=8000,suspend=n
@@ -276,7 +276,7 @@ members without restart.
 
 The location of `reclazz-agent.jar` depends on how you installed Reclazz:
 
-- **Installed via IntelliJ plugin:** The agent JAR is bundled inside the plugin directory. You can find it at:
+- **Installed via IntelliJ plugin:** The Java agent JAR is bundled inside the plugin directory. You can find it at:
 
   ```
   # macOS
@@ -309,10 +309,10 @@ Arguments are passed as a comma-separated string after the `=` sign:
 | `autoCompile` | `false` | Compile `.java` files internally instead of watching `.class` files |
 | `autoImpex` | `false` | Auto-import changed `.impex` files |
 | `debounceMs` | `500` | Milliseconds to wait before processing changes (batches rapid file writes) |
-| `startupDelaySec` | `30` | Seconds to wait after agent startup before watching files |
+| `startupDelaySec` | `30` | Seconds to wait after Java agent startup before watching files |
 | `verbose` | `false` | Enable verbose logging in the console, including each framework step's own line after a reload (the reload line carries the summary either way) |
 | `statusPort` | `0` | TCP port for plugin communication (0 = auto-assign) |
-| `portFile` | (none) | Path where agent writes its actual port after binding |
+| `portFile` | (none) | Path where Java agent writes its actual port after binding |
 | `watchDirs` | auto-detect | Semicolon-separated class output directories to watch, for a project the detection does not know |
 | `excludeClasses` | (none) | Semicolon-separated class name patterns the transform leaves alone; the way out when instrumenting one class is the problem |
 | `impexAllowRemove` | `false` | Let auto-imported ImpEx files run `REMOVE` lines |
@@ -324,22 +324,22 @@ Arguments are passed as a comma-separated string after the `=` sign:
 | `structuralReload` | `true` | The companion engine that adds and removes members on a stock JDK; `false` leaves method-body reloads only |
 | `platform` | `auto` | Skip detection and name the platform (`hybris`, `spring`, `generic`) |
 | `wrapOutput` | `auto` | Wrap console lines to the terminal width: `auto`, `true`, `false` |
-| `transformDumpDir` | (none) | Write every transformed class file here, for looking at what the agent emitted |
+| `transformDumpDir` | (none) | Write every transformed class file here, for looking at what the Java agent emitted |
 | `verifyTransform` | `false` | Run the bytecode verifier over every transformed class and print what it says |
 | `sessionLog` | (none) | Append every status line to this file with an ISO timestamp and level, no colour: the session's record, to read back or attach to a report |
 | `reloadBoundary` | `immediate` | `request` waits for synchronous MVC dispatches and supported Spring 5 `javax` and Spring 6 Jakarta MVC async requests before applying a class reload batch; requires `-javaagent` at JVM startup. See [Reload between requests](#reload-between-requests) |
 | `refreshOwnersOnHelper` | (none) | Opt-in `helperFqn>owner1;owner2\|helper2>owner3`: after a helper class reloads, recreate the named Spring singleton cache-owner beans so a custom cache they hold is rebuilt through the fresh helper logic. Owners are recreated through the normal guarded bean-reload lifecycle; non-singletons, FactoryBeans and event-listener owners are declined. See [Refreshing a custom cache after a helper reload](#refreshing-a-custom-cache-after-a-helper-reload) |
 
 Arguments are never removed or renamed within a major version: a line that
-worked with an older 1.x agent works with a newer one. An argument the agent
+worked with an older 1.x Java agent works with a newer one. An argument the Java agent
 does not know is named in the console at start-up and ignored, not fatal, so a
-line written for a newer agent still starts an older one. Put such arguments
+line written for a newer Java agent still starts an older one. Put such arguments
 first: the line is split at a comma only where a known argument follows, so
 that a value may contain a comma, which means an unknown argument placed after
 another becomes part of that one's value (and is still named). The plugin's own
 test (`AgentArgumentContractTest`) keeps what it passes inside this table, and
-the agent's (`AgentArgumentsAreDocumentedTest`) keeps this table equal to what
-the agent accepts.
+the Java agent's (`AgentArgumentsAreDocumentedTest`) keeps this table equal to what
+the Java agent accepts.
 
 ### Workflow
 
@@ -416,11 +416,11 @@ Use auto-build for rapid iteration on small changes (fixing a service method, tw
 
 ## Option 4: Attach to Running Server
 
-Use this option when the SAP Commerce server is **already running** without the `-javaagent` flag, for example, started from a terminal or by another team member. Reclazz uses the JVM Attach API to load the agent into the running process without restarting it.
+Use this option when the SAP Commerce server is **already running** without the `-javaagent` flag, for example, started from a terminal or by another team member. Reclazz uses the JVM Attach API to load the Java agent into the running process without restarting it.
 
 ### How It Works
 
-The IntelliJ plugin scans for running JVMs, identifies SAP Commerce processes (by detecting the Tanuki wrapper or Hybris bootstrap loader), and dynamically loads `reclazz-agent.jar` into the selected process. The agent initializes inside the running JVM and begins watching for class changes.
+The IntelliJ plugin scans for running JVMs, identifies SAP Commerce processes (by detecting the Tanuki wrapper or Hybris bootstrap loader), and dynamically loads `reclazz-agent.jar` into the selected process. The Java agent initializes inside the running JVM and begins watching for class changes.
 
 ### Requirements
 
@@ -433,7 +433,7 @@ The IntelliJ plugin scans for running JVMs, identifies SAP Commerce processes (b
 
 1. Go to **Tools** > **Attach Reclazz to Running Server**
 2. If multiple SAP Commerce processes are detected, pick the one you want
-3. The agent loads and the plugin connects automatically
+3. The Java agent loads and the plugin connects automatically
 4. Status bar shows "Reclazz: Connected"
 
 **From settings:**
@@ -466,13 +466,13 @@ The IntelliJ plugin scans for running JVMs, identifies SAP Commerce processes (b
 ### Limitations
 
 - **JBR flags cannot be added retroactively**: If the server was started without `-XX:+AllowEnhancedClassRedefinition`, the JVM cannot switch to enhanced redefinition mid-run. The companion-class reloader still works on the attached JVM, so structural changes are still applied, but reflective access to the new members carries the standard-JVM caveat (see below).
-- **Startup delay is skipped**: Since the server is already running, the agent starts watching immediately (no `startupDelaySec` wait).
+- **Startup delay is skipped**: Since the server is already running, the Java agent starts watching immediately (no `startupDelaySec` wait).
 
 ### Troubleshooting
 
 - **"No running SAP Commerce JVM found"**: The server must be running before you attach. Reclazz looks for processes containing `org.tanukisoftware.wrapper.WrapperSimpleApp`, `-Dplatform.home=`, `-DHYBRIS_BIN_DIR=`, or `de.hybris.bootstrap.loader.Loader`.
 - **"Permission denied"**: IntelliJ and the server must run as the same OS user. If the server runs as `hybris` and IntelliJ runs as your user, the attach will be refused.
-- **"Agent is already loaded"**: The agent was already attached. The plugin will reconnect to the existing agent instance.
+- **"Java agent is already loaded"**: The Java agent was already attached. The plugin will reconnect to the existing Java agent instance.
 
 ---
 
@@ -600,7 +600,7 @@ have separate metadata support, including direct method-level `@Conditional`.
 The condition adapter uses an internal Spring API and refuses
 conditional registration if that API is unavailable or inaccessible.
 
-The condition contract is tested on Spring 5.3.39 and 6.1.14. Real-agent tests on
+The condition contract is tested on Spring 5.3.39 and 6.1.14. Real Java agent tests on
 Spring 5.3.39 cover normal and child classloaders, class-file watching and automatic
 source compilation, including rejected classes' static initialization. Lazy/prototype
 identity and destruction are separately tested on both application classloaders.
@@ -611,7 +611,7 @@ On a stock JDK, supported `@PostConstruct` and `@PreDestroy` methods added to a
 running Spring singleton now participate in its lifecycle, in the
 `javax.annotation` namespace on Spring 5 and the `jakarta.annotation` namespace
 on Spring 6. Verified with real Spring 5.3.39 and, on a separate dependency
-graph, real Spring 6.1 with jakarta annotations and a startup agent, including
+graph, real Spring 6.1 with jakarta annotations and a startup Java agent, including
 private callbacks and a resource field added in the same save.
 
 The lifetime policy is per instance:
@@ -664,11 +664,11 @@ their existing live dispatch behavior.
 Regression tests check exact callback order and instance identity through six
 saves, method/annotation removal and restoration, external bean recreation and
 context close. Real NIO channels must close, with zero left open. Annotation API
-1.3.2 is a test-only dependency and is not included in the production agent.
+1.3.2 is a test-only dependency and is not included in the production Java agent.
 
 ### Bean methods added after startup
 
-On a stock JDK with the agent attached at startup, add a factory to an existing
+On a stock JDK with the Java agent attached at startup, add a factory to an existing
 configuration class, compile, and look up the new singleton through Spring:
 
 ```java
@@ -827,7 +827,7 @@ participate in bean-presence checks without forcing their creation. A factory wi
 definition is retired before the replacement is evaluated. Unrelated beans remain
 untouched. The three conditions can combine with each other and direct `@Profile`.
 Verified with Boot 2.7.18 / Spring 5.3.39, using native-startup comparisons and real
-agent reloads on lite/default configurations with normal/child classloaders.
+Java agent reloads on lite/default configurations with normal/child classloaders.
 
 Other Boot condition annotations, custom composed conditions, class-level conditions
 on the configuration, repeated configuration parsing and Boot auto-configuration
@@ -836,7 +836,7 @@ re-evaluate conditions; save the configuration again. Generic return deduction i
 outside the existing supported factory signatures. Boot 3 condition behavior has
 not been verified here. An unavailable Boot annotation or native condition API
 refuses the factory. The underlying direct `@Conditional` tests cover
-Spring 5.3.39 and 6.1.14; their real-agent activation/error/removal/restoration tests cover
+Spring 5.3.39 and 6.1.14; their real Java agent activation/error/removal/restoration tests cover
 Spring 5.3.39 with lite/default configurations on normal and child classloaders.
 
 Parameters allow direct `@Qualifier` and `@Value`. Primitive parameters without
@@ -973,7 +973,7 @@ registration step, with its existing lifecycle effects. This feature does not
 rerun configuration parsing or add `@Bean` to methods that existed at startup.
 
 The richer argument path is covered with Spring 5.3.39 on SapMachine 21,
-including real startup-agent reloads in both application and child classloaders.
+including real startup Java agent reloads in both application and child classloaders.
 Those tests cover successive saves, same-save dependencies, lazy lookup,
 conversion failure, removal, recovery and destruction. Other Spring versions
 and a JDK 17 runtime have not been verified for this extension.
@@ -1038,7 +1038,7 @@ this feature does not preserve destroyed bean resources or make metadata
 publication atomic with concurrent requests.
 
 Current [P3b evidence](feature-evidence.md#p3b-exception-local) runs on stock
-SapMachine JDK 17 and 21 with Spring Framework 5.3.39 and 6.1.14. Real-agent tests send
+SapMachine JDK 17 and 21 with Spring Framework 5.3.39 and 6.1.14. Real Java agent tests send
 loopback HTTP through MockMvc/DispatcherServlet, checking local/advice handlers,
 existing/new endpoints, selectors and local priority across five saves and normal/
 child loaders. This is an HTTP bridge, not a deployed servlet-container test.
@@ -1087,7 +1087,7 @@ identities after native bean recreation/cascade/healing. This does not make bean
 destruction atomic with concurrent/in-flight requests; the existing opt-in
 request-boundary policy remains separate. Changes to registration declarations, order,
 path-filter configuration or chain structure are not certified by this repair. No
-dependency or new agent option is added.
+dependency or new Java agent option is added.
 
 ### Binding and model methods added after startup
 
@@ -1146,7 +1146,7 @@ publication with concurrent requests. Added methods remain absent from ordinary
 application reflection.
 
 Current [P3b evidence](feature-evidence.md#p3b-binder-local) exercises Spring
-Framework 5.3.39 and 6.1.14 on stock SapMachine JDK 17 and 21. Real-agent
+Framework 5.3.39 and 6.1.14 on stock SapMachine JDK 17 and 21. Real Java agent
 loopback HTTP bridges into MockMvc/DispatcherServlet observe local/advice binders
 and model callbacks on old/new endpoints across five saves and normal/child
 loaders. These bridges do not certify a deployed servlet container. Void/generic
@@ -1206,7 +1206,7 @@ Verified with Spring Framework 5.3.39, AspectJ 1.9.22.1 and a stock JDK 21 using
 real JDK/CGLIB proxies and HTTP calls across four aspect saves. Other Spring/
 AspectJ versions and a JDK 17 runtime were not exercised for those existing-chain
 cases. First-proxy recreation has separate native Spring 6/7 and Boot 3/4 checks.
-AspectJ is only a test dependency of Reclazz; the production agent ships neither
+AspectJ is only a test dependency of Reclazz; the production Java agent ships neither
 Spring nor AspectJ and does not enable AspectJ weaving.
 
 <a id="jackson-getters-added-after-startup"></a>
@@ -1292,7 +1292,7 @@ Jackson 3.1.8, 3.2.4 and 3.3.0 getter output is separately covered on stock JDK 
 Jackson 2 hidden and with both namespaces present: getter addition, body changes,
 annotation rename/ignore, removal/restoration, naming and generic values, access
 restrictions and exception propagation. A Spring-free process and the Boot 4.1.2
-sample's manual-agent mode also serve an added getter and its changed body over
+sample's manual Java agent mode also serve an added getter and its changed body over
 HTTP without restarting. The Jackson 3 hook routes its method-handle getter path
 and clears mapper caches through the public API; constructor tracking includes
 standalone and rebuilt mappers. Already-prefetched ObjectWriters keep their
@@ -1303,7 +1303,7 @@ are separately covered by targeted component tests on Jackson 3.1.8, 3.2.4 and
 3.3.0. They use the real receiver and virtual field storage, with alias/naming,
 generic conversion, null skipping, removal/restoration, mapper access restrictions,
 final-field write refusal and native method-handle exception boundaries. On the
-Boot 4.1.2 manual-agent sample with Jackson 3.3.0 and Java 17, a mutable DTO's
+Boot 4.1.2 manual Java agent sample with Jackson 3.3.0 and Java 17, a mutable DTO's
 added field and setter complete a POST/GET round-trip in the same JVM; a second
 setter body edit also takes effect without restarting. The existing retained
 object remains usable after the shape changes.
@@ -1454,7 +1454,7 @@ Removing the member again removes it everywhere. Each library is covered by its
 own `Added*ReloadTest`; the SAP Commerce and Velocity ones use the jars of a local
 SAP Commerce installation. Only a save that adds or removes fields or methods
 clears these caches; a body-only save leaves them warm. The hooks must load before
-the library does, so an agent attached later covers only instances created after
+the library does, so a Java agent attached later covers only instances created after
 the attach. Groovy (HAC console, script jobs) and SAP Commerce's
 `DefaultValidationService` metadata are not covered: a restart shows added members
 to them.
@@ -1547,7 +1547,7 @@ parameter names, custom key generation, annotation changes, method removal and
 restoration, and old/new bean references. Spring 6 transaction/cache advice combined
 with authorization is verified in the next section; a JDK 17 runtime was not exercised.
 Spring JDBC/TX and H2 are test-only dependencies of
-Reclazz and are absent from the production agent.
+Reclazz and are absent from the production Java agent.
 
 ### Authorization on added service methods
 
@@ -1635,7 +1635,7 @@ Verified on both security configurations listed above: native nested-policy cont
 deny-before-body, post-authorization after side effects, class/method precedence,
 cache/database protection and rejection of mixed or ambiguous policies. Modern tests
 remove each required pre/post advisor independently and prove that the body cannot
-run with only the other advisor. Actual-agent tests cover six saves through retained
+run with only the other advisor. Actual Java agent tests cover six saves through retained
 proxies, normal and child class loaders, rule/body edits, removal and restoration.
 
 ### Composed transaction annotations on added services
@@ -1680,7 +1680,7 @@ receiver, proxy, advice, visibility and generic restrictions above still apply.
 
 Verified with Spring 5.3.39, H2 2.2.224 and JDK 21: native attribute comparisons,
 checked-exception rollback, read-only hints, manager aliases and `REQUIRES_NEW`
-inside an outer rollback. Real agent tests cover five saves through a held CGLIB
+inside an outer rollback. Real Java agent tests cover five saves through a held CGLIB
 proxy in ordinary and child classloaders, including annotation removal and method
 removal/restoration. No new Spring 6, JDK 17 or live SAP Commerce compatibility claim.
 
@@ -1732,13 +1732,13 @@ the annotation type definition itself is not covered, so save changes to its usa
 
 Verified with Spring 5.3.39: native operation comparisons, alias/default selection,
 condition/unless checks, before-invocation eviction on a throwing body and grouped
-cache operations. Real agent tests run seven saves through a held CGLIB proxy with
+cache operations. Real Java agent tests run seven saves through a held CGLIB proxy with
 normal and child classloaders. No broader Spring-version compatibility is claimed
 for composed cache operations here.
 
 ### Scheduled methods added after startup
 
-With the agent attached at startup, add this method to an existing singleton
+With the Java agent attached at startup, add this method to an existing singleton
 `@Service` or `@Component`, compile, and it starts running without a restart.
 The bean may already be a standard transaction, cache or async proxy: the task is
 unwrapped to run on the real target, so it reads the live fields. Supported
@@ -1772,7 +1772,7 @@ may finish. Scheduled work is outside the MVC request reload boundary.
 
 The added-method path supports direct `@Scheduled` and repeated `@Scheduled`
 declarations (`@Schedules`) on no-argument, `void` instance methods, including
-private methods, on singleton classes recognized by the agent's Spring
+private methods, on singleton classes recognized by the Java agent's Spring
 stereotype detection (`@Service`, `@Component`, and the other directly supported
 Spring stereotypes). It also works when the application had no scheduled tasks
 at startup. The existing scheduler, unrelated tasks and scheduling configuration
@@ -1795,7 +1795,7 @@ Correct the declaration and compile again to retry.
 
 ### Event listener methods added after startup
 
-With the agent attached at startup, add a listener to an existing singleton
+With the Java agent attached at startup, add a listener to an existing singleton
 `@Service` or `@Component` and compile. It can be the class's first listener.
 The bean may already be a standard transaction or cache proxy: the listener is
 unwrapped to run on the real target. Supported public callbacks may also carry
@@ -1916,7 +1916,7 @@ Direct async callbacks have separate [scheduled](#async-scheduled-methods-added-
 and [ordinary event](#async-event-listeners-added-after-startup) scopes below.
 Unsupported operation infrastructure fails before the callback body.
 
-Real-agent tests with Spring 5.3.39 and H2 exercise ordinary and child classloaders,
+Real Java agent tests with Spring 5.3.39 and H2 exercise ordinary and child classloaders,
 commit/checked rollback, successful versus failed cache eviction, event cache hits
 and returned-event publication, removal of advice, removal/restoration of callbacks,
 and old proxy references over four saves. They invoke Spring's registered scheduled
@@ -1971,7 +1971,7 @@ This does not add a drain boundary around scheduled work.
 Verified on Spring 5.3.39 with stock JDK 21, including normal and child classloaders,
 executor changes, queued work across reload/removal, checked-exception transaction
 rollback, error handling, synchronous restoration and existing proxy advice.
-The agent tests explicitly invoke Spring's registered scheduled Runnable on a
+The Java agent tests explicitly invoke Spring's registered scheduled Runnable on a
 scheduler probe thread for deterministic queue checks. Existing scheduling tests
 cover actual timers. Other Spring versions are not claimed by these tests.
 
@@ -2083,7 +2083,7 @@ queued-target/resource and executor-lifecycle limits still apply. This service i
 shapes. MVC request lifetime protection is a separate opt-in
 [request boundary](#reload-between-requests); WebFlux remains outside it.
 
-Verified with native Spring 5.3.39, H2 and stock JDK 21, including real agent runs on
+Verified with native Spring 5.3.39, H2 and stock JDK 21, including real Java agent runs on
 ordinary and child classloaders, old/current bean references, five saves, qualifier
 changes, worker rollback, cancellation, synchronous annotation removal, method
 removal/restoration, and self-invocation. No additional Spring-version claim is made.
@@ -2236,7 +2236,7 @@ delivery guarantee; application acknowledgments, retries and offset policy
 continue to determine redelivery.
 
 Verified with Spring Kafka 2.9.13, Spring Framework 5.3.39 and a real embedded
-Kafka 3.2.3 broker on stock JDK 17 and 21 on macOS arm64. Real-agent tests cover both the first listener
+Kafka 3.2.3 broker on stock JDK 17 and 21 on macOS arm64. Real Java agent tests cover both the first listener
 on an already used bean and addition beside an existing listener, unique test
 message delivery across six saves, topic changes, retired consumer state,
 unrelated container identity and context close. Expression tests on normal and
@@ -2369,7 +2369,7 @@ blocked real consumer proves timeout/interruption and retry using a shorter
 internal test wait. Request/reply tests cover native Spring controls, text/bytes/
 map/native and Spring messages, correlation, `JMSReplyTo` priority, null results,
 rollback followed by a reply on redelivery, and invalid `@SendTo` recovery.
-Actual-agent reply tests cover normal/child class loaders, repeated saves,
+Actual Java agent reply tests cover normal/child class loaders, repeated saves,
 private restoration and reply queue changes. Other JMS providers and Spring versions,
 late attach, XA and durable topics were not exercised in that legacy lane.
 
@@ -2458,7 +2458,7 @@ checked against the runtime lifecycle restrictions above, not the added-method
 metadata restrictions. Unknown broker ownership also requires a restart. Unsupported Rabbit infrastructure does not block unrelated
 beans.
 
-Start with `-javaagent`. The agent tracks each actual simple-container worker
+Start with `-javaagent`. The Java agent tracks each actual simple-container worker
 from construction through its complete `run()` exit, including queued tasks and
 channel/transaction cleanup. Before recreation it prevents new workers on the
 retired container, starts destruction, and waits up to 30 seconds for both
@@ -2482,7 +2482,7 @@ Custom conversion depending on the callback’s exact declaring-class identity i
 outside the verified scope because added callbacks use a hidden delegate.
 
 Verified locally with Spring Rabbit 2.4.17, Spring Framework 5.3.39, RabbitMQ
-4.3.5 and stock JDK 17 and 21 on macOS arm64. Real-agent tests cover six saves both on an already used
+4.3.5 and stock JDK 17 and 21 on macOS arm64. Real Java agent tests cover six saves both on an already used
 bean with no listeners and beside both explicitly named and ID-less original
 listeners, including payload/header
 conversion, rollback/redelivery and context close. Queue-expression tests on
@@ -2503,7 +2503,7 @@ runtime repair. Modern Rabbit reply/async, direct child-loader watcher behavior
 and property/dependency-cascade consumer recreation are not established here.
 
 Spring Rabbit is a test dependency; no AMQP/framework/broker classes ship in the
-agent. The `:agent:rabbitTest` suite requires Docker with Linux containers and a
+Java agent. The `:agent:rabbitTest` suite requires Docker with Linux containers and a
 pre-pulled official image. Prepare and run it with:
 
 ```bash
@@ -2549,15 +2549,15 @@ current acceptance proof. The tests edit the actual runtime file; automatic
 source-resource copying is not established by these observations.
 
 These observations use stock SapMachine JDK 17/21 on macOS arm64 and startup
-agent attachment. They do not certify other versions, operating systems, late
+Java agent attachment. They do not certify other versions, operating systems, late
 attachment or native SAP Commerce tenant behavior. Engine libraries are test-only and are
-not packaged with the production agent. See the [P5 registry](feature-evidence.md#p5-properties-xml-messages-and-templates)
+not packaged with the production Java agent. See the [P5 registry](feature-evidence.md#p5-properties-xml-messages-and-templates)
 for separate watcher, component, refusal and unverified claims.
 
 ### Loaded Spring XML resources
 
 Alongside `*-spring.xml`, Reclazz recognizes local `.xml` resources that Spring's
-XML reader successfully loaded for an active application context after agent
+XML reader successfully loaded for an active application context after Java agent
 startup. This includes nested imports and files such as `spring-mvc-config.xml`
 and `web-application-config.xml`, including files with no bean definitions of their
 own. It uses the resolved file path and owning context, not a basename match or
@@ -2567,7 +2567,7 @@ Files under existing watch roots use the normal watcher. Other captured local
 XML files are checked once per second without watching their neighbouring files;
 module and filename exclusions still apply. Closed contexts and temporary parser
 factories do not grant resource ownership. JAR entries, remote resources and XML
-loaded before the agent's reader hook are not covered by this discovery path.
+loaded before the Java agent's reader hook are not covered by this discovery path.
 Reserved logging, code-generation and backoffice filename rules retain priority.
 
 Recognition routes supported bean changes through the existing XML safety checks;
@@ -2760,7 +2760,7 @@ This is not rollback of constructor or callback side effects; restoration can ru
 callbacks again. Spring retains its own callback-error handling. Replacement is
 not a transaction with concurrent requests, registry edits or external resources.
 
-Verified with Spring 5.3.39 and SapMachine 21, including startup-agent reloads in
+Verified with Spring 5.3.39 and SapMachine 21, including startup Java agent reloads in
 ordinary and child classloaders, factory edits, callback counts and repeated saves.
 Multiple owning contexts resolve placeholders independently, using the same Spring
 classes. Other Spring versions, separate Spring installations, SAP Commerce runtime
@@ -2793,7 +2793,7 @@ verify configuration-record replacement and held-consumer repair on Boot 2.7.18,
 Focused property checks also cover Boot 3.3.5 and Boot 4.1.2. Boot 4 scratch
 checks close their own fallback validation factories on success, rejection and
 unexpected binding failures, while retaining the application's custom validator
-and native self-validation order. A manual-agent Boot 4.1.2 sample also updates
+and native self-validation order. A manual Java agent Boot 4.1.2 sample also updates
 its JavaBean property object, direct field and Environment in the same process.
 This focused coverage does not certify every P5 scenario on Boot 3 or Boot 4.
 
@@ -2918,12 +2918,12 @@ pair present at startup; file/XML and ambiguous declarations are held.
 
 Verified in current P5 with Spring Boot 2.7.18, Spring 5.3.39, SnakeYAML 1.30
 and stock SapMachine JDK 17/21 on macOS arm64:
-real startup-agent HTTP checks for properties and YAML, old bean holders,
+real startup Java agent HTTP checks for properties and YAML, old bean holders,
 lists/defaults, invalid conversion/syntax recovery, deletion and restoration;
 unit regressions cover precedence, active/inactive documents, multiple contexts,
 immutable candidates, external source replacement and partial-application retry.
 Other Boot/SnakeYAML versions are not verified. SnakeYAML is a test dependency;
-the production agent uses the application's parser and packages no YAML library.
+the production Java agent uses the application's parser and packages no YAML library.
 
 ### Computed @Value fields
 
@@ -3259,7 +3259,7 @@ A reloaded method body takes effect wherever it runs, but a value a bean already
 computed and kept in its own cache, a Guava cache or a plain field, does not
 recompute on its own. When the logic lives in a plain helper class that is not a
 Spring bean, editing the helper updates its code yet leaves that cached value as it
-was, because the agent has no way to know which bean's cache a given helper feeds and
+was, because the Java agent has no way to know which bean's cache a given helper feeds and
 will not guess a cache field or empty every cache.
 
 `refreshOwnersOnHelper` lets you say so explicitly. Map a helper class to the Spring
@@ -3282,12 +3282,12 @@ reload.
 ### Cache dependencies after reload
 
 Spring Cache observation is automatic when the companion engine instruments
-application methods. No agent argument is needed. If `PriceService` caches
+application methods. No Java agent argument is needed. If `PriceService` caches
 its result in `prices` and calls an unannotated `DiscountRules` helper,
 reloading the helper invalidates `prices`. An unrelated `descriptions` cache
 stays populated. This works for externally compiled classes and AutoCompile.
 
-The agent records the watched classes executed inside Spring's synchronous
+The Java agent records the watched classes executed inside Spring's synchronous
 cache interceptor and the actual cache instances involved. If a cached
 `quotes` calculation reads an already cached `prices` result, their dependency
 is recorded too: changing the price helper invalidates both regions. Equal
@@ -3311,7 +3311,7 @@ for another reload to retry. Operations overlapping unrelated reloads may also
 be cleared conservatively.
 
 Attach mode and any cache-hook failure mark observation incomplete. For an
-annotated class the agent then retains its existing fallback of clearing all
+annotated class the Java agent then retains its existing fallback of clearing all
 manager caches; known resolver-only caches are also cleared. An unannotated
 helper invalidates only its observed dependents, even with incomplete history.
 Without observations, an annotated class keeps the same fallback. Tracking
@@ -3352,7 +3352,7 @@ an already mapped entity does not trigger this new-entity rebuild again.
 
 Verified with standard `LocalContainerEntityManagerFactoryBean`, the standard
 Hibernate provider, Spring ORM 6.1.14, Hibernate 6.5.3.Final and H2 2.2.224 on stock
-JDK 21, including real agent runs on ordinary and child application classloaders.
+JDK 21, including real Java agent runs on ordinary and child application classloaders.
 Only one persistence unit is supported for new-entity selection. The factory or
 unit must explicitly configure Hibernate `validate`. JPA database/script action
 overrides (including `none`), contributor-specific actions, custom schema tools,
@@ -3512,7 +3512,7 @@ Read the [request-boundary reference](#reload-between-requests) before choosing 
 
 ### Reload between requests
 
-Add `reloadBoundary=request` to the agent arguments to keep a supported Spring
+Add `reloadBoundary=request` to the Java agent arguments to keep a supported Spring
 MVC request from crossing a class reload. For example:
 
 ```bash
@@ -3526,7 +3526,7 @@ starts. New requests wait while the class batch and its framework follow-up
 run, then enter against the updated code. The default, `immediate`, keeps
 the existing reload behavior and installs no request hook.
 
-The agent waits up to one second for active dispatches, supported async requests
+The Java agent waits up to one second for active dispatches, supported async requests
 and Callable workers to drain. If a long
 request or a breakpoint outlasts that deadline, it prints
 `Request boundary deferred`, reopens admission, and retains the queued edit.
@@ -3577,7 +3577,7 @@ this gate). This is not a database snapshot or an all-or-nothing deployment:
 structural changes and a partially failed batch retain existing limitations.
 
 Use this option at JVM startup. Attach mode, missing bootstrap support, or
-Spring MVC already loaded by an earlier agent refuses initialization rather
+Spring MVC already loaded by an earlier Java agent refuses initialization rather
 than silently running without protection. A missing or failed MVC hook keeps
 class edits deferred. A non-MVC application therefore should use `immediate`.
 An invalid `reloadBoundary` value refuses initialization. Application startup
@@ -3588,7 +3588,7 @@ itself is not aborted.
 A reload is a change to a running program, and the way back is the same as
 the way in: change the file back and save. The old bytes are reloaded like
 any other change, so an edit that throws on every request is undone in the
-editor, without a restart. What the agent offers on top:
+editor, without a restart. What the Java agent offers on top:
 
 | Ask | Answer |
 |---|---|
@@ -3597,10 +3597,10 @@ editor, without a restart. What the agent offers on top:
 | `HEALTH` | reloads, failures, latency, what is watched, and a reload that is still running |
 | `sessionLog=<path>` | the whole session, timestamped, for reading back after the fact |
 
-When the trouble is the agent rather than the edit: `excludeClasses=<pattern>`
+When the trouble is the Java agent rather than the edit: `excludeClasses=<pattern>`
 takes a class out of instrumentation (method-body reloads still work for it),
 `structuralReload=false` turns the companion engine off for the session, and
-removing the `-javaagent` line runs the application with no agent at all. None
+removing the `-javaagent` line runs the application with no Java agent at all. None
 of these loses application state that a restart would have kept; a restart is
 the last step, and `PENDING` says when it is the only one.
 
@@ -3670,7 +3670,7 @@ transitively: selected modules use their existing class output; other modules
 use their packaged `resources/backoffice/<name>_bof.jar`. Publication still waits
 for every compilation group to succeed.
 
-Start the server with the agent before the widget class first loads. Standard
+Start the server with the Java agent before the widget class first loads. Standard
 Backoffice modules are loaded by
 `com.hybris.cockpitng.core.persistence.packaging.WidgetClassLoader` from copied
 module JARs with a null CodeSource location. Reclazz prepares such a class only
@@ -3685,9 +3685,9 @@ even when the caller's context loader has a foreign same-name class. A second
 definition is left unprepared and does not receive reloads or replace the owner's
 metadata. An unavailable/collected owner refuses reload explicitly. Attaching
 late cannot add the missing preparation; rebuild matching output/JARs and restart
-with the agent when initial preparation was missed.
+with the Java agent when initial preparation was missed.
 
-The synthetic full-agent tests cover source saves, IDE output saves and newly
+The synthetic full Java agent tests cover source saves, IDE output saves and newly
 added helper calls on an existing widget object. Real native WidgetClassLoader
 preparation and added-method calls were executed in isolated SDK JVMs on
 2211.49/JDK17 and 2211-jdk21.8/JDK21.
@@ -3706,7 +3706,7 @@ MVVM binding, static handlers or other live platform/JDK combinations. See the
 
 ### Backoffice socket actions
 
-These action rules require an agent-prepared class. Standard module preparation
+These action rules require a class the Java agent prepared. Standard module preparation
 follows the [Backoffice Java module conditions](#backoffice-java-modules);
 classes loaded without it cannot gain a method on a stock JVM. Existing prepared
 widget action bodies use ordinary class reload. On stock JDK 17/21,
@@ -3760,7 +3760,7 @@ body had and the new one does not has nothing to bind to, as in any rebuild.
 Everything the IntelliJ plugin sees comes over a small loopback socket, and
 anything else can read it or send the four commands, `DIAGNOSE`, `PENDING`,
 `HEALTH` and `SCAN`: another IDE's extension, a Gradle or Maven build that
-nudges the agent when it has finished writing class files, a log shipper.
+nudges the Java agent when it has finished writing class files, a log shipper.
 The port file, the JSON lines and the commands are in
 [protocol.md](protocol.md), with a Gradle and a shell recipe for `SCAN`.
 
@@ -3784,7 +3784,7 @@ jfr print --events reclazz.Reload,reclazz.ReloadFailed reclazz.jfr
 
 In JDK Mission Control they appear under the **Reclazz** category in the event
 browser. A recording of a slow session, sent along with a report, shows what
-the agent did and when without the console log.
+the Java agent did and when without the console log.
 
 ## Supported JDK Providers
 
@@ -3937,7 +3937,7 @@ A field edited into a compile-time constant stays physically non-final but is
 not reset: callers may inline the new constant. A field that was a compile-time
 constant at first load stays final and cannot be reset after changing to a
 nonconstant initializer. The existing inlined-constant warning/rebuild advice
-still applies. Missing baselines and classes loaded before the agent fail closed;
+still applies. Missing baselines and classes loaded before the Java agent fail closed;
 dynamic attach cannot prepare their final fields: when Reclazz is attached to an
 already running JVM, classes loaded before the attach keep `final`, and their changed
 static initializers need a restart even with the option on. These field refusals do not
@@ -4211,7 +4211,7 @@ the native operation returned without propagating errors; it does not certify
 fresh stored fields. `FINISHED_UNVERIFIED` means native `ignoreErrors` can have
 skipped provider errors. `FAILED` reports refusal or failure without copying
 native messages, customer class names, document values or paths into the
-agent's result line. Config/type tags and counts identify the operation's
+Java agent's result line. Config/type tags and counts identify the operation's
 scope. Validate the served search field and consult the native indexing logs
 for application failures. See the [evidence record](feature-evidence/sap-solr-reindex.json)
 for the distinct unit, watcher, SDK and live verification status.
@@ -4272,7 +4272,7 @@ Reclazz compares supported direct annotations obtained through fresh reflection
 against operation-source answers, including discoverable retained proxy Methods.
 A detected mismatch or repair failure produces a warning naming the affected
 class and annotation kind. Unsupported inspection, including composed or
-unverifiable proxy metadata, warns once per class and reason per agent session.
+unverifiable proxy metadata, warns once per class and reason per Java agent session.
 An unknown historical annotation baseline suppresses unsupported-inspection
 warnings for that reload; detected mismatches and repair failures still warn.
 Matching samples are silent and do not guarantee that a later writer cannot

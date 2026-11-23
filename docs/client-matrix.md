@@ -9,12 +9,12 @@ passing. SDK acceptance does not certify any desktop AI application or GUI.
 `mcp-server/src/test/client` is a private, test-only npm project. It pins the
 [official MCP TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk)
 to **1.30.0** with a lockfile. Node 22 runs the consumer; the installed product
-still requires only Java. No npm dependency is added to the agent, IDE plugin,
+still requires only Java. No npm dependency is added to the Java agent, IDE plugin,
 build plugins or MCP distribution.
 
 The SDK performs initialization/negotiation, ping, tool discovery and calls
 against the **packaged MCP jar over stdio**. The test installs both jars under
-paths containing spaces and launches a real application JVM with the agent.
+paths containing spaces and launches a real application JVM with the Java agent.
 It covers:
 
 - MCP startup from an unrelated client directory with explicit project and relative
@@ -72,11 +72,11 @@ workflow evaluation, not a model benchmark.
 for actual Gradle and Maven **two-module builds**. It exercises seven scenarios
 per tool: ordinary opt-out, partial compilation failure, competing owner,
 same-owner recovery, exact-byte receipts, up-to-date barrier and offline target
-refusal before output changes. It talks directly to the agent's socket; it is
+refusal before output changes. It talks directly to the Java agent's socket; it is
 not another independent MCP SDK client.
 
 Build `:gradle-plugin:jar`, `:agent:shadowJar`, `:mcp-server:shadowJar` and package
-`maven-plugin/pom.xml` first. The Maven plugin needs the matching agent artifact
+`maven-plugin/pom.xml` first. The Maven plugin needs the matching Java agent artifact
 available in its build repository. The fixture itself overlays artifacts into
 an isolated repository and does not publish to the user's repository. Existing
 [Gradle](gradle-plugin.md) and [Maven](maven.md) guides describe the opt-in wrappers.
@@ -139,15 +139,15 @@ completions or restarts. Hosted and Windows runs for this extension remain unrun
 ## JDK 25 agent runtime
 
 Observed locally on **2026-11-14**, macOS, JDK 25.0.5.0.3 test workers
-with a JDK 21 build JVM. These are agent/framework suites, separate from the
+with a JDK 21 build JVM. These are Java agent and framework suites, separate from the
 independent SDK/MCP client acceptance above.
 
 | Runtime / application fixtures | Observed result | Scope |
 | --- | --- | --- |
 | JDK25 / Spring 5/6 process fixtures target21 | PASS locally | `unitTest` 2691, `e2eTest` 333 and `springSixTest` 393, no failures |
 | JDK25 / Spring 7 fixtures target25 | PASS locally | `springSevenTest` 421, no failures (includes the first-`@Bean` cases) |
-| Ubuntu/JDK25, build JDK21 | Configured; Linux CI pending | Agent unit/e2e/Spring6 only; no hosted run dispatched or observed |
-| Windows/JDK25 and independent SDK/MCP on25 | Not run | Neither is implied by the local agent suites |
+| Ubuntu/JDK25, build JDK21 | Configured; Linux CI pending | Java agent unit/e2e/Spring6 only; no hosted run dispatched or observed |
+| Windows/JDK25 and independent SDK/MCP on25 | Not run | Neither is implied by the local Java agent suites |
 
 The workflow installs the 25 runtime first and 21 last so Gradle8.10.2 stays
 on21. `-Preclazz.testJava=25` selects the test JVM through the opt-in launcher.
@@ -160,7 +160,7 @@ acceptance does not establish a hosted CI or all-client compatibility result.
 ## Installed coding clients
 
 Observed locally on **2026-11-10**, macOS arm64, Java 21, matching locally built
-Reclazz agent/MCP 1.5.0, against an isolated copy of the Spring Boot 3.3.5 Maven
+Reclazz Java agent and MCP server 1.5.0, against an isolated copy of the Spring Boot 3.3.5 Maven
 sample. These checks establish discovery and read-only attachment status, not
 reload correctness or every tool's execution. See
 [client setup](mcp-server.md#claude-code) for configuration examples.
@@ -169,7 +169,7 @@ reload correctness or every tool's execution. See
 | --- | --- | --- |
 | Claude Code 2.1.321 | PASS: eleven tools discovered; one `reclazz_status({})` returned `attached:true` with health | Project registration in the temporary sample; print mode with explicit JSON config and strict MCP selection |
 | Codex CLI 0.162.0-alpha.17.2 | PASS: eleven tools discovered; one `reclazz_status({})` returned `attached:true` with health | Ephemeral CLI run, user config ignored, per-run `mcp_servers` overrides; persistent TOML entry parsed separately |
-| Cursor desktop 3.26.13 | Documented, not verified | Desktop installed; separate Agent CLI absent; no installed non-GUI tool-call route was established; no GUI acceptance or installation performed |
+| Cursor desktop 3.26.13 | Documented, not verified | Desktop installed; separate Cursor Agent CLI absent; no installed non-GUI tool-call route was established; no GUI acceptance or installation performed |
 | Cursor Agent CLI | Documented, not verified | Not installed; desktop presence does not imply CLI presence |
 | Claude Desktop, Inspector GUI, other operating systems/client versions | Not verified by this check | No result is inferred from the two CLI checks |
 

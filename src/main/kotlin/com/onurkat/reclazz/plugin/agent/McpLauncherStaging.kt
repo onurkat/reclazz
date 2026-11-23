@@ -28,7 +28,7 @@ object McpLauncherStaging {
         require(version.matches(Regex("[A-Za-z0-9._-]+"))) { "Invalid bundled MCP version" }
         for (jar in listOf(mcp, agent)) JarFile(jar.toFile()).use {
             require(it.manifest?.mainAttributes?.getValue("Implementation-Version") == version) {
-                "MCP, agent and plugin versions must match before connecting an assistant"
+                "MCP, Java agent and plugin versions must match before connecting an AI assistant"
             }
         }
         require(java.isAbsolute && java.toString().none { it == '\n' || it == '\r' }) { "Java fallback must be an absolute executable path" }

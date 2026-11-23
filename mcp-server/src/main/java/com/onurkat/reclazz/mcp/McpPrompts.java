@@ -21,7 +21,7 @@ final class McpPrompts {
             3. For an external build, call reclazz_build with a unique owner and state started before
                publishing compiler output. Run the actual complete build. On failure send state failed;
                only after build success send state ok with the same owner. Never send BUILD ok just to
-               clear a hold. Automatic agent compilation is a separate path; inspect its compile errors
+               clear a hold. Automatic Java agent compilation is a separate path; inspect its compile errors
                instead of fabricating an external BUILD lifecycle. Do not clear another owner's hold.
             4. Call reclazz_await_reload with action wait, the retained sessionId and subscriptionId,
                afterCursor set to the checkpoint cursor, exact binary className and expected sha256.

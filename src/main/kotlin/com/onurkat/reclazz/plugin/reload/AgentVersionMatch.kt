@@ -41,9 +41,9 @@ object AgentVersionMatch {
         if (plugin.isEmpty() || plugin == "?") return null
         if (plugin == agent) return null
 
-        return "The running agent is $agent and this plugin is $plugin. It works, " +
+        return "The running Java agent is $agent and this plugin is $plugin. It works, " +
             "and it is not what the $plugin release notes describe. The jar a server " +
-            "attaches is the one named in its start script, so the agent changes when " +
+            "attaches is the one named in its start script, so the Java agent changes when " +
             "that process restarts, not when the plugin updates."
     }
 }

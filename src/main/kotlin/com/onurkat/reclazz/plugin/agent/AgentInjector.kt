@@ -58,8 +58,8 @@ class AgentInjector internal constructor(private val locateAgentJar: () -> File?
         if (agentJar == null) {
             if (missingJarReported.add(project.locationHash)) {
                 ReloadNotifications.warn(
-                    project, "Reclazz could not find its agent",
-                    "The agent jar is not where this plugin was installed, so " +
+                    project, "Reclazz could not find its Java agent",
+                    "The Java agent jar is not where this plugin was installed, so " +
                     "${configuration.name} is running without it and nothing will hot-reload. " +
                     "Reinstalling Reclazz puts the jar back. The path it looked at is in " +
                     "idea.log, under AgentJarLocator."

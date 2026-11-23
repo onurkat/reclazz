@@ -19,7 +19,7 @@ public class ReclazzProperties {
     private boolean enabled = true;
 
     /**
-     * Fail application startup when the agent is not attached to this JVM.
+     * Fail application startup when the Reclazz Java agent is not attached to this JVM.
      * Off by default: a missing agent is reported, not fatal. Turn it on in a
      * dev profile where a hot-reload run is expected.
      */

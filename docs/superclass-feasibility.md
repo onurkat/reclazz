@@ -17,7 +17,7 @@ This experiment does not add superclass replacement support to Reclazz.
 The fixture under [scripts/probes/superclass](../scripts/probes/superclass/) is
 adapted from the preserved 2026-09-22 research probe. The runner uses Python 3.9+
 and explicitly selected full JDKs (17+); no third-party dependencies, downloads,
-Reclazz build or production agent are involved. Run from the repository root:
+Reclazz build or production Java agent are involved. Run from the repository root:
 
 ```sh
 python3 scripts/test-superclass-feasibility.py \
@@ -31,13 +31,13 @@ runtime being measured. Choose a **new output directory** each time: an existing
 one is refused without overwriting its evidence. The command uses argument arrays
 and native executable suffixes, but Windows/Linux execution was not tested in this
 research. The process environment is inherited; run without unrelated injected
-agents or custom JVM options when reproducing the baseline.
+Java agents or custom JVM options when reproducing the baseline.
 
 For each JDK the runner copies the source, compiles the original classes and then
-the replacement `C` separately, packages a tiny premain instrumentation agent and
+the replacement `C` separately, packages a tiny premain instrumentation Java agent and
 launches one isolated JVM. Each subprocess has a 60-second limit. `evidence.json`
 records planned runs, completed/failed runs, exact commands, log paths, source and
-class/agent digests, runtime version and observed results. Any command/assertion
+class and Java agent digests, runtime version and observed results. Any command/assertion
 failure returns nonzero and leaves `passed:false` evidence plus logs. Setup before
 the output directory exists, forced process termination or an unwritable disk may
 prevent a report; a missing report never means success.
@@ -81,7 +81,7 @@ Each passing run demonstrates:
 | Unrouted inherited `original.who()` | A |
 | Change original field from 7 to 11, call routed method again | `v2:B:11` |
 
-The positive redefine control prevents a missing agent or disabled redefinition
+The positive redefine control prevents a missing Java agent or disabled redefinition
 capability from being mistaken for a hierarchy-specific limitation. The final
 field check shows an explicit read of the original object's field, not copying
 or migrating the new base's state.
@@ -167,7 +167,7 @@ Pinned-method warnings name the retained method and reason. Class-level blockers
 refuse the save and leave its method changes unapplied.
 
 [SuperclassReportingVerificationTest](../agent/src/test/java/com/onurkat/reclazz/e2e/SuperclassReportingVerificationTest.java)
-starts one real application with the packaged Reclazz agent. Across ordinary
+starts one real application with the packaged Reclazz Java agent. Across ordinary
 updates, superclass salvage, a pinned method, two refused saves and recovery, it
 checks fresh live output on the held receiver against exact-input socket receipts:
 

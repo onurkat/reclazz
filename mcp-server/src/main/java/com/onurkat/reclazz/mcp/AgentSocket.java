@@ -52,7 +52,7 @@ final class AgentSocket {
     static Result run(Map<String, String> opts, String command) {
         Result result = new Result();
         if (command != null && (command.length() > 512 || command.codePoints().anyMatch(Character::isISOControl))) {
-            result.reason = "invalid agent command";
+            result.reason = "invalid Java agent command";
             return result;
         }
         resolvePort(opts, result);
@@ -81,7 +81,7 @@ final class AgentSocket {
                 try {
                     event = event(line);
                 } catch (IOException invalid) {
-                    result.reason = result.connected ? "Invalid agent response" : "Invalid agent handshake";
+                    result.reason = result.connected ? "Invalid Java agent response" : "Invalid Java agent handshake";
                     return result;
                 }
                 String level = string(event, "level");
@@ -93,7 +93,7 @@ final class AgentSocket {
                     if (!"CONNECTED".equals(level) || agent == null || agent.isBlank()
                             || version == null || !version.isJsonPrimitive()
                             || !version.getAsJsonPrimitive().isNumber() || !"1".equals(version.getAsString())) {
-                        result.reason = "Invalid agent handshake";
+                        result.reason = "Invalid Java agent handshake";
                         return result;
                     }
                     try { McpTarget.verifyProject(opts, socket, in, deadline); }
@@ -110,7 +110,7 @@ final class AgentSocket {
                 } else if ("INFO".equals(level)) {
                     String message = string(event, "message");
                     if (message == null || message.isBlank()) {
-                        result.reason = "Invalid agent response";
+                        result.reason = "Invalid Java agent response";
                         return result;
                     }
                     result.lines.add(message);
@@ -119,14 +119,14 @@ final class AgentSocket {
                 }
             }
             if (!result.connected) {
-                result.reason = "No agent handshake received before disconnect or timeout";
+                result.reason = "No Java agent handshake received before disconnect or timeout";
             } else if (result.lines.isEmpty()) {
                 result.reason = "No INFO response received before disconnect or timeout";
             }
             return result;
         } catch (IOException e) {
-            result.reason = result.connected ? "Agent connection failed while sending or reading the command"
-                    : "cannot reach the agent on 127.0.0.1:" + port;
+            result.reason = result.connected ? "Java agent connection failed while sending or reading the command"
+                    : "cannot reach the Java agent on 127.0.0.1:" + port;
             return result;
         }
     }
@@ -146,7 +146,7 @@ final class AgentSocket {
             try { portFile = locatePortFile(opts); }
             catch (IOException invalid) { result.reason = invalid.getMessage(); return; }
             if (portFile == null) {
-                result.reason = "no port file found; run the app with the Reclazz agent, or pass port/portFile";
+                result.reason = "no port file found; run the app with the Reclazz Java agent, or pass port/portFile";
                 return;
             }
             try {
@@ -211,9 +211,9 @@ final class AgentSocket {
             JsonElement value = JSON.fromJson(line, JsonElement.class);
             if (value != null && value.isJsonObject()) return value.getAsJsonObject();
         } catch (JsonParseException invalid) {
-            throw new IOException("Invalid agent JSON", invalid);
+            throw new IOException("Invalid Java agent JSON", invalid);
         }
-        throw new IOException("Expected agent JSON object");
+        throw new IOException("Expected Java agent JSON object");
     }
 
     private static String string(JsonObject object, String name) {

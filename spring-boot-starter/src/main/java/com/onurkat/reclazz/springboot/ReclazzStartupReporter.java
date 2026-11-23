@@ -33,11 +33,11 @@ public class ReclazzStartupReporter {
     /** The decision, separated from the event so it can be tested directly. */
     void check(boolean attached) {
         if (attached) {
-            log.info("Reclazz hot-reload agent is attached. Edit code, recompile, "
+            log.info("Reclazz hot-reload Java agent is attached. Edit code, recompile, "
                     + "and changes reload in place, no restart.");
             return;
         }
-        String message = "Reclazz starter is on the classpath, but the agent is not attached "
+        String message = "Reclazz starter is on the classpath, but the Java agent is not attached "
                 + "to this JVM, so nothing will hot-reload. " + enableHint();
         if (properties.isFailOnMissingAgent()) {
             throw new IllegalStateException(message);

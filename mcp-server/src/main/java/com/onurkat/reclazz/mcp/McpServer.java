@@ -105,25 +105,25 @@ public final class McpServer implements AutoCloseable {
     private JsonObject toolsList() {
         JsonArray tools = new JsonArray();
         tools.add(tool("reclazz_status",
-                "Report whether the Reclazz hot-reload agent is attached to a running app and how it "
+                "Report whether the Reclazz Java agent is attached to a running app and how it "
                         + "is doing (reloads, failures, latency, watched directories), as JSON.",
                 false));
         tools.add(tool("reclazz_doctor",
                 "Read correlated JVM/session/watch and BUILD/VERIFY capability evidence. Compare the target before acting. "
                         + "A bounded directory sample and working directory do not prove output coverage, project root or reload success.", false));
         tools.add(tool("reclazz_scan",
-                "Wait for a token/session-correlated scan and event-queue receipt from a supporting agent. "
+                "Wait for a token/session-correlated scan and event-queue receipt from a supporting Java agent. "
                         + "This neither releases build/pause holds nor confirms reload completion.",
                 false));
         tools.add(tool("reclazz_pending",
-                "List what still needs a restart in this session (changes the agent could not apply live).",
+                "List what still needs a restart in this session (changes the Java agent could not apply live).",
                 false));
         tools.add(tool("reclazz_diagnose",
                 "Explain why a specific class did or did not reload last time. Requires className.",
                 true));
         JsonObject control = tool("reclazz_reload_control",
                 "Pause, resume or inspect automatic reload admission. Pending changes are retained; admitted work may finish. "
-                        + "Resume never releases BUILD holds. Acknowledgement is not reload completion. Agent-wide manual switch, not client ownership.", false);
+                        + "Resume never releases BUILD holds. Acknowledgement is not reload completion. Manual switch for the whole Java agent, not client ownership.", false);
         JsonObject action = stringProp("pause, resume or status");
         JsonArray actions = new JsonArray();
         for (String value : List.of("pause", "resume", "status")) actions.add(value);
@@ -158,7 +158,7 @@ public final class McpServer implements AutoCloseable {
                 .add("timeoutMs", stringProp("Socket timeout in milliseconds, 1–60000; default 5000."));
         tools.add(verify);
         JsonObject batch = tool("reclazz_verify_batch",
-                "Observe 1–32 unique class/hash pairs on one agent connection with one total timeout. "
+                "Observe 1–32 unique class/hash pairs on one Java agent connection with one total timeout. "
                         + "Only allApplied confirms individual applied receipts; never atomic reload or application behavior. "
                         + "Cancellable via notifications/cancelled in stdio; no automatic retry.", false);
         JsonObject entries = new JsonObject(); entries.addProperty("type", "array");
@@ -177,13 +177,13 @@ public final class McpServer implements AutoCloseable {
         JsonObject await = tool("reclazz_await_reload",
                 "Checkpoint a persistent received-event stream before saving, then wait for exact-owner events and a same-session byte receipt. "
                         + "Source mode requires ownerClassName; basename correlation proves no full source path, source revision or application behavior. "
-                        + "Bounded sapOutcomes describe agent messages only and never change Java await acceptance. "
+                        + "Bounded sapOutcomes describe Java agent messages only and never change Java await acceptance. "
                         + "Read-only; cancellation closes the subscription. Total timeout default 5000, max 60000 ms.", false);
         JsonObject ap = await.getAsJsonObject("inputSchema").getAsJsonObject("properties");
         for (String key : List.of("action", "sessionId", "subscriptionId", "afterCursor", "filePath", "className", "ownerClassName", "sha256"))
             ap.add(key, stringProp(switch (key) {
                 case "action" -> "checkpoint before editing; wait with the returned session, subscription and cursor";
-                case "filePath" -> "Absolute normalized .java path; only basename is present in agent compile events";
+                case "filePath" -> "Absolute normalized .java path; only basename is present in Java agent compile events";
                 case "ownerClassName" -> "Exact binary source owner; required for a successful source-mode observation";
                 case "sha256" -> "Optional expected compiled-owner SHA-256; otherwise discover and reverify receipt bytes";
                 default -> "Observation identity returned by checkpoint, or an exact binary class selector";
@@ -210,7 +210,7 @@ public final class McpServer implements AutoCloseable {
         JsonObject events = tool("reclazz_events",
                 "List bounded received-event pages from an await_reload checkpoint. Reuse nextCursor as sinceCursor. "
                         + "Exact filters are AND on one event; event types confirm no reload, source revision or behavior. "
-                        + "Typed SAP outcomes describe explicit agent messages, not correlated edits or native application proof. "
+                        + "Typed SAP outcomes describe explicit Java agent messages, not correlated edits or native application proof. "
                         + "No implicit reconnect; cancellation closes the shared observation subscription.", false);
         JsonObject ep = events.getAsJsonObject("inputSchema").getAsJsonObject("properties");
         for (String key : List.of("sessionId", "subscriptionId", "sinceCursor", "limit", "level", "ownerClassName", "fileBasename"))
@@ -250,8 +250,8 @@ public final class McpServer implements AutoCloseable {
         schema.addProperty("type", "object");
         JsonObject props = new JsonObject();
         props.add("projectDir", stringProp("Explicit project directory; requires matching target working-directory evidence. Relative to startup project/cwd."));
-        props.add("portFile", stringProp("Path to the agent port file (optional; auto-located otherwise)."));
-        props.add("port", stringProp("Connect directly to this agent status port (optional)."));
+        props.add("portFile", stringProp("Path to the Java agent's port file (optional; auto-located otherwise)."));
+        props.add("port", stringProp("Connect directly to this Java agent status port (optional)."));
         props.add("hybrisHome", stringProp("SAP Commerce home, to find its port file (optional)."));
         props.add("timeoutMs", stringProp("Socket timeout in milliseconds, 1–60000; default "
                 + (name.equals("reclazz_build") || name.equals("reclazz_verify") || name.equals("reclazz_doctor")
@@ -345,7 +345,7 @@ public final class McpServer implements AutoCloseable {
                 try (BuildSession session = BuildSession.open(opts)) {
                     data = session.doctor();
                 } catch (java.io.IOException | IllegalArgumentException e) {
-                    data = ToolContracts.operation("unavailable", "Doctor evidence unavailable; check the endpoint and matching agent version.");
+                    data = ToolContracts.operation("unavailable", "Doctor evidence unavailable; check the endpoint and matching Java agent version.");
                 }
                 isError = !"observed".equals(data.get("status").getAsString());
                 data = DoctorResult.finish(data);

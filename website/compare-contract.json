@@ -480,7 +480,7 @@
       "product": "reclazz",
       "text": "No telemetry; local development tools",
       "verdict": "yes",
-      "source_key": "doc:docs/for-ai-agents.md#for-ai-agents"
+      "source_key": "doc:docs/for-ai-agents.md#for-ai-assistants"
     },
     {
       "row": "network",

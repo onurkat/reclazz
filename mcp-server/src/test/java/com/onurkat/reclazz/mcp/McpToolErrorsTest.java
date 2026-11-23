@@ -159,7 +159,7 @@ class McpToolErrorsTest {
             assertEquals("PENDING", in.readLine());
             out.println("{\"level\":\"INFO\",\"message\":false}");
         })) {
-            assertTrue(text(call("reclazz_pending", peer.port()), true).contains("Invalid agent response"));
+            assertTrue(text(call("reclazz_pending", peer.port()), true).contains("Invalid Java agent response"));
             peer.verify();
         }
     }

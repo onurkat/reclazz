@@ -46,7 +46,7 @@ final class BatchVerification {
                 JsonObject pair = item.getAsJsonObject();
                 JsonObject receipt = session.verify(pair.get("className").getAsString(), pair.get("sha256").getAsString(), until);
                 String actualSession = receipt.get("sessionId").getAsString();
-                if (!sessionId.isEmpty() && !sessionId.equals(actualSession)) throw new IOException("Inconsistent agent session");
+                if (!sessionId.isEmpty() && !sessionId.equals(actualSession)) throw new IOException("Inconsistent Java agent session");
                 sessionId = actualSession;
                 results.add(receipt);
                 allApplied &= "applied".equals(receipt.get("status").getAsString());

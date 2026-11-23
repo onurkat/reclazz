@@ -51,7 +51,7 @@ final class AgentStatus {
             Path portFile = locatePortFile(opts);
             if (portFile == null) {
                 return json(notAttached(
-                        "no port file found; run the app with the Reclazz agent, or pass --port-file", null));
+                        "no port file found; run the app with the Reclazz Java agent, or pass --port-file", null));
             }
             try {
                 port = Integer.parseInt(Files.readString(portFile).trim());
@@ -100,7 +100,7 @@ final class AgentStatus {
             }
 
             if (agent == null || agent.isBlank() || protocol <= 0) {
-                return json(notAttached("connected but no CONNECTED agent handshake", port));
+                return json(notAttached("connected but no CONNECTED handshake from the Java agent", port));
             }
             Map<String, Object> result = new LinkedHashMap<>();
             result.put("attached", true);
@@ -110,7 +110,7 @@ final class AgentStatus {
             result.put("health", health);
             return json(result);
         } catch (IOException e) {
-            return json(notAttached("cannot reach the agent on 127.0.0.1:" + port, port));
+            return json(notAttached("cannot reach the Java agent on 127.0.0.1:" + port, port));
         }
     }
 

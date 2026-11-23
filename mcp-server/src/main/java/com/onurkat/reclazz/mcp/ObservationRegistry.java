@@ -31,7 +31,7 @@ final class ObservationRegistry implements AutoCloseable {
     }
     Entry acquire(Map<String, String> opts, RequestCancellation cancel, long until) throws IOException {
         AgentSocket.Result address = new AgentSocket.Result(); AgentSocket.resolvePort(opts, address);
-        if (address.reason != null) throw new EventSubscription.Failure("target_unavailable", "Cannot resolve the selected agent endpoint");
+        if (address.reason != null) throw new EventSubscription.Failure("target_unavailable", "Cannot resolve the selected Java agent endpoint");
         String key = address.port + "\n" + opts.getOrDefault("baseDir", "") + "\n" + opts.getOrDefault("projectDir", "");
         synchronized (this) {
             Entry e = subscriptions.get(key);

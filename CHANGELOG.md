@@ -8,6 +8,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- One name for each side everywhere users read it: the part loaded into the JVM is the
+  "Java agent" and Claude Code, Cursor, VS Code or Codex are "AI assistants" (plugin
+  actions, settings and notifications, the MCP server's tool descriptions and messages,
+  the Gradle and Maven plugins, the Spring Boot starter and the docs). Button labels
+  follow, for example **Install Java Agent**. Page addresses stay the same.
+
 - The IntelliJ plugin now enables `resetStatics` by default for ordinary projects;
   SAP Commerce projects and hand-written `-javaagent` lines keep it off, and an
   explicit choice in Settings always wins. Static finals that resetStatics prepares

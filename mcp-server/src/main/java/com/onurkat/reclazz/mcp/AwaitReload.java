@@ -102,7 +102,7 @@ final class AwaitReload implements AutoCloseable {
                 if (select(observations(out, stream, after), file, owner) != null) continue;
                 if (admission.get("paused").getAsBoolean() || !admission.get("buildHold").getAsString().equals("none")) {
                     out.add("admission", admission);
-                    return outcome(out, "held", "admission_blocked", "Agent-wide admission state only; target observation/pending is unconfirmed and already admitted work may finish");
+                    return outcome(out, "held", "admission_blocked", "Admission state of the whole Java agent only; target observation/pending is unconfirmed and already admitted work may finish");
                 }
                 long head = stream.cursor();
                 if (nanoTime.getAsLong() >= until) break;

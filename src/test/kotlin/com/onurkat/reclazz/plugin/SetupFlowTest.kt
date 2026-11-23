@@ -29,7 +29,7 @@ class SetupFlowTest {
             antRunning = antRunning, antFailure = antFailure, assistants = assistants, assistantSkipped = skipped)
 
     private val line = SetupCheck.Finding("agent-line", Level.OK, "Both launch modes contain one managed Reclazz agent.")
-    private val jar = SetupCheck.Finding("agent-jar", Level.OK, "Installed agent jar matches plugin 2.0.0.")
+    private val jar = SetupCheck.Finding("agent-jar", Level.OK, "Installed Java agent jar matches plugin 2.0.0.")
     private val antOk = SetupCheck.Finding("ant-server", Level.OK, "Both generated launch modes match.")
     private val antStale = SetupCheck.Finding("ant-server", Level.FAIL, "wrapper.conf does not match.")
 
@@ -69,8 +69,8 @@ class SetupFlowTest {
     }
 
     @Test fun anOlderOrMissingJavaAgentIsUpdatedInPlace() {
-        val older = SetupCheck.Finding("agent-jar", Level.WARN, "Agent jar version 1.9.0; plugin 2.0.0.")
-        val missing = SetupCheck.Finding("agent-jar", Level.FAIL, "A configured Reclazz jar is missing.", "Reinstall Agent before starting the server.")
+        val older = SetupCheck.Finding("agent-jar", Level.WARN, "Java agent jar version 1.9.0; plugin 2.0.0.")
+        val missing = SetupCheck.Finding("agent-jar", Level.FAIL, "A configured Reclazz jar is missing.", "Reinstall Java Agent before starting the server.")
         val unsafe = SetupCheck.Finding("jdk", Level.FAIL, "JDK 24 needs the Unsafe access flag in both launch modes.")
         for (finding in listOf(older, missing)) assertTrue((status(sap(line, finding), "install") as StepStatus.NeedsAction).actions.single() == SetupAction.Update)
         assertTrue((status(sap(line, jar, unsafe), "install") as StepStatus.NeedsAction).actions.single() == SetupAction.Update)
@@ -118,8 +118,8 @@ class SetupFlowTest {
     }
 
     private val manual = SetupCheck.Finding("agent-line", Level.WARN, "Reclazz is installed manually outside its managed block.")
-    private val olderJar = SetupCheck.Finding("agent-jar", Level.WARN, "Agent jar version 1.9.0; plugin 2.0.0.")
-    private val antUnverifiable = SetupCheck.Finding("ant-server", Level.WARN, "Cannot verify a configured agent path or placeholder.")
+    private val olderJar = SetupCheck.Finding("agent-jar", Level.WARN, "Java agent jar version 1.9.0; plugin 2.0.0.")
+    private val antUnverifiable = SetupCheck.Finding("ant-server", Level.WARN, "Cannot verify a configured Java agent path or placeholder.")
 
     @Test fun aHandMadeSetupIsNeverRewrittenEvenWithAnOlderJar() {
         assertTrue(status(sap(manual, olderJar), "install") is StepStatus.Done)
@@ -135,8 +135,8 @@ class SetupFlowTest {
     }
 
     @Test fun noStatusTextSaysAgentWithoutSayingWhichOne() {
-        val broken = SetupCheck.Finding("agent-line", Level.FAIL, "Exactly one Reclazz agent is required in tomcat.javaoptions.", "Use Install Agent / Reinstall in Settings")
-        val missing = SetupCheck.Finding("agent-jar", Level.FAIL, "A configured Reclazz jar is missing.", "Reinstall Agent before starting the server.")
+        val broken = SetupCheck.Finding("agent-line", Level.FAIL, "Exactly one Reclazz Java agent is required in tomcat.javaoptions.", "Use Install Java Agent / Reinstall in Settings")
+        val missing = SetupCheck.Finding("agent-jar", Level.FAIL, "A configured Reclazz jar is missing.", "Reinstall Java Agent before starting the server.")
         val unsafe = SetupCheck.Finding("jdk", Level.FAIL, "JDK 24 needs the Unsafe access flag in both launch modes.")
         val facts = listOf(sap(), sap(enabled = false), sap(line, broken), sap(line, missing), sap(line, olderJar), sap(line, jar, unsafe),
             sap(manual, jar, enabled = false), sap(manual, olderJar, antUnverifiable), sap(line, jar, antStale), sap(line, jar, antStale, antRunning = true),

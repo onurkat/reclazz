@@ -185,7 +185,7 @@ def grouped_options(options,renderer):
     body='<section aria-labelledby="all-options"><h2 id="all-options">Startup options</h2>'
     intros={
         'Common':'In IntelliJ, open Settings → Tools → Reclazz for structural reload, exclusions and timing. Other keys use the startup argument below.',
-        'SAP Commerce':'In IntelliJ, open Settings → Tools → Reclazz. The SAP Commerce controls appear for a detected SAP Commerce project. Use its Install Agent action for server startup configuration.',
+        'SAP Commerce':'In IntelliJ, open Settings → Tools → Reclazz. The SAP Commerce controls appear for a detected SAP Commerce project. Use its Install Java Agent action for server startup configuration.',
         'Opt-in behaviour':'In IntelliJ, open Settings → Tools → Reclazz for JPA refresh, static initialization and reload timing. Custom cache-owner rules use the startup argument.',
         'Diagnostics':'In IntelliJ, open Settings → Tools → Reclazz for verbose logging and connection settings. Output, dump and session-log keys use the startup argument.'}
     examples={'Common':'startupDelaySec=30','SAP Commerce':'autoImpex=false','Opt-in behaviour':'jpaRefresh=false','Diagnostics':'verbose=true'}

@@ -130,9 +130,9 @@ object ReloadNotifications {
         NotificationGroupManager.getInstance()
             .getNotificationGroup(WELCOME_GROUP_ID)
             .createNotification(
-                "Reclazz agent updated to $version",
-                "The agent copy SAP Commerce servers load from ~/.reclazz/agent was updated. "
-                        + "A server started before this keeps the previous agent until it restarts.",
+                "Reclazz Java agent updated to $version",
+                "The Java agent copy SAP Commerce servers load from ~/.reclazz/agent was updated. "
+                        + "A server started before this keeps the previous Java agent until it restarts.",
                 NotificationType.INFORMATION
             )
             .notify(project)
@@ -171,7 +171,7 @@ object ReloadNotifications {
                     "JVM has it. The Reclazz tool window shows what was reloaded."
                 else
                     "Hot-reload without restarting. Reclazz ships off because it puts a " +
-                    "java agent into the JVM that runs your code, so it asks first. " + next,
+                    "Java agent into the JVM that runs your code, so it asks first. " + next,
                 NotificationType.INFORMATION
             )
             .apply {
@@ -200,7 +200,7 @@ object ReloadNotifications {
                 "Reclazz",
                 "You changed ${properties.joinToString(" and ")}, but Reclazz's copy still " +
                 "has the previous value and takes precedence. Re-sync to keep your change " +
-                "and the agent.",
+                "and the Java agent.",
                 NotificationType.WARNING
             )
             .addAction(NotificationAction.createSimpleExpiring("Re-sync") {
@@ -231,7 +231,7 @@ object ReloadNotifications {
             .getNotificationGroup(GROUP_ID)
             .createNotification(
                 "Reclazz",
-                "Your SAP Commerce server is configured to load an agent that no longer " +
+                "Your SAP Commerce server is configured to load a Java agent that no longer " +
                 "exists ($missing). The server will refuse to start until this is fixed.",
                 NotificationType.ERROR
             )

@@ -33,7 +33,7 @@ class AttachAction : AnAction("Attach Reclazz to Running Server") {
             false
         ) {
             override fun run(indicator: ProgressIndicator) {
-                indicator.text = "Loading agent into JVM ${info.pid}..."
+                indicator.text = "Loading the Java agent into JVM ${info.pid}..."
                 val result = JvmAttacher.attach(info.pid, project)
 
                 ApplicationManager.getApplication().invokeLater {
@@ -42,7 +42,7 @@ class AttachAction : AnAction("Attach Reclazz to Running Server") {
                             ReloadNotifications.info(
                                 project,
                                 "Reclazz",
-                                "Agent attached to ${info.displayName} (PID ${result.pid}). Connecting..."
+                                "Java agent attached to ${info.displayName} (PID ${result.pid}). Connecting..."
                             )
                             ReloadManager.getInstance(project).connectToAgent()
                         }
@@ -50,7 +50,7 @@ class AttachAction : AnAction("Attach Reclazz to Running Server") {
                             ReloadNotifications.info(
                                 project,
                                 "Reclazz",
-                                "Agent is already loaded in PID ${result.pid}. Reconnecting..."
+                                "Java agent is already loaded in PID ${result.pid}. Reconnecting..."
                             )
                             ReloadManager.getInstance(project).connectToAgent()
                         }

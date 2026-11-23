@@ -47,7 +47,7 @@ class WelcomeDialog(private val project: Project) : DialogWrapper(project, false
 
     init {
         title = "Reclazz"
-        setOKButtonText(if (isHybris) "Install Agent" else "Enable Reclazz")
+        setOKButtonText(if (isHybris) "Install Java Agent" else "Enable Reclazz")
         setCancelButtonText("Not now")
         init()
     }
@@ -75,7 +75,7 @@ class WelcomeDialog(private val project: Project) : DialogWrapper(project, false
             }
             row {
                 comment(
-                    "Your server starts outside the IDE, so Reclazz adds its agent " +
+                    "Your server starts outside the IDE, so Reclazz adds its Java agent " +
                     "to the platform properties it starts from, so the setting survives " +
                     "ant clean all instead of being wiped by it. It takes effect after " +
                     "the next config regeneration (ant server) and server restart."
@@ -84,7 +84,7 @@ class WelcomeDialog(private val project: Project) : DialogWrapper(project, false
         } else {
             row {
                 comment(
-                    "Reclazz will add its agent to the run configurations you start " +
+                    "Reclazz will add its Java agent to the run configurations you start " +
                     "from the IDE. Nothing else to set up: run your application and " +
                     "build after an edit."
                 )

@@ -52,7 +52,7 @@ class SetupCheckUiTest : BasePlatformTestCase() {
                 done=SetupCheckUi.run(fixture.project,show,message,collect={expectFalse(SwingUtilities.isEventDispatchThread());findings},present={error("Automatic check opened a dialog")},notify={notices.add(it)})
             }
             try {
-                descendants(configurable.createComponent()).filterIsInstance<javax.swing.JButton>().single { it.text=="Install Agent" }.doClick()
+                descendants(configurable.createComponent()).filterIsInstance<javax.swing.JButton>().single { it.text=="Install Java Agent" }.doClick()
                 await(checkNotNull(done));expectEquals("Synthetic install succeeded",notices.first());assertContains(notices.last(),"1 failed");assertContains(notices.last(),"1 warning")
             } finally { configurable.disposeUIResources() }
         }

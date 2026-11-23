@@ -71,7 +71,7 @@ final class EventSubscription implements AutoCloseable {
             throw new Failure("unsupported_agent", "A session and VERIFY capability are required");
         synchronized (monitor) {
             if (sessionId != null && !sessionId.equals(string(d, "sessionId")))
-                throw new Failure("session_changed", "Agent session changed on the observation stream");
+                throw new Failure("session_changed", "Java agent session changed on the observation stream");
             sessionId = string(d, "sessionId");
         }
         if (opts.containsKey("projectDir")) {
@@ -90,7 +90,7 @@ final class EventSubscription implements AutoCloseable {
             if (!McpServer.isString(field.getValue()) || field.getValue().getAsString().length() > 512)
                 throw new Failure("malformed_response", "VERIFY field exceeds observation bounds");
         if (!sessionId.equals(string(receipt, "sessionId")))
-            throw new Failure("session_changed", "VERIFY belongs to another agent session");
+            throw new Failure("session_changed", "VERIFY belongs to another Java agent session");
         return receipt;
     }
 
@@ -168,10 +168,10 @@ final class EventSubscription implements AutoCloseable {
                 StringBuilder line = new StringBuilder();
                 int c;
                 while ((c = input.read()) != -1 && c != '\n') {
-                    if (line.length() >= 16384) throw new Failure("malformed_response", "Agent frame exceeds size bound");
+                    if (line.length() >= 16384) throw new Failure("malformed_response", "Java agent frame exceeds size bound");
                     line.append((char) c);
                 }
-                if (c == -1) throw new Failure("agent_gone", "Agent event stream disconnected");
+                if (c == -1) throw new Failure("agent_gone", "Java agent event stream disconnected");
                 JsonObject frame = JSON.fromJson(line.toString(), JsonObject.class);
                 String level = string(frame, "level"), message = string(frame, "message");
                 if (!Set.of("INFO", "OK", "WARN", "ERROR", "RELOAD", "STRUCTURAL_RELOAD", "COMPILE", "HEARTBEAT").contains(level))

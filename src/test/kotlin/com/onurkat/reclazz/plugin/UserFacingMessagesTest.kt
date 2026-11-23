@@ -48,9 +48,9 @@ class UserFacingMessagesTest {
     fun `reconnect says what happened, including when nothing was found`() {
         val strings = stringsIn(action)
 
-        assertTrue(strings.any { it.contains("Connected to the Reclazz agent") },
+        assertTrue(strings.any { it.contains("Connected to the Reclazz Java agent") },
             "the success case must say so. Found: $strings")
-        assertTrue(strings.any { it.contains("No running agent found") },
+        assertTrue(strings.any { it.contains("No running Java agent found") },
             "the case that used to end in silence is the one that most needs a " +
             "message. Found: $strings")
         assertTrue(strings.any { it.contains("Attach Reclazz to Running Server") },

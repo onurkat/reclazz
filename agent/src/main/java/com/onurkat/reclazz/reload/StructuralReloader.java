@@ -1187,7 +1187,7 @@ public class StructuralReloader {
                     }
                     return ClassReloader.ReloadResult.failure(
                             "Class " + className + " was loaded before Reclazz attached; " +
-                            "structural changes need the agent at server start " +
+                            "structural changes need the Java agent at server start " +
                             "(-javaagent in wrapper.conf / JVM args) or JBR/DCEVM.", true);
                 }
                 lookupField.setAccessible(true);

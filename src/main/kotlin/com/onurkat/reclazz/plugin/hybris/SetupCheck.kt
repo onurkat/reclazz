@@ -78,11 +78,11 @@ internal object SetupCheck {
         fun add(check: () -> Finding) { checkCancelled();rows.add(check()) }
         add {
             val wrong=agents.filterValues { it.size!=1 }.keys
-            if(wrong.isNotEmpty()) Finding("agent-line",Level.FAIL,"Exactly one Reclazz agent is required in ${wrong.joinToString()}.","Use Install Agent / Reinstall in Settings, then run ant server and restart the server.")
+            if(wrong.isNotEmpty()) Finding("agent-line",Level.FAIL,"Exactly one Reclazz Java agent is required in ${wrong.joinToString()}.","Use Install Java Agent / Reinstall in Settings, then run ant server and restart the server.")
             else {
                 val managed=managedValues(target(config))
                 val manual=keys.any { key -> agents.getValue(key).single() !in tokens(managed[key].orEmpty()) }
-                Finding("agent-line",if(manual) Level.WARN else Level.OK,if(manual) "Reclazz is installed manually outside its managed block." else "Both launch modes contain one managed Reclazz agent.",if(manual) "Keep this manual configuration, or remove it before using Install Agent." else "")
+                Finding("agent-line",if(manual) Level.WARN else Level.OK,if(manual) "Reclazz is installed manually outside its managed block." else "Both launch modes contain one managed Reclazz Java agent.",if(manual) "Keep this manual configuration, or remove it before using Install Java Agent." else "")
             }
         }
         add {
@@ -92,10 +92,10 @@ internal object SetupCheck {
                 if(installed==null) missing.add(file) else if(relevant(installed,input.home)!=relevant(options.getValue(keys[index]),input.home)) stale.add(file)
             }
             when {
-                unresolvedAgentPath -> Finding("ant-server",Level.WARN,"Cannot verify a configured agent path or placeholder.","Use a known SAP Commerce path placeholder or a path relative to bin/platform.")
+                unresolvedAgentPath -> Finding("ant-server",Level.WARN,"Cannot verify a configured Java agent path or placeholder.","Use a known SAP Commerce path placeholder or a path relative to bin/platform.")
                 stale.isNotEmpty() -> Finding("ant-server",Level.FAIL,"Launch arguments differ in ${stale.joinToString()}.","Run ant server, then restart the server.")
                 missing.isNotEmpty() -> Finding("ant-server",Level.SKIP,"Not built yet: ${missing.joinToString()} is missing.","Run ant server to generate the launch configuration.")
-                else -> Finding("ant-server",Level.OK,"Both generated launch modes match the effective agent, Unsafe and debug options.")
+                else -> Finding("ant-server",Level.OK,"Both generated launch modes match the effective Java agent, Unsafe and debug options.")
             }
         }
         add {
@@ -109,7 +109,7 @@ internal object SetupCheck {
         }
         add {
             val jars=agents.values.flatten().map { agentPath(it,input.home) }.distinct()
-            if(jars.isEmpty()) Finding("agent-jar",Level.SKIP,"No Reclazz jar is configured.","Install Agent in Settings.")
+            if(jars.isEmpty()) Finding("agent-jar",Level.SKIP,"No Reclazz jar is configured.","Install Java Agent in Settings.")
             else {
                 val unresolved=jars.any { it==null }
                 val missing=jars.filterNotNull().any { !Files.isRegularFile(it) }
@@ -119,11 +119,11 @@ internal object SetupCheck {
                     catch (_: IOException) { unreadable=true;null }
                 }
                 when {
-                    missing -> Finding("agent-jar",Level.FAIL,"A configured Reclazz jar is missing.","Reinstall Agent before starting the server.")
-                    unresolved -> Finding("agent-jar",Level.WARN,"Cannot verify a configured agent path or placeholder.","Use a known SAP Commerce path placeholder or a path relative to bin/platform.")
-                    unreadable -> Finding("agent-jar",Level.FAIL,"A configured agent jar cannot be read as a JAR.","Reinstall Agent before starting the server.")
-                    versions.any { it!=input.pluginVersion } -> Finding("agent-jar",Level.WARN,"Agent jar version ${versions.joinToString { it ?: "unknown" }}; plugin ${input.pluginVersion}.","Reinstall Agent and restart the server to use the bundled version.")
-                    else -> Finding("agent-jar",Level.OK,"Installed agent jar matches plugin ${input.pluginVersion}.")
+                    missing -> Finding("agent-jar",Level.FAIL,"A configured Reclazz jar is missing.","Reinstall Java Agent before starting the server.")
+                    unresolved -> Finding("agent-jar",Level.WARN,"Cannot verify a configured Java agent path or placeholder.","Use a known SAP Commerce path placeholder or a path relative to bin/platform.")
+                    unreadable -> Finding("agent-jar",Level.FAIL,"A configured Java agent jar cannot be read as a JAR.","Reinstall Java Agent before starting the server.")
+                    versions.any { it!=input.pluginVersion } -> Finding("agent-jar",Level.WARN,"Java agent jar version ${versions.joinToString { it ?: "unknown" }}; plugin ${input.pluginVersion}.","Reinstall Java Agent and restart the server to use the bundled version.")
+                    else -> Finding("agent-jar",Level.OK,"Installed Java agent jar matches plugin ${input.pluginVersion}.")
                 }
             }
         }
@@ -134,7 +134,7 @@ internal object SetupCheck {
             when {
                 home==null || feature==null -> Finding("jdk",Level.SKIP,"Server JDK could not be determined from wrapper.java.command and its release file.","Check the generated wrapper's Java home.")
                 (input.autoCompile || agents.values.flatten().any { it.substringAfter('=', "").split(',').contains("autoCompile=true") }) && !Files.isRegularFile(home.resolve("bin/javac")) && !Files.isRegularFile(home.resolve("bin/javac.exe")) -> Finding("jdk",Level.FAIL,"Server Java home has no javac; autoCompile needs a JDK.","Configure a full JDK and rebuild the server launch configuration.")
-                feature>=24 && options.values.any { HybrisAgentInstaller.UNSAFE_ACCESS_FLAG !in it } -> Finding("jdk",Level.FAIL,"JDK $feature needs the Unsafe access flag in both launch modes.","Reinstall Agent, run ant server and restart the server.")
+                feature>=24 && options.values.any { HybrisAgentInstaller.UNSAFE_ACCESS_FLAG !in it } -> Finding("jdk",Level.FAIL,"JDK $feature needs the Unsafe access flag in both launch modes.","Reinstall Java Agent, run ant server and restart the server.")
                 else -> Finding("jdk",Level.OK,"Server JDK $feature satisfies the configured requirements.")
             }
         }
@@ -142,9 +142,9 @@ internal object SetupCheck {
             val other=options.values.flatten().distinct().filter { (it.startsWith("-javaagent:") || it.startsWith("-agentpath:")) && !isReclazz(it) }
             val reload=other.any { token -> val name=token.substringAfter(':').substringBefore('=').substringAfterLast('/').substringAfterLast('\\').lowercase();name.contains("jrebel") || name.contains("hotswap-agent") || name.contains("hotswapagent") }
             when {
-                reload -> Finding("other-agents",Level.FAIL,"Another reload agent is configured (JRebel/HotswapAgent).","Remove the other reload agent before starting with Reclazz.")
-                other.isNotEmpty() -> Finding("other-agents",Level.WARN,"Other Java/native agents are configured.","Check their compatibility with Reclazz.")
-                else -> Finding("other-agents",Level.OK,"No other Java/native agents are configured.")
+                reload -> Finding("other-agents",Level.FAIL,"Another reload Java agent is configured (JRebel/HotswapAgent).","Remove the other reload Java agent before starting with Reclazz.")
+                other.isNotEmpty() -> Finding("other-agents",Level.WARN,"Other Java or native agents are configured.","Check their compatibility with Reclazz.")
+                else -> Finding("other-agents",Level.OK,"No other Java or native agents are configured.")
             }
         }
         add {
@@ -158,11 +158,11 @@ internal object SetupCheck {
             try {
                 val observed=server();checkCancelled()
                 when {
-                    observed==null -> Finding("server",Level.SKIP,"Server not running or no agent endpoint discovered.","Start the server with Reclazz, then check again.")
-                    observed.version!=input.pluginVersion -> Finding("server",Level.WARN,"Running agent ${observed.version.ifBlank { "unknown" }}; plugin ${input.pluginVersion}. ${observed.summary}","Restart with the matching installed agent jar.")
-                    else -> Finding("server",Level.OK,"Agent ${observed.version}: ${observed.summary}")
+                    observed==null -> Finding("server",Level.SKIP,"Server not running or no Java agent endpoint discovered.","Start the server with Reclazz, then check again.")
+                    observed.version!=input.pluginVersion -> Finding("server",Level.WARN,"Running Java agent ${observed.version.ifBlank { "unknown" }}; plugin ${input.pluginVersion}. ${observed.summary}","Restart with the matching installed Java agent jar.")
+                    else -> Finding("server",Level.OK,"Java agent ${observed.version}: ${observed.summary}")
                 }
-            } catch (_: IOException) { Finding("server",Level.WARN,"Could not read the running agent's DOCTOR response.","Check the connection and try again.") }
+            } catch (_: IOException) { Finding("server",Level.WARN,"Could not read the running Java agent's DOCTOR response.","Check the connection and try again.") }
         }
         return rows
     }

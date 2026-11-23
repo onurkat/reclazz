@@ -444,8 +444,8 @@ public class AgentConfig {
         java.util.Collections.sort(accepted);
         StatusReporter.warn(
                 Plural.word(unknownKeys.size(),
-                        "This agent argument is not one this version knows: ",
-                        "These agent arguments are not ones this version knows: ")
+                        "This Java agent argument is not one this version knows: ",
+                        "These Java agent arguments are not ones this version knows: ")
                         + String.join(", ", unknownKeys)
                         + Plural.word(unknownKeys.size(),
                                 ". It was not ignored: unless it came first, it became part of "

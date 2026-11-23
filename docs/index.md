@@ -22,10 +22,10 @@ Choose a reference for the task you are working on. Start with the [quickstart](
 - [SAP Commerce reference](sap-commerce.md): Look up platform integrations and reload outcomes.
 - [SAP Commerce test guide](test-guide.md): Try the SAP Commerce evaluation workflow.
 
-## Integrate tools and coding agents
+## Integrate tools and AI assistants
 
-- [IntelliJ + coding agents](for-ai-agents.md): Set up an agent-assisted edit workflow.
-- [MCP for coding agents](mcp-for-coding-agents.md): Connect a coding agent to a running application.
+- [IntelliJ + AI assistants](for-ai-agents.md): Set up an AI-assisted edit workflow.
+- [MCP for AI assistants](mcp-for-coding-agents.md): Connect an AI assistant to a running application.
 - [MCP server reference](mcp-server.md): Look up MCP tools and targeting.
 - [Status socket protocol](protocol.md): Integrate diagnostic and reload commands.
 
@@ -38,7 +38,7 @@ These references are available in the repository.
 - [Constructor dependency research](spring-constructor-dependencies.md)
 - [Superclass research](superclass-feasibility.md)
 - [Client acceptance matrix](client-matrix.md)
-- [Agentic workflow evaluation](agentic-evaluation.md)
+- [AI-assisted workflow evaluation](agentic-evaluation.md)
 - [Documentation workflow](documentation-workflow.md)
 - [Release and Marketplace publishing](publishing.md)
 

@@ -42,12 +42,12 @@ class DiagnoseAction : AnAction("Why Didn't My Class Reload?") {
         if (!manager.diagnose(className)) {
             ReloadNotifications.warn(
                 project, "Reclazz",
-                "Not connected to an agent, so there is nothing to ask. Start your " +
+                "Not connected to a Java agent, so there is nothing to ask. Start your " +
                     "application with Reclazz, or use Tools > Attach Reclazz to Running Server."
             )
             return
         }
-        manager.postLocalMessage("INFO", "Asked the agent about $className…")
+        manager.postLocalMessage("INFO", "Asked the Java agent about $className…")
     }
 
     /**

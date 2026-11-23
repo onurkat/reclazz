@@ -73,7 +73,7 @@ class ReclazzConfigurableApplyTest : BasePlatformTestCase() {
                 remove.isSelected = true
                 controls.filterIsInstance<JCheckBox>().single { it.text.startsWith("Update Solr documents") }.isSelected = true
                 controls.filterIsInstance<JCheckBox>().single { it.text.startsWith("Update the running system") }.isSelected = true
-                controls.filterIsInstance<JButton>().single { it.text == (if (reinstall) "Reinstall" else "Install Agent") }.doClick()
+                controls.filterIsInstance<JButton>().single { it.text == (if (reinstall) "Reinstall" else "Install Java Agent") }.doClick()
                 val captured = checkNotNull(installed)
                 expectTrue(captured.autoSolrReindex)
                 expectTrue(captured.autoUpdateRunningSystem)
@@ -100,7 +100,7 @@ class ReclazzConfigurableApplyTest : BasePlatformTestCase() {
                 if (SwingUtilities.isEventDispatchThread()) action() else SwingUtilities.invokeAndWait { action() }
                 expectTrue(descendants(form).filterIsInstance<JLabel>().any { it.text.orEmpty().contains(message) })
             }
-            show("Running agent: ImpEx import: on")
+            show("Running Java agent: ImpEx import: on")
             show("Live settings: failed compiler unavailable")
             expectFalse(configurable.isModified)
         } finally { configurable.disposeUIResources() }

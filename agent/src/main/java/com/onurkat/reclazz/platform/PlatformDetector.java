@@ -124,7 +124,7 @@ public class PlatformDetector {
             selected=new Home(explicit,"hybrisHome=");
         } else selected=detectHome();
         if (selected == null) {
-            StatusReporter.error("Cannot detect Hybris home. Set hybrisHome= in agent args, HYBRIS_BIN_DIR env var, or -DHYBRIS_BIN_DIR= system property.");
+            StatusReporter.error("Cannot detect Hybris home. Set hybrisHome= in the Java agent arguments, HYBRIS_BIN_DIR env var, or -DHYBRIS_BIN_DIR= system property.");
             return null;
         }
         return new HybrisPlatformContext(selected.path(),config,selected.source());

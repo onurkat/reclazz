@@ -88,8 +88,8 @@ class HybrisProjectDetectorTest : BasePlatformTestCase() {
     private fun assertInstallVisible(candidate: Project) {
         val configurable = ReclazzConfigurable(candidate)
         try {
-            assertTrue("SAP Commerce settings must contain Install Agent",
-                descendants(configurable.createComponent()).filterIsInstance<JButton>().any { it.text == "Install Agent" })
+            assertTrue("SAP Commerce settings must contain Install Java Agent",
+                descendants(configurable.createComponent()).filterIsInstance<JButton>().any { it.text == "Install Java Agent" })
         } finally { configurable.disposeUIResources() }
     }
     fun testSettingsExposeInstallWithoutConfig() {

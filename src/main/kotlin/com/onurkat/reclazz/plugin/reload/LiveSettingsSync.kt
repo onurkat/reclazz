@@ -38,13 +38,13 @@ internal class LiveSettingsSync(
     @Synchronized fun disconnected(connection: Long) {
         if (generation != connection) return
         generation = connection; epoch++; awaited = null; revision = null; pendingRevision = null; pendingRequest = null
-        report("No running agent connected; saved settings will be sent on reconnect.")
+        report("No running Java agent connected; saved settings will be sent on reconnect.")
         generation = -1
     }
     @Synchronized fun apply() {
         epoch++; awaited = null; conflictRetries = 0
         if (generation < 0) {
-            report("No running agent connected; saved settings will be sent on reconnect.")
+            report("No running Java agent connected; saved settings will be sent on reconnect.")
         } else if (pendingRevision != null) get(Kind.POLL)
         else if (revision == null) get()
         else reconcile()
@@ -57,7 +57,7 @@ internal class LiveSettingsSync(
         awaited = current
         if (!send(generation, text)) {
             awaited = null
-            report("No running agent connected; saved settings will be sent on reconnect.")
+            report("No running Java agent connected; saved settings will be sent on reconnect.")
             return
         }
         val connection = generation
@@ -68,9 +68,9 @@ internal class LiveSettingsSync(
         awaited = null
         if (request.kind == Kind.SET || request.kind == Kind.POLL || pendingRevision != null) {
             if (pendingRevision == null) { pendingRevision = request.base?.plus(1); pendingEpoch = request.epoch }; if (request.kind == Kind.SET) pendingRequest = request
-            report("Settings change is pending; reading the running agent without resending it.")
+            report("Settings change is pending; reading the running Java agent without resending it.")
             poll()
-        } else report("This agent does not apply settings live; restart to apply.")
+        } else report("This Java agent does not apply settings live; restart to apply.")
     }
     private fun poll() {
         val connection = generation; val currentEpoch = epoch
@@ -95,7 +95,7 @@ internal class LiveSettingsSync(
         when (parts[2]) {
             "ERROR" -> {
                 if (parts[3] == "unavailable" && current.kind != Kind.SET && pendingRequest == null) {
-                    report("Agent is starting; waiting to apply saved settings.")
+                    report("Java agent is starting; waiting to apply saved settings.")
                     val connection = generation; val currentEpoch = epoch
                     defer(1000) { synchronized(this) {
                         if (generation == connection && epoch == currentEpoch && awaited == null && generation >= 0) get()
@@ -116,7 +116,7 @@ internal class LiveSettingsSync(
             "OK" -> {
                 val value = fields["rev"]?.toLongOrNull()
                 if (value == null || fields["live"] == null) {
-                    report("This agent does not report effective live settings; restart to apply.")
+                    report("This Java agent does not report effective live settings; restart to apply.")
                     return true
                 }
                 revision = value
@@ -125,7 +125,7 @@ internal class LiveSettingsSync(
                 } }.toMap()
                 supported = fields.getValue("live").split(',').filter { it in KEYS }.toSet()
                 if (!effective.keys.containsAll(supported)) {
-                    report("The running agent did not report its effective settings; restart to apply.")
+                    report("The running Java agent did not report its effective settings; restart to apply.")
                     return true
                 }
                 watchSupported = "watchExtensions" in fields.getValue("live").split(',')
@@ -171,7 +171,7 @@ internal class LiveSettingsSync(
         }
         val rawNote=if(loadedUninstrumented>0) "; $loadedUninstrumented already loaded classes support body edits only until restart." else ""
         val skippedNote=if(unwatchable>0) "; $unwatchable directories could not be watched." else ""
-        report("Running agent: $state" + watchNote + rawNote + skippedNote + suffix)
+        report("Running Java agent: $state" + watchNote + rawNote + skippedNote + suffix)
     }
     companion object {
         val KEYS = listOf("autoCompile", "autoImpex", "impexAllowRemove", "autoUpdateRunningSystem", "autoSolrReindex", "backofficeConfigReset")

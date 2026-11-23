@@ -10,7 +10,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.application.ApplicationManager
 import com.onurkat.reclazz.plugin.notifications.ReloadNotifications
 
-class DisconnectAction : AnAction("Disconnect from Reclazz Agent") {
+class DisconnectAction : AnAction("Disconnect from Reclazz Java Agent") {
 
     override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
 
@@ -21,7 +21,7 @@ class DisconnectAction : AnAction("Disconnect from Reclazz Agent") {
         ApplicationManager.getApplication().executeOnPooledThread {
             manager.disconnectFromAgent()
         }
-        ReloadNotifications.info(project, "Reclazz", "Disconnected from agent")
+        ReloadNotifications.info(project, "Reclazz", "Disconnected from the Java agent")
     }
 
     override fun update(e: AnActionEvent) {

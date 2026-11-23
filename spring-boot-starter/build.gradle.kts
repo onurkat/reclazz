@@ -59,7 +59,7 @@ publishing {
             pom {
                 name.set("Reclazz Spring Boot starter")
                 description.set(
-                    "Reports at startup whether the Reclazz hot-reload agent is attached, " +
+                    "Reports at startup whether the Reclazz hot-reload Java agent is attached, " +
                         "and exposes a reclazz actuator endpoint when the actuator is present."
                 )
                 url.set("https://reclazz.com")

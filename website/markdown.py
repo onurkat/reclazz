@@ -101,7 +101,7 @@ def github_anchor_map(path):
     return result
 
 
-REFERENCE_TITLES = {'index': 'Reference library', 'installation': 'Installation', 'usage': 'Usage manual', 'gradle-plugin': 'Gradle plugin', 'maven': 'Maven plugin', 'spring-boot-starter': 'Spring Boot starter', 'for-ai-agents': 'IntelliJ + coding agents', 'mcp-for-coding-agents': 'MCP for coding agents', 'mcp-server': 'MCP server reference', 'sap-commerce': 'SAP Commerce reference', 'test-guide': 'SAP Commerce test guide', 'reload-support': 'What reloads source table', 'product-reference': 'Product reference', 'protocol': 'Status socket protocol'}
+REFERENCE_TITLES = {'index': 'Reference library', 'installation': 'Installation', 'usage': 'Usage manual', 'gradle-plugin': 'Gradle plugin', 'maven': 'Maven plugin', 'spring-boot-starter': 'Spring Boot starter', 'for-ai-agents': 'IntelliJ + AI assistants', 'mcp-for-coding-agents': 'MCP for AI assistants', 'mcp-server': 'MCP server reference', 'sap-commerce': 'SAP Commerce reference', 'test-guide': 'SAP Commerce test guide', 'reload-support': 'What reloads source table', 'product-reference': 'Product reference', 'protocol': 'Status socket protocol'}
 
 
 def reference_pages(repo):

@@ -2,7 +2,7 @@
 
 ## Install from JetBrains Marketplace (recommended)
 
-For an application you run directly from IntelliJ, start here. You do not need to download a separate agent.
+For an application you run directly from IntelliJ, start here. You do not need to download a separate Java agent.
 
 1. In IntelliJ IDEA, open **Settings → Plugins → Marketplace**.
 2. Search for **Reclazz**, choose **Install**, and restart IntelliJ if prompted.
@@ -27,7 +27,7 @@ are optional; Reclazz also runs with Spring Boot and plain Java.
 | Spring Boot with Gradle `bootRun` | [Gradle setup](#gradle) |
 | Plain Java with Gradle `application` / `run` | [Opt-in application run](gradle-plugin.md#plain-java-application-run-opt-in) |
 | Spring Boot with Maven | [Maven development profile](#maven) |
-| Plain Java, another IDE or a custom launcher | [Standalone agent](#standalone-agent) |
+| Plain Java, another IDE or a custom launcher | [Standalone Java agent](#standalone-agent) |
 | SAP Commerce scripts or IntelliJ | [SAP Commerce setup](#sap-commerce) |
 | An AI client should inspect the running app | [Optional MCP server](#optional-mcp-server), after one of the above |
 
@@ -37,7 +37,7 @@ Finish with [your first reload](#your-first-reload).
 
 ## Versions and requirements
 
-- The agent and MCP server target **Java 17+**. JDK 17/21 are the baseline test
+- The Java agent and MCP server target **Java 17+**. JDK 17/21 are the baseline test
   lanes; [the client matrix](client-matrix.md) records narrower OS/framework
   coverage. This is not a guarantee for every later JDK or framework version.
 - **JDK 25 runtime:** unit, end-to-end and Spring 6 suites passed locally on
@@ -54,7 +54,7 @@ Finish with [your first reload](#your-first-reload).
   are in [usage](usage.md) and [superclass feasibility](superclass-feasibility.md).
 - Examples use source version **1.9.0**. A source version is not proof that every
   registry has published it. Choose a version present in your chosen channel or
-  [build from source](#building-from-source). Match the agent and its integration artifacts;
+  [build from source](#building-from-source). Match the Java agent and its integration artifacts;
   newer BUILD/VERIFY/MCP features may require local builds.
 
 ## IntelliJ IDEA
@@ -62,7 +62,7 @@ Finish with [your first reload](#your-first-reload).
 1. Open **Settings → Plugins → Marketplace**, search for **Reclazz**, install it
    and restart the IDE if prompted. Alternatively, use **Install Plugin from
    Disk…** with a plugin ZIP from [GitHub Releases](https://github.com/onurkat/reclazz/releases).
-   Choose a release that actually contains the ZIP; the agent JAR is not the IDE plugin.
+   Choose a release that actually contains the ZIP; the Java agent JAR is not the IDE plugin.
 
 ### Setup wizard
 
@@ -85,16 +85,16 @@ The manual steps below are what the wizard does for an IDE-started application.
 2. Open the project and enable **Settings → Tools → Reclazz → Enable Reclazz in this project**.
    It is off by default. This also works for non-SAP Commerce projects.
 3. Start a Java run configuration handled by the IDE. Reclazz supplies its bundled
-   agent and watches the IDE's module compiler outputs. For a run delegated to
+   Java agent and watches the IDE's module compiler outputs. For a run delegated to
    Gradle or Maven, follow the [Gradle](#gradle) or [Maven](#maven) setup rather than assuming IDE injection.
    IDE-managed JUnit, TestNG and Spock test runs are skipped by default; enable
-   **Also attach the agent to IDE test runs** to opt in. Delegated builds keep
+   **Also attach the Java agent to IDE test runs** to opt in. Delegated builds keep
    their separate [Gradle `applyToTest`](gradle-plugin.md) and [Maven `skip`](maven.md) settings.
 4. Compile a small edit with the build that writes those watched outputs, then
    check the running application's response. Detailed options: [usage](usage.md).
 
 The ZIP contains `agent/reclazz-agent.jar` under the plugin's installed root;
-that bundled name is deliberately unversioned. No separate agent download is
+that bundled name is deliberately unversioned. No separate Java agent download is
 needed for IDE-managed runs. SAP Commerce launches outside the IDE use a staged copy;
 follow the SAP Commerce guide rather than persisting a path inside an IDE installation.
 
@@ -128,7 +128,7 @@ idea64.exe installPlugins com.onurkat.reclazz
 
 For Toolbox-managed IDEs, use the launcher name configured in Toolbox. These
 commands install the plugin only; still enable it for the project and start the
-application with the agent. See JetBrains' [plugin installation](https://www.jetbrains.com/help/idea/install-plugins-from-the-command-line.html)
+application with the Java agent. See JetBrains' [plugin installation](https://www.jetbrains.com/help/idea/install-plugins-from-the-command-line.html)
 and [OS-specific launchers](https://www.jetbrains.com/help/idea/working-with-the-ide-features-from-command-line.html).
 
 ## Gradle
@@ -152,14 +152,14 @@ availability and scope. Automatic watching includes all main class outputs;
 an explicit `watchDirs` list replaces them in the [Gradle options](gradle-plugin.md#options).
 
 If that plugin version is not available in the Plugin Portal, use a released
-matching version or the standalone route. A local agent can be selected via
+matching version or the standalone route. A local Java agent jar can be selected via
 `reclazz { agentJar.set(file("/absolute/path/to/agent-1.9.0.jar")) }`; this replaces
-agent resolution, not Gradle plugin resolution. Full setup: [Gradle plugin](gradle-plugin.md).
+Java agent resolution, not Gradle plugin resolution. Full setup: [Gradle plugin](gradle-plugin.md).
 
 ## Maven
 
 Use the opt-in `reclazz-dev` profile in [the Maven guide](maven.md#minimal-development-profile).
-It attaches the agent to `spring-boot:run` while retaining your other JVM arguments:
+It attaches the Java agent to `spring-boot:run` while retaining your other JVM arguments:
 
 ```sh
 mvn -Preclazz-dev reclazz:prepare-agent spring-boot:run
@@ -174,13 +174,13 @@ an upgrade recommendation. The longer dependency-plugin alternative remains in
 [the Maven guide](maven.md#without-the-plugin-works-today).
 
 The optional [Spring Boot starter](spring-boot-starter.md) reports attachment and
-can expose Actuator status. It does **not** attach the agent and is unnecessary
+can expose Actuator status. It does **not** attach the Java agent and is unnecessary
 for the first reload. Keep it in development configuration if you choose it.
 
 ## Standalone agent
 
 Download `reclazz-agent-X.Y.Z.jar` from the assets of your chosen
-[GitHub release](https://github.com/onurkat/reclazz/releases), or [build from source](#building-from-source). Replace `X.Y.Z` and the application paths. Keep the entire agent argument
+[GitHub release](https://github.com/onurkat/reclazz/releases), or [build from source](#building-from-source). Replace `X.Y.Z` and the application paths. Keep the entire Java agent argument
 quoted when paths contain spaces.
 
 ```sh
@@ -200,19 +200,19 @@ class output. Watching source files or merely rebuilding a JAR is not this recip
 The flag must be present at startup so classes are instrumented when loaded.
 The watcher defaults to a **30-second startup delay**; wait before your first edit.
 For a small standalone demo only, `startupDelaySec=0` removes that wait.
-Agent arguments and framework-specific limits: [usage](usage.md).
+Java agent arguments and framework-specific limits: [usage](usage.md).
 
 ## SAP Commerce
 
 Follow [SAP Commerce setup](sap-commerce.md) for the correct Hybris home, launcher
 properties and compile command, or [manual setup](usage.md#option-1-manual-setup).
 Enabling the IDE plugin does not modify an already-running external server JVM;
-start it once with the configured agent before attempting reloads. Keep the
-server-facing agent at a stable path, outside versioned IDE installation folders.
+start it once with the configured Java agent before attempting reloads. Keep the
+server-facing Java agent jar at a stable path, outside versioned IDE installation folders.
 
 ## Optional MCP server
 
-First run the application with the agent using one of the routes above. Then
+First run the application with the Java agent using one of the routes above. Then
 use **Settings | Tools | Reclazz | Connect AI assistant** in IntelliJ for the bundled
 matching MCP server, preview and confirmation. For standalone/manual setup, follow
 [MCP installation](mcp-server.md#running-it): build or obtain the matching
@@ -237,7 +237,7 @@ On Windows use `gradlew.bat` in place of `./gradlew`. For the current 1.9.0 sour
 
 | Output | Use |
 |---|---|
-| `agent/build/libs/agent-1.9.0.jar` | Standalone shaded agent; use this exact path in `-javaagent` for a local build |
+| `agent/build/libs/agent-1.9.0.jar` | Standalone shaded Java agent; use this exact path in `-javaagent` for a local build |
 | `build/distributions/reclazz-1.9.0.zip` | Local IDE plugin; install from disk |
 | `mcp-server/build/distributions/mcp/reclazz-mcp-1.9.0.jar` and `.jar.sha256` | Optional standalone MCP package |
 
@@ -245,24 +245,24 @@ Read `pluginVersion` in `gradle.properties` if building another version.
 `agent-1.9.0-thin.jar` is not the standalone package. The source build's
 `agent-1.9.0.jar`, GitHub's `reclazz-agent-1.9.0.jar` and the IDE's bundled
 `reclazz-agent.jar` are different names for their respective packaging contexts.
-For local Maven plugin/agent installation, see [Maven local builds](maven.md#local-builds).
+For local Maven plugin and Java agent installation, see [Maven local builds](maven.md#local-builds).
 These commands build local files; they do not publish a release.
 
 ## Your first reload
 
-1. Start the application with the agent and confirm the target JVM is the one
+1. Start the application with the Java agent and confirm the target JVM is the one
    you intended. Connection alone only confirms connectivity.
 2. After the watcher starts, call an endpoint or method and record its response.
 3. Change a simple method's returned text, compile to a watched class output,
    then call it again **without restarting**. Expect the new text and the same JVM.
-4. For complete acceptance with matching agent/MCP builds, follow the
+4. For complete acceptance with matching Java agent and MCP builds, follow the
    [Maven installation verification recipe](../examples/maven-spring-boot/README.md#verify-the-installation)
    from its baseline step before editing: confirm the intended JVM/version with
    DOCTOR, hash the compiled class, require a same-session `applied` VERIFY
    receipt, and check the changed response in the same JVM. A successful
    connection or compile alone never completes this check.
 
-If only connection succeeds, do not call installation accepted: check the agent
+If only connection succeeds, do not call installation accepted: check the Java agent
 was present at startup, the compiled output is watched, and the current change
 is supported. [Troubleshooting](usage.md#when-a-reload-goes-wrong).
 

@@ -35,7 +35,7 @@ object ReclazzActivation {
         if (!HybrisProjectDetector.isHybrisProject(project)) {
             ReloadNotifications.info(
                 project, "Reclazz",
-                "Reclazz is on. Run your application from the IDE and the agent " +
+                "Reclazz is on. Run your application from the IDE and the Java agent " +
                 "attaches itself; build after an edit to hot-reload it."
             )
             return

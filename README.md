@@ -36,7 +36,7 @@ and its linked documents, then build the site. Do not maintain a second copy on 
 | First working reload | [Quickstart](https://reclazz.com/docs/quickstart/) |
 | Supported changes and restart requirements | [Reload matrix](https://reclazz.com/docs/support-matrix/) |
 | Every option and detailed behavior | [Usage reference](https://reclazz.com/docs/reference/usage/) |
-| AI tooling and MCP | [AI agent guide](https://reclazz.com/docs/reference/for-ai-agents/) |
+| AI tooling and MCP | [AI assistant guide](https://reclazz.com/docs/reference/for-ai-agents/) |
 | Diagnose a failed or partial reload | [Troubleshooting](https://reclazz.com/docs/troubleshooting/) |
 | Full source documentation | [Reference library](https://reclazz.com/docs/reference/) |
 

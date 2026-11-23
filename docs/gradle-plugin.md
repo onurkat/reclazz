@@ -1,8 +1,8 @@
 # Reclazz Gradle plugin
 
-The plugin attaches the Reclazz agent to a project's run and test JVMs, so you
+The plugin attaches the Reclazz Java agent to a project's run and test JVMs, so you
 do not hand-write a `-javaagent` flag. Apply it and `bootRun` and the test
-tasks start with the agent already attached, watching all main compiled-class output directories.
+tasks start with it already attached, watching all main compiled-class output directories.
 The standard `application` plugin's `run` task is also supported by explicit opt-in.
 
 The plugin id is `com.onurkat.reclazz`.
@@ -14,12 +14,12 @@ The plugin id is `com.onurkat.reclazz`.
 - Adds the same flag to `Test` tasks, so tests run against reloaded classes.
 - With `applyToRun=true`, attaches to the standard `application` plugin's `run`
   task. Plain Java applications do not receive a forced Spring platform argument.
-- Resolves the agent jar from the coordinate
+- Resolves the Java agent jar from the coordinate
   `com.onurkat.reclazz:reclazz-agent:<version>`, or from an explicit path you set.
 
 ## Apply it
 
-The agent is on Maven Central, so applying the plugin is enough for a standard
+The Java agent is on Maven Central, so applying the plugin is enough for a standard
 Spring Boot project:
 
 ```kotlin
@@ -52,11 +52,11 @@ reclazz {
 ```
 
 Launch with `./gradlew run`; compile edits with `./gradlew classes` in another
-terminal. The same agent resolution, `agentJar`, watched-output and argument
+terminal. The same Java agent resolution, `agentJar`, watched-output and argument
 options below apply. Existing application JVM arguments are retained. Without
 the Spring Boot plugin or an explicit platform override, the plugin leaves
-platform selection to the agent. `enabled=false` or `applyToRun=false` prevents
-attachment and agent resolution for this task.
+platform selection to the Java agent. `enabled=false` or `applyToRun=false` prevents
+attachment and Java agent resolution for this task.
 
 Only the standard `application` plugin's `run` task is selected. A custom JavaExec
 named `run` without that plugin, other JavaExec tasks, `applicationDefaultJvmArgs`
@@ -100,19 +100,19 @@ and sorted by path, joined with semicolons. Outputs need not exist when the
 arguments are computed; compilation can create them before the application starts.
 Resource directories, test outputs and other projects are not added by this default.
 If there is no main source set or it has no class outputs, the plugin supplies no
-automatic `watchDirs` argument, leaving discovery to the agent.
+automatic `watchDirs` argument, leaving discovery to the Java agent.
 
 A nonempty explicit `watchDirs` list replaces the automatic outputs and retains
 its supplied order. Anything in `arguments` is appended as `key=value` and overrides the computed
-`platform` and `watchDirs`, so you can express any agent argument the flag
+`platform` and `watchDirs`, so you can express any Java agent argument the flag
 accepts. For SAP Commerce, set `platform` and the Hybris arguments explicitly,
 for example `arguments.put("hybrisHome", "/opt/hybris")`.
 
 ## Checking status
 
 The plugin adds a `reclazzStatus` task that prints, as one JSON line, whether
-the agent is attached to a running app and how it is doing. It is meant for a
-person or a coding agent to check the inner loop:
+the Java agent is attached to a running app and how it is doing. It is meant for a
+person or an AI assistant to check the inner loop:
 
 ```
 ./gradlew reclazzStatus
@@ -123,17 +123,17 @@ person or a coding agent to check the inner loop:
 ```
 
 When nothing is attached it prints `{"attached":false,"reason":"..."}`. It reads
-the agent's loopback status socket and asks nothing of the agent beyond its own
+the Java agent's loopback status socket and asks nothing of it beyond its own
 state. Options: `--port-file`, `--port`, `--hybris-home`, `--timeout-ms`.
 
 ## Notes
 
-- The agent only reloads classes it transformed at load time, so the flag must
+- The Java agent only reloads classes it transformed at load time, so the flag must
   be present at JVM startup. The plugin adds it to task startup for you.
-- The agent is published at `com.onurkat.reclazz:reclazz-agent` on Maven
+- The Java agent is published at `com.onurkat.reclazz:reclazz-agent` on Maven
   Central, which is what the version-only form resolves.
-- `reclazzStatus` lives in the plugin, not the agent jar, because the agent's
-  tests forbid the shipped agent from opening a client socket; the status
+- `reclazzStatus` lives in the plugin, not the Java agent jar, because that jar's
+  tests forbid it from opening a client socket; the status
   client that must open one to loopback belongs beside the build.
 
 ## Opt-in whole-build safety
@@ -168,7 +168,7 @@ compile task is up-to-date. Nested safe builds are refused.
 The standalone wrapper acquires a named BUILD hold and waits for its correlated
 acknowledgement **before launching the child**. It sends `ok` only after the
 whole child exits zero; compilation failure sends `failed` and preserves the
-hold. A missing agent, rejected ownership or missing acknowledgement fails the
+hold. A missing Java agent, rejected ownership or missing acknowledgement fails the
 task. The MCP jar is an explicit local file, not a new plugin dependency or a
 network download. A plugin version without this task must be rebuilt locally;
 these instructions do not imply a published release.
@@ -181,7 +181,7 @@ After recovery, use exact-byte `VERIFY`/`reclazz_verify_batch` receipts and chec
 application behavior: successful compilation alone confirms no reload.
 
 Protection covers only outputs written synchronously by the selected child build
-to the selected agent's watched directories. Configuration-time writes by the
+to the selected Java agent's watched directories. Configuration-time writes by the
 outer build, external writers, asynchronously spawned work, unselected modules
-and other agents are outside that boundary. It is not an atomic reload or rollback.
+and other Java agents are outside that boundary. It is not an atomic reload or rollback.
 Gradle 8.10.2 and 9.9.1 are explicitly exercised consumer versions; other versions need separate acceptance.

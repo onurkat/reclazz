@@ -63,7 +63,7 @@ public final class JpaMappingRefresh {
      * then decline for a different reason.
      */
     static final String OPT_IN_HINT =
-            " Start the agent with jpaRefresh=true to rebuild the persistence unit automatically.";
+            " Start the Java agent with jpaRefresh=true to rebuild the persistence unit automatically.";
 
     private JpaMappingRefresh() {
     }

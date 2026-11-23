@@ -13,7 +13,7 @@ import com.onurkat.reclazz.plugin.settings.ReclazzSettings
 /**
  * Action to manually trigger a reconnection to the Reclazz agent.
  */
-class TriggerReloadAction : AnAction("Reconnect to Reclazz Agent") {
+class TriggerReloadAction : AnAction("Reconnect to Reclazz Java Agent") {
 
     override fun getActionUpdateThread(): ActionUpdateThread = ActionUpdateThread.BGT
 
@@ -26,19 +26,19 @@ class TriggerReloadAction : AnAction("Reconnect to Reclazz Agent") {
         manager.connectToAgent { result ->
             when (result) {
                 ReloadManager.ConnectResult.CONNECTED ->
-                    ReloadNotifications.info(project, "Reclazz", "Connected to the Reclazz agent.")
+                    ReloadNotifications.info(project, "Reclazz", "Connected to the Reclazz Java agent.")
 
                 ReloadManager.ConnectResult.NO_AGENT_FOUND ->
                     ReloadNotifications.warn(
                         project, "Reclazz",
-                        "No running agent found. Start your server with the Reclazz agent " +
+                        "No running Java agent found. Start your server with the Reclazz Java agent " +
                         "attached, or use Tools > Attach Reclazz to Running Server."
                     )
 
                 ReloadManager.ConnectResult.FAILED ->
                     ReloadNotifications.warn(
                         project, "Reclazz",
-                        "Found an agent but could not connect to it. It may have just stopped."
+                        "Found a Java agent but could not connect to it. It may have just stopped."
                     )
 
                 ReloadManager.ConnectResult.ALREADY_IN_PROGRESS -> Unit

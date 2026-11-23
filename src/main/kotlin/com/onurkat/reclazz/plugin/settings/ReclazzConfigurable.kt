@@ -110,9 +110,9 @@ class ReclazzConfigurable internal constructor(
         val connected = manager.isConnected
         val reloadCount = manager.reloadCount
         val statusLine = if (connected) {
-            "Agent: connected, $reloadCount reload${if (reloadCount == 1) "" else "s"} this session"
+            "Java agent: connected, $reloadCount reload${if (reloadCount == 1) "" else "s"} this session"
         } else {
-            "Agent: not connected"
+            "Java agent: not connected"
         }
         val agentInstalled = if (isHybris) HybrisAgentInstaller.isInstalled(project) else false
 
@@ -125,11 +125,11 @@ class ReclazzConfigurable internal constructor(
             row {
                 enabledCell = checkBox("Enable Reclazz in this project")
                     .bindSelected(::enabledCheckbox)
-                contextHelp("Adds the agent to Java run configurations and reloads classes when they compile. " +
-                            "Turn it off to only watch an agent attached some other way.")
+                contextHelp("Adds the Java agent to Java run configurations and reloads classes when they compile. " +
+                            "Turn it off to only watch a Java agent attached some other way.")
             }
             row {
-                checkBox("Also attach the agent to IDE test runs (JUnit, TestNG)")
+                checkBox("Also attach the Java agent to IDE test runs (JUnit, TestNG)")
                     .bindSelected(::injectIntoTestsCheckbox)
                     .enabledIf(enabledCell.selected)
             }
@@ -153,19 +153,19 @@ class ReclazzConfigurable internal constructor(
                 group("SAP Commerce") {
                     row {
                         if (agentInstalled) {
-                            label("Agent installed in the server startup properties")
+                            label("Java agent installed in the server startup properties")
                             button("Reinstall") {
                                 apply()
                                 installAgentIntoWrapperConf()
                             }
                             link("Remove") { uninstallAgentFromWrapperConf() }
                         } else {
-                            label("Agent not installed in the server")
-                            button("Install Agent") {
+                            label("Java agent not installed in the server")
+                            button("Install Java Agent") {
                                 apply()
                                 installAgentIntoWrapperConf()
                             }
-                            contextHelp("Writes the agent to the platform properties the server starts from, so it " +
+                            contextHelp("Writes the Java agent to the platform properties the server starts from, so it " +
                                     "survives ant clean all. Safe to run again; it takes effect at the next server start.")
                         }
                     }
@@ -235,7 +235,7 @@ class ReclazzConfigurable internal constructor(
                         })
                         .bindItem({ reloadBoundaryField }, { reloadBoundaryField = it ?: "immediate" })
                     contextHelp("At the next request boundary waits for running MVC requests to finish. It needs " +
-                                "the agent at JVM startup; an attached agent always applies immediately.")
+                                "the Java agent at JVM startup; an attached one always applies immediately.")
                 }
                 row {
                     checkBox("Configure the JVM for hot-swap")
@@ -272,7 +272,7 @@ class ReclazzConfigurable internal constructor(
                     textField()
                         .bindText(::excludeClassesField)
                         .columns(COLUMNS_MEDIUM)
-                    contextHelp("Class-name globs the agent never instruments, separated by semicolons, " +
+                    contextHelp("Class-name globs the Java agent never instruments, separated by semicolons, " +
                                 "for example com.example.Legacy*.")
                 }
                 row("Ignore files:") {
@@ -299,13 +299,13 @@ class ReclazzConfigurable internal constructor(
                     label("s")
                     contextHelp("Wait before watching files, so a starting server does not run out of file handles.")
                 }
-                row("Agent port:") {
+                row("Java agent port:") {
                     spinner(0..65535, 1)
                         .bindIntValue(
                             getter = { agentPortField },
                             setter = { agentPortField = it }
                         )
-                    contextHelp("0 reads the port from the port file. Set it when the agent port is fixed.")
+                    contextHelp("0 reads the port from the port file. Set it when the Java agent port is fixed.")
                 }
                 row("Port file:") {
                     textField()
@@ -405,9 +405,9 @@ class ReclazzConfigurable internal constructor(
         val manager = ReloadManager.getInstance(project)
         if (manager.isConnected) {
             ReloadNotifications.info(project, "Reclazz",
-                "Agent is connected (" + com.onurkat.reclazz.plugin.ui.plural(manager.reloadCount, "reload") + ")")
+                "Java agent is connected (" + com.onurkat.reclazz.plugin.ui.plural(manager.reloadCount, "reload") + ")")
         } else {
-            ReloadNotifications.info(project, "Reclazz", "Connecting to agent...")
+            ReloadNotifications.info(project, "Reclazz", "Connecting to the Java agent...")
             manager.connectToAgent()
             ApplicationManager.getApplication().executeOnPooledThread {
                 // Wait up to 5 seconds, checking every 500ms
@@ -426,11 +426,11 @@ class ReclazzConfigurable internal constructor(
                 }
                 ApplicationManager.getApplication().invokeLater {
                     if (connected) {
-                        ReloadNotifications.info(project, "Reclazz", "Successfully connected to agent")
+                        ReloadNotifications.info(project, "Reclazz", "Successfully connected to the Java agent")
                     } else {
                         val settings = ReclazzSettings.getInstance(project).state
                         val hint = buildString {
-                            append("Agent not reachable. ")
+                            append("Java agent not reachable. ")
                             if (settings.agentPort > 0) {
                                 append("Port ${settings.agentPort} is not responding. ")
                             } else if (settings.portFilePath.isNotBlank()) {
@@ -438,7 +438,7 @@ class ReclazzConfigurable internal constructor(
                             } else {
                                 append("Port file '.idea/reclazz/agent.port' not found. ")
                             }
-                            append("Make sure the server is running with the Reclazz agent.")
+                            append("Make sure the server is running with the Reclazz Java agent.")
                         }
                         ReloadNotifications.warn(project, "Reclazz", hint)
                     }

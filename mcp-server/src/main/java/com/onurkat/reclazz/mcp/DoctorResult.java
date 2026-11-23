@@ -50,15 +50,15 @@ final class DoctorResult {
         data.addProperty("reloadConfirmed", false);
         JsonArray actions = new JsonArray();
         if (!"observed".equals(data.get("status").getAsString())) {
-            actions.add("Check the port/port file and install matching agent and MCP builds; capability support is unknown.");
+            actions.add("Check the port/port file and install matching Java agent and MCP builds; capability support is unknown.");
         } else {
             actions.add("Compare target PID, workingDirectory and sessionId with the intended application; workingDirectory is not a repository-root assertion.");
-            if (!"watching".equals(data.get("watcherState").getAsString())) actions.add("Wait for watcher startup or inspect agent startup/stop diagnostics.");
+            if (!"watching".equals(data.get("watcherState").getAsString())) actions.add("Wait for watcher startup or inspect Java agent startup/stop diagnostics.");
             if (data.get("watchedDirectoryCount").getAsInt() == 0 || data.get("unwatchableDirectoryCount").getAsInt() > 0)
                 actions.add("Check compiled output directories and refused watches before building.");
             if (data.get("watchSampleTruncated").getAsBoolean()) actions.add("Directory sample is incomplete; do not infer coverage of an absent output path.");
             if (!data.get("buildOwnershipSupported").getAsBoolean() || !data.get("verifySupported").getAsBoolean())
-                actions.add("Wait for initialization or use a matching agent with BUILD ownership and VERIFY support.");
+                actions.add("Wait for initialization or use a matching Java agent with BUILD ownership and VERIFY support.");
             if (!"none".equals(data.get("buildHold").getAsString())) actions.add("Inspect the existing build hold; retain the original owner for recovery. Do not force-release it.");
             actions.add("Use exact-byte VERIFY and application checks after a successful owned build; this observation proves no reload.");
         }

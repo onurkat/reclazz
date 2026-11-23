@@ -22,7 +22,7 @@ Spring Boot DevTools restarts the application context after a code change. Recla
 | Add instance fields | **Yes**, and on a stock JDK an object that already existed reads the initialiser's value on the field's first read: `cache = new ArrayList<>()` added to a live Spring singleton is a list, not a null. The initialiser is lifted out of the constructor on its own, including isolated conditional expressions in single-constructor classes; one that needs a constructor argument is named instead. [Scope](usage.md#new-field-values-on-objects-that-already-existed). Direct reads/writes from another reloaded watched class use the same store on the measured stock-JDK lanes; see the [cross-class scope](usage.md#cross-class-access-to-added-instance-fields). On JBR/DCEVM the field is real and objects from before the reload keep the type default | Yes (restart) | No: "will not be initialized in existing instances" ([FAQ](https://www.jrebel.com/jrebel/learn/faq)) |
 | Add static fields | **Yes**, constants and isolated initialisers, including ternary and short-circuit expressions. Only the selected branch runs; later saves preserve the field’s current value. [Scope](usage.md#added-static-field-values) | Yes (restart) | Yes, but the initialiser is not re-run |
 | Added static field whose initialiser is entangled with the rest of `<clinit>` | Reads as null/0, and names the field and the reason | Yes (restart) | Reads as null/0 |
-| Add enum values (on the end) | **Yes on JDK 17-25**: `values()`, `valueOf`, switches and the EnumMap/EnumSet built before the reload all see it. What nothing can find: an array your own code sized with `values().length` before the reload still has the old length, and indexing it by the new constant's ordinal throws. JDK 26 refuses the `sun.misc.Unsafe` access this needs, so Reclazz falls back to the JDK's own `jdk.internal.misc.Unsafe`, which JEP 471 does not cover, by opening that package with the agent's own `redefineModule`; `--sun-misc-unsafe-memory-access=allow` keeps the first door open and silences the warning | Yes (restart) | Yes |
+| Add enum values (on the end) | **Yes on JDK 17-25**: `values()`, `valueOf`, switches and the EnumMap/EnumSet built before the reload all see it. What nothing can find: an array your own code sized with `values().length` before the reload still has the old length, and indexing it by the new constant's ordinal throws. JDK 26 refuses the `sun.misc.Unsafe` access this needs, so Reclazz falls back to the JDK's own `jdk.internal.misc.Unsafe`, which JEP 471 does not cover, by opening that package with the Java agent's own `redefineModule`; `--sun-misc-unsafe-memory-access=allow` keeps the first door open and silences the warning | Yes (restart) | Yes |
 | Remove the LAST enum value | **Yes on JDK 17-25**, the tail moves no ordinal, so `values()` and `valueOf` drop it while every survivor keeps its number | Yes (restart) | Yes |
 | Insert or reorder enum values | No, that renumbers every ordinal after the change, including `@Enumerated` columns already in your database. Reclazz refuses and says why | Yes (restart) | Yes |
 | Add / remove an interface | **Yes on JetBrains Runtime or DCEVM**, existing objects included; on a stock JDK it is refused by the JVM and Reclazz names the interface | Yes (restart) | Yes |
@@ -226,7 +226,7 @@ than either.
   [logger removal](usage.md#yaml-and-removed-configuration-keys)
 - **Auto-detection**: Automatically detects Spring Boot, Maven, and Gradle project layouts
 - **Zero config**: Just add `-javaagent`, no configuration files needed
-- **IntelliJ IDEA plugin**: Auto-injects agent into run configurations, auto-detects JDK and JBR
+- **IntelliJ IDEA plugin**: Auto-injects the Java agent into run configurations, auto-detects JDK and JBR
 
 ### Platform Support
 
@@ -246,11 +246,11 @@ Or from inside the IDE:
 2. Search for **"Reclazz"**
 3. Click **Install** and restart the IDE
 
-The plugin bundles the agent JAR, so there is nothing else to download.
+The plugin bundles the Java agent JAR, so there is nothing else to download.
 
 ### From GitHub
 
-The agent on its own, which is all you need outside IntelliJ, is attached to
+The Java agent on its own, which is all you need outside IntelliJ, is attached to
 every release:
 
 ```bash
@@ -276,7 +276,7 @@ cd reclazz
 ```
 
 `build/libs` also holds `agent-<version>-thin.jar`, which is the module's own
-classes without the bytecode library shaded in. It is not the agent and cannot
+classes without the bytecode library shaded in. It is not the Java agent and cannot
 be attached as one.
 
 What watching costs, on a platform where the JDK has to poll: the walk is linear
@@ -290,7 +290,7 @@ count and that figure so it is not invisible. `watchExtensions` and
 `excludePatterns` are what shorten the walk. On Linux and Windows the kernel
 tells the JDK instead and none of this is paid at all.
 
-While it is running, `Tools > How Is Reclazz Doing?` asks the agent what it has
+While it is running, `Tools > How Is Reclazz Doing?` asks the Java agent what it has
 actually done: how long it has been up, what it has reloaded and what failed,
 what a save costs at the median and the 95th on your machine rather than on
 mine, how many directories it is watching and how many it could not, and how
@@ -300,7 +300,7 @@ much is waiting on a restart. `Tools > Why Didn't My Class Reload?` and
 `./gradlew :agent:check` runs the unit suite and a coverage floor with it;
 `:agent:jacocoTestReport` writes the report to
 `agent/build/reports/jacoco/test/html`. The figure counts only what runs in the
-test process. Fourteen of the tests launch a child JVM with the real agent
+test process. Fourteen of the tests launch a child JVM with the real Java agent
 attached, which is the only honest way to check startup, behaviour under load,
 or a clean build, and none of that is instrumented.
 
@@ -308,7 +308,7 @@ or a clean build, and none of that is instrumented.
 
 ### Spring Boot
 
-Add the agent to your JVM arguments:
+Add the Java agent to your JVM arguments:
 
 ```bash
 # Maven
@@ -338,16 +338,16 @@ When you run the application from IntelliJ, the plugin handles everything:
 
 1. Install the plugin. Reclazz introduces itself once and asks whether to
    turn on: click **Enable Reclazz**. It starts switched off, because
-   enabling it means putting an agent into the JVM that runs your code.
+   enabling it means putting a Java agent into the JVM that runs your code.
    (Missed the dialog, or opening a second project? **Settings** >
    **Tools** > **Reclazz** > **Enable Reclazz**.)
 2. Run your application from IntelliJ (Run/Debug)
-3. The agent is injected automatically with optimal JVM flags
+3. The Java agent is injected automatically with optimal JVM flags
 4. Build your project. Changes are hot-swapped, status shown in the IDE
 
 ### Without IntelliJ
 
-The agent has no IDE dependency. It needs three things: the `-javaagent` flag
+The Java agent has no IDE dependency. It needs three things: the `-javaagent` flag
 on the JVM, a directory to watch, and any build that writes `.class` files
 into that directory.
 
@@ -374,10 +374,10 @@ adds auto-attach and a status UI.
 
 ### Remote and containers
 
-The agent does not care where the compiler runs. It only needs the changed
+The Java agent does not care where the compiler runs. It only needs the changed
 `.class` files to appear in a directory it watches, on the filesystem of the
 JVM it lives in. Remote and containerized development is therefore a
-file-sync problem, not an agent feature.
+file-sync problem, not a Java agent feature.
 
 For Docker, sync the host build output into the watched directory with
 Docker Compose Watch:
@@ -396,7 +396,7 @@ services:
 ```
 
 `docker compose watch` copies each changed class file into the container the
-moment the compiler writes it, and the agent inside picks it up.
+moment the compiler writes it, and the Java agent inside picks it up.
 
 For a VM, one rsync after each build does the same:
 
@@ -419,7 +419,7 @@ against the live database. Reclazz does not, and cannot, verify where those
 files came from, any more than the JVM verifies its own classpath. So a watched
 directory should be trusted exactly as much as the server's classpath itself:
 keep it to your own build output on your own machine, which is what local
-development is. The agent opens one socket, bound to loopback, that answers two
+development is. The Java agent opens one socket, bound to loopback, that answers two
 read-only status questions and triggers nothing; it makes no outbound network
 connection of any kind. Nothing about your code or your machine leaves the
 machine. What it will say, to anyone who can reach loopback on that host, is
@@ -428,7 +428,7 @@ session would need a restart for. On your own machine that is you; on a shared
 development server it is anyone with an account there, so treat it as readable
 by them.
 
-Running under the agent also does not hand the application anything it did not
+Running under the Java agent also does not hand the application anything it did not
 have. The engine keeps each watched class's own lookup, which carries private
 access to that class, and its holder sits on the bootstrap classloader where
 every line of code in the process can reach it. Only the engine's own classes,
@@ -437,7 +437,7 @@ asking is refused, which matters because code that can evaluate a submitted
 expression or reach a static method through a deserialized object cannot write
 a class file into a watched directory, and should not get there by another
 route. Reload-added field values are readable and writable through the same
-bootstrap classes, because the code the agent generates calls them, and they
+bootstrap classes, because the code the Java agent generates calls them, and they
 reach only the values Reclazz itself stores.
 
 ### SAP Commerce (Hybris)
@@ -527,16 +527,16 @@ If the server is already running without the `-javaagent` flag:
 
 1. Go to **Tools** > **Attach Reclazz to Running Server**
 2. Select the JVM from the list
-3. The agent loads into the running JVM, no restart needed
+3. The Java agent loads into the running JVM, no restart needed
 
 ## Configuration
 
-### Agent Arguments
+### Java Agent Arguments
 
-The canonical [agent argument table](usage.md#agent-arguments) defines every accepted
+The canonical [Java agent argument table](usage.md#agent-arguments) defines every accepted
 option and default. The website [configuration reference](https://reclazz.com/docs/configuration-reference/)
 is generated from that table. See [output formatting](usage.md#agent-arguments)
-for the `NO_COLOR` environment variable; it is not an agent argument.
+for the `NO_COLOR` environment variable; it is not a Java agent argument.
 
 ### IntelliJ Plugin Settings
 
@@ -558,7 +558,7 @@ from the code. What that means concretely:
 
 | Environment | Version | Covered |
 |---|---|---|
-| SAP Commerce | 2211-jdk21.8 (Java 21, Spring 6.2) | 21/23 integration scenarios on a live server. The two that do not pass are named rather than hidden: the ImpEx scenario needs `autoImpex=true` in the agent arguments, and an enum scenario has a 404 flake in the harness that predates the current release |
+| SAP Commerce | 2211-jdk21.8 (Java 21, Spring 6.2) | 21/23 integration scenarios on a live server. The two that do not pass are named rather than hidden: the ImpEx scenario needs `autoImpex=true` in the Java agent arguments, and an enum scenario has a 404 flake in the harness that predates the current release |
 | Spring Boot | 3.3 | class reload, structural reload, bean refresh, cache, MVC, properties, logging |
 | Spring Boot | 2.7 | the same six, including a new endpoint mapped without a restart |
 | JDK | SapMachine 17 and 21, JBR 25 | companion-class engine on both, plus native enhanced redefinition |
@@ -652,7 +652,7 @@ compile with an older `--release` while you develop, or update Reclazz.
 +---------------------------------------------------+
 ```
 
-### What attaching the agent changes about your classes
+### What attaching the Java agent changes about your classes
 
 Reclazz rewrites every watched class at load time, whether or not you ever
 reload anything. Most of that is invisible, and it is worth writing down which
@@ -696,7 +696,7 @@ deserialized or pre-existing object reads the type default. See the
 [component evidence and remaining limits](feature-evidence.md#p1-field-serialization).
 
 **A call into a watched class costs about 1.4 nanoseconds more.** Measured with
-and without the agent on the same code: a method that only increments a field
+and without the Java agent on the same code: a method that only increments a field
 went from 0.3ns to 1.7ns per call, and one that concatenates two strings went
 from 19.4ns to 19.2ns, which is to say the cost disappears into anything that
 does work. It is the same whether the caller is watched, where its call site is
@@ -705,12 +705,12 @@ reload, once the JIT has recompiled what the redefinition threw away, calls stay
 in the same few-nanosecond range.
 
 **Startup cost is below this machine's own variation.** Six SAP Commerce boots
-with the agent ranged from 91 to 99 seconds; two warm boots without it were 97.4
+with the Java agent ranged from 91 to 99 seconds; two warm boots without it were 97.4
 and 97.9. Instrumenting every watched class at load time is real work, and on a
 platform that takes a minute and a half to start it is not something you can see
 from outside.
 
-**What the agent itself holds is bounded and does not grow with reloading.**
+**What the Java agent itself holds is bounded and does not grow with reloading.**
 Measured on a live SAP Commerce server after a full integration run, with a
 heap histogram: 95,996 objects and 2.2 MB across all of Reclazz's own classes.
 It scales with how many classes were transformed rather than with how many
@@ -725,7 +725,7 @@ classloader.
 **Each reload costs metaspace that is never returned.** Around 8.5 KB, measured
 over 60 reloads. This is the JVM's cost rather than Reclazz's: redefining a
 class makes the JVM keep the previous version, so that threads still running
-the old code keep working, and a bare `redefineClasses` loop with no agent at
+the old code keep working, and a bare `redefineClasses` loop with no Java agent at
 all measured 10.6 KB per redefinition on the same JDK. Reclazz's own companion
 classes are collected, one for one with the reloads. It is only worth thinking
 about where metaspace is capped, which on SAP Commerce it is: a day of heavy
@@ -803,10 +803,10 @@ empty it says so, which is the answer that saves the restart.
 
 ### "Why didn't my class reload?"
 
-Ask the agent: **Tools > Why Didn't My Class Reload?**, or right-click in the
+Ask the Java agent: **Tools > Why Didn't My Class Reload?**, or right-click in the
 editor. It reports what it found for that class, into the reload log: whether a
 compiled file exists under a watched directory and when it was last built,
-whether the JVM has loaded it, whether the agent prepared it, and what the last
+whether the JVM has loaded it, whether the Java agent prepared it, and what the last
 reload attempt did and which file it took the bytes from. Most of the time the
 answer is that no reload was ever attempted, and none of those reasons produce
 an error message on their own.
@@ -818,7 +818,7 @@ Reclazz couldn't find `target/classes` (Maven) or `build/classes/java/main` (Gra
 Your JVM doesn't support class redefinition. This shouldn't happen with modern JDKs.
 
 ### Structural change fails on a class
-Structural reload works on supported JDK 17+ paths for classes the agent transformed at load time. If the message says the class "was loaded before Reclazz attached", start the server with `-javaagent` (the IntelliJ plugin's Install action sets this up) instead of attaching later. Attach mode cannot retrofit the reload infrastructure into already-loaded classes on standard JVMs.
+Structural reload works on supported JDK 17+ paths for classes the Java agent transformed at load time. If the message says the class "was loaded before Reclazz attached", start the server with `-javaagent` (the IntelliJ plugin's Install action sets this up) instead of attaching later. Attach mode cannot retrofit the reload infrastructure into already-loaded classes on standard JVMs.
 
 ### Spring bean not refreshed
 Reclazz destroys and recreates the singleton, cascades the refresh to dependent beans, and re-points fields that still hold the old instance to the new one (stale-reference healing). If a component still sees stale behavior, check the Reclazz tool window for a reload error on that class.
@@ -827,7 +827,7 @@ Reclazz destroys and recreates the singleton, cascades the refresh to dependent 
 Reclazz can run alongside DevTools, but it's recommended to disable DevTools when using Reclazz. DevTools performs full context restarts which are slower and lose application state.
 
 ### Docker / containerized environments
-Mount the agent JAR into the container and add the `-javaagent` flag to `JAVA_OPTS`:
+Mount the Java agent JAR into the container and add the `-javaagent` flag to `JAVA_OPTS`:
 
 ```dockerfile
 COPY reclazz-agent.jar /opt/reclazz/agent.jar

@@ -71,7 +71,7 @@ class DoctorTest {
             JsonObject d=data(result);assertEquals("/target/project",d.get("workingDirectory").getAsString());
             assertEquals(System.getProperty("user.dir"),d.get("clientWorkingDirectory").getAsString());
             String actions=d.get("nextActions").toString();
-            for(String expected:List.of("startup","refused watches","incomplete","original owner","matching agent"))assertTrue(actions.contains(expected),actions);
+            for(String expected:List.of("startup","refused watches","incomplete","original owner","matching Java agent"))assertTrue(actions.contains(expected),actions);
             assertFalse(d.has("ready"));agent.verify();
         }
     }

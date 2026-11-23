@@ -138,7 +138,7 @@ object HybrisAgentInstaller {
         // up in properties the server starts from, and the IDE's plugin
         // directory is named after the IDE version. See stableAgentJar.
         val pluginAgentJar = stageAgent()
-            ?: return Result.Error("Bundled agent jar not found. Reinstall the Reclazz plugin.")
+            ?: return Result.Error("Bundled Java agent jar not found. Reinstall the Reclazz plugin.")
 
         val settings = ReclazzSettings.getInstance(project).state
         var agentArg = agentArgument(
@@ -285,14 +285,14 @@ object HybrisAgentInstaller {
         existingDebugOptions: String
     ): String = buildString {
         append(MARKER_BEGIN).append('\n')
-        append("# Reclazz appends its agent through the platform's documented\n")
+        append("# Reclazz appends its Java agent through the platform's documented\n")
         append("# append properties. wrapper.conf is generated from these, so the\n")
-        append("# agent survives `ant clean all` instead of being wiped by it.\n")
+        append("# Java agent survives `ant clean all` instead of being wiped by it.\n")
         append("#\n")
         append("# These lines OVERRIDE the same properties set elsewhere, because\n")
         append("# this file is read last. The reclazz-base lines below record what\n")
         append("# each property held before Reclazz touched it: everything after\n")
-        append("# that value is the agent and nothing else. Reclazz compares them\n")
+        append("# that value is the Java agent and nothing else. Reclazz compares them\n")
         append("# on startup, so if you change your own options it will notice its\n")
         append("# copy is stale and offer to re-sync instead of quietly winning.\n")
         append("$BASE_MARKER$JAVA_OPTIONS=$existingJavaOptions\n")
@@ -324,10 +324,10 @@ object HybrisAgentInstaller {
             val written = HybrisPropertyFiles.readProperty(target, key)
                 ?: return "$key was not written to ${target.fileName}."
             if (written.trim() != joinOptions(base, agentArg).trim()) {
-                return "$key would have been changed beyond adding the agent."
+                return "$key would have been changed beyond adding the Java agent."
             }
             if (HybrisPropertyFiles.effectiveValue(platformHome, configDir, key, excludeManagedBlock = false) != written.trim()) {
-                return "$key is overridden by another properties layer; the managed agent would not be active."
+                return "$key is overridden by another properties layer; the managed Java agent would not be active."
             }
         }
         return null
@@ -398,7 +398,7 @@ object HybrisAgentInstaller {
                     val name = normalized.substringAfterLast('/')
                     if (jar == expectedJar || RECLAZZ_JAR.matches(name) || normalized.endsWith("/.reclazz/agent.jar")) {
                         return "Conflicting Reclazz -javaagent at $file:${index + 1}. " +
-                            "Remove the manual agent option before installing from Settings; no files were changed."
+                            "Remove the manual Java agent option before installing from Settings; no files were changed."
                     }
                 }
             }

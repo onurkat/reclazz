@@ -34,7 +34,7 @@ class PauseReloadAction : ToggleAction("Pause Automatic Reload", "Keep saved cha
         val project = e.project ?: return
         if (!ReloadManager.getInstance(project).setReloadPaused(state)) {
             ReloadNotifications.warn(project, "Reclazz",
-                "Not connected to an agent, so there is nothing to pause. Start your " +
+                "Not connected to a Java agent, so there is nothing to pause. Start your " +
                     "application with Reclazz, or use Tools > Attach Reclazz to Running Server.")
         }
     }

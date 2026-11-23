@@ -1,16 +1,16 @@
 # Reclazz Spring Boot starter
 
 A starter that makes a Spring Boot app aware of Reclazz: it reports at startup
-whether the hot-reload agent is attached, gives the exact command to attach it
+whether the hot-reload Java agent is attached, gives the exact command to attach it
 when it is not, and, where the actuator is present, exposes a `reclazz` endpoint
 with live status. The coordinate is
 `com.onurkat.reclazz:reclazz-spring-boot-starter`.
 
 ## What it does not do
 
-It does not attach the agent. A `-javaagent` has to be on the command line when
+It does not attach the Java agent. A `-javaagent` has to be on the command line when
 the JVM starts, and a starter runs after that, so nothing a dependency does can
-turn the agent on by itself. Attaching is the job of the Gradle plugin, the
+turn it on by itself. Attaching is the job of the Gradle plugin, the
 Maven plugin, or a plain flag; see [gradle-plugin.md](gradle-plugin.md),
 [maven.md](maven.md) and [for-ai-agents.md](for-ai-agents.md). The starter is the
 Spring-native half: it tells you whether that worked and surfaces the status.
@@ -26,7 +26,7 @@ dependencies {
 `developmentOnly` keeps it out of the production jar, which is the right scope: it
 is a development aid. On Maven, use an optional or a dev-profile dependency.
 
-With the agent attached, the log at startup reads:
+With the Java agent attached, the log at startup reads:
 
 ```
 Reclazz hot-reload agent is attached. Edit code, recompile, and changes reload in place, no restart.
@@ -42,15 +42,15 @@ All properties are under the `reclazz` prefix.
 | Property | Default | Meaning |
 |---|---|---|
 | `reclazz.enabled` | `true` | Master switch for the starter's auto-configuration |
-| `reclazz.fail-on-missing-agent` | `false` | Fail startup when the agent is not attached, instead of only warning |
-| `reclazz.port` | (auto) | Connect to this agent status port directly |
-| `reclazz.port-file` | (auto) | Path to the agent port file. By default the agent's own `portFile` argument, then `.reclazz/agent.port` under the SAP Commerce home or the working directory, then `.idea/reclazz/agent.port` |
+| `reclazz.fail-on-missing-agent` | `false` | Fail startup when the Java agent is not attached, instead of only warning |
+| `reclazz.port` | (auto) | Connect to this Java agent status port directly |
+| `reclazz.port-file` | (auto) | Path to the Java agent port file. By default its own `portFile` argument, then `.reclazz/agent.port` under the SAP Commerce home or the working directory, then `.idea/reclazz/agent.port` |
 | `reclazz.hybris-home` | (auto) | SAP Commerce home, to locate its port file |
 
 Scope it to development the usual Spring way, for example by keeping the
 dependency `developmentOnly`, or by setting `reclazz.enabled` per profile.
 Turning `fail-on-missing-agent` on in a dev profile makes a hot-reload run
-required there: the app refuses to start without the agent.
+required there: the app refuses to start without the Java agent.
 
 ## The actuator endpoint
 
@@ -76,13 +76,13 @@ GET /actuator/reclazz
 }
 ```
 
-When the agent is not attached it returns `{"attached": false}`. The endpoint
-reads the agent's loopback status socket and reaches nothing off the machine,
-the same promise the agent itself keeps.
+When the Java agent is not attached it returns `{"attached": false}`. The endpoint
+reads the loopback status socket and reaches nothing off the machine,
+the same promise the Java agent itself keeps.
 
 ## How attachment is detected
 
 The starter reads this JVM's own startup arguments
 (`RuntimeMXBean.getInputArguments()`) and looks for a `-javaagent` that names the
-Reclazz agent. It asks the agent nothing and opens no socket for the check; the
+Reclazz Java agent. It asks the Java agent nothing and opens no socket for the check; the
 status socket is used only by the actuator endpoint, and only to loopback.

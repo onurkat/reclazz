@@ -1,21 +1,21 @@
 # Reclazz MCP server
 
 An [MCP](https://modelcontextprotocol.io) server that turns the running Reclazz
-agent into tools a coding agent can call: check whether Reclazz is attached,
+Java agent into tools an AI assistant can call: check whether Reclazz is attached,
 nudge a scan after a build, ask what still needs a restart, or diagnose why a
 class did not reload. Read-only resources expose the same status, pending and
 event queries, and a verification prompt guides the next authorized edit. It
-is a thin, loopback-only client of the agent's status socket and asks the agent
+is a thin, loopback-only client of the Java agent's status socket and asks it
 nothing beyond its own state.
 
-It lives in `:mcp-server`, not the agent jar, because the agent's own tests
-forbid the shipped agent from opening a client socket.
+It lives in `:mcp-server`, not the Java agent jar, because the Java agent's own tests
+forbid the shipped jar from opening a client socket.
 
 The [client acceptance matrix](client-matrix.md) records independent SDK,
 real build-tool and OS coverage, with runnable tests and explicit untested lanes.
 
 For the developer workflow, read
-[MCP for coding agents: close the loop](mcp-for-coding-agents.md): each benefit
+[MCP for AI assistants: close the loop](mcp-for-coding-agents.md): each benefit
 has a recorded example and a limit, from target discovery to byte receipts.
 
 ## Connect from IntelliJ
@@ -44,7 +44,7 @@ launcher templates, so another launcher generation gets its own directory. Clien
 entries keep their version. Java selection
 is `RECLAZZ_JAVA`, `JAVA_HOME`, PATH, then the IDE Java fallback refreshed at staging.
 An invalid explicit Java choice reports an error. Java must be 17+; a running application
-still needs its agent. Old unreferenced versions can be previewed and removed through
+still needs its Java agent. Old unreferenced versions can be previewed and removed through
 an explicit Settings action; the running plugin version, newest three version numbers,
 known client references and copied setups are kept. Copied setups stay protected even
 before paste. Cleanup cannot discover manually created, unregistered client configs;
@@ -64,7 +64,7 @@ Gradle or a separately installed Gson at runtime.
 
 ### Build and install locally
 
-From a source checkout, build matching agent/MCP jars and test the MCP package:
+From a source checkout, build matching Java agent and MCP jars and test the MCP package:
 
 ```sh
 ./gradlew :agent:shadowJar :mcp-server:test :mcp-server:mcpRelease
@@ -85,10 +85,10 @@ Stop on a checksum mismatch. This stages/installs local files; it does not publi
 ### Release assets
 
 GitHub releases carry `reclazz-mcp-X.Y.Z.jar` and
-`reclazz-mcp-X.Y.Z.jar.sha256` next to the matching agent jar. Older releases
+`reclazz-mcp-X.Y.Z.jar.sha256` next to the matching Java agent jar. Older releases
 were not changed retroactively. When a release contains these assets, download both from that same
 tag, put them together in a permanent directory and verify the checksum as above.
-Use matching agent and MCP builds for BUILD/VERIFY support. A checksum detects
+Use matching Java agent and MCP builds for BUILD/VERIFY support. A checksum detects
 file corruption; it is not a signature or proof of publisher identity.
 
 ### Configure a stdio client
@@ -116,7 +116,7 @@ configuration file locations vary; this entry does not modify them automatically
 Clients with another configuration format need the same executable and arguments.
 Restart/reconnect the MCP client after changing the entry.
 
-The application must separately run with the Reclazz agent attached. The
+The application must separately run with the Reclazz Java agent attached. The
 `--project-dir` option makes startup independent of the client's working
 directory. Discovery checks that directory's `.reclazz/agent.port` and
 `.idea/reclazz/agent.port`, in that order. If neither exists, it checks fixed SAP Commerce
@@ -197,7 +197,7 @@ Create or merge the `reclazz` entry in the project's `.cursor/mcp.json`:
 [Cursor's MCP guide](https://cursor.com/docs/mcp) also documents
 `~/.cursor/mcp.json` for global configuration. Use the project file when this
 server should target only that project. Reconnect the server in Cursor's MCP
-settings, inspect its available tools and ask Agent to call `reclazz_status`
+settings, inspect its available tools and ask Cursor's Agent to call `reclazz_status`
 with `{}`. Do not count a registered entry as a completed call.
 
 The separate Cursor Agent CLI has its own installation. If it is already
@@ -250,12 +250,12 @@ Per-tool selection works as follows:
   A call selecting another project's port must also select its `projectDir`
   when a startup project is configured.
 
-An **explicit project** opts into a launch-directory check: on the same agent
+An **explicit project** opts into a launch-directory check: on the same Java agent
 connection, before the requested command, MCP requires a valid correlated
 DOCTOR result whose canonical absolute `workingDirectory` equals or is below
 that project. Missing/unsupported/malformed evidence, a relative working
 directory or another project's directory fails closed. This also applies to
-status and batch verification. It prevents a stale port pointing to an agent
+status and batch verification. It prevents a stale port pointing to a Java agent
 launched outside the selected tree from receiving BUILD/SCAN/reload commands.
 
 Working directory is not proof of repository root, watched-output coverage or
@@ -264,8 +264,8 @@ session and watch evidence for those distinctions. If the application launches
 outside its project tree, use explicit `--port-file` alone (or per-call `portFile`)
 without project selection; this selects an endpoint but does **not** validate its
 project. No-argument startup retains discovery within the startup working
-directory and has no project check. Old agents without DOCTOR cannot satisfy an
-explicit project check; use matching agent/MCP builds.
+directory and has no project check. Old Java agents without DOCTOR cannot satisfy an
+explicit project check; use matching Java agent and MCP builds.
 
 ### Smoke check without an attached application
 
@@ -291,11 +291,11 @@ application is a separate condition: `reclazz_status` reports `attached:false`.
 | Tool | What it does |
 |---|---|
 | `reclazz_doctor` | Read correlated target JVM, session, live watch registration and capability evidence, with next checks |
-| `reclazz_status` | Whether the agent is attached and how it is doing (reloads, failures, latency, watched directories), as JSON |
-| `reclazz_build` | Signal `started`, `ok` or `failed`; waits for the agent to acknowledge the signal, and returns a tool error if unconfirmed |
+| `reclazz_status` | Whether the Java agent is attached and how it is doing (reloads, failures, latency, watched directories), as JSON |
+| `reclazz_build` | Signal `started`, `ok` or `failed`; waits for the Java agent to acknowledge the signal, and returns a tool error if unconfirmed |
 | `reclazz_verify_batch` | Read 1–32 unique class/hash pairs on one connection within a total timeout; cancellable through stdio |
 | `reclazz_verify` | Structured exact-byte reload receipt; requires `className` and lower-case `sha256`; only `status:applied` is success |
-| `reclazz_scan` | Wait for a correlated scan/enqueue receipt from the agent; reload completion remains separate |
+| `reclazz_scan` | Wait for a correlated scan/enqueue receipt from the Java agent; reload completion remains separate |
 | `reclazz_pending` | Restart-required changes plus manual-pause and pending counts |
 | `reclazz_reload_control` | Pause/resume automatic reload admission or inspect its state; never releases BUILD holds |
 | `reclazz_diagnose` | Why a given class did or did not reload last time (requires `className`) |
@@ -303,12 +303,12 @@ application is a separate condition: `reclazz_status` reports `attached:false`.
 | `reclazz_events` | List bounded received-event pages from that checkpoint with exact filters; observations never confirm a reload |
 
 Each tool accepts optional `projectDir`, `portFile`, `port` and `hybrisHome` arguments to
-locate the agent; `reclazz_diagnose` also requires `className`.
+locate the Java agent; `reclazz_diagnose` also requires `className`.
 
 ## Tool execution errors
 
 `reclazz_scan`, `reclazz_pending` and `reclazz_diagnose` return `isError:true`
-with a text explanation when the agent cannot be reached or its handshake is
+with a text explanation when the Java agent cannot be reached or its handshake is
 invalid. Before sending a command, the client requires a JSON `CONNECTED` event
 with numeric status-socket `version:1` and a nonblank string `agent` release.
 Malformed or unsupported handshakes do not terminate the MCP stdio session.
@@ -316,7 +316,7 @@ Malformed or unsupported handshakes do not terminate the MCP stdio session.
 Pending/diagnose also return a tool error if the connection fails, a diagnostic
 response is malformed, or no `INFO` answer arrives before disconnect/timeout.
 Silence does not mean nothing needs a restart or no diagnosis exists. An explicit
-empty-ledger answer from the agent remains a successful result. Invalid tool
+empty-ledger answer from the Java agent remains a successful result. Invalid tool
 arguments still return a JSON-RPC error rather than a tool execution result.
 
 `reclazz_status` remains an attachment diagnostic: `attached:false` is a
@@ -472,7 +472,7 @@ available through `reclazz_events`, not the resource URI. Events still confirm
 neither applied bytes, source paths/revisions nor application behavior.
 
 Both discovery methods return one bounded page without `nextCursor`; a
-continuation `cursor` is rejected. Listing them does not contact the agent.
+continuation `cursor` is rejected. Listing them does not contact the Java agent.
 Event resource reads use the existing cancellable observation worker. Ping and
 pure tool/resource/prompt metadata remain responsive during that work; other
 execution receives busy rather than being queued. Status and pending retain
@@ -491,15 +491,15 @@ their existing bounded synchronous socket behavior.
 
 The result contains a description and one fixed `user` message with text
 content. No arguments are accepted; an absent or empty `arguments` object is
-valid. Listing or retrieving the prompt performs no agent query, build, edit,
+valid. Listing or retrieving the prompt performs no Java agent query, build, edit,
 model call or application action, and grants no additional permission.
 
-The prompt guides the agent through doctor identity checks, a checkpoint before
+The prompt guides the AI assistant through doctor identity checks, a checkpoint before
 a new authorized edit, the real external BUILD lifecycle where applicable,
 awaiting an exact-owner reload, exact-byte verification and the application's
 own HTTP/UI/database check. A previously saved edit cannot gain retroactive
 checkpoint or source-revision proof. BUILD `ok` is sent with the same owner only
-after the complete build succeeds, never just to clear a hold. Automatic agent
+after the complete build succeeds, never just to clear a hold. Automatic Java agent
 compilation remains a separate path. Failed, held, refused, restart-required or
 unavailable results must be reported instead of an automatic resume or restart.
 
@@ -520,7 +520,7 @@ success or a resource-not-found error.
 
 ### Recorded client coverage
 
-Recorded locally on **2026-11-10**, with matching locally built agent/MCP 1.5.0:
+Recorded locally on **2026-11-10**, with matching locally built Java agent and MCP 1.5.0:
 
 | Client/check | Observed | Explicit limit |
 |---|---|---|
@@ -568,16 +568,16 @@ so a supplied name cannot insert a second line command.
 
 ## What it does not do
 
-It opens one connection, to `127.0.0.1`, to the agent already running on this
+It opens one connection, to `127.0.0.1`, to the Java agent already running on this
 machine. It sends no telemetry and reaches nothing off the machine, the same
-promise the agent itself keeps.
+promise the Java agent itself keeps.
 
 ## Protecting terminal builds
 
-Build the current agent and MCP jars together from this source tree:
+Build the current Java agent and MCP jars together from this source tree:
 `./gradlew :agent:shadowJar :mcp-server:shadowJar`. This receipt protocol is new;
-it is not a promise that an older published agent supports it. Attach the built
-agent to your development app and use the resulting MCP jar as `MCP_JAR` below.
+it is not a promise that an older published Java agent supports it. Attach the built
+Java agent to your development app and use the resulting MCP jar as `MCP_JAR` below.
 From the consuming project's directory, wrap the whole compile command:
 
 ```sh
@@ -601,7 +601,7 @@ underscores or hyphens. A fresh token cannot take another outstanding hold.
 The wrapper waits for an owner-correlated `started` receipt before launching the command.
 It sends `ok` only after exit zero, and `failed` after a nonzero exit, launch
 failure or interruption. A lost connection is never replaced mid-build. A
-missing agent or missing start receipt prevents compilation; an unconfirmed
+missing Java agent or missing start receipt prevents compilation; an unconfirmed
 finish returns nonzero. A confirmed finish preserves the command's exit code.
 The app keeps running. Class output from a failed build stays held until a
 subsequent successful build by the same owner. If the wrapper is killed, the
@@ -613,7 +613,7 @@ that no reload occurred.
 Different named owners and unowned IDE commands cannot change an owned hold.
 A named start cannot take an active legacy hold. Ownership releases after
 successful output capture, asynchronously after the ok receipt. Lost owner
-tokens require an application/agent restart; no timeout or force unlock exists.
+tokens require an application restart (which restarts the Java agent); no timeout or force unlock exists.
 Tokens identify cooperating builds; they are not authentication and cannot
 protect output from a compiler that bypasses the hold. Use a unique token for
 each independent build and retain it until recovery is complete.
@@ -627,7 +627,7 @@ not completion of live reload; exercise the endpoint/test to verify behavior.
 For a client that launches its own compiler, call `reclazz_build` with
 `{"state":"started","owner":"build-unique-id","portFile":"/absolute/path/.reclazz/agent.port"}` and
 require `isError:false` **before** launching compilation. Afterwards call the
-same tool against the same running agent with the same `owner` and `state:"ok"` only for exit zero,
+same tool against the same running Java agent with the same `owner` and `state:"ok"` only for exit zero,
 or `state:"failed"` for failure/cancellation. Do not restart the app or run
 another builder between those calls. If the target changes, stop the sequence;
 the terminal wrapper is preferable when one persistent connection is required.
@@ -645,7 +645,7 @@ For a concrete first installation, use the [Maven verification recipe](../exampl
 it combines DOCTOR identity, class-file hashing, this receipt and an observable
 response, with next steps for wrong targets, stale sessions and unwatched output.
 
-Build and attach matching current agent/MCP jars; older published agents may not
+Build and attach matching current Java agent and MCP jars; older published Java agents may not
 support this tool's socket command. After a successful protected compilation,
 compute SHA-256 of each changed `.class` file and call `reclazz_verify` with its
 binary name (`com.acme.OrderService`, or `com.acme.OrderService$Nested`), `sha256`,
@@ -669,7 +669,9 @@ cannot produce a positive receipt. See [the receipt contract](protocol.md#verify
 After verifying the relevant classes, exercise the live endpoint or test to
 prove the intended application behavior.
 
-## Check the target before an agentic build
+<a id="check-the-target-before-an-agentic-build"></a>
+
+## Check the target before an AI-assisted build
 
 Call `reclazz_doctor` using the same endpoint arguments as the other tools.
 Its default timeout is 5000 ms. The tool reads one correlated DOCTOR response and
@@ -681,7 +683,7 @@ the identical object as structured content.
 Compare the target `pid`, `workingDirectory` and `sessionId` against the application
 intended for the build. `clientWorkingDirectory` belongs to the MCP process;
 neither directory is an inferred repository root. `sessionId` matches VERIFY for
-this agent instance. Capability booleans reflect installed handlers; observation
+this Java agent instance. Capability booleans reflect installed handlers; observation
 can legitimately show incomplete startup. `watcherState`, live directory count,
 refused registration count and a bounded path sample expose watcher evidence.
 `watchSampleTruncated:true` means absence from the sample proves nothing about
@@ -704,7 +706,7 @@ The tool composes existing VERIFY commands sequentially on one socket; it neithe
 builds nor polls automatically. `results` preserves input order. Validated earlier
 receipts are retained when a timeout, disconnect, malformed receipt or changed
 session makes the remaining entries unavailable. It does not reconnect or combine
-proof from different agent sessions. Each socket reply is limited to 16384
+proof from different Java agent sessions. Each socket reply is limited to 16384
 characters, with at most 32 replies. `sessionId` is empty if none was validated.
 
 `status:applied` and `allApplied:true` require every individual receipt to be
@@ -751,7 +753,7 @@ plugin release. Retain the owner for recovery and collect exact-byte VERIFY
 receipts separately after a successful build.
 
 A reproducible acceptance harness lives at `scripts/test-build-plugin-safety.py`.
-Build local agent/MCP/Gradle-plugin jars and package the Maven plugin, then run:
+Build local Java agent, MCP and Gradle plugin jars and package the Maven plugin, then run:
 
 ```text
 python3 scripts/test-build-plugin-safety.py --work-dir /tmp/reclazz-safety-proof --gradle /absolute/path/to/gradle
@@ -761,7 +763,7 @@ It requires a fresh work directory, Java/Javac 17+, Gradle 8.10.2, Maven 3.9.x a
 an already populated offline Maven cache. `--help` lists explicit artifact and
 tool paths. It does not publish or install to the user's Maven repository; it
 uses a temporary cache overlay. Each tool exercises two real modules and a live
-agent: opt-out, partial failure, competing owner rejection, same-owner recovery,
+Java agent: opt-out, partial failure, competing owner rejection, same-owner recovery,
 exact-byte receipts, up-to-date barriers and offline refusal before output.
 Logs and `evidence.json` stay in the work directory. A missing tool/dependency is
 a failed prerequisite, never a silently skipped success. Mac/Linux local results
@@ -779,13 +781,13 @@ and the same `port`/`portFile` endpoint options as other tools. For example:
 Wait for `status: "acknowledged"`. The result reports `paused`,
 `pendingClasses`, `pendingActions`, and `buildHold` (`none`, `named`, `legacy`)
 as an admission-state snapshot. `reloadConfirmed` is always false. On
-`unavailable`, the action may have reached the agent; inspect `status` before
-retrying. Unsupported older agents time out instead of appearing successful.
+`unavailable`, the action may have reached the Java agent; inspect `status` before
+retrying. Unsupported older Java agents time out instead of appearing successful.
 
 Pause retains observed class/source/resource changes; SCAN does not apply them.
 Resume schedules current output, but never clears an active or failed BUILD
 hold. A successful BUILD does not clear manual pause. Already admitted work
-may finish. The switch is shared by all clients of this agent, survives client
+may finish. The switch is shared by all clients of this Java agent, survives client
 disconnect, and is not a per-client ownership lock. Repeated pause/resume does
 not discard pending changes. See [the socket contract](protocol.md#pausing-automatic-reload)
 for admission and count boundaries. No IDE control or automatic rollback is added.
@@ -810,7 +812,7 @@ identities are placeholders, not a receipt from a running application:
 Source mode accepts an absolute normalized `.java` path and requires an explicit
 `ownerClassName` to produce a useful result. Without the owner it returns
 `unavailable` with `reasonCode:owner_required`. It observes `Compiled <basename>`
-followed by an exact-owner reload, excluding inner-class-only events. The agent
+followed by an exact-owner reload, excluding inner-class-only events. The Java agent
 does not include the full source path in that compile event. Visible ambiguous
 same-basename sequences fail closed; this does not detect every path collision.
 
@@ -824,7 +826,7 @@ reload. `hashSource:caller` distinguishes supplied bytes from `hashSource:receip
 
 | Field or result | Meaning |
 |---|---|
-| `correlationScope:received_events` | The cursor orders events received on this unbroken MCP subscription, not agent attempt starts |
+| `correlationScope:received_events` | The cursor orders events received on this unbroken MCP subscription, not Java agent attempt starts |
 | `sourcePathConfirmed:false` | The compile event cannot prove a full source path |
 | `editRevisionConfirmed:false` | A previous in-flight attempt can finish after checkpoint; the tool does not prove an arbitrary source revision was compiled |
 | `ready` | Checkpoint established; no reload is confirmed |
@@ -832,7 +834,7 @@ reload. `hashSource:caller` distinguishes supplied bytes from `hashSource:receip
 | `compile_error` | A new compiler-error block names that source basename and line; bounded diagnostic lines retained |
 | `refused` | Exact-owner hot-swap failure with a compatible failed byte receipt |
 | `restart_required` | The observed owner reports a superclass change that was not applied; independently salvageable bodies may have changed |
-| `held` | Agent-wide pause or BUILD hold observed; it does not prove this target was pending, and admitted work may finish |
+| `held` | Pause of the whole Java agent or BUILD hold observed; it does not prove this target was pending, and admitted work may finish |
 | `timeout` | No qualifying evidence within the total deadline; never success |
 | `unavailable` | Missing owner, lost/foreign cursor, changed session/target, malformed or contradictory receipt, or unavailable connection; inspect `reasonCode` |
 
@@ -840,12 +842,12 @@ Only `ready` and `applied` return `isError:false`. All outcomes carry the three
 correlation-limit fields above. `applied` proves a point-in-time completed byte
 receipt, not application behavior, source revision, atomic reload or retained
 bean state. Exercise the live endpoint/test afterward. Typed restart diagnosis
-currently recognizes the agent's superclass-change warning; unknown failures
+currently recognizes the Java agent's superclass-change warning; unknown failures
 cannot become success through an unverified receipt. This is not an exhaustive
 classifier for SAP Commerce resource operations.
 
 BUILD ok acknowledges scheduling. A subsequent await can still report `held`
-before the agent accepts the queued build output. Reuse the same checkpoint
+before the Java agent accepts the queued build output. Reuse the same checkpoint
 and recheck after the caller's successful BUILD sequence; await never sends
 BUILD, SCAN, pause, resume, compilation or restart commands.
 
@@ -888,7 +890,7 @@ including target and session checks, default `5000`, maximum `60000`.
 | `nextCursor` | Last inspected event, including excluded events; feed it into the next `sinceCursor` |
 | `snapshotHead` | Head captured together with this page's input history; later arrivals belong to subsequent queries |
 | `hasMore` | Uninspected events remain through that head; they may not match your filters |
-| `correlationScope:received_events` | Local receive order, not a durable agent history or attempt identifier |
+| `correlationScope:received_events` | Local receive order, not a durable Java agent history or attempt identifier |
 | `sourcePathConfirmed:false`, `editRevisionConfirmed:false` | No full source path or source revision attribution |
 | `reloadConfirmed:false` | Listing an event never validates an applied byte receipt or application behavior |
 
@@ -914,7 +916,7 @@ from the same checkpoint when inspecting both kinds of evidence:
 ```
 
 Each row carries `sequence`, `level`, `timestamp`, `message`, `messageTruncated`
-and a parsed `type`. The timestamp comes from the agent's broadcast; missing
+and a parsed `type`. The timestamp comes from the Java agent's broadcast; missing
 or invalid timestamps are explicit `null`. Sequence orders rows even when
 clock times repeat or move backwards. Messages retain at most 512 Java
 characters, with `messageTruncated:true` when clipped. Parsing uses the full
@@ -948,7 +950,7 @@ compilation or restart command is sent by event listing.
 ## Typed SAP Commerce operation observations
 
 `reclazz_events` and the event resource expose recognized SAP Commerce messages as
-`type:sap_operation` with a nested `sap` object. Each row is an **agent message,
+`type:sap_operation` with a nested `sap` object. Each row is a **Java agent message,
 not a request receipt**. Matching uses the complete received message and its
 level before display clipping. Unknown or malformed formats remain `unknown`.
 
@@ -966,7 +968,7 @@ carry no operation request ID, edit revision or inferred link to adjacent events
 | `backoffice_reset` | applied, disabled, error | applied |
 | `solr_reindex` | finished, finished_unverified, failed, skipped | finished, failed |
 
-The remaining outcomes have unit/fake-agent evidence only. Live acceptance used
+The remaining outcomes have unit and fake Java agent evidence only. Live acceptance used
 synthetic fixtures on a clean SAP Commerce installation: real ImpEx data checks,
 generated accessors and OCC responses, persisted schema/model checks, stored
 Solr document checks, and Backoffice configuration media changes. Profile
@@ -1005,10 +1007,10 @@ and the [parser contract tests](../mcp-server/src/test/java/com/onurkat/reclazz/
 
 `reclazz_scan` checks DOCTOR's additive `scanCompletionSupported` capability and
 waits on that same connection for its token/session-matched SCAN_RESULT. It
-returns queued only after file events were delivered to the agent callback.
+returns queued only after file events were delivered to the Java agent callback.
 Zero is a valid unchanged scan; coalesced requests share a pass count. This
 neither clears BUILD/pause holds nor proves compilation or reload success.
-Unsupported older agents, missing/malformed receipts, session changes, stopped
+Unsupported older Java agents, missing/malformed receipts, session changes, stopped
 watchers, disconnects and timeouts return unavailable; no retry or reconnect
 silently turns an unknown result into success. Older IDE/wire clients retain
-bare SCAN behavior. Use matching agent/MCP versions for completion receipts.
+bare SCAN behavior. Use matching Java agent and MCP versions for completion receipts.

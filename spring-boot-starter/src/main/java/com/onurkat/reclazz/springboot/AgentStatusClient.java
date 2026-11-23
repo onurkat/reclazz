@@ -51,7 +51,7 @@ final class AgentStatusClient {
         if (port == null) {
             Path portFile = locatePortFile(properties);
             if (portFile == null) {
-                status.reason = "no agent port file found";
+                status.reason = "no Java agent port file found";
                 return status;
             }
             try {
@@ -106,11 +106,11 @@ final class AgentStatusClient {
                 }
             }
             if (!status.reachable) {
-                status.reason = "connected but no CONNECTED line from the agent";
+                status.reason = "connected but no CONNECTED line from the Java agent";
             }
             return status;
         } catch (IOException e) {
-            status.reason = "cannot reach the agent on 127.0.0.1:" + port;
+            status.reason = "cannot reach the Java agent on 127.0.0.1:" + port;
             return status;
         }
     }

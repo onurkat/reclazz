@@ -1,6 +1,6 @@
-# For AI agents
+# For AI assistants
 
-This page is for a coding agent (Claude Code, Cursor, Copilot, Windsurf, Aider
+This page is for an AI assistant (Claude Code, Cursor, Copilot, Windsurf, Aider
 and the like) working on a Spring Boot or SAP Commerce project. It tells you how
 to run that project with Reclazz so your code edits take effect in the running
 JVM without a restart, and how to confirm that they did.
@@ -14,11 +14,11 @@ See [reload support](reload-support.md) and the
 [SAP Commerce scenarios tested live](sap-commerce-live-tests.md) for the proven scope.
 It is free, open source, sends no telemetry, and needs no
 IDE: everything below is a shell command or a build-file edit, the two things
-an agent already does.
+an AI assistant already does.
 
 ## Turn it on
 
-Pick the build you are in. Each path attaches the agent to the dev run and the
+Pick the build you are in. Each path attaches the Java agent to the dev run and the
 test JVM, so a plain `bootRun` / `mvn test` runs against reloaded classes.
 
 ### Gradle (plugin)
@@ -37,20 +37,20 @@ options: [gradle-plugin.md](gradle-plugin.md).
 
 ### Maven
 
-No plugin is needed. Let the dependency plugin resolve the agent into a property
+No plugin is needed. Let the dependency plugin resolve the Java agent into a property
 and reference it from Surefire and `spring-boot:run`; a `prepare-agent` plugin
 is available too. Both are in [maven.md](maven.md).
 
 ### Any JVM (works everywhere today)
 
-The agent is on Maven Central as `com.onurkat.reclazz:reclazz-agent`. Resolve or
+The Java agent is on Maven Central as `com.onurkat.reclazz:reclazz-agent`. Resolve or
 download the jar, then attach it at startup:
 
 ```bash
 java -javaagent:/path/to/reclazz-agent.jar=platform=spring,watchDirs=build/classes/java/main -jar app.jar
 ```
 
-The flag must be present when the JVM starts; the agent only reloads classes it
+The flag must be present when the JVM starts; the Java agent only reloads classes it
 transformed at load time. Every argument is in [usage.md](usage.md).
 
 ## Confirm it attached and verify a reload
@@ -105,7 +105,7 @@ MCP build sequence](mcp-server.md#protecting-terminal-builds) with matching jars
 that support build receipts. Plain compile commands do not provide that barrier.
 
 The basic loop: edit code, recompile (`./gradlew classes` or `mvn
-compile`), let the agent swap it, then hit the endpoint or run the test. If a
+compile`), let the Java agent swap it, then hit the endpoint or run the test. If a
 change did not take, call `reclazz_diagnose` with `className` and the same explicit
 `portFile`, or inspect the logs. `reclazz_pending` lists what genuinely needs a restart (a changed superclass, a
 reordered enum). Restart only for those.
@@ -113,17 +113,17 @@ reordered enum). Restart only for those.
 ## Drop-in AGENTS.md recipe
 
 Paste this into the target project's `AGENTS.md` (or `CLAUDE.md`, `.cursorrules`,
-whatever your setup reads) so the agent that works on that project keeps using
+whatever your setup reads) so the AI assistant that works on that project keeps using
 the hot-reload loop instead of restarting on every change. Adjust the build
 commands to the project.
 
 ```markdown
 ## Hot reload with Reclazz
 
-This project runs with the Reclazz agent attached, so a running app picks up
+This project runs with the Reclazz Java agent attached, so a running app picks up
 compiled changes without a restart. Prefer this loop over restarting.
 
-Run the app (agent attaches automatically):
+Run the app (the Java agent attaches automatically):
     ./gradlew bootRun          # Gradle, Reclazz plugin applied
     # or: mvn spring-boot:run  # Maven, see the project's POM
 
@@ -132,13 +132,13 @@ Apply a code change while it runs:
 2. Recompile with the configured Reclazz build wrapper around `./gradlew classes`
    or `mvn compile`. If using MCP, require acknowledged `reclazz_build started`
    before compilation, then send `ok` only on exit zero or `failed` otherwise.
-   This requires an agent with build receipt support; stop if unconfirmed.
-3. The agent hot-swaps the changed classes in place. Do not restart.
+   This requires a Java agent with build receipt support; stop if unconfirmed.
+3. The Java agent hot-swaps the changed classes in place. Do not restart.
 4. Verify each changed compiled class with `reclazz_verify`, passing className,
-   its compiled file's lower-case SHA-256 as sha256, and the same agent address.
+   its compiled file's lower-case SHA-256 as sha256, and the same Java agent address.
    Require status applied, matching hashes and the same sessionId. Poll with a
    bounded deadline; any other status is not proof of success. This requires
-   matching agent/MCP jars with VERIFY support. Then exercise the endpoint or
+   matching Java agent and MCP jars with VERIFY support. Then exercise the endpoint or
    run the test. An attached status or rising reload count alone proves no edit.
 
 Restart only when Reclazz reports the change as pending (for example a changed
@@ -148,14 +148,14 @@ an edit applied. Require the exact-byte receipt and the behavior check above;
 consult the documented reload support and tested SAP scenarios for scope.
 ```
 
-## Why an agent can rely on this
+## Why an AI assistant can rely on this
 
 - Zero config: the flag alone works, no config file required.
 - No telemetry, open source: nothing phones home, so a safety layer around the
-  agent has nothing to block.
+  Java agent or the AI assistant has nothing to block.
 - Loopback only: MCP connects to the status socket on `127.0.0.1` and reaches
   nothing off the machine. Await retains bounded subscriptions to selected
-  local targets. The shipped agent jar opens no
+  local targets. The shipped Java agent jar opens no
   client socket at all; its own tests enforce that.
 
 ## Reproducing the packaged consumer workflow
@@ -166,10 +166,10 @@ From a Reclazz source checkout with a JDK 17+ toolchain, run:
 ./gradlew :mcp-server:test --rerun --tests '*AgenticEndToEndTest'
 ```
 
-This test builds the current agent and MCP distribution, then creates a clean
+This test builds the current Java agent and MCP distribution, then creates a clean
 standalone Java consumer project in a temporary directory. It copies both jars
 to an installation path containing spaces, compiles with the real JDK `javac`,
-and attaches the agent at application startup. A separate `java -jar` MCP
+and attaches the Java agent at application startup. A separate `java -jar` MCP
 process receives actual JSON-RPC stdio requests throughout the scenario.
 
 The proof covers:
@@ -181,7 +181,7 @@ The proof covers:
   output cannot change the running application during or after that failed build.
 - A complete repaired build releasing the hold, with matching hash evidence and
   changed live behavior. A stale hash returns `mismatch`.
-- The same application PID, startup identity, agent session and increasing
+- The same application PID, startup identity, Java agent session and increasing
   counter on the existing service object across edits and recovery.
 
 The test uses only local artifacts and JDK tools, without a running IDE or

@@ -1,7 +1,7 @@
 # Reclazz with Maven
 
 For a Spring Boot development run, start with the opt-in profile below. It uses
-`prepare-agent` to resolve the agent on the plugin's own classpath; the agent is
+`prepare-agent` to resolve the Java agent on the plugin's own classpath; it is
 not an application dependency. The longer dependency-plugin alternative remains
 below. Return to [installation](installation.md) for other launch methods.
 
@@ -65,7 +65,7 @@ The explicit `reclazz:prepare-agent` goal supplies `reclazz.agentArgs` before
 Boot's run goal; `watchDirs` defaults to `${project.build.outputDirectory}`.
 Do not omit that first goal: setting the property only inside Boot's forked
 `initialize` lifecycle did not propagate it to `run` in the tested Maven/Boot
-combination. The profile has no lifecycle execution, so the agent is prepared
+combination. The profile has no lifecycle execution, so the Java agent is prepared
 once. Boot consumes that property plus `app.jvmArgs` in its application JVM.
 The profile is inactive without `-Preclazz-dev`, and it does not add Reclazz to
 the packaged application. Existing Surefire/Jacoco `argLine` wiring is untouched;
@@ -90,16 +90,16 @@ mvn -f maven-plugin/pom.xml install
 
 On Windows use `gradlew.bat`. Both commands install locally; neither publishes
 remotely. Then run the example with `reclazz.version` matching `pluginVersion`
-in `gradle.properties`. The agent must be installed before the Maven plugin can
+in `gradle.properties`. The Java agent must be installed before the Maven plugin can
 resolve its runtime dependency. If using an alternate Maven local repository,
 both artifact installations and the consumer must use that same repository.
 
 ## Without the plugin (works today)
 
-Let the dependency plugin resolve the agent jar into a property, then reference
+Let the dependency plugin resolve the Java agent jar into a property, then reference
 that property from Surefire and from `spring-boot:run`. Keep the `app.jvmArgs`
 property from the minimal example (or set it empty). Merge with your existing
-Surefire arguments rather than replacing another agent's configuration. Unlike
+Surefire arguments rather than replacing another Java agent's configuration. Unlike
 the dev profile, this older alternative attaches to tests as well.
 
 ```xml
@@ -154,9 +154,9 @@ the dev profile, this older alternative attaches to tests as well.
 
 The `provided` scope is enough for the dependency plugin to resolve the jar and
 expose `${com.onurkat.reclazz:reclazz-agent:jar}`. The explicit Boot exclusion
-keeps the agent out of a Boot-repackaged application; `provided` alone is not
+keeps the Java agent out of a Boot-repackaged application; `provided` alone is not
 that guarantee ([Boot packaging rules](https://docs.spring.io/spring-boot/3.3/maven-plugin/packaging.html)).
-This alternative resolves the agent as a project dependency,
+This alternative resolves the Java agent as a project dependency,
 whereas the recommended dev profile keeps it on the Reclazz plugin classpath.
 
 Resolve the property in the outer lifecycle before Boot forks its lifecycle:
@@ -171,7 +171,7 @@ Using only `mvn spring-boot:run` is not the tested setup. Recompile with
 ## With the Reclazz Maven plugin
 
 The plugin removes the hardcoded property name: its `prepare-agent` goal finds
-the agent on its own classpath and sets `argLine` (which Surefire reads) to the
+the Java agent on its own classpath and sets `argLine` (which Surefire reads) to the
 `-javaagent` flag.
 
 ```xml
@@ -192,14 +192,14 @@ the agent on its own classpath and sets `argLine` (which Surefire reads) to the
 ```
 
 `prepare-agent` binds to the `initialize` phase, so `mvn test` picks up the
-agent through `argLine`. For `spring-boot:run`, use the explicit-goal development
+Java agent through `argLine`. For `spring-boot:run`, use the explicit-goal development
 profile above instead of relying on initialization inside Boot's forked lifecycle.
-Configure the platform and any agent argument through the plugin's
+Configure the platform and any Java agent argument through the plugin's
 `<configuration>` (`platform`, `watchDirs`, `agentArgs`).
 
 Repeated `prepare-agent` calls reuse one identical Reclazz argument already in
 the selected property (`argLine` by default, or `propertyName`). Quote syntax is
-decoded for comparison; the existing property text, other agents and JVM options
+decoded for comparison; the existing property text, other Java agents and JVM options
 are preserved. A different jar path/version/options, multiple Reclazz flags or
 unbalanced quotes fail the goal without overwriting the property. Remove the
 manual Reclazz flag and let the goal supply it, or align its jar path and options
@@ -216,7 +216,7 @@ The plugin coordinate is `com.onurkat.reclazz:reclazz-maven-plugin`; select a
 published version or use the local-build instructions above. Its sources are in
 `maven-plugin/`; this repository builds with Gradle, so the Maven plugin is built
 with Maven separately (`cd maven-plugin && mvn install`) and published on its
-own. The no-plugin wiring above needs the agent artifact but not the Reclazz Maven plugin.
+own. The no-plugin wiring above needs the Java agent artifact but not the Reclazz Maven plugin.
 
 ## Opt-in whole-reactor safety
 
@@ -267,12 +267,12 @@ is a local standalone artifact, not a new Maven plugin runtime dependency.
 The wrapper waits for an owned `started` acknowledgement before launching Maven,
 and for `ok` only after the **entire selected reactor** exits zero. Any compiler
 failure, including a later module failing after an earlier module wrote classes,
-keeps the hold. Ownership rejection, offline agent or missing acknowledgement
+keeps the hold. Ownership rejection, offline Java agent or missing acknowledgement
 fails the goal. Retain the owner printed by the wrapper and rerun the complete
 repaired build with that same owner; never share it across concurrent builders.
 Use `VERIFY`/`reclazz_verify_batch` afterwards: build success is not reload proof.
 
-Only synchronous child build outputs on the selected agent are covered. Outer
+Only synchronous child build outputs on the selected Java agent are covered. Outer
 configuration/extensions, external writers, unselected reactor modules and
 asynchronous child work are not covered. There is no rollback or atomicity claim.
 The API target is Maven 3.9.9; the real reactor acceptance is run with the installed

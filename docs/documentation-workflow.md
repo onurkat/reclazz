@@ -17,14 +17,14 @@ project introduction, with links to the site and this source index.
 Every top-level `docs/*.md` file is listed in [the source index](index.md) and
 rendered in the website’s reference library. The 13 task-oriented guides introduce
 those references; they are maintained in the same source tree, not in a separate
-website checkout. Agent options are extracted from `docs/usage.md`, not copied
+website checkout. Java agent options are extracted from `docs/usage.md`, not copied
 into a separately authored JSON table. The interactive matrix and downloadable JSON are derived from `docs/reload-support.md`. Support records must retain their source
 and condition, with missing evidence clearly distinguished from known refusal.
 
 ## Build and preview
 
 Use Python 3.9+ in an isolated environment. The pinned dependencies are documentation
-build tools only; they do not enter the agent, IDE plugin or Maven/Gradle artifacts.
+build tools only; they do not enter the Java agent, IDE plugin or Maven/Gradle artifacts.
 
 ```sh
 python3 -m venv .venv-docs
@@ -87,7 +87,7 @@ Keep examples synthetic and remove private names, credentials and customer paths
 - Installation actions and runnable setup snippets: `docs/installation.md` and `docs/maven.md`.
   Quickstart uses `{{INCLUDE docs/file.md#heading}}` to render the canonical section;
   do not paste its commands into an HTML fragment. Missing sections fail the build.
-- Agent arguments/defaults: `docs/usage.md`. The product reference links here and
+- Java agent arguments/defaults: `docs/usage.md`. The product reference links here and
   the options page is generated from this table.
 - Support outcomes/conditions/actions: `docs/reload-support.md`. Keep linked technical
   scope precise; these are bounded editorial summaries, not automatic certification

@@ -94,7 +94,7 @@ object JvmAttacher {
 
     fun attach(pid: String, project: Project): AttachResult {
         val agentJar = AgentJarLocator.findAgentJar()
-            ?: return AttachResult.Error("Agent JAR not found. Is the Reclazz plugin installed correctly?")
+            ?: return AttachResult.Error("Java agent JAR not found. Is the Reclazz plugin installed correctly?")
 
         val settings = ReclazzSettings.getInstance(project).state
         val agentArgs = buildAttachArgs(project, settings)
@@ -142,13 +142,13 @@ object JvmAttacher {
                 // to put it, which depends on how their server starts.
                 message.contains("Dynamic agent loading is not enabled", ignoreCase = true) ->
                     AttachResult.Error(
-                        "PID $pid was started with dynamic agent loading disabled, so no agent " +
+                        "PID $pid was started with dynamic agent loading disabled, so no Java agent " +
                         "can be attached to it while it runs. Add -XX:+EnableDynamicAgentLoading " +
                         "to how that JVM starts and restart it: on SAP Commerce that is " +
                         "tomcat.javaoptions in config/dev/props/95-local.properties, which is " +
-                        "the file Reclazz already writes its agent line into; on Spring Boot it " +
+                        "the file Reclazz already writes its Java agent line into; on Spring Boot it " +
                         "is the VM options of the run configuration. Starting the server with " +
-                        "the agent already on the command line needs none of this.",
+                        "the Java agent already on the command line needs none of this.",
                         e
                     )
 
@@ -161,7 +161,7 @@ object JvmAttacher {
         if (settings.reloadBoundary == "request") {
             com.onurkat.reclazz.plugin.reload.ReloadManager.getInstance(project).postLocalMessage(
                 "WARN", "Request-boundary reload requires -javaagent at JVM startup. " +
-                    "Dynamic attach uses immediate reload; restart with the agent to use request mode."
+                    "Dynamic attach uses immediate reload; restart with the Java agent to use request mode."
             )
         }
         // The resetStatics default is for launches started by the IDE; an attach target (maybe SAP Commerce, maybe

@@ -35,7 +35,7 @@ final class McpResources {
         if (templates) rows.add(description("events", "uriTemplate", TEMPLATE,
                 "Received event pages from an existing await_reload checkpoint on the startup target. since required; limit 1-100, default 50. Observations are not reload proof."));
         else {
-            rows.add(description("status", "uri", "reclazz://status", "Agent attachment and health on the startup target."));
+            rows.add(description("status", "uri", "reclazz://status", "Java agent attachment and health on the startup target."));
             rows.add(description("pending", "uri", "reclazz://pending", "Restart diagnostics on the startup target; complete remains false."));
         }
         JsonObject result = new JsonObject(); result.add(templates ? "resourceTemplates" : "resources", rows); return result;

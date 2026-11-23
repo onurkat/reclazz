@@ -608,7 +608,7 @@
           "text": "No telemetry; local development tools",
           "verdict": "yes",
           "source": {
-            "doc": "docs/for-ai-agents.md#for-ai-agents"
+            "doc": "docs/for-ai-agents.md#for-ai-assistants"
           }
         },
         "jrebel": {

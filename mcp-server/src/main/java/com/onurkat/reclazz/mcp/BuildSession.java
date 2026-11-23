@@ -63,16 +63,16 @@ final class BuildSession implements AutoCloseable {
                 if (level == null || !level.isJsonPrimitive() || !level.getAsJsonPrimitive().isString() || !"CONNECTED".equals(level.getAsString())
                         || agent == null || !agent.isJsonPrimitive() || !agent.getAsJsonPrimitive().isString() || agent.getAsString().isBlank()
                         || version == null || !version.isJsonPrimitive() || !version.getAsJsonPrimitive().isNumber() || !"1".equals(version.getAsString()))
-                    throw new IOException("No valid agent handshake");
+                    throw new IOException("No valid Java agent handshake");
             } catch (IOException | RuntimeException invalid) {
-                throw new IOException("Invalid agent handshake", invalid);
+                throw new IOException("Invalid Java agent handshake", invalid);
             }
             McpTarget.verifyProject(opts, socket, session.in, until == 0 ? session.deadline() : until);
             return session;
         } catch (IOException | RuntimeException e) {
             socket.close();
             if (cancellation != null) cancellation.detach(socket);
-            throw new IOException("Cannot open build session: " + (e instanceof java.net.ConnectException ? "cannot reach the agent on 127.0.0.1:" + address.port : e.getMessage()), e);
+            throw new IOException("Cannot open build session: " + (e instanceof java.net.ConnectException ? "cannot reach the Java agent on 127.0.0.1:" + address.port : e.getMessage()), e);
         }
     }
 
@@ -149,7 +149,7 @@ final class BuildSession implements AutoCloseable {
         if (!"observed".equals(text(evidence, "status"))
                 || !evidence.has("scanCompletionSupported") || !evidence.get("scanCompletionSupported").getAsBoolean()
                 || text(evidence, "sessionId").isBlank())
-            throw new IOException("Agent does not advertise SCAN completion support; use a matching agent");
+            throw new IOException("The Java agent does not advertise SCAN completion support; use a matching version");
         String session = text(evidence, "sessionId");
         String token = UUID.randomUUID().toString();
         socket.getOutputStream().write(("SCAN request=" + token + "\n").getBytes(StandardCharsets.UTF_8));
@@ -198,7 +198,7 @@ final class BuildSession implements AutoCloseable {
                 return DoctorResult.parse(message.substring(prefix.length()), token);
             }
         } catch (IOException | RuntimeException e) {
-            throw new IOException("Doctor evidence unavailable: no valid correlated response; check the endpoint and matching agent version", e);
+            throw new IOException("Doctor evidence unavailable: no valid correlated response; check the endpoint and matching Java agent version", e);
         }
     }
 
@@ -269,21 +269,21 @@ final class BuildSession implements AutoCloseable {
         StringBuilder line = new StringBuilder();
         while (line.length() < 16384) {
             long remaining = deadline - System.nanoTime();
-            if (remaining <= 0) throw new IOException("Agent acknowledgement timed out");
+            if (remaining <= 0) throw new IOException("Java agent acknowledgement timed out");
             socket.setSoTimeout((int) Math.max(1, TimeUnit.NANOSECONDS.toMillis(remaining)));
             int c = in.read();
-            if (c < 0) throw new IOException("Agent disconnected");
+            if (c < 0) throw new IOException("Java agent disconnected");
             if (c == '\n') {
                 try {
                     JsonObject result = STRICT_JSON.fromJson(line.toString(), JsonObject.class);
-                    if (result == null) throw new IOException("Invalid agent response");
+                    if (result == null) throw new IOException("Invalid Java agent response");
                     return result;
                 }
-                catch (RuntimeException e) { throw new IOException("Invalid agent response", e); }
+                catch (RuntimeException e) { throw new IOException("Invalid Java agent response", e); }
             }
             line.append((char) c);
         }
-        throw new IOException("Agent response exceeds size limit");
+        throw new IOException("Java agent response exceeds size limit");
     }
 
     private static String text(JsonObject object, String key) {

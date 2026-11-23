@@ -1,13 +1,13 @@
-# MCP for coding agents: close the loop
+# MCP for AI assistants: close the loop
 
-Your coding agent can edit a Java service and finish a build. Reclazz's MCP
+Your AI assistant can edit a Java service and finish a build. Reclazz's MCP
 tools help it answer the next questions: Which JVM is running? Were the changed
 bytes applied? Is something held or waiting for a restart? What should it check
 before telling you the change works?
 
-Keep the application running while the agent gathers that evidence. The bridge
+Keep the application running while the AI assistant gathers that evidence. The bridge
 exposes eleven tools, read-only resources and a verification prompt through
-stdio, backed by the attached Reclazz agent's local status socket. Use the
+stdio, backed by the attached Reclazz Java agent's local status socket. Use the
 [MCP reference](mcp-server.md) for installation, full schemas and target selection. This page explains the developer benefits.
 
 Examples below come from recorded local acceptance through **10 November 2026**.
@@ -19,7 +19,7 @@ with evidence from your own run. Rendering this page does not rerun acceptance.
 
 ## Find the right running application
 
-An agent can compile successfully while talking to the wrong server. Start with
+An AI assistant can compile successfully while talking to the wrong server. Start with
 `reclazz_status` for attachment and health, then `reclazz_doctor` for JVM identity,
 session, launch directory, capabilities and watcher evidence.
 
@@ -54,7 +54,7 @@ repository-root assertion. See [target checks](mcp-server.md#target-selection-an
 
 ## Replace a guessed wait with a bounded result
 
-After saving, an agent needs more than a delay or an increasing reload counter.
+After saving, an AI assistant needs more than a delay or an increasing reload counter.
 `reclazz_await_reload` creates a checkpoint before the edit, then waits for
 qualifying received events and an exact-owner byte receipt.
 
@@ -90,7 +90,7 @@ Recorded result excerpt:
 ```
 
 Recorded acceptance also exercised `compile_error`, `refused`,
-`restart_required` and `held`, so an agent can branch on a failed compile,
+`restart_required` and `held`, so an AI assistant can branch on a failed compile,
 refusal, hierarchy limit or blocked admission. `timeout` and `unavailable`
 remain explicit outcomes, never success by silence.
 
@@ -138,7 +138,7 @@ See [exact-byte verification](mcp-server.md#verifying-the-compiled-change).
 
 ## Inspect several edits without reading a log by eye
 
-When an agent edits several files, `reclazz_events` gives it bounded, ordered
+When an AI assistant edits several files, `reclazz_events` gives it bounded, ordered
 pages from a checkpoint. Filter by level, exact owner or file basename to
 inspect the relevant observations.
 
@@ -263,7 +263,9 @@ verification and changed behavior in the same application JVM.
 admitted work. Resume does not unlock a failed BUILD hold. See
 [pause and resume](mcp-server.md#pause-and-resume-automatic-reload).
 
-## Give the agent a concrete next diagnostic
+<a id="give-the-agent-a-concrete-next-diagnostic"></a>
+
+## Give the AI assistant a concrete next diagnostic
 
 An unchanged response should lead to an investigation, not another optimistic
 completion message. `reclazz_pending` exposes the restart ledger and admission
@@ -292,7 +294,7 @@ Recorded result excerpt, selecting the actionable diagnostic line:
 }
 ```
 
-That result directs the agent back to compiler output rather than a server
+That result directs the AI assistant back to compiler output rather than a server
 restart. A pending restart requirement calls for its specific recovery instead.
 
 **Limit:** Pending/diagnose use a legacy broadcast diagnostic stream with no
@@ -302,7 +304,7 @@ not a guaranteed complete or exclusively request-owned response. See
 
 ## Use the same evidence loop for Spring Boot and SAP Commerce
 
-The tools speak to the running Reclazz agent, so the workflow does not depend
+The tools speak to the running Reclazz Java agent, so the workflow does not depend
 on an IDE. Recorded acceptance used both a Spring Boot sample and a clean,
 licensed SAP Commerce 2211 installation with synthetic fixtures.
 
@@ -322,11 +324,11 @@ receipt API. See [live SAP Commerce scope](sap-commerce-live-tests.md) and
 
 ## Read SAP Commerce operation outcomes with their limits
 
-A coding agent investigating a resource edit can read a stable operation and
+An AI assistant investigating a resource edit can read a stable operation and
 outcome instead of interpreting every log sentence. Event pages and the event
 resource classify recognized ImpEx, codegen, items schema, Backoffice reset
 and Solr messages. Java await also includes a bounded list of recent SAP Commerce
-observations, so the agent can see related activity while checking Java bytes.
+observations, so the AI assistant can see related activity while checking Java bytes.
 
 This selected field projection comes from a recorded live ImpEx event:
 
@@ -344,7 +346,7 @@ This selected field projection comes from a recorded live ImpEx event:
 }
 ```
 
-It is an **agent message, not a request receipt**. The row does not identify
+It is a **Java agent message, not a request receipt**. The row does not identify
 which edit caused it or confirm application behavior. Follow it with a native
 data or endpoint check. In particular, codegen `generated` precedes the need
 to verify applied classes, and Solr completion still carries
@@ -354,7 +356,7 @@ Recorded live acceptance observed ImpEx applied/refused/skipped, codegen
 generated, items schema applied, Backoffice reset applied, and Solr
 finished/failed. Native data, generated classes/OCC, schema, stored documents
 and configuration media supplied separate behavioral checks. Other recognized
-outcomes have unit/fake-agent coverage only. Backoffice media checks do not
+outcomes have unit and fake Java agent coverage only. Backoffice media checks do not
 establish browser rendering or widget/socket behavior.
 
 **Limit:** SAP Commerce observations cannot turn a Java await into success. Await keeps
@@ -435,7 +437,7 @@ Clients can also retrieve `verify_my_last_change` through `prompts/get`:
 
 The prompt guides doctor -> checkpoint before a new edit -> real BUILD signals
 for external compilation -> await reload -> verify the bytes -> check the
-application. It explains already-saved edits and tells the agent never to send
+application. It explains already-saved edits and tells the AI assistant never to send
 BUILD `ok` merely to clear a hold. Fetching the prompt executes none of those
 steps and grants no permission to perform them.
 
@@ -451,14 +453,14 @@ and exact client coverage.
 ## Keep the Reclazz bridge local
 
 The transport is `coding client ↔ stdio MCP server ↔ 127.0.0.1 status socket`.
-The MCP server has no hosted endpoint or telemetry; the agent opens its status
+The MCP server has no hosted endpoint or telemetry; the Java agent opens its status
 server on loopback and does not dial out. The bridge does not require a cloud
 account to contact the application.
 
-For example, the local status request above returned the agent's attachment
+For example, the local status request above returned the Java agent's attachment
 and health. It did not need to upload source to a Reclazz service. The
-[agent network guard](../agent/src/test/java/com/onurkat/reclazz/EverythingStaysOnThisMachineTest.java)
-checks built agent calls, while the bridge's
+[Java agent network guard](../agent/src/test/java/com/onurkat/reclazz/EverythingStaysOnThisMachineTest.java)
+checks the built Java agent's calls, while the bridge's
 [socket client](../mcp-server/src/main/java/com/onurkat/reclazz/mcp/AgentSocket.java)
 explicitly selects loopback.
 
@@ -470,7 +472,7 @@ effects; inspect their conservative hints and require appropriate permissions.
 
 ## Follow the proof, then check your application
 
-The documented behavior is present in matching locally built agent/MCP 1.5.0.
+The documented behavior is present in matching locally built Java agent and MCP 1.5.0.
 Source presence does not establish that an older published release contains it;
 follow the [matching-build instructions](mcp-server.md#build-and-install-locally).
 
