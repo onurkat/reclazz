@@ -33,7 +33,12 @@ class ReclazzSettings : PersistentStateComponent<ReclazzSettings.State> {
         var impexAllowRemove: Boolean = false,
         var reloadBoundary: String = "immediate",
         var structuralReload: Boolean = true,
-        var resetStatics: Boolean = false,
+        /**
+         * Null until the user chooses. Unset means on for IDE launches of ordinary projects and off for SAP Commerce
+         * projects, which stay opt-in until a live SAP Commerce boot with it on is recorded (owner decision 2026-11-22).
+         * See [effectiveResetStatics].
+         */
+        var resetStatics: Boolean? = null,
         var excludeClasses: String = "",
         var watchExtensions: String = "",
         var excludePatterns: String = "",
@@ -63,5 +68,8 @@ class ReclazzSettings : PersistentStateComponent<ReclazzSettings.State> {
     companion object {
         fun getInstance(project: Project): ReclazzSettings =
             project.getService(ReclazzSettings::class.java)
+
+        /** The value Reclazz uses: the user's choice, else on outside SAP Commerce projects. */
+        fun effectiveResetStatics(state: State, sapCommerce: Boolean): Boolean = state.resetStatics ?: !sapCommerce
     }
 }

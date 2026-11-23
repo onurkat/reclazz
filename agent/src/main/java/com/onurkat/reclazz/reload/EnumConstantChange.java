@@ -94,7 +94,7 @@ public final class EnumConstantChange {
         }
         if (declared.isEmpty()) return null;
 
-        List<String> loadedConstants = liveConstants(loaded);
+        List<String> loadedConstants = logicalConstants(loaded);
         if (loadedConstants == null) return null;
 
         List<String> added = new ArrayList<>(declared);
@@ -127,7 +127,7 @@ public final class EnumConstantChange {
     public static boolean isAppendOnly(Class<?> loaded, byte[] newBytecode) {
         if (loaded == null || newBytecode == null || !loaded.isEnum()) return false;
 
-        List<String> before = liveConstants(loaded);
+        List<String> before = logicalConstants(loaded);
         if (before == null) return false;
         List<String> after;
         try {
@@ -139,10 +139,38 @@ public final class EnumConstantChange {
         return after.subList(0, before.size()).equals(before);
     }
 
+    /**
+     * Whether this change only inserts constants, at least one of them before an existing one, without
+     * removing or reordering any existing constant. Such an insert is applied as an append: the existing
+     * constants keep their ordinals, so EnumMap/EnumSet and switch tables stay right, and the new constant
+     * takes the next free ordinal until a restart gives it its source position.
+     */
+    public static boolean isInsertOnly(Class<?> loaded, byte[] newBytecode) {
+        if (loaded == null || newBytecode == null || !loaded.isEnum()) return false;
+        List<String> before = logicalConstants(loaded);
+        if (before == null) return false;
+        List<String> after;
+        try { after = new ArrayList<>(constantsIn(newBytecode)); } catch (RuntimeException e) { return false; }
+        if (after.size() <= before.size() || after.subList(0, before.size()).equals(before)) return false;
+        List<String> kept = new ArrayList<>(after);
+        kept.removeIf(name -> !before.contains(name));
+        return kept.equals(before);
+    }
+
+    /** The inserted constants in source order, with the ordinal each one will have after a restart. */
+    public static java.util.LinkedHashMap<String, Integer> insertedNames(Class<?> loaded, byte[] newBytecode) {
+        var result = new java.util.LinkedHashMap<String, Integer>();
+        if (!isInsertOnly(loaded, newBytecode)) return result;
+        List<String> before = logicalConstants(loaded);
+        List<String> after = new ArrayList<>(constantsIn(newBytecode));
+        for (int i = 0; i < after.size(); i++) if (!before.contains(after.get(i))) result.put(after.get(i), i);
+        return result;
+    }
+
     /** The constants this version adds on the end, in order. */
     public static List<String> appendedNames(Class<?> loaded, byte[] newBytecode) {
         if (!isAppendOnly(loaded, newBytecode)) return List.of();
-        int existing = liveConstants(loaded).size();
+        int existing = logicalConstants(loaded).size();
         List<String> after = new ArrayList<>(constantsIn(newBytecode));
         return after.subList(existing, after.size());
     }
@@ -161,7 +189,7 @@ public final class EnumConstantChange {
     public static boolean isTailRemovalOnly(Class<?> loaded, byte[] newBytecode) {
         if (loaded == null || newBytecode == null || !loaded.isEnum()) return false;
 
-        List<String> before = liveConstants(loaded);
+        List<String> before = logicalConstants(loaded);
         if (before == null) return false;
         List<String> after;
         try {
@@ -170,15 +198,19 @@ public final class EnumConstantChange {
             return false;
         }
         if (after.isEmpty() || after.size() >= before.size()) return false;
-        return before.subList(0, after.size()).equals(after);
+        if (!before.subList(0, after.size()).equals(after)) return false;
+        // The surgery shrinks the physical end; after an insert the logical tail may sit elsewhere physically.
+        List<String> physical = liveConstants(loaded);
+        return new java.util.HashSet<>(physical.subList(after.size(), physical.size()))
+                .equals(new java.util.HashSet<>(before.subList(after.size(), before.size())));
     }
 
     /** The constants this version drops from the end, in declaration order. */
     public static List<String> removedTailNames(Class<?> loaded, byte[] newBytecode) {
         if (!isTailRemovalOnly(loaded, newBytecode)) return List.of();
-        List<String> before = liveConstants(loaded);
+        List<String> physical = liveConstants(loaded);
         int surviving = constantsIn(newBytecode).size();
-        return new ArrayList<>(before.subList(surviving, before.size()));
+        return new ArrayList<>(physical.subList(surviving, physical.size()));
     }
 
     /** The success report for a tail removal, with its honest edges. */
@@ -271,6 +303,29 @@ public final class EnumConstantChange {
      * already includes what was appended, so asking it is what makes this
      * idempotent.
      */
+    /**
+     * The source order last accepted for each reloaded enum. An insert is applied after the existing constants, so the
+     * physical order (ordinals) and the source order differ until a restart; later saves are compared with the source
+     * order, or a body-only save of the accepted source would look like a reorder (audit F1).
+     */
+    private static final ClassValue<java.util.concurrent.atomic.AtomicReference<List<String>>> ACCEPTED = new ClassValue<>() {
+        @Override protected java.util.concurrent.atomic.AtomicReference<List<String>> computeValue(Class<?> type) { return new java.util.concurrent.atomic.AtomicReference<>(); }
+    };
+
+    /** Records the source order of a save whose constant change was applied. */
+    public static void accepted(Class<?> loaded, byte[] newBytecode) {
+        try { ACCEPTED.get(loaded).set(List.copyOf(constantsIn(newBytecode))); } catch (RuntimeException unreadable) { ACCEPTED.get(loaded).set(null); }
+    }
+
+    /** Source order of the running enum: the last accepted one while it names exactly the live constants, else physical. */
+    private static List<String> logicalConstants(Class<?> enumClass) {
+        List<String> physical = liveConstants(enumClass);
+        if (physical == null) return null;
+        List<String> accepted = ACCEPTED.get(enumClass).get();
+        return accepted != null && accepted.size() == physical.size() && new java.util.HashSet<>(accepted).equals(new java.util.HashSet<>(physical))
+                ? accepted : physical;
+    }
+
     private static List<String> liveConstants(Class<?> enumClass) {
         try {
             Object[] constants = enumClass.getEnumConstants();

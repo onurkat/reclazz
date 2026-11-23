@@ -164,7 +164,9 @@ object JvmAttacher {
                     "Dynamic attach uses immediate reload; restart with the agent to use request mode."
             )
         }
-        return AgentJarLocator.buildAgentArgs(project, settings.copy(reloadBoundary = "immediate"))
+        // The resetStatics default is for launches started by the IDE; an attach target (maybe SAP Commerce, maybe
+        // unknown) keeps it off unless the user chose it explicitly (R31b audit F2).
+        return AgentJarLocator.buildAgentArgs(project, settings.copy(reloadBoundary = "immediate", resetStatics = settings.resetStatics ?: false))
     }
 
     private fun isKnownDisplayName(displayName: String): Boolean {

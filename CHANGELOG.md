@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed
+
+- The IntelliJ plugin now enables `resetStatics` by default for ordinary projects;
+  SAP Commerce projects and hand-written `-javaagent` lines keep it off, and an
+  explicit choice in Settings always wins. Static finals that resetStatics prepares
+  are still reported as `final` by reflection, so libraries checking
+  `Modifier.isFinal` see the declared modifiers.
+
 ### Added
 
 - With `resetStatics=true`, changed static initializers built from pure JDK value
@@ -14,6 +22,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   `Optional`, empty collections) and public JDK constants (`StandardCharsets`,
   `TimeUnit`, `ChronoUnit` and similar) are reset too. Application statics, calls on
   values and ambient calls such as `now()` still keep the old value with a reason.
+- An enum constant inserted between existing constants reloads: it is added after
+  the existing constants so no ordinal moves, and existing EnumMap/EnumSet and switch
+  tables keep working. Until a restart it has the next free ordinal and sorts last.
+  In a JVM that uses JPA the insert still needs a restart, because ordinal storage
+  cannot be ruled out; the message names the entity field or the JPA type. Reorders and removals before the last constant still
+  need a restart.
+- On Spring 7.0.10, a raw full configuration that has instance fields, constructor
+  parameters or `@PostConstruct`/`@PreDestroy` methods from startup can gain its first
+  added `@Bean` factory, which reads the injected values. A save that changes those
+  fields, constructors or callbacks still needs a restart.
 - SAP Commerce XML reload replays exact eager ListMergeDirective addition and
   bean-name position edits with a uniquely reversible old effect and no other
   directive targeting the list. Converter publication preserves complete reader

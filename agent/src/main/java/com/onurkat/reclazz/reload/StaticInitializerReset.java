@@ -51,6 +51,13 @@ public final class StaticInitializerReset implements Opcodes {
 
     public static void afterReload(Class<?> owner, byte[] original, boolean enabled, Set<String> addedFields) {
         try {
+            // Reflection reports the declaration of the accepted source, not the first-load one (R31b audit F1).
+            Set<String> stillFinal = new HashSet<>();
+            for (FieldNode field : read(original).fields)
+                if ((field.access & (ACC_STATIC | ACC_FINAL)) == (ACC_STATIC | ACC_FINAL)) stillFinal.add(key(field));
+            com.onurkat.reclazz.bootstrap.PreparedStaticFinals.declared(owner, stillFinal);
+        } catch (RuntimeException unreadable) { /* keep the previous declaration */ }
+        try {
             State state = BASELINES.get(owner);
             Map<String, Initializer> baseline = state.fields;
             synchronized (baseline) {
@@ -102,7 +109,7 @@ public final class StaticInitializerReset implements Opcodes {
                                 var field = owner.getDeclaredField(key.substring(0, key.indexOf(':')));
                                 // A startup constant would still be final even if
                                 // the option had been enabled at first definition.
-                                if (!(before.constant && Modifier.isFinal(field.getModifiers())))
+                                if (!(before.constant && physicallyFinal(field)))
                                     report(owner, key, "option-off (enable resetStatics=true)");
                             }
                             continue;
@@ -110,7 +117,7 @@ public final class StaticInitializerReset implements Opcodes {
                         String reason = candidate.reason;
                         if (candidate.constant) reason = "became-constant (callers inline it)";
                         var field = owner.getDeclaredField(key.substring(0, key.indexOf(':')));
-                        if (Modifier.isFinal(field.getModifiers())) reason = "not-prepared (constant at first load or late attach)";
+                        if (physicallyFinal(field)) reason = "not-prepared (constant at first load or late attach)";
                         if (reason != null) { report(owner, key, reason); continue; }
                         Object value;
                         try { value = candidate.expression.value(); }
@@ -171,6 +178,10 @@ public final class StaticInitializerReset implements Opcodes {
         StatusReporter.warn("Static " + owner.getName() + "." + key.substring(0, key.indexOf(':'))
                 + " initializer changed, not reset: " + reason + "; restart to apply");
         RestartLedger.note(subject(owner,key), PENDING);
+    }
+    /** Reflection reports a prepared field as final again (PreparedStaticFinals); the physical bit is what matters here. */
+    private static boolean physicallyFinal(java.lang.reflect.Field field) {
+        return Modifier.isFinal(field.getModifiers()) && !com.onurkat.reclazz.bootstrap.PreparedStaticFinals.isPrepared(field);
     }
     private static String subject(Class<?> owner, String key) { return owner.getName() + "." + key.substring(0,key.indexOf(':')); }
 

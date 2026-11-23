@@ -46,6 +46,39 @@ class CoreEnumReloadTest {
         }
     }
 
+    /** R32: a constant inserted in the middle is applied as an append; no existing ordinal moves. */
+    @Test
+    void insertInTheMiddleIsAppliedAsAnAppendWithoutMovingOrdinals() throws Exception {
+        try (var app = WatchedApp.in(dir).jvmArgs("-Dprobe.dir=" + dir)
+                .with("Color", color("RED, BLUE", 1))
+                .with("Labels", """
+                        package app;
+                        public class Labels {
+                            public static String label(Color color) {
+                                switch (color) { case RED: return "red"; case BLUE: return "blue"; default: return "other"; }
+                            }
+                        }
+                        """).with("App", driver()).start()) {
+            app.awaitOrFail("READY=", "old collections and switch must exist before the insert");
+            app.awaitOrFail("] Watching 1 director", "watcher ready");
+            String id = app.latest("READY=").substring(6);
+            probe(app, 0, "[RED, BLUE]:ord=0,1:blue=old:green=absent:arrayLength=2:marker=v1", id);
+            reload(app, color("RED, GREEN, BLUE", 2));
+            probe(app, 1, appended(2), id);
+            assertTrue(app.output().stream().anyMatch(s -> s.contains("gained [GREEN]")), app.tail());
+            assertTrue(app.output().stream().anyMatch(s -> s.contains("GREEN ordinal 2 now, 1 after a restart")), app.tail());
+            assertFalse(app.output().stream().anyMatch(s -> s.contains("Only the end of an enum can change")), app.tail());
+            // Audit F1: the accepted source order, not the physical one, is the baseline for later saves.
+            reload(app, color("RED, GREEN, BLUE", 3));
+            probe(app, 2, appended(3), id);
+            assertFalse(app.output().stream().anyMatch(s -> s.contains("reordered")), "a body-only save of the accepted source is not a reorder: " + app.tail());
+            reload(app, color("RED, GREEN, BLUE, YELLOW", 4));
+            assertTrue(app.output().stream().anyMatch(s -> s.contains("gained [YELLOW]")), "an append after an insert applies: " + app.tail());
+            reload(app, color("GREEN, RED, BLUE, YELLOW", 5));
+            assertTrue(app.output().stream().anyMatch(s -> s.contains("reordered") && s.toLowerCase(java.util.Locale.ROOT).contains("restart")), "a genuine reorder still refuses: " + app.tail());
+        }
+    }
+
     @Test
     void generatedNativeEnumCodeIsReadyInTheRunningJvm() throws Exception {
         String contract="package de.hybris.platform.core; public interface HybrisEnumValue { String getCode(); String getType(); }";

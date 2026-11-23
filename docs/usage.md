@@ -320,7 +320,7 @@ Arguments are passed as a comma-separated string after the `=` sign:
 | `backofficeConfigReset` | `true` | After a module Backoffice config XML save, perform the native F4 cockpit-config reset without restarting. Resets UI-made configuration too; does not reset widgets. Set `false` to leave the save unapplied and use F4 manually. |
 | `autoSolrReindex` | `false` | After a SAP Commerce indexing provider/resolver reload, queue a bounded native update of its existing local Solr documents. Runs normal platform listeners and bookkeeping. Development only; see [targeted reindexing](#targeted-sap-solr-reindexing) |
 | `jpaRefresh` | `false` | Opt-in mapping rebuild. Existing fields require enhanced redefinition; new entities also work on stock JDKs, including supported Hibernate `validate` with a prepared schema. See [scope](#new-jpa-entities-with-a-prepared-schema) |
-| `resetStatics` | `false` | Opt-in reset of changed, isolated pure initializers of existing static fields; eligible static finals are made non-final at first load. Requires startup preparation; aliases keep the old object. See [Changed static initializers](#changed-static-initializers) |
+| `resetStatics` | `false` | Reset of changed, isolated pure initializers of existing static fields; eligible static finals are made physically writable at first load while reflection still reports them final. The IntelliJ plugin turns it on for ordinary projects unless you untick it; SAP Commerce projects and hand-written `-javaagent` lines keep `false`. Requires startup preparation; aliases keep the old object. See [Changed static initializers](#changed-static-initializers) |
 | `structuralReload` | `true` | The companion engine that adds and removes members on a stock JDK; `false` leaves method-body reloads only |
 | `platform` | `auto` | Skip detection and name the platform (`hybris`, `spring`, `generic`) |
 | `wrapOutput` | `auto` | Wrap console lines to the terminal width: `auto`, `true`, `false` |
@@ -902,9 +902,14 @@ parameters. It does not add new supported parameter types or annotations, and
 it does not implement Spring's general circular-reference permissiveness.
 Full configuration normally uses Spring's direct enhanced subclass with its native
 bean factory binding. Spring 7.0.10 can leave an empty full configuration raw at
-startup. Its first added instance factory is supported when the exact local
-singleton has no instance fields, one no-argument constructor and no lifecycle
-callbacks or interfaces. The original singleton is preserved across supported
+startup. Its first added instance factory is supported for the exact local
+singleton as it was created at startup: its instance fields, the constructor
+Spring used and its `@PostConstruct`/`@PreDestroy` methods may exist, and the
+added factory reads the injected values. The save must not add, remove or retype
+an instance field, change constructors or lifecycle callbacks, or change
+interfaces, because the singleton is not constructed, injected or initialized
+again. Interfaces, superclasses and web or custom scopes still require a restart.
+The original singleton is preserved across supported
 method edits, including removal of its last added factory and later re-addition.
 Each managed receiver resolves only its own active context; closing that context
 or replacing its singleton makes retained factory calls require a restart.
@@ -3804,8 +3809,10 @@ enhanced class redefinition applies it.
 
 ### Changed Static Initializers
 
-Start the JVM with `resetStatics=true`, or enable **Re-run changed static
-initializers** in IDE Settings before the next launch. The default is off.
+Start the JVM with `resetStatics=true`, or keep **Re-run changed static
+initializers** ticked in IDE Settings. The IntelliJ plugin enables it by default
+for ordinary projects; SAP Commerce projects keep it off until you tick it, and a
+hand-written `-javaagent` line defaults to off. Your explicit choice always wins.
 Keep `structuralReload=true` so first-load preparation is enabled.
 For example, editing an existing `static final Map<String,String> CODES =
 Map.of("key", "new")` can update the value read by subsequent field readers
@@ -3842,8 +3849,14 @@ retain the current value and name the reason.
 
 With the option on, first-load preparation removes `final` from non-synthetic
 static final fields that have no ConstantValue attribute, excluding all interface
-and enum owners and `serialVersionUID`. **Reflection sees these fields as
-non-final.** This frozen per-loader decision is reapplied to every redefine and
+and enum owners and `serialVersionUID`. Reflection still reports these fields as
+`final` (`Field.getModifiers()`, `toGenericString()`), so libraries that check
+`Modifier.isFinal` behave as without Reclazz, and a later save that removes
+`final` (or removes the field and adds it back without it) is reported as
+declared. The change is physical only: a plain `Field.set` is still refused, but
+`setAccessible(true)`, `MethodHandles.Lookup.unreflectSetter` and a static
+`VarHandle` can write the field, which they could not without the option. Dynamic
+attach never uses the IDE default: it keeps `resetStatics` off unless you chose it. This frozen per-loader decision is reapplied to every redefine and
 retransform, including spliced payloads. It prevents trusted-final folding by
 warmed readers. Values are produced before a typed static setter writes them;
 volatile modifiers are preserved and no Unsafe store is used.
@@ -3853,7 +3866,9 @@ not reset: callers may inline the new constant. A field that was a compile-time
 constant at first load stays final and cannot be reset after changing to a
 nonconstant initializer. The existing inlined-constant warning/rebuild advice
 still applies. Missing baselines and classes loaded before the agent fail closed;
-dynamic attach cannot prepare their final fields. These field refusals do not
+dynamic attach cannot prepare their final fields: when Reclazz is attached to an
+already running JVM, classes loaded before the attach keep `final`, and their changed
+static initializers need a restart even with the option on. These field refusals do not
 block unrelated admitted Map or method changes in the same owner.
 
 A bean or other object that copied the old value into another field keeps its

@@ -26,7 +26,7 @@ class ReclazzConfigurableApplyTest : BasePlatformTestCase() {
             val form = configurable.createComponent()
             val controls = descendants(form)
             controls.filterIsInstance<JCheckBox>().single { it.text.startsWith("Reload added and removed members") }.isSelected = false
-            controls.filterIsInstance<JCheckBox>().single { it.text.startsWith("Re-run changed static") }.isSelected = true
+            controls.filterIsInstance<JCheckBox>().single { it.text.startsWith("Re-run changed static") }.isSelected = false
             controls.filterIsInstance<JComboBox<*>>().single().selectedItem = "request"
             val exclusion = controls.filterIsInstance<JLabel>().single { it.text?.startsWith("Exclude classes") == true }.labelFor as JTextField
             exclusion.text = "com.example.Legacy*"
@@ -34,7 +34,8 @@ class ReclazzConfigurableApplyTest : BasePlatformTestCase() {
             configurable.apply()
             expectTrue(settings.state.supportLineDismissed)
             expectFalse(settings.state.structuralReload)
-            expectTrue(settings.state.resetStatics)
+            // On by default outside SAP Commerce; unticking stores the explicit choice.
+            expectEquals(false, settings.state.resetStatics)
             expectEquals("request", settings.state.reloadBoundary)
             expectEquals("com.example.Legacy*", settings.state.excludeClasses)
             expectFalse(configurable.isModified)

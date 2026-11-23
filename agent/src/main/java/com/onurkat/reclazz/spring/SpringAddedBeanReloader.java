@@ -216,37 +216,72 @@ public final class SpringAddedBeanReloader {
             throw new IllegalStateException("raw configuration identity changed; restart required");
     }
 
+    private static final Set<String> LIFECYCLE = Set.of("Ljakarta/annotation/PostConstruct;", "Ljakarta/annotation/PreDestroy;",
+            "Ljavax/annotation/PostConstruct;", "Ljavax/annotation/PreDestroy;");
+    private static final Set<String> INFRASTRUCTURE = Set.of("org.springframework.beans.factory.FactoryBean",
+            "org.springframework.beans.factory.config.BeanPostProcessor",
+            "org.springframework.beans.factory.config.BeanFactoryPostProcessor");
+
+    /**
+     * The live raw configuration singleton was created, injected and initialized at startup. Its existing state is fine
+     * for an added factory to read: instance fields, the constructor Spring used, lifecycle callbacks and lifecycle
+     * interfaces all already ran. What this save must not do is change that state, because nothing would run again:
+     * an added field is never injected, a changed constructor is never called, an added callback never fires.
+     */
     private static void requireStateless(Class<?> type, byte[] bytes) {
-        if (type.getSuperclass() != Object.class || type.getInterfaces().length != 0)
-            throw new IllegalStateException("raw configuration inheritance/lifecycle interfaces require a restart");
-        for (var field : type.getDeclaredFields())
-            if (!java.lang.reflect.Modifier.isStatic(field.getModifiers()) && !field.getName().startsWith(com.onurkat.reclazz.bootstrap.InjectedNames.PREFIX))
-                throw new IllegalStateException("raw configuration instance fields require a restart");
-        if (type.getDeclaredConstructors().length != 1 || type.getDeclaredConstructors()[0].getParameterCount() != 0)
-            throw new IllegalStateException("raw configuration constructor parameters require a restart");
+        if (type.getSuperclass() != Object.class)
+            throw new IllegalStateException("raw configuration inheritance requires a restart");
         org.objectweb.asm.tree.ClassNode node = new org.objectweb.asm.tree.ClassNode();
         new org.objectweb.asm.ClassReader(bytes).accept(node, org.objectweb.asm.ClassReader.SKIP_FRAMES);
-        if (!"java/lang/Object".equals(node.superName) || !node.interfaces.isEmpty())
-            throw new IllegalStateException("raw configuration inheritance/lifecycle interfaces require a restart");
+        if (!"java/lang/Object".equals(node.superName))
+            throw new IllegalStateException("raw configuration inheritance requires a restart");
+        Set<String> loadedInterfaces = new TreeSet<>();
+        for (Class<?> iface : type.getInterfaces()) loadedInterfaces.add(iface.getName().replace('.', '/'));
+        if (!loadedInterfaces.equals(new TreeSet<>(node.interfaces)))
+            throw new IllegalStateException("raw configuration interfaces changed; restart required");
+        for (String name : INFRASTRUCTURE) {
+            try { if (Class.forName(name, false, type.getClassLoader()).isAssignableFrom(type))
+                throw new IllegalStateException("raw configuration that is also Spring infrastructure requires a restart"); }
+            catch (ClassNotFoundException absent) { /* not visible to the application: cannot be implemented */ }
+        }
+        Set<String> loadedFields = new TreeSet<>();
+        for (var field : com.onurkat.reclazz.bootstrap.ReflectionBridge.physicalDeclaredFields(type))
+            if (!java.lang.reflect.Modifier.isStatic(field.getModifiers()) && !field.getName().startsWith(com.onurkat.reclazz.bootstrap.InjectedNames.PREFIX))
+                loadedFields.add(field.getName() + ":" + field.getType().descriptorString());
+        Set<String> savedFields = new TreeSet<>();
         for (var field : node.fields)
             if ((field.access & org.objectweb.asm.Opcodes.ACC_STATIC) == 0 && !field.name.startsWith(com.onurkat.reclazz.bootstrap.InjectedNames.PREFIX))
-                throw new IllegalStateException("raw configuration instance fields require a restart");
-        int constructors = 0;
+                savedFields.add(field.name + ":" + field.desc);
+        if (!loadedFields.equals(savedFields))
+            throw new IllegalStateException("raw configuration instance fields changed (an added field is never injected); restart required");
+        Set<String> loadedConstructors = new TreeSet<>();
+        for (var constructor : com.onurkat.reclazz.bootstrap.ReflectionBridge.physicalDeclaredConstructors(type))
+            loadedConstructors.add(org.objectweb.asm.Type.getConstructorDescriptor(constructor));
+        Set<String> savedConstructors = new TreeSet<>();
+        Set<String> savedLifecycle = new TreeSet<>();
         for (var method : node.methods) {
-            if (method.name.equals("<init>")) {
-                constructors++;
-                if (!method.desc.equals("()V")) throw new IllegalStateException("raw configuration constructor parameters require a restart");
-            }
+            if (method.name.equals("<init>")) savedConstructors.add(method.desc);
             if (method.visibleAnnotations != null) for (var annotation : method.visibleAnnotations)
-                if (annotation.desc.equals("Ljakarta/annotation/PostConstruct;") || annotation.desc.equals("Ljakarta/annotation/PreDestroy;")
-                        || annotation.desc.equals("Ljavax/annotation/PostConstruct;") || annotation.desc.equals("Ljavax/annotation/PreDestroy;"))
-                    throw new IllegalStateException("raw configuration lifecycle callbacks require a restart");
+                if (LIFECYCLE.contains(annotation.desc)) savedLifecycle.add(annotation.desc + method.name + method.desc);
         }
-        if (constructors != 1) throw new IllegalStateException("raw configuration requires exactly one no-arg constructor");
-        for (var method : type.getDeclaredMethods()) for (var annotation : method.getDeclaredAnnotations())
-            if (Set.of("jakarta.annotation.PostConstruct", "jakarta.annotation.PreDestroy", "javax.annotation.PostConstruct", "javax.annotation.PreDestroy")
-                    .contains(annotation.annotationType().getName()))
-                throw new IllegalStateException("raw configuration lifecycle callbacks require a restart");
+        if (!loadedConstructors.equals(savedConstructors))
+            throw new IllegalStateException("raw configuration constructors changed (the singleton is not constructed again); restart required");
+        Set<String> loadedLifecycle = new TreeSet<>();
+        for (var method : type.getDeclaredMethods()) for (var annotation : method.getDeclaredAnnotations()) {
+            String descriptor = "L" + annotation.annotationType().getName().replace('.', '/') + ";";
+            if (LIFECYCLE.contains(descriptor))
+                loadedLifecycle.add(descriptor + method.getName() + org.objectweb.asm.Type.getMethodDescriptor(method));
+        }
+        if (!loadedLifecycle.equals(savedLifecycle))
+            throw new IllegalStateException("raw configuration lifecycle callbacks changed (they do not run again); restart required");
+        // Signatures are not enough: a same-signature constructor, callback or injection edit changes what a fresh
+        // creation would produce. Compare with what was witnessed at first load, never with the current reflection.
+        String startup = com.onurkat.reclazz.transform.CreationBaseline.startup(type);
+        if (startup == null)
+            throw new IllegalStateException("raw configuration startup creation state was not recorded; restart required");
+        if (!startup.equals(com.onurkat.reclazz.transform.CreationBaseline.digest(bytes)))
+            throw new IllegalStateException("raw configuration constructor, lifecycle or injection code changed since startup "
+                    + "(the singleton is not created again); restart required");
     }
 
     private void preflightName(Class<?> type, Object factory, AddedBeanAdapter.Factory method) throws Exception {

@@ -13,6 +13,7 @@ import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.instrument.Instrumentation;
 import java.util.List;
+import java.util.Set;
 import java.util.ArrayList;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -40,9 +41,11 @@ import com.onurkat.reclazz.ui.RestartLedger;
  * <p>Three things have to be true together, and each one is checked before
  * anything is written.
  *
- * <p>The change must be an append. A constant inserted in the middle or removed
- * renumbers the ones after it, and nothing in memory or in a database survives
- * that; it is refused with its own message.
+ * <p>The change must keep every existing ordinal. An append does; so does an
+ * insert in the middle when it is applied as an append (the new constant takes the
+ * next free ordinal until a restart), unless a loaded JPA entity stores the enum by
+ * ordinal. A removal before the last constant or a reorder renumbers, and nothing
+ * in memory or in a database survives that; it is refused with its own message.
  *
  * <p>The JDK must have the shapes this reaches into. They are not a contract,
  * so a JDK that moves one of them makes this decline, and the reload falls back
@@ -85,6 +88,7 @@ public final class EnumConstantAppender {
             }
             // The mapper caches still carry the removed constant: they would
             // keep serialising it and keep accepting its name.
+            EnumConstantChange.accepted(loaded, newBytecode);
             int mappers = JacksonEnumCaches.flush();
             EnumConstantChange.reportTailRemoved(className, removedTail, mappers);
             if (implementsHybrisEnumValue(loaded)) {
@@ -95,12 +99,29 @@ public final class EnumConstantAppender {
             return true;
         }
 
+        java.util.LinkedHashMap<String, Integer> inserted = new java.util.LinkedHashMap<>();
         if (!EnumConstantChange.isAppendOnly(loaded, newBytecode)) {
-            EnumConstantChange.reportNotAppendOnly(className, change);
-            return false;
+            inserted = EnumConstantChange.insertedNames(loaded, newBytecode);
+            if (inserted.isEmpty()) {
+                EnumConstantChange.reportNotAppendOnly(className, change);
+                return false;
+            }
+            // SAP Commerce stores its own enumtypes by code, but a separate JPA entity may still store the same Java enum
+            // by ordinal (audit F6), so the persistence check applies to every enum.
+            String persisted = ordinalPersistence(loaded, instrumentation);
+            if (persisted != null) {
+                StatusReporter.warn("Enum " + className + " " + change.describe() + " in the middle. " + persisted
+                        + " may store it by ordinal: on this JVM the new constant would get the next free ordinal and, after a "
+                        + "restart, its source position, so rows written now would read back as another constant. "
+                        + "Restart to pick this up. Everything else in this class reloaded.");
+                RestartLedger.note(className, change.describe()
+                        + " in the middle of an enum persisted by ordinal (" + persisted + ")");
+                return false;
+            }
         }
 
-        List<String> names = EnumConstantChange.appendedNames(loaded, newBytecode);
+        List<String> names = inserted.isEmpty()
+                ? EnumConstantChange.appendedNames(loaded, newBytecode) : new ArrayList<>(inserted.keySet());
         if (names.isEmpty()) {
             EnumConstantChange.report(className, change);
             return false;
@@ -145,6 +166,7 @@ public final class EnumConstantAppender {
         }
 
         EnumCollectionHealer.armed();
+        EnumConstantChange.accepted(loaded, newBytecode);
 
         int tables = 0;
         if (instrumentation != null) {
@@ -160,6 +182,15 @@ public final class EnumConstantAppender {
         int mappers = JacksonEnumCaches.flush();
 
         EnumConstantChange.reportAppended(className, outcome.appended(), tables, mappers);
+        if (!inserted.isEmpty()) {
+            int ordinal = countConstants(loaded) - inserted.size();
+            List<String> positions = new ArrayList<>();
+            for (var entry : inserted.entrySet())
+                positions.add(entry.getKey() + " ordinal " + (ordinal++) + " now, " + entry.getValue() + " after a restart");
+            StatusReporter.info("Enum " + className + ": the inserted " + (inserted.size() == 1 ? "constant is" : "constants are")
+                    + " added after the existing ones so no ordinal moves (" + String.join("; ", positions) + "). Until a restart, "
+                    + "values(), EnumSet iteration and compareTo put " + (inserted.size() == 1 ? "it" : "them") + " last.");
+        }
 
         // A static SAP Commerce enumtype compiles to a real Java enum, so the
         // append above made the JVM side whole; the platform side is not. The
@@ -293,6 +324,95 @@ public final class EnumConstantAppender {
         if (opcode >= Opcodes.ICONST_0 && opcode <= Opcodes.ICONST_5) return opcode - Opcodes.ICONST_0;
         if (n instanceof IntInsnNode i && (opcode == Opcodes.BIPUSH || opcode == Opcodes.SIPUSH)) return i.operand;
         return n instanceof LdcInsnNode l && l.cst instanceof Integer i ? i : -1;
+    }
+
+    private static final List<String> PERSISTENT_TYPES = List.of(
+            "jakarta.persistence.Entity", "jakarta.persistence.Embeddable", "jakarta.persistence.MappedSuperclass",
+            "javax.persistence.Entity", "javax.persistence.Embeddable", "javax.persistence.MappedSuperclass");
+
+    /**
+     * Names a JPA consumer that could store this enum by ordinal, or null. Proving name-based storage needs the effective
+     * persistence metadata (property access, map keys, converters, disabled conversion, XML overrides: audit F2-F5), so the
+     * rule is conservative: any loaded entity, embeddable or mapped superclass that mentions the enum in a non-static field or
+     * in a getter/setter signature counts, whatever its annotations say, and a loader of the enum or of such a type that ships
+     * JPA XML mappings (META-INF/orm.xml, or mapping-file entries in META-INF/persistence.xml) makes the insert unprovable.
+     * Reads annotations by name; no persistence class is loaded for this.
+     */
+    static String ordinalPersistence(Class<?> enumType, Instrumentation instrumentation) {
+        String xml = xmlMappings(enumType.getClassLoader());
+        if (xml != null) return xml;
+        if (instrumentation == null) return null;
+        for (Class<?> type : instrumentation.getAllLoadedClasses()) {
+            try {
+                if (type.getClassLoader() == null || !annotated(type.getDeclaredAnnotations(), PERSISTENT_TYPES)) continue;
+                for (Field field : type.getDeclaredFields())
+                    if (!Modifier.isStatic(field.getModifiers()) && mentions(field.getGenericType(), enumType))
+                        return type.getName() + "." + field.getName();
+                for (java.lang.reflect.Method method : type.getDeclaredMethods()) {
+                    if (Modifier.isStatic(method.getModifiers())) continue;
+                    if (mentions(method.getGenericReturnType(), enumType)) return type.getName() + "." + method.getName() + "()";
+                    for (var parameter : method.getGenericParameterTypes())
+                        if (mentions(parameter, enumType)) return type.getName() + "." + method.getName() + "(...)";
+                }
+                xml = xmlMappings(type.getClassLoader());
+                if (xml != null) return xml;
+            } catch (LinkageError | RuntimeException unreadable) {
+                // A persistence type whose members cannot be described cannot be proven safe.
+                if (annotatedSafely(type)) return type.getName() + " (members unreadable)";
+            }
+        }
+        // Raw collection mappings with targetClass/@MapKeyClass, XML-only entities in other loaders and namespaced or
+        // multiple persistence descriptors cannot all be resolved without the provider's own metadata (audit round 2
+        // F3a/F5a/F5b). So once JPA is in use anywhere in this JVM, an insert is not proven safe.
+        String inUse = jpaInUse(instrumentation);
+        if (inUse != null) return "JPA in this JVM (" + inUse + ")";
+        return null;
+    }
+    private static final Set<String> JPA_MARKERS = Set.of(
+            "jakarta.persistence.EntityManagerFactory", "javax.persistence.EntityManagerFactory",
+            "jakarta.persistence.Entity", "javax.persistence.Entity",
+            "jakarta.persistence.Embeddable", "javax.persistence.Embeddable",
+            "jakarta.persistence.MappedSuperclass", "javax.persistence.MappedSuperclass",
+            "jakarta.persistence.ElementCollection", "javax.persistence.ElementCollection");
+    /** Names a loaded JPA API type that shows persistence is active, or null. Reads class names only. */
+    static String jpaInUse(Instrumentation instrumentation) {
+        for (Class<?> type : instrumentation.getAllLoadedClasses()) if (JPA_MARKERS.contains(type.getName())) return type.getName();
+        return null;
+    }
+    private static boolean annotatedSafely(Class<?> type) {
+        try { return annotated(type.getDeclaredAnnotations(), PERSISTENT_TYPES); } catch (LinkageError | RuntimeException e) { return false; }
+    }
+    /** JPA XML mapping files visible to this loader, which can map types or override annotations without any annotation. */
+    static String xmlMappings(ClassLoader loader) {
+        if (loader == null) return null;
+        try {
+            if (loader.getResource("META-INF/orm.xml") != null) return "JPA XML mappings (META-INF/orm.xml)";
+            var unit = loader.getResourceAsStream("META-INF/persistence.xml");
+            if (unit != null) try (var in = unit) {
+                if (new String(in.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8).contains("<mapping-file"))
+                    return "JPA XML mappings (persistence.xml mapping-file)";
+            }
+        } catch (java.io.IOException | RuntimeException unreadable) {
+            return "JPA XML mappings (unreadable persistence.xml)";
+        }
+        return null;
+    }
+    private static boolean annotated(java.lang.annotation.Annotation[] annotations, List<String> names) {
+        for (var annotation : annotations) if (names.contains(annotation.annotationType().getName())) return true;
+        return false;
+    }
+    private static boolean mentions(java.lang.reflect.Type type, Class<?> enumType) {
+        if (type == enumType) return true;
+        if (type instanceof Class<?> c) return c.isArray() && mentions(c.getComponentType(), enumType);
+        if (type instanceof java.lang.reflect.ParameterizedType p) {
+            for (var argument : p.getActualTypeArguments()) if (mentions(argument, enumType)) return true;
+            return false;
+        }
+        if (type instanceof java.lang.reflect.GenericArrayType g) return mentions(g.getGenericComponentType(), enumType);
+        if (type instanceof java.lang.reflect.WildcardType w) {
+            for (var bound : w.getUpperBounds()) if (mentions(bound, enumType)) return true;
+        }
+        return false;
     }
 
     /** Walks the interface graph by name: no Hybris classes are ever loaded for this. */

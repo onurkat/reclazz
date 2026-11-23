@@ -211,6 +211,7 @@ public class ReclazzTransformer implements ClassFileTransformer {
 
             if (classBeingRedefined == null) {
                 StaticFieldPreparation.recordDefinition(loader, className, classfileBuffer, config.isResetStatics());
+                CreationBaseline.defined(loader, className, classfileBuffer);
                 com.onurkat.reclazz.transform.KeepBaseline.capture(loader, className, classfileBuffer);
                 AdmittedBytes.defined(loader,className,classfileBuffer);
                 if(RecordCohortCandidates.retain(loader,className))PhysicalDefinitions.defined(loader,className,transformed);

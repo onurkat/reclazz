@@ -30,7 +30,9 @@ public final class StaticFieldPreparation implements Opcodes {
     }
     /** Only after the complete first-load transform has passed bytecode validation. */
     public static synchronized void recordDefinition(ClassLoader loader, String name, byte[] bytes, boolean enabled) {
-        owners(loader,true).putIfAbsent(name,new Definition(mask(bytes,enabled), snapshot(bytes)));
+        Definition definition=new Definition(mask(bytes,enabled), snapshot(bytes));
+        if(owners(loader,true).putIfAbsent(name,definition)==null)
+            com.onurkat.reclazz.bootstrap.PreparedStaticFinals.record(loader,name,definition.mask());
     }
     public static synchronized byte[] originalBytes(Class<?> owner) {
         Definition definition=owners(owner.getClassLoader(),false).get(owner.getName().replace('.','/'));

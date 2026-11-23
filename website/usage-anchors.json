@@ -76,7 +76,7 @@
       "level": 3,
       "title": "Agent Arguments",
       "id": "agent-arguments",
-      "body_sha256": "75ec35fa052eff710e39a3e76da7ae004c7c5ea3fc2c8c1dff56242e805631c0",
+      "body_sha256": "f7b3e347f1ca7f0e4c4651dcc3d1026dc8365af92e1ba1405f60a9ac0932d9e2",
       "heading": "### Agent Arguments\n"
     },
     {
@@ -233,7 +233,7 @@
       "level": 3,
       "title": "Bean methods added after startup",
       "id": "bean-methods-added-after-startup",
-      "body_sha256": "a06f92b71cc468d298bb8b189c01c81da4b66c500d73544018b26ab8a361f432",
+      "body_sha256": "e7a1d449a70365f6764e068bc5671d196d7ef36b8f97d2b5d7bbb7f361f02d41",
       "heading": "### Bean methods added after startup\n"
     },
     {
@@ -1120,7 +1120,7 @@
       "level": 3,
       "title": "Changed Static Initializers",
       "id": "changed-static-initializers",
-      "body_sha256": "076a71e8adac8139d83951fb541b692491b2f4575924f443b9f0da0ed41a2219",
+      "body_sha256": "a0f45faaf74e584020322306a78904e9d9ed2ac2d766c8ee591ee2ee0a39e807",
       "heading": "### Changed Static Initializers\n"
     },
     {

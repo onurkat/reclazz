@@ -71,7 +71,7 @@ public final class ReflectionMethodTransformer implements ClassFileTransformer {
         }catch(Throwable failure){inst.removeTransformer(transformer);throw failure;}
     }
     private static boolean coreHook(int kind,String method){
-        return kind==2||kind==4||kind==8&&method.equals("getAnnotatedType")||kind==1&&Set.of("privateGetDeclaredMethods","privateGetDeclaredFields","privateGetDeclaredConstructors","privateGetPublicMethods","privateGetPublicFields").contains(method);
+        return kind==2||kind==4||kind==8&&(method.equals("getAnnotatedType")||method.equals("getModifiers")||method.startsWith("get")&&method.endsWith("FieldAccessor"))||kind==1&&Set.of("privateGetDeclaredMethods","privateGetDeclaredFields","privateGetDeclaredConstructors","privateGetPublicMethods","privateGetPublicFields").contains(method);
     }
 
     public static void invalidate(Instrumentation inst,Class<?> owner) {
@@ -114,6 +114,24 @@ public final class ReflectionMethodTransformer implements ClassFileTransformer {
                         String helper=switch(method){case "getGenericInfo"->"genericInfo";case "getAnnotatedSuperclass"->"annotatedSuperclass";case "getAnnotatedInterfaces"->"annotatedInterfaces";default->method;};
                         hooks.add(method);
                         return guardedHeader(mv,"hasView","(Ljava/lang/Class;)Z",helper,"(Ljava/lang/Class;)"+(method.equals("getGenericInfo")||method.equals("annotationData")?"Ljava/lang/Object;":Type.getReturnType(desc).getDescriptor()),Type.getReturnType(desc));
+                    }
+                    if(kind==8&&phase==Phase.CORE&&method.endsWith("FieldAccessor")&&method.startsWith("get")
+                            &&Type.getReturnType(desc).getInternalName().equals("jdk/internal/reflect/FieldAccessor")) {
+                        // A prepared static's write policy follows its current declaration (R31b audit round 2 F1a).
+                        return new MethodVisitor(Opcodes.ASM9,mv){@Override public void visitCode(){
+                            super.visitCode();super.visitVarInsn(Opcodes.ALOAD,0);
+                            super.visitMethodInsn(Opcodes.INVOKESTATIC,"com/onurkat/reclazz/bootstrap/PreparedStaticFinals","refreshAccessors","(Ljava/lang/reflect/Field;)V",false);
+                        }};
+                    }
+                    if(kind==8&&method.equals("getModifiers")&&desc.equals("()I")) {
+                        // A static final field that resetStatics made physically writable still reports final.
+                        hooks.add(method);
+                        return new MethodVisitor(Opcodes.ASM9,mv){@Override public void visitCode(){
+                            super.visitCode();super.visitVarInsn(Opcodes.ALOAD,0);super.visitVarInsn(Opcodes.ALOAD,0);
+                            super.visitFieldInsn(Opcodes.GETFIELD,"java/lang/reflect/Field","modifiers","I");
+                            super.visitMethodInsn(Opcodes.INVOKESTATIC,"com/onurkat/reclazz/bootstrap/PreparedStaticFinals","modifiers","(Ljava/lang/reflect/Field;I)I",false);
+                            super.visitInsn(Opcodes.IRETURN);
+                        }};
                     }
                     if((kind==8||kind==32||kind==64)&&method.equals("getGenericInfo")) {
                         hooks.add(method);
@@ -278,7 +296,7 @@ public final class ReflectionMethodTransformer implements ClassFileTransformer {
                 case 32->Set.of("newInstanceWithCaller","getGenericInfo");
                 case 64->Set.of("getGenericInfo");
                 case 128->Set.of("getAnnotations","getAnnotation","getAnnotatedBounds","getBounds");
-                default->Set.of("getAnnotatedType","getGenericInfo");};
+                default->Set.of("getAnnotatedType","getGenericInfo","getModifiers");};
             if(phase!=Phase.ALL)expected=expected.stream().filter(method->phase==Phase.CORE?coreHook(kind,method):!coreHook(kind,method)).collect(java.util.stream.Collectors.toSet());
             if(!hooks.containsAll(expected))throw new IllegalStateException("Reflection hooks missing in "+name+": "+hooks);
             synchronized(this){installedTargets|=kind;}

@@ -42,6 +42,8 @@ class StaticInitializerResetReloadTest {
             Files.createFile(tmp.resolve("probe"));
             app.awaitOrFail("READERS=", "readers did not run");
             assertEquals(enabled ? "READERS=new:new:new:1" : "READERS=old:old:old:1", app.latest("READERS="), app.tail());
+            // resetStatics removes final physically, but reflection must still report the declared modifiers (R31b).
+            assertEquals("FINAL=true:true", app.latest("FINAL="), app.tail());
             if (transition) {
                 app.awaitOrFail("COUNT=7", "transition field was changed");
                 assertTrue(app.output().stream().anyMatch(s -> s.contains("not reset: became-constant")), app.tail());
@@ -79,6 +81,9 @@ class StaticInitializerResetReloadTest {
                     for (int i=0; i<200000; i++) {
                         sink = NativeReader.read(); sink = getter.invoke(); sink = dynamic.invoke();
                     }
+                    var codes = Holder.class.getField("CODES");
+                    System.out.println("FINAL=" + java.lang.reflect.Modifier.isFinal(codes.getModifiers())
+                        + ":" + codes.toGenericString().contains(" final "));
                     System.out.println("READY=" + NativeReader.read() + ":" + ((Map) getter.invoke()).get("key")
                         + ":" + ((Map) dynamic.invoke()).get("key"));
                     Path probe = Path.of(System.getProperty("test.dir"), "probe");

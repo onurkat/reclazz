@@ -92,7 +92,7 @@ class ReclazzConfigurable internal constructor(
         impexAllowRemoveCheckbox = settings.impexAllowRemove
         reloadBoundaryField = settings.reloadBoundary
         structuralReloadCheckbox = settings.structuralReload
-        resetStaticsCheckbox = settings.resetStatics
+        resetStaticsCheckbox = ReclazzSettings.effectiveResetStatics(settings, sapCommerceProject())
         excludeClassesField = settings.excludeClasses
         watchExtensionsField = settings.watchExtensions
         excludePatternsField = settings.excludePatterns
@@ -260,8 +260,8 @@ class ReclazzConfigurable internal constructor(
                 row {
                     checkBox("Re-run changed static initializers")
                         .bindSelected(::resetStaticsCheckbox)
-                    contextHelp("Applies at the next launch. Eligible static finals become non-final; " +
-                                "copies taken earlier keep their old value.")
+                    contextHelp("On by default for IDE launches, off for SAP Commerce projects. Applies at the next launch. " +
+                                "Reflection still reports eligible static finals as final; copies taken earlier keep their old value.")
                 }
                 row {
                     checkBox("Verbose logging")
@@ -459,7 +459,7 @@ class ReclazzConfigurable internal constructor(
                 impexAllowRemoveCheckbox != settings.impexAllowRemove ||
                 reloadBoundaryField != settings.reloadBoundary ||
                 structuralReloadCheckbox != settings.structuralReload ||
-                resetStaticsCheckbox != settings.resetStatics ||
+                resetStaticsCheckbox != ReclazzSettings.effectiveResetStatics(settings, sapCommerceProject()) ||
                 excludeClassesField != settings.excludeClasses ||
                 watchExtensionsField != settings.watchExtensions ||
                 excludePatternsField != settings.excludePatterns ||
@@ -480,6 +480,8 @@ class ReclazzConfigurable internal constructor(
         }
     }
 
+    private fun sapCommerceProject(): Boolean = HybrisProjectDetector.findHybrisHome(project) != null
+
     override fun apply() {
         readForm()
         val settings = ReclazzSettings.getInstance(project)
@@ -495,7 +497,7 @@ class ReclazzConfigurable internal constructor(
                 impexAllowRemove = impexAllowRemoveCheckbox,
                 reloadBoundary = reloadBoundaryField,
                 structuralReload = structuralReloadCheckbox,
-                resetStatics = resetStaticsCheckbox,
+                resetStatics = if (resetStaticsCheckbox == ReclazzSettings.effectiveResetStatics(settings.state, sapCommerceProject())) settings.state.resetStatics else resetStaticsCheckbox,
                 excludeClasses = excludeClassesField,
                 watchExtensions = watchExtensionsField,
                 excludePatterns = excludePatternsField,
@@ -526,7 +528,7 @@ class ReclazzConfigurable internal constructor(
         impexAllowRemoveCheckbox = settings.impexAllowRemove
         reloadBoundaryField = settings.reloadBoundary
         structuralReloadCheckbox = settings.structuralReload
-        resetStaticsCheckbox = settings.resetStatics
+        resetStaticsCheckbox = ReclazzSettings.effectiveResetStatics(settings, sapCommerceProject())
         excludeClassesField = settings.excludeClasses
         watchExtensionsField = settings.watchExtensions
         excludePatternsField = settings.excludePatterns

@@ -257,8 +257,82 @@ class FirstAddedFullConfigurationOwnershipTest {
         }
     }
 
+    /** R34: state the singleton had at startup (constructor-injected field, lifecycle callback) stays readable. */
+    @Configuration public static class StatefulOwner {
+        static int initialized;
+        private final String prefix;
+        public StatefulOwner(org.springframework.core.env.Environment environment) { prefix = "stateful:" + environment.getClass().getSimpleName(); }
+        @jakarta.annotation.PostConstruct void init() { initialized++; }
+        public Object product() { return prefix; }
+    }
+    @Test void startupStateOfARawConfigurationIsKeptAndReadByTheAddedFactory() throws Throwable {
+        LookupCapture.store(StatefulOwner.class, MethodHandles.lookup());
+        com.onurkat.reclazz.transform.CreationBaseline.defined(StatefulOwner.class.getClassLoader(), StatefulOwner.class.getName().replace('.', '/'), statefulBytes());
+        StatefulOwner.initialized = 0;
+        try (var context = new AnnotationConfigApplicationContext()) {
+            context.registerBean("statefulOwner", StatefulOwner.class);
+            context.refresh();
+            StatefulOwner held = context.getBean(StatefulOwner.class);
+            assumeTrue(held.getClass() == StatefulOwner.class, "raw configuration only on the Spring line that leaves it raw");
+            RestartLedger.clear();
+            assertTrue(reloader(context).reloadBeanMethods(StatefulOwner.class, keys(), statefulWithBean(null)), RestartLedger.digest().toString());
+            assertEquals("stateful:" + context.getEnvironment().getClass().getSimpleName(), context.getBean("product"));
+            assertSame(held, context.getBean(StatefulOwner.class), "the startup singleton is kept");
+            assertEquals(1, StatefulOwner.initialized, "@PostConstruct is not run again");
+        } finally { AddedBeanBridge.publish(StatefulOwner.class, Map.of()); }
+    }
+
+    /** R34 audit F1: same-signature creation edits change what a fresh creation would produce, so they must refuse. */
+    @ParameterizedTest @ValueSource(strings = {"constructorBody", "callbackBody", "injection", "annotateExisting"})
+    void sameSignatureCreationEditsRefuse(String variant) throws Throwable {
+        LookupCapture.store(StatefulOwner.class, MethodHandles.lookup());
+        com.onurkat.reclazz.transform.CreationBaseline.defined(StatefulOwner.class.getClassLoader(), StatefulOwner.class.getName().replace('.', '/'), statefulBytes());
+        try (var context = new AnnotationConfigApplicationContext()) {
+            context.registerBean("statefulOwner", StatefulOwner.class);
+            context.refresh();
+            StatefulOwner held = context.getBean(StatefulOwner.class);
+            assumeTrue(held.getClass() == StatefulOwner.class, "raw configuration only on the Spring line that leaves it raw");
+            RestartLedger.clear();
+            assertFalse(reloader(context).reloadBeanMethods(StatefulOwner.class, keys(), statefulWithBean(variant)), variant);
+            assertTrue(RestartLedger.digest().toString().toLowerCase(Locale.ROOT).contains("restart"), variant);
+            assertFalse(context.containsBean("product"), variant);
+            assertSame(held, context.getBean(StatefulOwner.class));
+        } finally { AddedBeanBridge.publish(StatefulOwner.class, Map.of()); }
+    }
+    private static byte[] statefulBytes() throws Exception {
+        try (var in = StatefulOwner.class.getResourceAsStream("/" + StatefulOwner.class.getName().replace('.', '/') + ".class")) {
+            return Objects.requireNonNull(in).readAllBytes();
+        }
+    }
+    private static byte[] statefulWithBean(String variant) throws Exception {
+        var node = new ClassNode(); new ClassReader(statefulBytes()).accept(node, 0);
+        for (var method : node.methods) {
+            if (method.name.equals("product")) method.visibleAnnotations = new ArrayList<>(List.of(new AnnotationNode(AddedBeanAdapter.BEAN)));
+            if ("constructorBody".equals(variant) && method.name.equals("<init>"))
+                for (var insn : method.instructions) {
+                    if (insn instanceof LdcInsnNode ldc && "stateful:".equals(ldc.cst)) ldc.cst = "changed:";
+                    if (insn instanceof InvokeDynamicInsnNode indy) for (int i = 0; i < indy.bsmArgs.length; i++)
+                        if (indy.bsmArgs[i] instanceof String recipe && recipe.startsWith("stateful:")) indy.bsmArgs[i] = recipe.replace("stateful:", "changed:");
+                }
+            if ("callbackBody".equals(variant) && method.name.equals("init")) {
+                method.instructions.insert(new InsnNode(Opcodes.POP)); method.instructions.insert(new InsnNode(Opcodes.ICONST_0));
+                method.maxStack = Math.max(method.maxStack, 1);
+            }
+            if ("annotateExisting".equals(variant) && method.name.equals("init"))
+                method.visibleAnnotations.add(new AnnotationNode("Ljakarta/annotation/PreDestroy;"));
+        }
+        if ("injection".equals(variant)) for (var field : node.fields) if (field.name.equals("prefix")) {
+            var value = new AnnotationNode("Lorg/springframework/beans/factory/annotation/Value;"); value.values = new ArrayList<>(List.of("value", "x"));
+            field.visibleAnnotations = new ArrayList<>(List.of(value));
+        }
+        var writer = new ClassWriter(0); node.accept(writer); return writer.toByteArray();
+    }
+
     @Test void equalsOverridingConfigInTwoContextsKeepsTwoIdentities() throws Throwable {
         LookupCapture.store(EqualOwner.class, MethodHandles.lookup());
+        try (var in = EqualOwner.class.getResourceAsStream("/" + EqualOwner.class.getName().replace('.', '/') + ".class")) {
+            com.onurkat.reclazz.transform.CreationBaseline.defined(EqualOwner.class.getClassLoader(), EqualOwner.class.getName().replace('.', '/'), Objects.requireNonNull(in).readAllBytes());
+        }
         try (var one = new AnnotationConfigApplicationContext(EqualOwner.class);
              var two = new AnnotationConfigApplicationContext(EqualOwner.class)) {
             var a = one.getBean(EqualOwner.class); var b = two.getBean(EqualOwner.class);
@@ -429,6 +503,8 @@ class FirstAddedFullConfigurationOwnershipTest {
 
     private static AnnotationConfigApplicationContext context() {
         LookupCapture.store(Owner.class, MethodHandles.lookup());
+        try { com.onurkat.reclazz.transform.CreationBaseline.defined(Owner.class.getClassLoader(), Owner.class.getName().replace('.', '/'), original()); }
+        catch (Exception unreadable) { throw new AssertionError(unreadable); }
         var context = new AnnotationConfigApplicationContext();
         context.registerBean("owner", Owner.class);
         context.refresh();
