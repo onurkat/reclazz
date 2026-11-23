@@ -35,7 +35,8 @@ public final class SpringPropertyFiles {
     }
     private record Owned(String name, int document, Object source, Map<String, Object> accepted) { }
     private record Prepared(Object context, Object live, Object candidate, Object before, Path file, List<Owned> old,
-                            List<Owned> next, Map<String, String> changed, Set<String> removed) { }
+                            List<Owned> next, Map<String, String> changed, Set<String> removed,
+                            List<SpringConfigImports.Plan> imports) { }
     public record LoggerOwner(Object applicationContext, Set<String> changedKeys, Set<String> removedKeys,
                               Map<String, String> previousLoggingValues, Map<String, String> effectiveLoggingValues, Runnable retryLoggerReset, String metadataFailure, LoggerAcceptance acceptance) {
         public LoggerOwner(Object applicationContext, Set<String> changedKeys, Set<String> removedKeys,
@@ -169,6 +170,14 @@ public final class SpringPropertyFiles {
                     for (Prepared plan : plans) {
                         Object sources = call(plan.live(), "getPropertySources");
                         for (Owned next : plan.next()) call(sources, "replace", next.name(), next.source());
+                        for (SpringConfigImports.Plan imports : plan.imports()) {
+                            imports.apply(sources);
+                            imports.committed();
+                            // Imported files are found again through their resource origins on their next edit.
+                            ownership.get(plan.live()).keySet().removeAll(imports.files());
+                            // Files no longer imported are no longer owned: their next edit is not this environment's.
+                            ownership.get(plan.live()).keySet().removeAll(imports.released());
+                        }
                         // Keep the old accepted values until binding succeeds, so partial failures retry.
                         List<Owned> pending = new ArrayList<>();
                         for (int i = 0; i < plan.next().size(); i++) {
@@ -382,8 +391,9 @@ public final class SpringPropertyFiles {
         for (int i = 0; i < documents.size(); i++) {
             Map<String, Object> values = values(documents.get(i));
             for (String key : values.keySet())
-                if ((key.startsWith("spring.config.") && !key.equals(PROFILE)) || key.startsWith("spring.profiles"))
-                    throw new IllegalStateException("Config imports, locations and profile changes require a restart: " + key);
+                if ((key.startsWith("spring.config.") && !key.equals(PROFILE) && !SpringConfigImports.isImportKey(key))
+                        || key.startsWith("spring.profiles"))
+                    throw new IllegalStateException("Config locations and profile changes require a restart: " + key);
             Object profile = values.get(PROFILE);
             if (profile != null) {
                 String expression = String.valueOf(profile);
@@ -428,7 +438,32 @@ public final class SpringPropertyFiles {
         Object sources = call(candidate, "getPropertySources");
         // candidateEnvironment's empty legacy overlay does not change file precedence.
         for (Owned item : next) call(sources, "replace", item.name(), item.source());
-        return new Prepared(context, live, candidate, before, file, owned, List.copyOf(next), Map.copyOf(changed), Set.copyOf(removed));
+        // R38: an edited import list. The import keys themselves are not application values.
+        changed.keySet().removeIf(SpringConfigImports::isImportKey);
+        removed.removeIf(SpringConfigImports::isImportKey);
+        // Each document's imports sit directly above that document (Boot), so each changed document gets its own plan.
+        List<SpringConfigImports.Plan> imports = new ArrayList<>();
+        Set<String> keys = new LinkedHashSet<>();
+        for (Owned old : owned) {
+            // What the live environment reflects: a save whose other keys failed to bind still applied its imports.
+            List<String> oldImports = SpringConfigImports.liveEntries(live, old.name(), SpringConfigImports.entries(old.accepted()));
+            List<String> newImports = SpringConfigImports.entries(active.get(old.document()));
+            if (oldImports.equals(newImports)) continue;
+            SpringConfigImports.Plan plan = SpringConfigImports.plan(loader, live, file, old.name(), oldImports, newImports);
+            plan.apply(sources);
+            imports.add(plan);
+            keys.addAll(plan.before().keySet()); keys.addAll(plan.after().keySet());
+        }
+        if (!imports.isEmpty()) {
+            for (String key : keys) {
+                Object was = call(before, "getProperty", key), now = call(candidate, "getProperty", key);
+                if (Objects.equals(was == null ? null : String.valueOf(was), now == null ? null : String.valueOf(now))) continue;
+                changed.put(key, now == null ? "" : String.valueOf(now));
+                if (now == null) removed.add(key);
+            }
+        }
+        return new Prepared(context, live, candidate, before, file, owned, List.copyOf(next), Map.copyOf(changed),
+                Set.copyOf(removed), List.copyOf(imports));
     }
 
     private static Map<String, Object> values(Object source) throws Exception {

@@ -2826,9 +2826,22 @@ boundary uses the captured file bytes. It does not reread a later save.
 
 Supported YAML documents use the current active profiles and
 `spring.config.activate.on-profile` expressions. The set and positions of active
-documents must stay the same. Changing activation, imports, config locations,
+documents must stay the same. Changing activation, config locations, profiles,
 profile groups or cloud-platform selection requires a restart. Files containing
-other `spring.config.*` or `spring.profiles*` controls are held. New or initially
+other `spring.config.*` or `spring.profiles*` controls are held.
+
+Editing `spring.config.import` applies without a restart: entries can be added,
+removed and reordered, and the result is what a restart on the saved files builds
+(the same sources, in the same order, with the same names). This covers nested
+imports, unprefixed locations (relative to the importing file, or to its classpath
+folder), `file:` and `classpath:` locations, `optional:`, directories (every
+`spring.config.name`, `.yaml`, `.yml`, `.xml`, `.properties`), a `*` directory
+wildcard, `configtree:`, the profile companions (`name-<profile>.ext`, or
+`-default` when no profile is active) and imports from any document of a
+multi-document file. An imported file is then edited like any other config file.
+A missing required location, an import of a file another config file already
+loads, a custom location resolver, and an imported file that changes profiles or
+config locations are held with a reason. New or initially
 empty files with no identifiable Boot source, custom source loaders and changed
 source ownership are outside this path. Applications with Boot file sources do
 not fall back to a global override for an unowned file. General SAP Commerce configuration

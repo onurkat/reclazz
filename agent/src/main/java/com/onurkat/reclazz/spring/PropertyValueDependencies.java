@@ -181,13 +181,18 @@ final class PropertyValueDependencies implements Predicate<String> {
             Object source = PropertyChangeCheck.call(sources, "get", name);
             if (source == null) continue;
             String type = source.getClass().getName();
-            if (!type.equals("org.springframework.core.env.MapPropertySource")
+            // R38: a config tree's values are file contents the binder reads as text; a map copy of their text reads the same.
+            boolean tree = type.equals("org.springframework.boot.env.ConfigTreePropertySource");
+            if (!tree && !type.equals("org.springframework.core.env.MapPropertySource")
                     && !type.equals("org.springframework.boot.env.OriginTrackedMapPropertySource"))
                 throw new IllegalStateException("Unverified candidate map source: " + type);
             Map<String, Object> data = new LinkedHashMap<>();
             String[] keys = (String[]) PropertyChangeCheck.call(source, "getPropertyNames");
             if (keys.length > MAX_TEXT) throw new IllegalStateException("candidate source key limit exceeded");
-            for (String key : keys) data.put(key, PropertyChangeCheck.call(source, "getProperty", key));
+            for (String key : keys) {
+                Object value = PropertyChangeCheck.call(source, "getProperty", key);
+                data.put(key, tree && value != null ? value.toString() : value);
+            }
             Map<String, Object> recording = new AbstractMap<>() {
                 @Override public Set<Entry<String, Object>> entrySet() { return Collections.unmodifiableMap(data).entrySet(); }
                 @Override public Object get(Object key) {
@@ -197,7 +202,8 @@ final class PropertyValueDependencies implements Predicate<String> {
                     return value;
                 }
             };
-            Object copy = source.getClass().getConstructor(String.class, Map.class).newInstance(name, recording);
+            Class<?> copyType = tree ? Class.forName("org.springframework.core.env.MapPropertySource", true, loader) : source.getClass();
+            Object copy = copyType.getConstructor(String.class, Map.class).newInstance(name, recording);
             PropertyChangeCheck.call(sources, "replace", name, copy);
         }
         PropertyChangeCheck.attachBoot(loader, detached);

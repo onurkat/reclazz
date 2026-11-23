@@ -16,6 +16,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Editing `spring.config.import` in a Spring Boot config file applies without a
+  restart: imports are added, removed and reordered exactly as a restart would load
+  them, including nested imports, relative, classpath and directory locations,
+  wildcards, config trees, profile companions and multi-document files.
 - A setup wizard in the IntelliJ plugin (Setup tab of the Reclazz tool window, also
   Tools > Set Up Reclazz and the first-run notification). For SAP Commerce it is three
   steps: install the Reclazz Java agent into local.properties (the exact lines are shown
