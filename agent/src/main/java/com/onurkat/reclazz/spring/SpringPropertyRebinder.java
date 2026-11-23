@@ -114,6 +114,7 @@ public final class SpringPropertyRebinder {
         PropertyChangeOutcome[] result = {PropertyChangeOutcome.held(
                 PropertyChangeOutcome.State.NOT_RUN, List.of("Property application did not run"))};
         boundary.accept(() -> {
+            for (Object context : applicationContexts) SpringDataSourceCheck.remember(context, candidate);
             result[0] = applyLive(candidate, Map.of(), true, check.selection());
             if (result[0].state() == PropertyChangeOutcome.State.APPLIED) accepted.run();
         });
@@ -628,7 +629,7 @@ public final class SpringPropertyRebinder {
                 .getMethod("postProcessBeforeInitialization", Object.class, String.class);
 
         for (Map.Entry<String, Object> bean : beans.entrySet()) {
-            String prefix = prefixOf(bean.getValue(), annotation);
+            String prefix = prefixOf(context, bean.getKey(), bean.getValue(), annotation);
             if (!affects(changed.keySet(), prefix)) continue;
 
             // Asked to rebind one of these, the post-processor returns without
@@ -730,6 +731,28 @@ public final class SpringPropertyRebinder {
                     + "); the values it already holds cannot be replaced. "
                     + "A restart is what applies them.");
             return false;
+        }
+    }
+
+    /**
+     * The prefix of a bean whose {@code @ConfigurationProperties} may sit on its {@code @Bean} factory method rather than
+     * its class (Boot's own {@code dataSource} is one: {@code spring.datasource.hikari}). Reading only the class made such
+     * a bean bind "the root", so every property save rebound it and validated it as a removal target (R37).
+     */
+    static String prefixOf(Object context, String name, Object bean, Class<?> annotation) {
+        String own = prefixOf(bean, annotation);
+        if (!own.isEmpty() || userClass(unwrapAopProxy(bean).getClass()).getAnnotation(
+                annotation.asSubclass(java.lang.annotation.Annotation.class)) != null) return own;
+        try {
+            Object found = context.getClass().getMethod("findAnnotationOnBean", String.class, Class.class)
+                    .invoke(context, name, annotation);
+            if (found == null) return own;
+            Object prefix = annotation.getMethod("prefix").invoke(found);
+            if (prefix != null && !String.valueOf(prefix).isEmpty()) return String.valueOf(prefix);
+            Object value = annotation.getMethod("value").invoke(found);
+            return value == null ? "" : String.valueOf(value);
+        } catch (Throwable unreadable) {
+            return own;
         }
     }
 

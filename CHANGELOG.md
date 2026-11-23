@@ -25,10 +25,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - The agent's SAP Commerce extension scan no longer stops at a symlink cycle under
   bin/custom; the looping entry is skipped and named, and every other extension is
   still found and watched.
+- A Spring Boot HikariCP pool takes a changed `spring.datasource.url`, username
+  or password without a restart. A connection with the new settings is opened
+  first from a copy of the pool's configuration, the pool is switched inside the
+  same `DataSource`, borrowed connections and their transactions finish on the old
+  pool, and the old pool closes once they are returned. A removed key falls back
+  to what Boot builds the pool with at startup. Unreachable settings, driver or
+  database-product changes and non-Hikari pools keep the running pool with a reason.
 
 - Changing a static initializer in an interface with `resetStatics=true` no longer adds
   a per-field "not-prepared" warning next to the interface message; interface fields
   are final by definition and the interface message already names the restart.
+
+- A Spring Boot config-file save no longer stops as "Uncheckable" when a bean
+  carries `@ConfigurationProperties` on its `@Bean` method (Boot's own HikariCP
+  `dataSource` is one). The prefix is read from the factory method, so such a
+  bean is rebound only for its own keys.
 
 - Editing a default or static method body in an interface no longer warns that the
   interface was loaded before instrumentation or records a pending restart: the edit

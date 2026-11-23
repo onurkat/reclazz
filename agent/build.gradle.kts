@@ -167,6 +167,8 @@ dependencies {
     // Real commit/rollback regressions against a local in-memory database only.
     testImplementation("org.springframework:spring-jdbc:5.3.39")
     testImplementation("com.h2database:h2:2.5.252")
+    // Boot 2.7 manages HikariCP 4.0.3; the 5.x members HikariPoolSwap uses were read from the 5.1.0 bytecode.
+    testImplementation("com.zaxxer:HikariCP:4.0.3")
     // Real @Aspect proxy regressions only; no weaving and no production dependency.
     testImplementation("org.aspectj:aspectjweaver:1.9.27")
     // Native method authorization regressions only; never packaged in the agent.

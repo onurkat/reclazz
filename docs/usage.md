@@ -2774,7 +2774,19 @@ can have side effects; Reclazz cannot isolate state they keep themselves.
 If a setter or bean rebuild fails after a clean check, changes already made
 are not rolled back. Request isolation covers the supported MVC scope of
 [the existing boundary](#reload-between-requests); background readers are not
-paused. Connection pools still have their existing limitations.
+paused.
+
+A HikariCP pool (Spring Boot's default) takes a changed URL, username or
+password in the running JVM. Reclazz matches the pool to the keys it was built
+from, opens a connection with the new settings first, and only then switches
+the pool inside the same `DataSource` object, so nothing that holds it needs
+reinjection. Connections already borrowed, and any transaction on them, finish
+on the old pool; the old pool closes once they are returned. The change is
+refused, and the running pool kept, when the connection cannot be opened, the
+driver class changes, the URL names a different database product, or the pool
+is not a URL-based HikariCP pool. Other pool implementations and Hikari's sealed
+`spring.datasource.hikari.*` settings still say that a restart applies them.
+Pool size and timeouts were already applied live.
 
 A JavaBean target needs a usable no-argument constructor. Constructor-bound
 targets use Boot's constructor binding. Missing or incompatible Boot internals

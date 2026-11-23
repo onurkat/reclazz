@@ -59,17 +59,16 @@ public final class PropertyChangeCheck {
                 @SuppressWarnings("unchecked")
                 Map<String, Object> beans = (Map<String, Object>) call(context, "getBeansWithAnnotation", annotation);
                 for (var entry : beans.entrySet()) {
-                    if (!SpringPropertyRebinder.affects(changed.keySet(),
-                            SpringPropertyRebinder.prefixOf(entry.getValue(), annotation))) continue;
+                    String prefix = SpringPropertyRebinder.prefixOf(context, entry.getKey(), entry.getValue(), annotation);
+                    if (!SpringPropertyRebinder.affects(changed.keySet(), prefix)) continue;
                     try {
                         if (binder == null) binder = scratchBinder(context, environment, loader);
                         Object detached = checkBean(context, entry.getKey(), entry.getValue(), binder, loader);
-                        if (detached != null && SpringPropertyRebinder.affects(removed,
-                                SpringPropertyRebinder.prefixOf(entry.getValue(), annotation))) {
+                        if (detached != null && !removed.isEmpty() && SpringPropertyRebinder.affects(removed, prefix)) {
                             Class<?> beanUtils = Class.forName("org.springframework.beans.BeanUtils", true, loader);
                             for (Object descriptor : (Object[]) beanUtils.getMethod("getPropertyDescriptors", Class.class)
                                     .invoke(null, detached.getClass()))
-                                if (!call(descriptor, "getName").equals("class")
+                                if (!call(descriptor, "getName").equals("class") && !awareCallback(detached.getClass(), descriptor)
                                         && (call(descriptor, "getReadMethod") == null || call(descriptor, "getWriteMethod") == null))
                                     throw new IllegalStateException("Removal requires readable and writable properties: " + call(descriptor, "getName"));
                             resets.put(entry.getKey(), detached);
@@ -97,6 +96,32 @@ public final class PropertyChangeCheck {
         return new Result(!unavailable.isEmpty() ? PropertyChangeOutcome.State.UNCHECKABLE
                 : !rejected.isEmpty() ? PropertyChangeOutcome.State.REJECTED
                 : PropertyChangeOutcome.State.APPLIED, findings, selections.build());
+    }
+
+    /**
+     * A write-only setter that belongs to a Spring {@code *Aware} callback (setBeanClassLoader, setBeanFactory, ...): the
+     * container hands the live bean the same value, so it is not configuration a reset could lose.
+     */
+    static boolean awareCallback(Class<?> type, Object descriptor) throws Exception {
+        if (call(descriptor, "getReadMethod") != null) return false;
+        java.lang.reflect.Method write = (java.lang.reflect.Method) call(descriptor, "getWriteMethod");
+        if (write == null) return false;
+        Class<?> aware;
+        try { aware = Class.forName("org.springframework.beans.factory.Aware", false, type.getClassLoader()); }
+        catch (ClassNotFoundException noSpring) { return false; }
+        for (Class<?> c = type; c != null; c = c.getSuperclass())
+            for (Class<?> declared : allInterfaces(c))
+                if (aware.isAssignableFrom(declared))
+                    for (java.lang.reflect.Method m : declared.getMethods())
+                        if (m.getName().equals(write.getName()) && java.util.Arrays.equals(m.getParameterTypes(), write.getParameterTypes())) return true;
+        return false;
+    }
+
+    private static java.util.Set<Class<?>> allInterfaces(Class<?> type) {
+        java.util.Set<Class<?>> found = new java.util.LinkedHashSet<>();
+        java.util.ArrayDeque<Class<?>> todo = new java.util.ArrayDeque<>(List.of(type.getInterfaces()));
+        while (!todo.isEmpty()) { Class<?> next = todo.pop(); if (found.add(next)) todo.addAll(List.of(next.getInterfaces())); }
+        return found;
     }
 
     static Object candidateEnvironment(ClassLoader loader, Object live,

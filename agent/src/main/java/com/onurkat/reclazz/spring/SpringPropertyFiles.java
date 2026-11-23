@@ -164,6 +164,8 @@ public final class SpringPropertyFiles {
                         return;
                     }
                     for (Prepared plan : plans) verifyOwnership(plan.live(), plan.old());
+                    // Pools are matched to the keys they were built from, so read those before the sources change.
+                    for (Prepared plan : plans) SpringDataSourceCheck.remember(plan.context(), plan.changed());
                     for (Prepared plan : plans) {
                         Object sources = call(plan.live(), "getPropertySources");
                         for (Owned next : plan.next()) call(sources, "replace", next.name(), next.source());
