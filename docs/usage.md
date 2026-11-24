@@ -2212,12 +2212,18 @@ retained messages according to the application's offset policy.
 
 Use the standard `KafkaListenerAnnotationBeanPostProcessor`,
 `KafkaListenerEndpointRegistry` and `ConcurrentKafkaListenerContainerFactory`
-with Spring's record or batch listener adapter. On a batch factory
+with Spring's record or batch listener adapter. Spring's native annotation
+enhancer runs for added listeners and when existing listener annotations are
+rescanned after bean refresh. Enhancements to supported listener attributes are
+applied; an enhancer that changes an unsupported option is refused with the
+attribute named in the restart diagnostic. On a batch factory
 (`setBatchListener(true)`) an added method takes a `List` payload, and its edits,
 removal and re-addition next to a batch listener present at startup are measured
-like record listeners, on Spring Kafka 2.9.13 and 3.2.4. Added listeners refuse annotation enhancers, retry-topic
-configuration, filtered/retry-template factories, a batch-to-record adapter and
-container customizers. Proxy/subclass receivers are not unwrapped past advice. This
+like record listeners, on Spring Kafka 2.9.13 and 3.2.4. A retry-topic configuration
+that does not match an added listener no longer blocks it; a listener that a
+retry-topic configuration matches still requires a restart. Filtered/retry-template factories, a batch-to-record
+adapter and container customizers remain unsupported. Proxy/subclass receivers
+are not unwrapped past advice. This
 scope does not cover class-level or repeatable listeners, expressions/placeholders
 in other listener attributes, container groups, arbitrary wrapper/container types,
 scoped/prototype beans or sharing one registry between multiple contexts.

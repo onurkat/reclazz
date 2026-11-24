@@ -22,6 +22,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Added Kafka listeners and listener rescans apply Spring's native annotation
+  enhancer; an enhancer that changes an unsupported option names it in the restart
+  message. A retry-topic configuration no longer blocks adding listeners it does not
+  match; a listener it matches still needs a restart.
 - Listeners on batch container factories reload without a restart: `@KafkaListener` and
   `@RabbitListener` methods taking a `List`, on a Kafka batch factory or a Rabbit
   batch/consumer-batch factory, can be added, edited and removed after startup, and the

@@ -130,32 +130,46 @@ public final class SpringKafkaReloader {
                 if (!(Boolean) factory.getClass().getMethod("isSingleton", String.class).invoke(factory, name))
                     throw new IllegalStateException("only singleton Kafka listener beans are supported");
                 Supplier<Object> current = currentSingleton(factory, name, type);
-                current.get();
+                Object owner = current.get();
                 if (type.getSuperclass() != Object.class || type.getInterfaces().length != 0)
                     throw new IllegalStateException("listener inheritance/interfaces are unsupported");
-                if (Reflect.readField(scope.processor(), "enhancer") != null
-                        || SpringBeans.beanNamesForType(scope.context(), "org.springframework.kafka.retrytopic.RetryTopicConfiguration").length != 0)
-                    throw new IllegalStateException("annotation enhancers and retry-topic configurations require a restart");
-                for (String id : plan.ids()) if (container(scope.registry(), id) != null)
-                    throw new IllegalStateException("listener id already belongs to an existing container: " + id);
                 for (var method : plan.methods()) requireFactory(scope, method);
                 var delegate = AddedKafkaListenerAdapter.create(type, current, plan);
                 Class<?> annotation = Class.forName("org.springframework.kafka.annotation.KafkaListener", false, type.getClassLoader());
+                record Addition(Method method, Object metadata, SpringKafkaListenerExpressions.RetryProbe probe) { }
+                var additions = new java.util.LinkedHashMap<String, Addition>();
+                boolean hasRetryBeans = SpringKafkaListenerExpressions.hasRetryConfigurationBeans(annotation, factory);
                 for (int i = 0; i < delegate.methods().size(); i++) {
                     Method method = delegate.methods().get(i);
-                    Object metadata = Arrays.stream(method.getDeclaredAnnotations()).filter(a -> a.annotationType() == annotation).findFirst().orElseThrow();
+                    Object original = Arrays.stream(method.getDeclaredAnnotations()).filter(a -> a.annotationType() == annotation).findFirst().orElseThrow();
+                    Object metadata = SpringKafkaListenerExpressions.enhance(scope.processor(), annotation, original, method);
+                    String invalid = AddedKafkaListenerAdapter.validateEnhancement(original, metadata);
+                    if (invalid != null) throw new IllegalStateException(invalid);
+                    String id = (String) annotation.getMethod("id").invoke(metadata);
+                    if (additions.containsKey(id)) throw new IllegalStateException("annotation enhancer produced duplicate listener id " + id);
+                    if (container(scope.registry(), id) != null)
+                        throw new IllegalStateException("listener id already belongs to an existing container: " + id);
+                    var probe = hasRetryBeans ? SpringKafkaListenerExpressions.probeRetryTopicConfiguration(
+                            scope.processor(), annotation, metadata, method, owner, factory) : null;
+                    if (probe != null && probe.matching())
+                        throw new IllegalStateException("matching Kafka retry-topic configuration requires a restart; Spring Kafka does not expose a retry-destination unregister operation");
+                    additions.put(id, new Addition(method, metadata, probe));
+                }
+                for (var entry : additions.entrySet()) {
+                    String id = entry.getKey();
+                    Addition addition = entry.getValue();
                     try {
-                        SpringKafkaListenerExpressions.register(scope.processor(), annotation, metadata, method,
-                                delegate.bean(), current.get(), name);
+                        SpringKafkaListenerExpressions.register(scope.processor(), annotation, addition.metadata(), addition.method(),
+                                delegate.bean(), owner, name, addition.probe());
                     } finally {
-                        Object registered = container(scope.registry(), plan.ids().get(i));
+                        Object registered = container(scope.registry(), id);
                         if (registered != null && listenerBean(messageListener(registered)) == delegate.bean()) {
-                            created.add(new Container(scope.registry(), plan.ids().get(i), registered));
+                            created.add(new Container(scope.registry(), id, registered));
                             owners.get(type).registered = true;
                         }
                     }
-                    Object registered = container(scope.registry(), plan.ids().get(i));
-                    if (registered == null) throw new IllegalStateException("Kafka processor did not register " + plan.ids().get(i));
+                    Object registered = container(scope.registry(), id);
+                    if (registered == null) throw new IllegalStateException("Kafka processor did not register " + id);
                     if (!STANDARD_ADAPTERS.contains(messageListener(registered).getClass().getName()))
                         throw new IllegalStateException("custom Kafka listener adapters require a restart");
                     changed = true;
@@ -442,9 +456,19 @@ public final class SpringKafkaReloader {
                 Object metadata = Arrays.stream(method.getDeclaredAnnotations())
                         .filter(a -> a.annotationType().getName().equals("org.springframework.kafka.annotation.KafkaListener"))
                         .findFirst().orElseThrow(() -> new IllegalStateException("literal Kafka callback metadata required"));
+                Object enhanced = SpringKafkaListenerExpressions.enhance(scope.processor(),
+                        Class.forName("org.springframework.kafka.annotation.KafkaListener", false, type.getClassLoader()),
+                        metadata, method);
+                String invalid = AddedKafkaListenerAdapter.validateEnhancement(metadata, enhanced);
+                if (invalid != null) throw new IllegalStateException(invalid);
+                metadata = enhanced;
                 String id = (String) ((java.lang.annotation.Annotation) metadata).annotationType().getMethod("id").invoke(metadata);
                 if (!id.equals(c.id()) || id.isBlank() || id.contains("${") || id.contains("#{"))
                     throw new IllegalStateException("dependent Kafka callback requires a stable literal id");
+                if (SpringKafkaListenerExpressions.probeRetryTopicConfiguration(scope.processor(),
+                        ((java.lang.annotation.Annotation) metadata).annotationType(),
+                        metadata, method, bean, factory).matching())
+                    throw new IllegalStateException("matching Kafka retry-topic configuration requires a restart; Spring Kafka does not expose a retry-destination unregister operation");
                 requireFactory(scope, (String) ((java.lang.annotation.Annotation) metadata).annotationType().getMethod("containerFactory").invoke(metadata));
                 if (method.getReturnType() != void.class) throw new IllegalStateException("void dependent Kafka callbacks required");
                 String factoryName = (String) ((java.lang.annotation.Annotation) metadata).annotationType().getMethod("containerFactory").invoke(metadata);
@@ -486,9 +510,6 @@ public final class SpringKafkaReloader {
         for (var scope : scopes) {
             if (!Set.of("2.9.13", "3.2.4").contains(scope.processor().getClass().getPackage().getImplementationVersion()))
                 throw new IllegalStateException("unverified Kafka processor version");
-            if (Reflect.readField(scope.processor(), "enhancer") != null
-                    || SpringBeans.beanNamesForType(scope.context(), "org.springframework.kafka.retrytopic.RetryTopicConfiguration").length != 0)
-                throw new IllegalStateException("Kafka enhancers/retry topics require a restart");
         }
         if (owners.size() != 1 || selected.size() != 1) throw new IllegalStateException("one Kafka leaf owner/callback required in this stage");
         if (contexts.size() != 1 || contexts.get(0) != context || scopes.size() != 1
@@ -604,7 +625,7 @@ public final class SpringKafkaReloader {
                     Object current = factory.getClass().getMethod("getSingleton", String.class).invoke(factory, callback.name());
                     SpringKafkaListenerExpressions.register(callback.scope().processor(),
                             Class.forName("org.springframework.kafka.annotation.KafkaListener", false, callback.type().getClassLoader()),
-                            callback.metadata(), callback.method(), callback.receiver(), current, callback.name());
+                            callback.metadata(), callback.method(), callback.receiver(), current, callback.name(), null);
                 }
                 for (var callback : callbacks) {
                     Object container = container(callback.scope().registry(), callback.container().id());

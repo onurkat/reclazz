@@ -33,18 +33,24 @@ class AddedKafkaListenerReloadTest {
 
     @Test void serviceReceiverFollowsBrokerDeliveryAndRepeatedReloads() throws Exception { exercise(true, "Service"); }
     @Test void repositoryReceiverFollowsBrokerDeliveryAndRepeatedReloads() throws Exception { exercise(true, "Repository"); }
+    @Test void nativeAnnotationEnhancerAppliesToAddedAndRescannedListeners() throws Exception {
+        exercise(true, "Component", true);
+    }
 
-    private void exercise(boolean existing) throws Exception { exercise(existing, "Component"); }
+    private void exercise(boolean existing) throws Exception { exercise(existing, "Component", false); }
     private void exercise(boolean existing, String stereotype) throws Exception {
+        exercise(existing, stereotype, false);
+    }
+    private void exercise(boolean existing, String stereotype, boolean enhanced) throws Exception {
         String root = "reclazz-" + UUID.randomUUID();
         String first = root + "-first", second = root + "-second", base = root + "-base", other = root + "-other";
-        broker.addTopics(first, second, base, other);
+        broker.addTopics(first, second, base, other, first + "-enhanced", second + "-enhanced", base + "-enhanced");
         var producerFactory = new DefaultKafkaProducerFactory<Integer,String>(KafkaTestUtils.producerProps(broker));
         var producer = new KafkaTemplate<Integer,String>(producerFactory);
         try (var app = WatchedApp.in(tmp).classpath(kafkaClasspath())
                 .jvmArgs("-Dtest.brokers=" + broker.getBrokersAsString())
                 .agentArgs("startupDelaySec=1,debounceMs=100,verbose=true")
-                .with("Listener", listener(existing, 0, first, base, stereotype)).with("Other", other(other)).with("App", APP).start()) {
+                .with("Listener", listener(existing, 0, first, base, stereotype)).with("Other", other(other)).with("App", app(enhanced)).start()) {
             app.awaitOrFail("PORT=", "Kafka app did not start");
             app.awaitOrFail("] Watching ", "watcher did not start");
             int port = Integer.parseInt(app.latest("PORT=").substring(5));
@@ -52,7 +58,7 @@ class AddedKafkaListenerReloadTest {
             waitState(port, "other:assigned", app);
             if (existing) waitState(port, "existing:assigned", app);
             deliver(producer, app, other, "OTHER:initial", "initial");
-            if (existing) deliver(producer, app, base, "BASE:initial", "initial");
+            if (existing) deliver(producer, app, enhanced ? base + "-enhanced" : base, "BASE:initial", "initial");
             for (int stage = 1; stage <= 6; stage++) {
                 http(port, "/snapshot");
                 String topic = stage >= 3 ? second : first;
@@ -65,11 +71,12 @@ class AddedKafkaListenerReloadTest {
                 if (active) {
                     waitState(port, "added:assigned", app);
                     String msg = "save" + stage;
-                    deliver(producer, app, topic, "ADDED:" + stage + ":owner:" + topic + ":" + msg, msg);
+                    String effectiveTopic = enhanced ? topic + "-enhanced" : topic;
+                    deliver(producer, app, effectiveTopic, "ADDED:" + stage + ":owner:" + effectiveTopic + ":" + msg, msg);
                 } else assertFalse(http(port, "/state").contains("added:"), app.tail());
                 if (existing) {
                     waitState(port, "existing:assigned", app);
-                    deliver(producer, app, base, "BASE:save" + stage, "save" + stage);
+                    deliver(producer, app, enhanced ? base + "-enhanced" : base, "BASE:save" + stage, "save" + stage);
                 }
                 deliver(producer, app, other, "OTHER:save" + stage, "save" + stage);
                 assertTrue(http(port, "/state").contains("retiredRunning=0"), "old containers must stop: " + app.tail());
@@ -112,6 +119,23 @@ class AddedKafkaListenerReloadTest {
                             || n.startsWith("kafka-clients-") || n.startsWith("slf4j-api-") || n.startsWith("lz4-java-")
                             || n.startsWith("snappy-java-") || n.startsWith("zstd-jni-"));
                 }).toList());
+    }
+    private static String app(boolean enhancer) {
+        if (!enhancer) return APP;
+        String bean = """
+                @org.springframework.context.annotation.Bean
+                public org.springframework.kafka.annotation.KafkaListenerAnnotationBeanPostProcessor.AnnotationEnhancer topicEnhancer() {
+                    return (attributes, element) -> {
+                        if (element instanceof java.lang.reflect.Method method
+                                && method.getDeclaringClass().getName().startsWith("app.Listener")) {
+                            String[] topics = (String[]) attributes.get("topics");
+                            attributes.put("topics", java.util.Arrays.stream(topics).map(topic -> topic + "-enhanced").toArray(String[]::new));
+                        }
+                        return attributes;
+                    };
+                }
+                """;
+        return APP.replace("public static void main", bean + "\npublic static void main");
     }
     private static String listener(boolean existing, int stage, String topic, String base, String stereotype) {
         String added = stage == 0 || stage == 4 ? "" : """

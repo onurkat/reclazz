@@ -83,6 +83,7 @@ class InterfaceReloadTest {
                         System.out.println("READY=" + h.value() + ":" + Holder.stamp());
                         while (!Files.exists(Path.of(System.getProperty("probe.dir"), "probe0"))) Thread.sleep(10);
                         System.out.println("CHECK0=" + h.value() + ":" + Holder.stamp());
+                        while (!Files.exists(Path.of(System.getProperty("probe.dir"), "probe1"))) Thread.sleep(10);
                     }
                 }
                 """;
@@ -99,6 +100,7 @@ class InterfaceReloadTest {
             assertEquals("CHECK0=[old]:v2", running.latest("CHECK0="), running.tail());
             // The summary line follows the warnings; the probe can answer before it is printed (Windows gate ee78e927).
             running.awaitOrFail("Reloaded app.Holder", "the reload summary");
+            Files.createFile(dir.resolve("probe1"));
             assertTrue(running.output().stream().noneMatch(s -> s.contains("not-prepared")), "interface fields are never prepared: " + running.tail());
             assertTrue(running.output().stream().anyMatch(s -> s.contains("Reloaded app.Holder") && s.toLowerCase(java.util.Locale.ROOT).contains("restart")), running.tail());
         }

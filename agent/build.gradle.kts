@@ -533,9 +533,26 @@ val modernMessagingTest = tasks.register("modernMessagingTest", Test::class) {
     inputs.file(tasks.named<org.gradle.jvm.tasks.Jar>("shadowJar").get().archiveFile).withPropertyName("agentJar")
     val skipRabbit = providers.gradleProperty("reclazz.skipRabbitBroker").orNull == "true"
     if (skipRabbit) {
-        exclude("com/onurkat/reclazz/e2e/ModernRabbitListenerReloadTest*")
-        exclude("com/onurkat/reclazz/e2e/ModernRabbitConsumerCascadeReloadTest*")
-        exclude("com/onurkat/reclazz/spring/ModernRabbitDependencyRefreshTest*")
+        // Docker-backed modern Rabbit tests use this class-name convention; the
+        // mixed-broker test is the one explicit exception because its name also
+        // covers Kafka and JMS. Keep these patterns in sync with RabbitBroker users.
+        exclude("com/onurkat/reclazz/e2e/Modern*Rabbit*Test*")
+        exclude("com/onurkat/reclazz/spring/Modern*Rabbit*Test*")
+        exclude("com/onurkat/reclazz/e2e/ModernMixedBrokerListenerReloadTest*")
+        doFirst {
+            val users = modernMessagingTests.allJava.files.filter {
+                it.name != "RabbitBroker.java" && it.readText().contains("RabbitBroker")
+            }
+            val uncovered = users.filterNot {
+                (it.name.startsWith("Modern") && it.name.contains("Rabbit") && it.name.contains("Test"))
+                        || it.name == "ModernMixedBrokerListenerReloadTest.java"
+            }
+            check(uncovered.isEmpty()) {
+                "Modern RabbitBroker test sources must match Modern*Rabbit*Test or the explicit mixed-broker exclusion: " +
+                        uncovered.joinToString { it.relativeTo(projectDir).path }
+            }
+            logger.lifecycle("Verified ${users.size} modern RabbitBroker source files are covered by the Windows skip rule")
+        }
     }
     testLogging { events("passed", "failed", "skipped") }
     doFirst {

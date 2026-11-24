@@ -4038,7 +4038,7 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerReloadTest#firstListenerOnAnAlreadyUsedBeanFollowsEditsTopicsRemovalAndRestore",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedKafkaListenerReloadTest.java",
-          "source_sha256": "94994286f4bfbd4074b89756ee17524e5447da6ec41833c0c7ebea546e30609a",
+          "source_sha256": "11093836ec664c133df474d11e905db7597488e6672bea1ec256970305341b12",
           "assertions": "use=used before save; stage1 ADDED:1:owner:<route>:save1.",
           "kind": "watcher"
         }
@@ -4053,7 +4053,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -4095,7 +4095,7 @@
           "path": "docs/feature-evidence.md",
           "line": 7885,
           "quote": "### P4-KAFKA-FIRST-ADD",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -4114,7 +4114,7 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerReloadTest#addingBesideAnExistingListenerKeepsOneConsumerAndLeavesOtherBeanAlone",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedKafkaListenerReloadTest.java",
-          "source_sha256": "94994286f4bfbd4074b89756ee17524e5447da6ec41833c0c7ebea546e30609a",
+          "source_sha256": "11093836ec664c133df474d11e905db7597488e6672bea1ec256970305341b12",
           "assertions": "BASE:initial and BASE:save1..6 occur once each.",
           "kind": "watcher"
         }
@@ -4129,7 +4129,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -4171,7 +4171,7 @@
           "path": "docs/feature-evidence.md",
           "line": 7897,
           "quote": "### P4-KAFKA-EXISTING-PRESERVED",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -4190,14 +4190,14 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerReloadTest#firstListenerOnAnAlreadyUsedBeanFollowsEditsTopicsRemovalAndRestore",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedKafkaListenerReloadTest.java",
-          "source_sha256": "94994286f4bfbd4074b89756ee17524e5447da6ec41833c0c7ebea546e30609a",
+          "source_sha256": "11093836ec664c133df474d11e905db7597488e6672bea1ec256970305341b12",
           "assertions": "stage1/2/3/5 ADDED prefix contains current generation.",
           "kind": "watcher"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerReloadTest#addingBesideAnExistingListenerKeepsOneConsumerAndLeavesOtherBeanAlone",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedKafkaListenerReloadTest.java",
-          "source_sha256": "94994286f4bfbd4074b89756ee17524e5447da6ec41833c0c7ebea546e30609a",
+          "source_sha256": "11093836ec664c133df474d11e905db7597488e6672bea1ec256970305341b12",
           "assertions": "stage1/2/3/5 ADDED prefix contains current generation.",
           "kind": "watcher"
         }
@@ -4212,7 +4212,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -4254,7 +4254,7 @@
           "path": "docs/feature-evidence.md",
           "line": 7909,
           "quote": "### P4-KAFKA-BODY-EDIT",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -4273,14 +4273,14 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerReloadTest#firstListenerOnAnAlreadyUsedBeanFollowsEditsTopicsRemovalAndRestore",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedKafkaListenerReloadTest.java",
-          "source_sha256": "94994286f4bfbd4074b89756ee17524e5447da6ec41833c0c7ebea546e30609a",
+          "source_sha256": "11093836ec664c133df474d11e905db7597488e6672bea1ec256970305341b12",
           "assertions": "stage3 uses second route; old-topic messages have no ADDED output during bounded300ms wait.",
           "kind": "watcher"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerReloadTest#addingBesideAnExistingListenerKeepsOneConsumerAndLeavesOtherBeanAlone",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedKafkaListenerReloadTest.java",
-          "source_sha256": "94994286f4bfbd4074b89756ee17524e5447da6ec41833c0c7ebea546e30609a",
+          "source_sha256": "11093836ec664c133df474d11e905db7597488e6672bea1ec256970305341b12",
           "assertions": "stage3 uses second route; old-topic messages have no ADDED output during bounded300ms wait.",
           "kind": "watcher"
         }
@@ -4295,7 +4295,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -4337,7 +4337,7 @@
           "path": "docs/feature-evidence.md",
           "line": 7921,
           "quote": "### P4-KAFKA-ROUTE-EDIT",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -4356,14 +4356,14 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerReloadTest#firstListenerOnAnAlreadyUsedBeanFollowsEditsTopicsRemovalAndRestore",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedKafkaListenerReloadTest.java",
-          "source_sha256": "94994286f4bfbd4074b89756ee17524e5447da6ec41833c0c7ebea546e30609a",
+          "source_sha256": "11093836ec664c133df474d11e905db7597488e6672bea1ec256970305341b12",
           "assertions": "stage4 state contains no added container.",
           "kind": "watcher"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerReloadTest#addingBesideAnExistingListenerKeepsOneConsumerAndLeavesOtherBeanAlone",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedKafkaListenerReloadTest.java",
-          "source_sha256": "94994286f4bfbd4074b89756ee17524e5447da6ec41833c0c7ebea546e30609a",
+          "source_sha256": "11093836ec664c133df474d11e905db7597488e6672bea1ec256970305341b12",
           "assertions": "stage4 state contains no added container.",
           "kind": "watcher"
         }
@@ -4378,7 +4378,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -4420,7 +4420,7 @@
           "path": "docs/feature-evidence.md",
           "line": 7933,
           "quote": "### P4-KAFKA-METHOD-REMOVE",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -4439,14 +4439,14 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerReloadTest#firstListenerOnAnAlreadyUsedBeanFollowsEditsTopicsRemovalAndRestore",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedKafkaListenerReloadTest.java",
-          "source_sha256": "94994286f4bfbd4074b89756ee17524e5447da6ec41833c0c7ebea546e30609a",
+          "source_sha256": "11093836ec664c133df474d11e905db7597488e6672bea1ec256970305341b12",
           "assertions": "stage5 private method emits ADDED:5 for save5.",
           "kind": "watcher"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerReloadTest#addingBesideAnExistingListenerKeepsOneConsumerAndLeavesOtherBeanAlone",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedKafkaListenerReloadTest.java",
-          "source_sha256": "94994286f4bfbd4074b89756ee17524e5447da6ec41833c0c7ebea546e30609a",
+          "source_sha256": "11093836ec664c133df474d11e905db7597488e6672bea1ec256970305341b12",
           "assertions": "stage5 private method emits ADDED:5 for save5.",
           "kind": "watcher"
         }
@@ -4461,7 +4461,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -4503,7 +4503,7 @@
           "path": "docs/feature-evidence.md",
           "line": 7945,
           "quote": "### P4-KAFKA-PRIVATE-RESTORE",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -4522,14 +4522,14 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerReloadTest#firstListenerOnAnAlreadyUsedBeanFollowsEditsTopicsRemovalAndRestore",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedKafkaListenerReloadTest.java",
-          "source_sha256": "94994286f4bfbd4074b89756ee17524e5447da6ec41833c0c7ebea546e30609a",
+          "source_sha256": "11093836ec664c133df474d11e905db7597488e6672bea1ec256970305341b12",
           "assertions": "stage6 state contains no added container.",
           "kind": "watcher"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerReloadTest#addingBesideAnExistingListenerKeepsOneConsumerAndLeavesOtherBeanAlone",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedKafkaListenerReloadTest.java",
-          "source_sha256": "94994286f4bfbd4074b89756ee17524e5447da6ec41833c0c7ebea546e30609a",
+          "source_sha256": "11093836ec664c133df474d11e905db7597488e6672bea1ec256970305341b12",
           "assertions": "stage6 state contains no added container.",
           "kind": "watcher"
         }
@@ -4544,7 +4544,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -4586,7 +4586,7 @@
           "path": "docs/feature-evidence.md",
           "line": 7957,
           "quote": "### P4-KAFKA-ANNOTATION-REMOVE",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -4605,14 +4605,14 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerReloadTest#firstListenerOnAnAlreadyUsedBeanFollowsEditsTopicsRemovalAndRestore",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedKafkaListenerReloadTest.java",
-          "source_sha256": "94994286f4bfbd4074b89756ee17524e5447da6ec41833c0c7ebea546e30609a",
+          "source_sha256": "11093836ec664c133df474d11e905db7597488e6672bea1ec256970305341b12",
           "assertions": "each deliver waits for real line then asserts exactly1 after200ms; not exactly-once guarantee.",
           "kind": "watcher"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerReloadTest#addingBesideAnExistingListenerKeepsOneConsumerAndLeavesOtherBeanAlone",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedKafkaListenerReloadTest.java",
-          "source_sha256": "94994286f4bfbd4074b89756ee17524e5447da6ec41833c0c7ebea546e30609a",
+          "source_sha256": "11093836ec664c133df474d11e905db7597488e6672bea1ec256970305341b12",
           "assertions": "each deliver waits for real line then asserts exactly1 after200ms; not exactly-once guarantee.",
           "kind": "watcher"
         }
@@ -4627,7 +4627,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -4669,7 +4669,7 @@
           "path": "docs/feature-evidence.md",
           "line": 7969,
           "quote": "### P4-KAFKA-BOUNDED-DUPLICATES",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -4688,14 +4688,14 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerReloadTest#firstListenerOnAnAlreadyUsedBeanFollowsEditsTopicsRemovalAndRestore",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedKafkaListenerReloadTest.java",
-          "source_sha256": "94994286f4bfbd4074b89756ee17524e5447da6ec41833c0c7ebea546e30609a",
+          "source_sha256": "11093836ec664c133df474d11e905db7597488e6672bea1ec256970305341b12",
           "assertions": "retiredRunning=0 across six saves.",
           "kind": "watcher"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerReloadTest#addingBesideAnExistingListenerKeepsOneConsumerAndLeavesOtherBeanAlone",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedKafkaListenerReloadTest.java",
-          "source_sha256": "94994286f4bfbd4074b89756ee17524e5447da6ec41833c0c7ebea546e30609a",
+          "source_sha256": "11093836ec664c133df474d11e905db7597488e6672bea1ec256970305341b12",
           "assertions": "retiredRunning=0 across six saves.",
           "kind": "watcher"
         }
@@ -4710,7 +4710,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -4752,7 +4752,7 @@
           "path": "docs/feature-evidence.md",
           "line": 7981,
           "quote": "### P4-KAFKA-RETIRED-CONSUMERS",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -4771,14 +4771,14 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerReloadTest#firstListenerOnAnAlreadyUsedBeanFollowsEditsTopicsRemovalAndRestore",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedKafkaListenerReloadTest.java",
-          "source_sha256": "94994286f4bfbd4074b89756ee17524e5447da6ec41833c0c7ebea546e30609a",
+          "source_sha256": "11093836ec664c133df474d11e905db7597488e6672bea1ec256970305341b12",
           "assertions": "otherSame=true and OTHER:save1..6 actual deliveries.",
           "kind": "watcher"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerReloadTest#addingBesideAnExistingListenerKeepsOneConsumerAndLeavesOtherBeanAlone",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedKafkaListenerReloadTest.java",
-          "source_sha256": "94994286f4bfbd4074b89756ee17524e5447da6ec41833c0c7ebea546e30609a",
+          "source_sha256": "11093836ec664c133df474d11e905db7597488e6672bea1ec256970305341b12",
           "assertions": "otherSame=true and OTHER:save1..6 actual deliveries.",
           "kind": "watcher"
         }
@@ -4793,7 +4793,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -4835,7 +4835,7 @@
           "path": "docs/feature-evidence.md",
           "line": 7993,
           "quote": "### P4-KAFKA-UNRELATED-IDENTITY",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -4854,14 +4854,14 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerReloadTest#firstListenerOnAnAlreadyUsedBeanFollowsEditsTopicsRemovalAndRestore",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedKafkaListenerReloadTest.java",
-          "source_sha256": "94994286f4bfbd4074b89756ee17524e5447da6ec41833c0c7ebea546e30609a",
+          "source_sha256": "11093836ec664c133df474d11e905db7597488e6672bea1ec256970305341b12",
           "assertions": "allStopped=true from native container states after ctx.close.",
           "kind": "watcher"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerReloadTest#addingBesideAnExistingListenerKeepsOneConsumerAndLeavesOtherBeanAlone",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedKafkaListenerReloadTest.java",
-          "source_sha256": "94994286f4bfbd4074b89756ee17524e5447da6ec41833c0c7ebea546e30609a",
+          "source_sha256": "11093836ec664c133df474d11e905db7597488e6672bea1ec256970305341b12",
           "assertions": "allStopped=true from native container states after ctx.close.",
           "kind": "watcher"
         }
@@ -4876,7 +4876,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -4918,7 +4918,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8005,
           "quote": "### P4-KAFKA-CONTEXT-CLOSE",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -4937,14 +4937,14 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerReloadTest#firstListenerOnAnAlreadyUsedBeanFollowsEditsTopicsRemovalAndRestore",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedKafkaListenerReloadTest.java",
-          "source_sha256": "94994286f4bfbd4074b89756ee17524e5447da6ec41833c0c7ebea546e30609a",
+          "source_sha256": "11093836ec664c133df474d11e905db7597488e6672bea1ec256970305341b12",
           "assertions": "actual output owner:<received route/header>:saveN; supported void String payload/Header case.",
           "kind": "watcher"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerReloadTest#addingBesideAnExistingListenerKeepsOneConsumerAndLeavesOtherBeanAlone",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedKafkaListenerReloadTest.java",
-          "source_sha256": "94994286f4bfbd4074b89756ee17524e5447da6ec41833c0c7ebea546e30609a",
+          "source_sha256": "11093836ec664c133df474d11e905db7597488e6672bea1ec256970305341b12",
           "assertions": "actual output owner:<received route/header>:saveN; supported void String payload/Header case.",
           "kind": "watcher"
         }
@@ -4959,7 +4959,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -5001,7 +5001,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8017,
           "quote": "### P4-KAFKA-PAYLOAD-HEADER",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -5034,8 +5034,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -5077,7 +5077,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8029,
           "quote": "### P4-JMS-FIRST-ADD",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -5110,8 +5110,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -5153,7 +5153,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8041,
           "quote": "### P4-JMS-EXISTING-PRESERVED",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -5193,8 +5193,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -5236,7 +5236,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8053,
           "quote": "### P4-JMS-BODY-EDIT",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -5276,8 +5276,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -5319,7 +5319,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8065,
           "quote": "### P4-JMS-ROUTE-EDIT",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -5359,8 +5359,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -5402,7 +5402,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8077,
           "quote": "### P4-JMS-METHOD-REMOVE",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -5442,8 +5442,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -5485,7 +5485,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8089,
           "quote": "### P4-JMS-PRIVATE-RESTORE",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -5525,8 +5525,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -5568,7 +5568,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8101,
           "quote": "### P4-JMS-ANNOTATION-REMOVE",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -5608,8 +5608,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -5651,7 +5651,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8113,
           "quote": "### P4-JMS-BOUNDED-DUPLICATES",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -5691,8 +5691,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -5734,7 +5734,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8125,
           "quote": "### P4-JMS-RETIRED-CONSUMERS",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -5774,8 +5774,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -5817,7 +5817,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8137,
           "quote": "### P4-JMS-UNRELATED-IDENTITY",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -5857,8 +5857,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -5900,7 +5900,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8149,
           "quote": "### P4-JMS-CONTEXT-CLOSE",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -5940,8 +5940,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -5983,7 +5983,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8161,
           "quote": "### P4-JMS-PAYLOAD-HEADER",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -6023,8 +6023,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -6066,7 +6066,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8173,
           "quote": "### P4-JMS-LOCAL-ROLLBACK",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -6099,8 +6099,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -6142,7 +6142,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8185,
           "quote": "### P4-RABBIT-FIRST-ADD",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -6175,8 +6175,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -6218,7 +6218,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8197,
           "quote": "### P4-RABBIT-EXISTING-PRESERVED",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -6258,8 +6258,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -6301,7 +6301,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8209,
           "quote": "### P4-RABBIT-BODY-EDIT",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -6341,8 +6341,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -6384,7 +6384,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8221,
           "quote": "### P4-RABBIT-ROUTE-EDIT",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -6424,8 +6424,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -6467,7 +6467,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8233,
           "quote": "### P4-RABBIT-METHOD-REMOVE",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -6507,8 +6507,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -6550,7 +6550,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8245,
           "quote": "### P4-RABBIT-PRIVATE-RESTORE",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -6590,8 +6590,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -6633,7 +6633,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8257,
           "quote": "### P4-RABBIT-ANNOTATION-REMOVE",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -6673,8 +6673,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -6716,7 +6716,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8269,
           "quote": "### P4-RABBIT-BOUNDED-DUPLICATES",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -6756,8 +6756,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -6799,7 +6799,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8281,
           "quote": "### P4-RABBIT-RETIRED-CONSUMERS",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -6839,8 +6839,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -6882,7 +6882,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8293,
           "quote": "### P4-RABBIT-UNRELATED-IDENTITY",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -6922,8 +6922,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -6965,7 +6965,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8305,
           "quote": "### P4-RABBIT-CONTEXT-CLOSE",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -7005,8 +7005,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -7048,7 +7048,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8317,
           "quote": "### P4-RABBIT-PAYLOAD-HEADER",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -7088,8 +7088,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -7131,7 +7131,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8329,
           "quote": "### P4-RABBIT-LOCAL-ROLLBACK",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -7164,8 +7164,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -7207,7 +7207,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8341,
           "quote": "### P4-RABBIT-IDLESS-ORIGINAL",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -7241,7 +7241,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -7283,7 +7283,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8353,
           "quote": "### P4-KAFKA-PLACEHOLDER",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -7316,8 +7316,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -7359,7 +7359,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8365,
           "quote": "### P4-JMS-PLACEHOLDER",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -7392,8 +7392,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -7435,7 +7435,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8377,
           "quote": "### P4-JMS-WATCHED-SELECTOR",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -7468,8 +7468,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -7511,7 +7511,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8389,
           "quote": "### P4-RABBIT-PLACEHOLDER",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -7545,7 +7545,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -7587,7 +7587,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8401,
           "quote": "### P4-KAFKA-SELF-EXPRESSIONS",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -7621,7 +7621,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -7663,7 +7663,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8413,
           "quote": "### P4-KAFKA-PROPERTY-ONLY-LIMIT",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -7697,7 +7697,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -7739,7 +7739,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8425,
           "quote": "### P4-KAFKA-EXPRESSION-FAILURE",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -7773,7 +7773,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -7815,7 +7815,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8437,
           "quote": "### P4-KAFKA-MULTITOPIC-RECOVERY",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -7849,7 +7849,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -7891,7 +7891,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8449,
           "quote": "### P4-KAFKA-GROUP-REPLAY",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -7925,7 +7925,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -7967,7 +7967,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8461,
           "quote": "### P4-KAFKA-EXPRESSION-REMOVE",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -8001,7 +8001,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -8043,7 +8043,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8473,
           "quote": "### P4-KAFKA-HIDDEN-DELEGATE",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -8076,8 +8076,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -8119,7 +8119,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8485,
           "quote": "### P4-RABBIT-BEAN-EXPRESSIONS",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -8152,8 +8152,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -8195,7 +8195,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8497,
           "quote": "### P4-RABBIT-PROPERTY-ONLY-LIMIT",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -8228,8 +8228,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -8271,7 +8271,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8509,
           "quote": "### P4-RABBIT-EXPRESSION-FAILURE",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -8304,8 +8304,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -8347,7 +8347,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8521,
           "quote": "### P4-RABBIT-MULTIQUEUE-RECOVERY",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -8380,8 +8380,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -8423,7 +8423,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8533,
           "quote": "### P4-RABBIT-EXPRESSION-REMOVE",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -8456,8 +8456,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -8499,7 +8499,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8545,
           "quote": "### P4-RABBIT-HIDDEN-DELEGATE",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -8532,8 +8532,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -8575,7 +8575,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8557,
           "quote": "### P4-JMS-WATCHED-REPLY",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -8608,8 +8608,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -8651,7 +8651,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8569,
           "quote": "### P4-JMS-WATCHED-CORRELATION",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -8684,8 +8684,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -8727,7 +8727,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8581,
           "quote": "### P4-JMS-WATCHED-REPLYTO",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -8760,8 +8760,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -8803,7 +8803,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8593,
           "quote": "### P4-JMS-WATCHED-REPLY-ROUTE",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -8836,8 +8836,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -8879,7 +8879,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8605,
           "quote": "### P4-JMS-WATCHED-REPLY-RESTORE",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -8912,8 +8912,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -8955,7 +8955,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8617,
           "quote": "### P4-JMS-WATCHED-REPLY-ROLLBACK",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -8988,8 +8988,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -9031,7 +9031,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8629,
           "quote": "### P4-JMS-WATCHED-REPLY-REFLECTION",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -9050,7 +9050,7 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringKafkaReloaderTest#standardProcessorConvertsMessagesAndPrivateDelegateUsesCurrentSingleton",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringKafkaReloaderTest.java",
-          "source_sha256": "24cb3ddb78da8297e8e0b2dcdc60eb91a1ca0f3433691e348d92aee8939c8301",
+          "source_sha256": "b80cd2fe66cf7afed5f7a71e10ab3206efc19cc43f72c21cef4f2313a4a11210",
           "assertions": "Exact assertion excerpts: assertTrue(scope.reloader.reloadKafkaListeners(Owner.class, ADDED, annotated(\"second\", \"added\"))); var c = scope.registry.getListenerContainer(\"added\"); assertNotNull(c); assertFalse(c.isRunning()); Owner old = scope.owner(); invoke(c, \"one\"); assertEquals(List.of(\"second:one\"), old.calls); assertEquals(List.of(\"second:two\"), replacement.calls); assertEquals(List.of(\"second:one\"), old.calls); assertThrows(Exception.class, () -> invoke(c, \"missing\")); assertNull(scope.context.getBeanFactory().getSingleton(\"owner\"), \"callback must not create or silently acknowledge a missing bean\");",
           "kind": "component"
         }
@@ -9065,7 +9065,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -9107,7 +9107,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8641,
           "quote": "### P4-KAFKA-COMPONENT-STANDARD-PROCESSOR-CONVERTS-MESSAGES-AND-PRIVATE-DELEGATE-USES-CURRENT-SINGLETON",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -9126,7 +9126,7 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringKafkaReloaderTest#originalAndAddedContainersAreRemovedBeforeRecreationAndUnrelatedOneSurvives",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringKafkaReloaderTest.java",
-          "source_sha256": "24cb3ddb78da8297e8e0b2dcdc60eb91a1ca0f3433691e348d92aee8939c8301",
+          "source_sha256": "b80cd2fe66cf7afed5f7a71e10ab3206efc19cc43f72c21cef4f2313a4a11210",
           "assertions": "Exact assertion excerpts: assertTrue(scope.reloader.reloadKafkaListeners(Owner.class, ADDED, annotated(\"second\", \"added\"))); assertTrue(scope.reloader.beforeBeanRefresh(Owner.class)); assertEquals(Set.of(\"unrelated\"), scope.registry.getListenerContainerIds()); assertSame(other, scope.registry.getListenerContainer(\"unrelated\")); assertFalse(old.isRunning()); assertTrue(scope.reloader.reloadKafkaListeners(Owner.class, ADDED, annotated(\"second\", \"added\"))); assertTrue(scope.reloader.beforeBeanRefresh(Owner.class)); assertFalse(scope.reloader.reloadKafkaListeners(Owner.class, Set.of(), original())); assertEquals(Set.of(\"unrelated\"), scope.registry.getListenerContainerIds());",
           "kind": "component"
         }
@@ -9141,7 +9141,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -9183,7 +9183,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8653,
           "quote": "### P4-KAFKA-COMPONENT-ORIGINAL-AND-ADDED-CONTAINERS-ARE-REMOVED-BEFORE-RECREATION-AND-UNRELATED-ONE-SURVIVES",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -9202,7 +9202,7 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringKafkaReloaderTest#duplicateIdCannotStealAnotherBeansContainer",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringKafkaReloaderTest.java",
-          "source_sha256": "24cb3ddb78da8297e8e0b2dcdc60eb91a1ca0f3433691e348d92aee8939c8301",
+          "source_sha256": "b80cd2fe66cf7afed5f7a71e10ab3206efc19cc43f72c21cef4f2313a4a11210",
           "assertions": "Exact assertion excerpts: assertFalse(scope.reloader.reloadKafkaListeners(Owner.class, ADDED, annotated(\"first\", \"used\"))); assertSame(prior, scope.registry.getListenerContainer(\"used\")); assertTrue(RestartLedger.digest().stream().anyMatch(s -> s.contains(\"already belongs\")));",
           "kind": "component"
         }
@@ -9217,7 +9217,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -9259,7 +9259,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8665,
           "quote": "### P4-KAFKA-COMPONENT-DUPLICATE-ID-CANNOT-STEAL-ANOTHER-BEANS-CONTAINER",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -9278,7 +9278,7 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringKafkaReloaderTest#invalidDeclarationsDoNotStartAPartialRegistration",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringKafkaReloaderTest.java",
-          "source_sha256": "24cb3ddb78da8297e8e0b2dcdc60eb91a1ca0f3433691e348d92aee8939c8301",
+          "source_sha256": "b80cd2fe66cf7afed5f7a71e10ab3206efc19cc43f72c21cef4f2313a4a11210",
           "assertions": "Exact assertion excerpts: assertFalse(scope.reloader.reloadKafkaListeners(Owner.class, ADDED, write(node))); assertEquals(Set.of(\"unrelated\"), scope.registry.getListenerContainerIds()); assertSame(prior, scope.registry.getListenerContainer(\"unrelated\"));",
           "kind": "component"
         }
@@ -9293,7 +9293,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -9335,7 +9335,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8677,
           "quote": "### P4-KAFKA-COMPONENT-INVALID-DECLARATIONS-DO-NOT-START-APARTIAL-REGISTRATION",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -9354,7 +9354,7 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringKafkaReloaderTest#actualSecondRegistrationFailureRemovesTheFirstAndKeepsUnrelatedContainer",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringKafkaReloaderTest.java",
-          "source_sha256": "24cb3ddb78da8297e8e0b2dcdc60eb91a1ca0f3433691e348d92aee8939c8301",
+          "source_sha256": "b80cd2fe66cf7afed5f7a71e10ab3206efc19cc43f72c21cef4f2313a4a11210",
           "assertions": "Exact assertion excerpts: assertFalse(scope.reloader.reloadKafkaListeners(Owner.class, ADDED, write(node))); assertEquals(2, attempts.get(), \"both real Spring registration paths must be reached\"); assertEquals(Set.of(\"unrelated\"), scope.registry.getListenerContainerIds()); assertSame(prior, scope.registry.getListenerContainer(\"unrelated\")); assertTrue(RestartLedger.digest().stream().anyMatch(s -> s.contains(\"second registration fails\")));",
           "kind": "component"
         }
@@ -9369,7 +9369,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -9411,7 +9411,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8689,
           "quote": "### P4-KAFKA-COMPONENT-ACTUAL-SECOND-REGISTRATION-FAILURE-REMOVES-THE-FIRST-AND-KEEPS-UNRELATED-CONTAINER",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -9430,7 +9430,7 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringKafkaReloaderTest#proxyIsRefusedAndNoAdviceIsBypassed",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringKafkaReloaderTest.java",
-          "source_sha256": "24cb3ddb78da8297e8e0b2dcdc60eb91a1ca0f3433691e348d92aee8939c8301",
+          "source_sha256": "b80cd2fe66cf7afed5f7a71e10ab3206efc19cc43f72c21cef4f2313a4a11210",
           "assertions": "Exact assertion excerpts: assertFalse(scope.reloader.reloadKafkaListeners(Owner.class, ADDED, annotated(\"first\", \"added\"))); assertTrue(scope.registry.getListenerContainerIds().isEmpty()); assertTrue(target.calls.isEmpty());",
           "kind": "component"
         }
@@ -9445,7 +9445,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -9487,7 +9487,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8701,
           "quote": "### P4-KAFKA-COMPONENT-PROXY-IS-REFUSED-AND-NO-ADVICE-IS-BYPASSED",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -9506,7 +9506,7 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringKafkaReloaderTest#filteredFactoriesAreRefusedBeforeCreatingAnyContainer",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringKafkaReloaderTest.java",
-          "source_sha256": "24cb3ddb78da8297e8e0b2dcdc60eb91a1ca0f3433691e348d92aee8939c8301",
+          "source_sha256": "b80cd2fe66cf7afed5f7a71e10ab3206efc19cc43f72c21cef4f2313a4a11210",
           "assertions": "Exact assertion excerpts: assertFalse(scope.reloader.reloadKafkaListeners(Owner.class, ADDED, annotated(\"first\", \"added\"))); assertTrue(scope.registry.getListenerContainerIds().isEmpty()); assertTrue(RestartLedger.digest().stream().anyMatch(s -> s.contains(\"recordFilterStrategy\")));",
           "kind": "component"
         }
@@ -9521,7 +9521,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -9563,7 +9563,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8713,
           "quote": "### P4-KAFKA-COMPONENT-FILTERED-FACTORIES-ARE-REFUSED-BEFORE-CREATING-ANY-CONTAINER",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -9582,7 +9582,7 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringKafkaReloaderTest#aWrappedExistingListenerIsRefusedBeforeUnregisteringIt",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringKafkaReloaderTest.java",
-          "source_sha256": "24cb3ddb78da8297e8e0b2dcdc60eb91a1ca0f3433691e348d92aee8939c8301",
+          "source_sha256": "b80cd2fe66cf7afed5f7a71e10ab3206efc19cc43f72c21cef4f2313a4a11210",
           "assertions": "Exact assertion excerpts: assertFalse(scope.reloader.beforeBeanRefresh(Owner.class)); assertSame(prior, scope.registry.getListenerContainer(\"wrapped\"));",
           "kind": "component"
         }
@@ -9597,7 +9597,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -9639,7 +9639,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8725,
           "quote": "### P4-KAFKA-COMPONENT-A-WRAPPED-EXISTING-LISTENER-IS-REFUSED-BEFORE-UNREGISTERING-IT",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -9658,7 +9658,7 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringKafkaReloaderTest#concreteConsumerRecordGenericMetadataReachesTheRealKafkaAdapter",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringKafkaReloaderTest.java",
-          "source_sha256": "24cb3ddb78da8297e8e0b2dcdc60eb91a1ca0f3433691e348d92aee8939c8301",
+          "source_sha256": "b80cd2fe66cf7afed5f7a71e10ab3206efc19cc43f72c21cef4f2313a4a11210",
           "assertions": "Exact assertion excerpts: assertTrue(scope.reloader.reloadKafkaListeners(Owner.class, Set.of(\"record:\" + desc), annotated(\"record\", \"records\"))); invoke(scope.registry.getListenerContainer(\"records\"), \"body\"); assertEquals(List.of(\"record:body\"), scope.owner().calls);",
           "kind": "component"
         }
@@ -9673,7 +9673,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -9715,7 +9715,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8737,
           "quote": "### P4-KAFKA-COMPONENT-CONCRETE-CONSUMER-RECORD-GENERIC-METADATA-REACHES-THE-REAL-KAFKA-ADAPTER",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -9734,7 +9734,7 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringKafkaReloaderTest#unsupportedKafkaInfrastructureDoesNotBlockAnUnrelatedBeanReload",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringKafkaReloaderTest.java",
-          "source_sha256": "24cb3ddb78da8297e8e0b2dcdc60eb91a1ca0f3433691e348d92aee8939c8301",
+          "source_sha256": "b80cd2fe66cf7afed5f7a71e10ab3206efc19cc43f72c21cef4f2313a4a11210",
           "assertions": "Exact assertion excerpts: assertTrue(scope.reloader.beforeBeanRefresh(Other.class), \"unrelated bean must retain ordinary refresh with unsupported Kafka infrastructure\"); assertFalse(scope.reloader.beforeBeanRefresh(Owner.class, annotated(\"first\", \"new-id\")),",
           "kind": "component"
         }
@@ -9749,7 +9749,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -9791,7 +9791,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8749,
           "quote": "### P4-KAFKA-COMPONENT-UNSUPPORTED-KAFKA-INFRASTRUCTURE-DOES-NOT-BLOCK-AN-UNRELATED-BEAN-RELOAD",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -9810,7 +9810,7 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringKafkaReloaderTest#interruptedStopRetainsRegistryOwnershipAndCanBeRetried",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringKafkaReloaderTest.java",
-          "source_sha256": "24cb3ddb78da8297e8e0b2dcdc60eb91a1ca0f3433691e348d92aee8939c8301",
+          "source_sha256": "b80cd2fe66cf7afed5f7a71e10ab3206efc19cc43f72c21cef4f2313a4a11210",
           "assertions": "Exact assertion excerpts: assertTrue(scope.reloader.reloadKafkaListeners(Owner.class, ADDED, annotated(\"first\", \"added\"))); assertFalse(scope.reloader.beforeBeanRefresh(Owner.class)); assertTrue(Thread.currentThread().isInterrupted()); assertSame(prior, scope.registry.getListenerContainer(\"added\")); assertTrue(scope.reloader.beforeBeanRefresh(Owner.class)); assertTrue(scope.registry.getListenerContainerIds().isEmpty());",
           "kind": "component"
         }
@@ -9825,7 +9825,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -9867,7 +9867,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8761,
           "quote": "### P4-KAFKA-COMPONENT-INTERRUPTED-STOP-RETAINS-REGISTRY-OWNERSHIP-AND-CAN-BE-RETRIED",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -9886,7 +9886,7 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringKafkaReloaderTest#topicAndGroupExpressionsMatchNativeStartup",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringKafkaReloaderTest.java",
-          "source_sha256": "24cb3ddb78da8297e8e0b2dcdc60eb91a1ca0f3433691e348d92aee8939c8301",
+          "source_sha256": "b80cd2fe66cf7afed5f7a71e10ab3206efc19cc43f72c21cef4f2313a4a11210",
           "assertions": "Exact assertion excerpts: assertNotNull(expected); assertTrue(expected.length > 0); assertTrue(s.reloader.reloadKafkaListeners(Owner.class, ADDED, assertArrayEquals(expected, c.getContainerProperties().getTopics()); assertEquals(group, c.getGroupId()); invoke(c, \"body\"); assertEquals(List.of(\"first:body\"), s.owner().calls); assertNull(listenerScope(s).resolveContextualObject(\"__listener\"));",
           "kind": "component"
         }
@@ -9901,7 +9901,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -9943,7 +9943,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8773,
           "quote": "### P4-KAFKA-COMPONENT-TOPIC-AND-GROUP-EXPRESSIONS-MATCH-NATIVE-STARTUP",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -9962,7 +9962,7 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringKafkaReloaderTest#expressionScopeRestoresItsPreviousBindingAfterSuccessAndFailure",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringKafkaReloaderTest.java",
-          "source_sha256": "24cb3ddb78da8297e8e0b2dcdc60eb91a1ca0f3433691e348d92aee8939c8301",
+          "source_sha256": "b80cd2fe66cf7afed5f7a71e10ab3206efc19cc43f72c21cef4f2313a4a11210",
           "assertions": "Exact assertion excerpts: assertNotNull(add); add.invoke(scope, \"__listener\", outer); assertTrue(s.reloader.reloadKafkaListeners(Owner.class, ADDED, assertSame(outer, scope.resolveContextualObject(\"__listener\")); assertSame(outer, scope.resolveContextualObject(\"unrelated\")); assertTrue(s.reloader.beforeBeanRefresh(Owner.class)); assertFalse(s.reloader.reloadKafkaListeners(Owner.class, ADDED, assertNull(s.registry.getListenerContainer(\"added\")); assertSame(outer, scope.resolveContextualObject(\"__listener\")); assertSame(outer, scope.resolveContextualObject(\"unrelated\"));",
           "kind": "component"
         }
@@ -9977,7 +9977,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -10019,7 +10019,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8785,
           "quote": "### P4-KAFKA-COMPONENT-EXPRESSION-SCOPE-RESTORES-ITS-PREVIOUS-BINDING-AFTER-SUCCESS-AND-FAILURE",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -10038,7 +10038,7 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringKafkaReloaderTest#expressionRoutingBelongsToEachContextAndReevaluatesOnSave",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringKafkaReloaderTest.java",
-          "source_sha256": "24cb3ddb78da8297e8e0b2dcdc60eb91a1ca0f3433691e348d92aee8939c8301",
+          "source_sha256": "b80cd2fe66cf7afed5f7a71e10ab3206efc19cc43f72c21cef4f2313a4a11210",
           "assertions": "Exact assertion excerpts: assertTrue(one.reloader.reloadKafkaListeners(Owner.class, ADDED, bytes)); assertTrue(two.reloader.reloadKafkaListeners(Owner.class, ADDED, bytes)); assertArrayEquals(new String[]{\"route-one\"}, original.getContainerProperties().getTopics()); assertTrue(one.reloader.beforeBeanRefresh(Owner.class)); assertTrue(one.reloader.reloadKafkaListeners(Owner.class, ADDED, bytes)); assertNotSame(original, changed); assertArrayEquals(new String[]{\"edited-topic\"}, changed.getContainerProperties().getTopics()); assertEquals(\"edited-group\", changed.getGroupId()); assertArrayEquals(new String[]{\"other-topic\"}, two.registry.getListenerContainer(\"added\").getContainerProperties().getTopics()); assertEquals(\"other-group\", two.registry.getListenerContainer(\"added\").getGroupId());",
           "kind": "component"
         }
@@ -10053,7 +10053,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -10095,7 +10095,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8797,
           "quote": "### P4-KAFKA-COMPONENT-EXPRESSION-ROUTING-BELONGS-TO-EACH-CONTEXT-AND-REEVALUATES-ON-SAVE",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -10114,7 +10114,7 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringKafkaReloaderTest#expressionFailuresCleanPartialRegistrationsAndScope",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringKafkaReloaderTest.java",
-          "source_sha256": "24cb3ddb78da8297e8e0b2dcdc60eb91a1ca0f3433691e348d92aee8939c8301",
+          "source_sha256": "b80cd2fe66cf7afed5f7a71e10ab3206efc19cc43f72c21cef4f2313a4a11210",
           "assertions": "Exact assertion excerpts: assertFalse(s.reloader.reloadKafkaListeners(Owner.class, ADDED, write(n))); assertEquals(1, s.owner().evaluations, \"the first registration must reach native expression resolution\"); assertEquals(Set.of(\"unrelated\"), s.registry.getListenerContainerIds()); assertSame(unrelated, s.registry.getListenerContainer(\"unrelated\")); assertNull(listenerScope(s).resolveContextualObject(\"__listener\")); assertTrue(s.reloader.reloadKafkaListeners(Owner.class, ADDED, assertEquals(List.of(\"first:recovered\"), s.owner().calls);",
           "kind": "component"
         }
@@ -10129,7 +10129,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -10171,7 +10171,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8809,
           "quote": "### P4-KAFKA-COMPONENT-EXPRESSION-FAILURES-CLEAN-PARTIAL-REGISTRATIONS-AND-SCOPE",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -10190,7 +10190,7 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringKafkaReloaderTest#unsupportedOptionsShapesAndExtraAdviceAreExplicitlyRejected",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringKafkaReloaderTest.java",
-          "source_sha256": "24cb3ddb78da8297e8e0b2dcdc60eb91a1ca0f3433691e348d92aee8939c8301",
+          "source_sha256": "b80cd2fe66cf7afed5f7a71e10ab3206efc19cc43f72c21cef4f2313a4a11210",
           "assertions": "Exact assertion excerpts: assertFalse(AddedKafkaListenerAdapter.inspect(write(node), ADDED).refused().isEmpty(), option); assertFalse(AddedKafkaListenerAdapter.inspect(write(node), ADDED).refused().isEmpty()); assertFalse(AddedKafkaListenerAdapter.inspect(write(node), ADDED).refused().isEmpty()); node = read(annotated(\"first\", \"${id}\")); assertFalse(AddedKafkaListenerAdapter.inspect(write(node), ADDED).refused().isEmpty()); assertFalse(AddedKafkaListenerAdapter.inspect(write(node), ADDED).refused().isEmpty());",
           "kind": "component"
         }
@@ -10205,7 +10205,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -10247,7 +10247,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8821,
           "quote": "### P4-KAFKA-COMPONENT-UNSUPPORTED-OPTIONS-SHAPES-AND-EXTRA-ADVICE-ARE-EXPLICITLY-REJECTED",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -10280,8 +10280,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -10323,7 +10323,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8833,
           "quote": "### P4-JMS-COMPONENT-ACTUAL-SPRING-ADAPTER-USES-PRIVATE-METHOD-AND-CURRENT-SINGLETON",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -10356,8 +10356,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -10399,7 +10399,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8845,
           "quote": "### P4-JMS-COMPONENT-OWNED-CONTAINERS-ARE-DESTROYED-AND-UNRELATED-IDENTITY-SURVIVES",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -10432,8 +10432,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -10475,7 +10475,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8857,
           "quote": "### P4-JMS-COMPONENT-DUPLICATE-ID-CANNOT-STEAL-ANOTHER-BEANS-CONTAINER",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -10508,8 +10508,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -10551,7 +10551,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8869,
           "quote": "### P4-JMS-COMPONENT-SECOND-REAL-REGISTRATION-FAILURE-CLEANS-ONLY-THIS-ATTEMPT",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -10584,8 +10584,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -10627,7 +10627,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8881,
           "quote": "### P4-JMS-COMPONENT-PROXY-RECEIVER-IS-REFUSED-WITHOUT-BYPASSING-ADVICE",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -10660,8 +10660,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -10703,7 +10703,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8893,
           "quote": "### P4-JMS-COMPONENT-UNSUPPORTED-INFRASTRUCTURE-DOES-NOT-BLOCK-AN-UNRELATED-BEAN",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -10736,8 +10736,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -10779,7 +10779,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8905,
           "quote": "### P4-JMS-COMPONENT-MIXED-JMS-KAFKA-OWNER-RETIRES-NOTHING-UNTIL-BOTH-VALIDATED-THEN-BOTH",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -10812,8 +10812,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -10855,7 +10855,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8917,
           "quote": "### P4-JMS-COMPONENT-MIXED-RABBIT-JMS-OWNER-WITH-REMOVED-ANNOTATIONS-RETIRES-BOTH-ONLY-ON-COMMIT",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -10888,8 +10888,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -10931,7 +10931,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8929,
           "quote": "### P4-JMS-COMPONENT-UNFINISHED-SHUTDOWN-AND-REPEATED-WAIT-KEEP-REGISTRY-OWNERSHIP",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -10964,8 +10964,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -11007,7 +11007,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8941,
           "quote": "### P4-JMS-COMPONENT-UNSUPPORTED-FACTORIES-ARE-REFUSED-BEFORE-REGISTRATION",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -11040,8 +11040,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -11083,7 +11083,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8953,
           "quote": "### P4-JMS-COMPONENT-SELECTOR-AND-CONCURRENCY-USE-THE-ACTUAL-FACTORY-AND-BROKER",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -11116,8 +11116,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -11159,7 +11159,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8965,
           "quote": "### P4-JMS-COMPONENT-CUSTOM-EXISTING-ADAPTER-IS-REFUSED-BEFORE-CONTAINER-SHUTDOWN",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -11192,8 +11192,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -11235,7 +11235,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8977,
           "quote": "### P4-JMS-COMPONENT-INVALID-METADATA-CANNOT-CREATE-PARTIAL-REGISTRATION",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -11268,8 +11268,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -11311,7 +11311,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8989,
           "quote": "### P4-JMS-COMPONENT-UNSUPPORTED-SHAPES-AND-METHOD-ADVICE-ARE-EXPLICITLY-REFUSED",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -11344,8 +11344,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -11387,7 +11387,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9001,
           "quote": "### P4-JMS-REPLY-COMPONENT-DEFAULT-DESTINATION-REPLY-TO-AND-CORRELATION-MATCH-NATIVE-SPRING",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -11420,8 +11420,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -11463,7 +11463,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9013,
           "quote": "### P4-JMS-REPLY-COMPONENT-REPLY-TO-NEEDS-NO-SEND-TO-ANNOTATION",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -11496,8 +11496,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -11539,7 +11539,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9025,
           "quote": "### P4-JMS-REPLY-COMPONENT-CONVERTER-PRESERVES-BYTES-MAP-AND-NATIVE-AND-SPRING-MESSAGES",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -11572,8 +11572,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -11615,7 +11615,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9037,
           "quote": "### P4-JMS-REPLY-COMPONENT-NULL-RESULT-SENDS-NOTHING-AFTER-THE-BODY-RUNS",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -11648,8 +11648,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -11691,7 +11691,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9049,
           "quote": "### P4-JMS-REPLY-COMPONENT-FAILED-TRANSACTED-ATTEMPT-PRODUCES-ONE-REPLY-ONLY-AFTER-REDELIVERY",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -11724,8 +11724,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -11767,7 +11767,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9061,
           "quote": "### P4-JMS-REPLY-COMPONENT-INVALID-SEND-TO-LEAVES-NO-CONTAINER-AND-NEXT-CORRECTED-SAVE-RECOVERS",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -11800,8 +11800,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -11843,7 +11843,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9073,
           "quote": "### P4-JMS-REPLY-COMPONENT-UNSUPPORTED-RESULTS-AND-ADVICE-STAY-REFUSED",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -11876,8 +11876,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -11919,7 +11919,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9085,
           "quote": "### P4-RABBIT-COMPONENT-EXISTING-LISTENER-METADATA-DOES-NOT-BLOCK-ORDINARY-RECREATION",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -11952,8 +11952,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -11995,7 +11995,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9097,
           "quote": "### P4-RABBIT-COMPONENT-ACTUAL-SPRING-ADAPTER-USES-PRIVATE-METHOD-AND-CURRENT-SINGLETON",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -12028,8 +12028,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -12071,7 +12071,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9109,
           "quote": "### P4-RABBIT-COMPONENT-OWNED-CONTAINERS-ARE-DESTROYED-AND-UNRELATED-IDENTITY-SURVIVES",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -12104,8 +12104,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -12147,7 +12147,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9121,
           "quote": "### P4-RABBIT-COMPONENT-DUPLICATE-ID-CANNOT-STEAL-ANOTHER-BEANS-CONTAINER",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -12180,8 +12180,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -12223,7 +12223,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9133,
           "quote": "### P4-RABBIT-COMPONENT-SECOND-REAL-REGISTRATION-FAILURE-CLEANS-ONLY-THIS-ATTEMPT",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -12256,8 +12256,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -12299,7 +12299,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9145,
           "quote": "### P4-RABBIT-COMPONENT-PROXY-RECEIVER-IS-REFUSED-WITHOUT-BYPASSING-ADVICE",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -12332,8 +12332,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -12375,7 +12375,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9157,
           "quote": "### P4-RABBIT-COMPONENT-UNSUPPORTED-INFRASTRUCTURE-DOES-NOT-BLOCK-AN-UNRELATED-BEAN",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -12408,8 +12408,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -12451,7 +12451,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9169,
           "quote": "### P4-RABBIT-COMPONENT-MIXED-OWNER-RETIRES-NOTHING-UNTIL-EVERY-BROKER-VALIDATED-THEN-BOTH",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -12484,8 +12484,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -12527,7 +12527,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9181,
           "quote": "### P4-RABBIT-COMPONENT-UNSUPPORTED-FACTORIES-ARE-REFUSED-BEFORE-REGISTRATION",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -12560,8 +12560,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -12603,7 +12603,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9193,
           "quote": "### P4-RABBIT-COMPONENT-QUEUE-EXPRESSIONS-MATCH-NATIVE-ANNOTATION-PROCESSING",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -12636,8 +12636,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -12679,7 +12679,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9205,
           "quote": "### P4-RABBIT-COMPONENT-QUEUE-EXPRESSIONS-REEVALUATE-ON-SAVE-AND-RECOVER-AFTER-RESOLUTION-FAILURE",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -12712,8 +12712,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -12755,7 +12755,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9217,
           "quote": "### P4-RABBIT-COMPONENT-QUEUE-EXPRESSION-FAILURES-REMOVE-PARTIAL-REGISTRATIONS",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -12788,8 +12788,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -12831,7 +12831,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9229,
           "quote": "### P4-RABBIT-COMPONENT-INVALID-METADATA-CANNOT-CREATE-PARTIAL-REGISTRATION",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -12864,8 +12864,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -12907,7 +12907,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9241,
           "quote": "### P4-RABBIT-COMPONENT-UNSUPPORTED-SHAPES-AND-METHOD-ADVICE-ARE-EXPLICITLY-REFUSED",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -12940,8 +12940,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -12983,7 +12983,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9253,
           "quote": "### P4-RABBIT-COMPONENT-REFUSED-SAVE-DOES-NOT-RETIRE-EXISTING-CONSUMERS",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -13016,8 +13016,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -13059,7 +13059,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9265,
           "quote": "### P4-RABBIT-COMPONENT-CUSTOM-EXISTING-ADAPTER-IS-REFUSED-BEFORE-RETIREMENT",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -13092,8 +13092,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -13135,7 +13135,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9277,
           "quote": "### P4-RABBIT-COMPONENT-EXISTING-CONTAINER-ADVICE-IS-REFUSED-BEFORE-RETIREMENT",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -13168,8 +13168,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -13211,7 +13211,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9289,
           "quote": "### P4-RABBIT-COMPONENT-EXPLICIT-FACTORY-AND-CONCURRENCY-USE-SPRING-SETTINGS",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -13244,8 +13244,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -13287,7 +13287,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9301,
           "quote": "### P4-RABBIT-COMPONENT-SHUTDOWN-DOES-NOT-MEAN-BLOCKED-ORIGINAL-CALLBACK-HAS-FINISHED",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -13320,8 +13320,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -13363,7 +13363,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9313,
           "quote": "### P4-RABBIT-WORKER-COMPONENT-QUEUED-WORKER-AND-NORMAL-OR-EXCEPTIONAL-EXIT-STAY-TRACKED",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -13396,8 +13396,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -13439,7 +13439,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9325,
           "quote": "### P4-RABBIT-WORKER-COMPONENT-EXACT-SPRING-BYTES-VERIFY-AND-UNKNOWN-SHAPES-OR-LATE-ATTACH-ARE-REFUSED",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -13480,7 +13480,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -13522,7 +13522,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9337,
           "quote": "### P4-KAFKA-MODERN",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -13545,7 +13545,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -13587,7 +13587,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9361,
           "quote": "### P4-KAFKA-OTHER-ENVIRONMENTS",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -13610,7 +13610,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -13652,7 +13652,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9373,
           "quote": "### P4-KAFKA-HOSTED",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -13675,7 +13675,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -13717,7 +13717,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9385,
           "quote": "### P4-KAFKA-LATE-ATTACH",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -13768,7 +13768,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -13810,7 +13810,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9397,
           "quote": "### P4-KAFKA-CASCADE",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -13864,8 +13864,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -13907,7 +13907,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9409,
           "quote": "### P4-JMS-MODERN",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -13929,8 +13929,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -13972,7 +13972,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9433,
           "quote": "### P4-JMS-OTHER-ENVIRONMENTS",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -13994,8 +13994,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -14037,7 +14037,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9445,
           "quote": "### P4-JMS-HOSTED",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -14059,8 +14059,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -14102,7 +14102,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9457,
           "quote": "### P4-JMS-LATE-ATTACH",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -14152,8 +14152,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -14195,7 +14195,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9469,
           "quote": "### P4-JMS-CASCADE",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -14242,8 +14242,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -14285,7 +14285,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9481,
           "quote": "### P4-RABBIT-MODERN",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -14307,8 +14307,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -14350,7 +14350,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9505,
           "quote": "### P4-RABBIT-OTHER-ENVIRONMENTS",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -14372,8 +14372,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -14415,7 +14415,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9517,
           "quote": "### P4-RABBIT-HOSTED",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -14437,8 +14437,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -14480,7 +14480,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9529,
           "quote": "### P4-RABBIT-LATE-ATTACH",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -14530,8 +14530,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -14573,7 +14573,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9541,
           "quote": "### P4-RABBIT-CASCADE",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -14596,7 +14596,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -14638,7 +14638,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9553,
           "quote": "### P4-KAFKA-TRANSACTION-REBALANCE",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -14660,8 +14660,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -14703,7 +14703,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9565,
           "quote": "### P4-JMS-XA-JAKARTA-DURABLE",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -14725,8 +14725,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -14768,7 +14768,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9577,
           "quote": "### P4-RABBIT-REPLY-ASYNC",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -14787,14 +14787,14 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerReloadTest#serviceReceiverFollowsBrokerDeliveryAndRepeatedReloads",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedKafkaListenerReloadTest.java",
-          "source_sha256": "94994286f4bfbd4074b89756ee17524e5447da6ec41833c0c7ebea546e30609a",
+          "source_sha256": "11093836ec664c133df474d11e905db7597488e6672bea1ec256970305341b12",
           "kind": "watcher",
           "assertions": "Plain Service receiver: actual BASE/ADDED/OTHER messages across six saves; current generation/prefix/header; retiredRunning=0, unrelated identity retained and native context close allStopped=true."
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerReloadTest#repositoryReceiverFollowsBrokerDeliveryAndRepeatedReloads",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedKafkaListenerReloadTest.java",
-          "source_sha256": "94994286f4bfbd4074b89756ee17524e5447da6ec41833c0c7ebea546e30609a",
+          "source_sha256": "11093836ec664c133df474d11e905db7597488e6672bea1ec256970305341b12",
           "kind": "watcher",
           "assertions": "Plain Repository receiver: actual BASE/ADDED/OTHER messages across six saves; current generation/prefix/header; retiredRunning=0, unrelated identity retained and native context close allStopped=true."
         }
@@ -14809,7 +14809,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -14851,7 +14851,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9589,
           "quote": "### P4-KAFKA-STEREOTYPES",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -14874,7 +14874,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -14916,7 +14916,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9601,
           "quote": "### P4-KAFKA-HEADERS-MAP",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -14939,7 +14939,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -14981,7 +14981,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9613,
           "quote": "### P4-KAFKA-PRODUCTION-TIMEOUT",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -15021,8 +15021,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -15064,7 +15064,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9625,
           "quote": "### P4-JMS-STEREOTYPES",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -15086,8 +15086,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -15129,7 +15129,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9637,
           "quote": "### P4-JMS-HEADERS-MAP",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -15151,8 +15151,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### JMS listeners added after startup",
-          "line": 2270,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2276,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -15194,7 +15194,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9649,
           "quote": "### P4-JMS-PRODUCTION-TIMEOUT",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -15234,8 +15234,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -15277,7 +15277,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9661,
           "quote": "### P4-RABBIT-STEREOTYPES",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -15299,8 +15299,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -15342,7 +15342,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9673,
           "quote": "### P4-RABBIT-HEADERS-MAP",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -15364,8 +15364,8 @@
         {
           "path": "docs/usage.md",
           "quote": "### Rabbit listeners added after startup",
-          "line": 2408,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "line": 2414,
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -15407,7 +15407,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9685,
           "quote": "### P4-RABBIT-PRODUCTION-TIMEOUT",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -15441,7 +15441,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -15483,7 +15483,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9697,
           "quote": "### P4-KAFKA-FACTORY-OPTION",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -15517,7 +15517,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -15559,7 +15559,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9709,
           "quote": "### P4-KAFKA-CONCURRENCY-OPTION",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -15593,7 +15593,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -15635,7 +15635,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9721,
           "quote": "### P4-KAFKA-AUTOSTART-IDGROUP",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -15683,7 +15683,7 @@
           "path": "docs/usage.md",
           "quote": "### Kafka listeners added after startup",
           "line": 2144,
-          "sha256": "61983158be6ae64ea31ee3d1f554204b8c3587a14cf689bd14d204a1907fd901"
+          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
         },
         {
           "path": "docs/product-reference.md",
@@ -15725,7 +15725,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9733,
           "quote": "### P4-KAFKA-NULL-GROUP",
-          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -15877,7 +15877,7 @@
     "agent/src/main/java/com/onurkat/reclazz/compiler/ClasspathResolver.java": "9c82750874ac8261dd9eff90c63b42ab7f4c8e87d70d9501ced284a5a79f0dfd",
     "agent/src/main/java/com/onurkat/reclazz/compiler/IncrementalCompiler.java": "5660369c3a3cb7f04d3e880bb5214fb83a2d4e0a25354732bc81b66a33c99960",
     "agent/src/main/java/com/onurkat/reclazz/compiler/CompileAttempt.java": "699c86f787da3e899e70d33fa1480dca1295b5b084e840b79653b669f3e43dba",
-    "agent/src/main/java/com/onurkat/reclazz/spring/SpringKafkaListenerExpressions.java": "8ad5ec2813c6477a51b910468160f852f2fd2b8c3e8cd07eb680b56b904421ba",
+    "agent/src/main/java/com/onurkat/reclazz/spring/SpringKafkaListenerExpressions.java": "7d480018a2f11e845213b9df5795df5d4e8cb555bc3af01767ee7587246e01a0",
     "agent/src/main/java/com/onurkat/reclazz/spring/SpringNewBeanRegistrar.java": "99672e89b500fbf53385a866cdd56d94df1d6d1026f8950a9f260cc7afa0d50e",
     "agent/src/main/java/com/onurkat/reclazz/spring/SpringLifecycleReloader.java": "b8f0c1121b8bb0bd5858dfda7fb6063da78b6c228d79ec9b38ad01e8dd184342",
     "agent/src/main/java/com/onurkat/reclazz/spring/SpringPropertyRebinder.java": "3cc5546745524599fa60b6403a94576c2b853e6953719b5525f1711ff8c5c484",
@@ -15900,7 +15900,7 @@
     "agent/src/main/java/com/onurkat/reclazz/spring/SpringFactoryValues.java": "aecc5a5407df5eea45a2c706956fc8da4364469c21c8435b4e97bb0b85fc2b83",
     "agent/src/main/java/com/onurkat/reclazz/spring/SpringOperationSourceReloader.java": "dc22374c0aab1c4c42d193c6cd4a181d3c13a2883db50385a9f29f6fc59b93b5",
     "agent/src/main/java/com/onurkat/reclazz/spring/AddedKafkaListenerAdapter.java": "03e2253d096b932e41ddfbc6723dfd9e43bb5efc0bd1f7ca8ed0f86c87807203",
-    "agent/src/main/java/com/onurkat/reclazz/spring/SpringKafkaReloader.java": "79a46feee27c9bc60a4c70c8a8cc4f632870f876e04c556e5a24652711ba69e8",
+    "agent/src/main/java/com/onurkat/reclazz/spring/SpringKafkaReloader.java": "ae382a61280fdad91e5be0dc89be78b0ac3cb42bc5fa0d47f4742ae91d94fe91",
     "agent/src/main/java/com/onurkat/reclazz/spring/SpringReloadOrchestrator.java": "c3fbeab419d60c6f84fe560c3c02d9ed64e31da1a1e85b229b9f791992cc0c92",
     "agent/src/main/java/com/onurkat/reclazz/spring/SpringValidatorReloader.java": "1a8d22a2d92f2622c5434a7305a8a592780d9d9e449196c0a30050e06be83f9e",
     "agent/src/main/java/com/onurkat/reclazz/spring/SpringMvcReloader.java": "79cd8c8e38761879d9c990022008188bb6fb8b5c7c034db34357399f5435ebc5",

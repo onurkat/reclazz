@@ -86,6 +86,50 @@ public final class AddedKafkaListenerAdapter {
         }
         return new Plan(List.copyOf(methods), List.copyOf(ids), List.copyOf(refused));
     }
+
+    /** Validate what Spring's native annotation enhancer changed for this listener. */
+    static String validateEnhancement(Object original, Object enhanced) {
+        try {
+            java.lang.annotation.Annotation before = (java.lang.annotation.Annotation) original;
+            java.lang.annotation.Annotation after = (java.lang.annotation.Annotation) enhanced;
+            Class<? extends java.lang.annotation.Annotation> annotation = before.annotationType();
+            Set<String> changed = new HashSet<>();
+            for (Method attribute : annotation.getDeclaredMethods()) {
+                Object oldValue = attribute.invoke(before);
+                Object newValue = attribute.invoke(after);
+                if (!Objects.deepEquals(oldValue, newValue)) {
+                    if (!OPTIONS.contains(attribute.getName()))
+                        return "annotation enhancer produced unsupported KafkaListener option " + attribute.getName();
+                    changed.add(attribute.getName());
+                }
+            }
+            if (changed.contains("id")) literal(annotation.getMethod("id").invoke(after), "id");
+            if (changed.contains("topics")) {
+                String[] topics = (String[]) annotation.getMethod("topics").invoke(after);
+                if (topics.length == 0) throw new IllegalArgumentException("topics are required");
+                for (String topic : topics) destination(topic, "topic");
+            }
+            if (changed.contains("groupId")) {
+                String group = (String) annotation.getMethod("groupId").invoke(after);
+                if (!group.isEmpty()) destination(group, "groupId");
+            }
+            if (changed.contains("containerFactory"))
+                literal(annotation.getMethod("containerFactory").invoke(after), "containerFactory");
+            if (changed.contains("autoStartup")) {
+                String autoStartup = (String) annotation.getMethod("autoStartup").invoke(after);
+                if (!Set.of("true", "false").contains(autoStartup))
+                    throw new IllegalArgumentException("autoStartup must be literal true or false");
+            }
+            if (changed.contains("concurrency")) {
+                String concurrency = (String) annotation.getMethod("concurrency").invoke(after);
+                if (Integer.parseInt(literal(concurrency, "concurrency")) <= 0)
+                    throw new IllegalArgumentException("concurrency must be positive");
+            }
+            return null;
+        } catch (ReflectiveOperationException | RuntimeException invalid) {
+            return com.onurkat.reclazz.ui.Failures.describe(invalid);
+        }
+    }
     private static String literal(Object value, String name) {
         if (!(value instanceof String s) || s.isBlank() || s.contains("#{") || s.contains("${"))
             throw new IllegalArgumentException(name + " must be a nonempty literal");

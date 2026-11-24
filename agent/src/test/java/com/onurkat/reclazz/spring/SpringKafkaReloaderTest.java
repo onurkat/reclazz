@@ -299,6 +299,31 @@ class SpringKafkaReloaderTest {
         }
     }
 
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(booleans = {false, true})
+    void retrySelectionUsesTheSameTopicEvaluationAsRegistration(boolean matching) throws Exception {
+        try (var s = new Scope()) {
+            var producers = new org.springframework.kafka.core.DefaultKafkaProducerFactory<Integer, String>(Map.of());
+            var template = new org.springframework.kafka.core.KafkaTemplate<>(producers);
+            try {
+                var config = org.springframework.kafka.retrytopic.RetryTopicConfigurationBuilder.newInstance()
+                        .includeTopic(matching ? s.owner().topic : "another-topic").maxAttempts(2).create(template);
+                s.context.getBeanFactory().registerSingleton("retryConfiguration", config);
+                boolean registered = s.reloader.reloadKafkaListeners(Owner.class, ADDED,
+                        expressionBytes("first", "first-id", "#{__listener.countedTopic}", "group"));
+                assertEquals(!matching, registered);
+                assertEquals(1, s.owner().evaluations);
+                if (matching) assertTrue(s.registry.getListenerContainerIds().isEmpty());
+                else assertArrayEquals(new String[]{s.owner().topic},
+                        s.registry.getListenerContainer("first-id").getContainerProperties().getTopics());
+                assertNull(listenerScope(s).resolveContextualObject("__listener"));
+            } finally {
+                template.destroy();
+                producers.destroy();
+            }
+        }
+    }
+
     private static org.springframework.beans.factory.config.Scope listenerScope(Scope s) {
         Object processor = s.context.getBean(org.springframework.kafka.annotation.KafkaListenerAnnotationBeanPostProcessor.class);
         return (org.springframework.beans.factory.config.Scope) com.onurkat.reclazz.util.Reflect.readField(processor, "listenerScope");
@@ -338,6 +363,20 @@ class SpringKafkaReloaderTest {
         var node = read(write(empty)); var annotation = method(node, "first").visibleAnnotations.get(0);
         annotation.values.set(annotation.values.indexOf("groupId") + 1, 42);
         assertFalse(AddedKafkaListenerAdapter.inspect(write(node), ADDED).refused().isEmpty(), "group remains String-only");
+    }
+
+    @org.springframework.kafka.annotation.KafkaListener(id="enhancer", topics="source")
+    private void enhancerMetadata(String value) { }
+
+    @Test void enhancerUnsupportedAttributeNamesTheRefusal() throws Exception {
+        var original = SpringKafkaReloaderTest.class.getDeclaredMethod("enhancerMetadata", String.class)
+                .getAnnotation(org.springframework.kafka.annotation.KafkaListener.class);
+        var enhanced = (org.springframework.kafka.annotation.KafkaListener) Proxy.newProxyInstance(
+                original.annotationType().getClassLoader(), new Class<?>[]{original.annotationType()},
+                (proxy, method, arguments) -> method.getName().equals("properties")
+                        ? new String[]{"x=y"} : method.invoke(original, arguments));
+        assertEquals("annotation enhancer produced unsupported KafkaListener option properties",
+                AddedKafkaListenerAdapter.validateEnhancement(original, enhanced));
     }
 
     public static class Other { public void first(String value) { } }
