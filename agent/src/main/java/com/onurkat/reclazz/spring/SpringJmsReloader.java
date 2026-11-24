@@ -4,6 +4,7 @@
  */
 package com.onurkat.reclazz.spring;
 
+import com.onurkat.reclazz.bootstrap.NativeListenerSetup;
 import com.onurkat.reclazz.platform.PlatformContext;
 import com.onurkat.reclazz.ui.Failures;
 import com.onurkat.reclazz.ui.ReloadEffects;
@@ -43,7 +44,7 @@ public final class SpringJmsReloader {
         if (owners.get(type).registered || declaresJms(type, bytes)) return true;
         try {
             for (var scope : infrastructures()) for (var c : containers(scope.registry())) {
-                Object bean = listenerBean(messageListener(c.instance()));
+                Object bean = registrationBean(c.instance(), scope.processor());
                 if (AddedJmsListenerAdapter.ownerOf(bean) == type || (bean != null && type.isInstance(bean))) return true;
             }
             return false;
@@ -74,12 +75,11 @@ public final class SpringJmsReloader {
                 if (!(cache instanceof Set<?>)) throw new IllegalStateException("JMS negative scan cache is inaccessible");
                 for (var c : containers(scope.registry())) {
                     Object listener = messageListener(c.instance());
-                    Object bean = listenerBean(listener);
+                    Object bean = registrationBean(c.instance(), scope.processor());
                     if (AddedJmsListenerAdapter.ownerOf(bean) != type && (bean == null || !type.isInstance(bean))) continue;
                     relevant = true;
                     owners.get(type).registered = true;
-                    if (!listener.getClass().getName().equals(ADAPTER))
-                        throw new IllegalStateException("custom JMS listener adapter for " + c.id());
+                    requireAdapter(scope, c.instance(), listener, bean);
                     if (AddedJmsListenerAdapter.ownerOf(bean) != type)
                         throw new IllegalStateException("proxy or subclass JMS listener receiver for " + c.id());
                     // Validate every selected entry before stopping any of them.
@@ -147,19 +147,20 @@ public final class SpringJmsReloader {
                 for (int i = 0; i < delegate.methods().size(); i++) {
                     Method method = delegate.methods().get(i);
                     Object metadata = Arrays.stream(method.getDeclaredAnnotations()).filter(a -> a.annotationType() == annotation).findFirst().orElseThrow();
-                    try {
+                    try (var guard = NativeListenerSetup.beforeStart(scope.processor(), delegate.bean(),
+                            (endpoint, candidate, adapter) -> requireAdapter(scope, candidate, adapter, delegate.bean()))) {
                         process.invoke(scope.processor(), metadata, method, delegate.bean());
                     } finally {
                         Object registered = container(scope.registry(), plan.ids().get(i));
-                        if (registered != null && listenerBean(messageListener(registered)) == delegate.bean()) {
+                        if (registered != null && (NativeListenerSetup.produced(registered, scope.processor(), delegate.bean())
+                                || listenerBean(messageListener(registered)) == delegate.bean())) {
                             created.add(new Container(scope.registry(), plan.ids().get(i), registered));
                             owners.get(type).registered = true;
                         }
                     }
                     Object registered = container(scope.registry(), plan.ids().get(i));
                     if (registered == null) throw new IllegalStateException("JMS processor did not register " + plan.ids().get(i));
-                    if (!messageListener(registered).getClass().getName().equals(ADAPTER))
-                        throw new IllegalStateException("custom listener adapters require a restart");
+                    requireAdapter(scope, registered, messageListener(registered), delegate.bean());
                     changed = true;
                 }
             }
@@ -198,7 +199,7 @@ public final class SpringJmsReloader {
                 if (a.values.get(i).equals("containerFactory")) name = (String) a.values.get(i + 1);
         requireFactory(scope, name);
     }
-    private static void requireFactory(Infrastructure scope, String name) throws Exception {
+    private static Object requireFactory(Infrastructure scope, String name) throws Exception {
         if (name.isEmpty()) {
             Object configured = Reflect.readField(scope.processor(), "containerFactoryBeanName");
             if (!(configured instanceof String)) throw new IllegalStateException("JMS default factory inaccessible");
@@ -207,11 +208,38 @@ public final class SpringJmsReloader {
         Object factory = SpringBeans.getBean(scope.context(), name);
         if (factory == null || !factory.getClass().getName().equals("org.springframework.jms.config.DefaultJmsListenerContainerFactory"))
             throw new IllegalStateException("standard DefaultJmsListenerContainerFactory required: " + name);
+        if (!scope.processor().getClass().getName().equals(PROCESSOR) && !NativeListenerSetup.observed(scope.processor(), factory))
+            throw new IllegalStateException("custom JMS listener setup was not observed at construction");
         for (String field : List.of("transactionManager", "taskExecutor")) {
             var metadata = Reflect.findField(factory.getClass(), field);
             if (metadata == null || metadata.get(factory) != null)
                 throw new IllegalStateException("JMS factory " + field + " is unsupported for added listeners");
         }
+        return factory;
+    }
+
+    // Spring owns the registrar and scanner. Only endpoint creation is an application extension here.
+    private static boolean nativeProcessor(Object processor) throws ClassNotFoundException {
+        if (processor == null) return false;
+        Class<?> type = processor.getClass();
+        Class<?> base = Class.forName(PROCESSOR, false, type.getClassLoader());
+        if (type == base) return true;
+        if (!base.isAssignableFrom(type)) return false;
+        boolean createsEndpoint = false;
+        for (Class<?> current = type; current != base; current = current.getSuperclass()) {
+            for (var field : current.getDeclaredFields()) {
+                if (Set.of("registrar", "containerFactoryBeanName", "nonAnnotatedClasses").contains(field.getName())) return false;
+            }
+            for (Method method : current.getDeclaredMethods()) {
+                if (method.isBridge() || method.isSynthetic()) continue;
+                if (method.getName().equals("createMethodJmsListenerEndpoint") && method.getParameterCount() == 0) {
+                    createsEndpoint = true;
+                } else if (Reflect.findMethod(base, method.getName(), method.getParameterTypes()) != null) {
+                    return false;
+                }
+            }
+        }
+        return createsEndpoint;
     }
 
     private List<Infrastructure> infrastructures() throws Exception {
@@ -225,7 +253,7 @@ public final class SpringJmsReloader {
             if (names.length == 0) continue;
             if (names.length != 1) throw new IllegalStateException("multiple JMS listener processors are unsupported");
             Object processor = SpringBeans.getBean(context, names[0]);
-            if (processor == null || !processor.getClass().getName().equals(PROCESSOR))
+            if (!nativeProcessor(processor))
                 throw new IllegalStateException("custom JMS listener processors are unsupported");
             Object registrar = Reflect.readField(processor, "registrar");
             if (registrar == null) throw new IllegalStateException("JMS registrar is inaccessible");
@@ -273,9 +301,39 @@ public final class SpringJmsReloader {
         return false;
     }
 
+    private static Object registrationBean(Object container, Object processor) throws Exception {
+        Object original = NativeListenerSetup.originBean(container, processor);
+        return original != null ? original : listenerBean(messageListener(container));
+    }
+
+    private static Object handlerMethod(Object adapter) throws Exception {
+        if (adapter == null) return null;
+        Class<?> base = adapter.getClass();
+        while (base != null && !ADAPTER.equals(base.getName())) base = base.getSuperclass();
+        if (base == null) return null;
+        var field = Reflect.findField(base, "handlerMethod");
+        return field == null ? null : field.get(adapter);
+    }
+
+    private static void requireAdapter(Infrastructure scope, Object container, Object adapter, Object receiver) throws Exception {
+        Object handler = handlerMethod(adapter);
+        if (handler == null || receiver == null || handler.getClass().getMethod("getBean").invoke(handler) != receiver)
+            throw new IllegalStateException("custom JMS listener adapter has no matching native callback");
+        if (adapter.getClass().getName().equals(ADAPTER)
+                && (NativeListenerSetup.originBean(container, scope.processor()) == null
+                || NativeListenerSetup.originalAdapter(container, adapter, scope.processor(), receiver))) return;
+        Method method = (Method) handler.getClass().getMethod("getMethod").invoke(handler);
+        for (var annotation : method.getDeclaredAnnotations()) {
+            if (!annotation.annotationType().getName().equals("org.springframework.jms.annotation.JmsListener")) continue;
+            String name = (String) annotation.annotationType().getMethod("containerFactory").invoke(annotation);
+            if (NativeListenerSetup.installed(container, adapter, scope.processor(), receiver, requireFactory(scope, name)))
+                return;
+        }
+        throw new IllegalStateException("custom JMS listener adapter does not match its native factory registration");
+    }
+
     private static Object listenerBean(Object listener) throws Exception {
-        if (listener == null) return null;
-        Object handler = Reflect.readField(listener, "handlerMethod");
+        Object handler = handlerMethod(listener);
         return handler == null ? null : handler.getClass().getMethod("getBean").invoke(handler);
     }
     private static Map<?,?> registryMap(Object registry) {
@@ -406,15 +464,14 @@ public final class SpringJmsReloader {
             List<Container> owned = new ArrayList<>();
             for (var scope : scopes) for (var c : containers(scope.registry())) {
                 Object adapter = messageListener(c.instance());
-                Object receiver = listenerBean(adapter);
+                Object receiver = registrationBean(c.instance(), scope.processor());
                 if (receiver != bean && AddedJmsListenerAdapter.ownerOf(receiver) != type) continue;
-                if (!adapter.getClass().getName().equals(ADAPTER))
-                    throw new IllegalStateException("custom dependent JMS adapter requires a restart");
+                requireAdapter(scope, c.instance(), adapter, receiver);
                 requireLifecycle(c);
                 if (!Boolean.TRUE.equals(c.instance().getClass().getMethod("isActive").invoke(c.instance()))
                         || !Boolean.TRUE.equals(c.instance().getClass().getMethod("isRunning").invoke(c.instance())))
                     throw new IllegalStateException("dependent JMS consumer is inactive or shutting down: " + c.id());
-                Object handler = Reflect.readField(adapter, "handlerMethod");
+                Object handler = handlerMethod(adapter);
                 Method method = (Method) handler.getClass().getMethod("getMethod").invoke(handler);
                 Object metadata = Arrays.stream(method.getDeclaredAnnotations())
                         .filter(a -> a.annotationType().getName().equals("org.springframework.jms.annotation.JmsListener"))
@@ -571,6 +628,7 @@ public final class SpringJmsReloader {
                             || current.getClass() != callback.type()
                             || listenerBean(messageListener(container)) != (callback.added() ? callback.receiver() : current))
                         throw new IllegalStateException("JMS dependent callback was not restored: " + callback.container().id());
+                    requireAdapter(callback.scope(), container, messageListener(container), callback.added() ? callback.receiver() : current);
                 }
                 ReloadEffects.note("dependent JMS consumers re-created");
                 return result;
@@ -581,7 +639,7 @@ public final class SpringJmsReloader {
                 for (var callback : callbacks) {
                     Object value = container(callback.scope().registry(), callback.container().id());
                     if (value != null && value != callback.container().instance()
-                            && AddedJmsListenerAdapter.ownerOf(listenerBean(messageListener(value))) == callback.type())
+                            && AddedJmsListenerAdapter.ownerOf(registrationBean(value, callback.scope().processor())) == callback.type())
                         created.add(new Container(callback.scope().registry(), callback.container().id(), value));
                 }
                 try { coordinator.stopAndRemove(created); } catch (Exception cleanup) { failure.addSuppressed(cleanup); }

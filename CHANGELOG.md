@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ### Added
 
 - Spring 5.3.39 and 6.1.14 can register an instance `@Bean` added to a watched lite configuration or its application superclass. Shared superclasses use the factory owner Spring selected at startup. Enhanced JVMs also support default factories on a newly implemented interface or an existing interface.
+- Kafka, RabbitMQ and JMS listener reloads retain supported adapters and policies created by their Spring factories. Kafka filters, batch-to-record conversion and the legacy retry template follow re-registration. Kafka and Rabbit listener owners can keep their native transaction managers across a helper change. Verified with Spring Kafka 2.9.13 and 3.2.4, Spring AMQP 2.4.17 and 3.1.7, and Spring JMS on Framework 5.3.39 and 6.1.14.
 
 - Added Kafka listeners and listener rescans apply Spring's native annotation
   enhancer; an enhancer that changes an unsupported option names it in the restart

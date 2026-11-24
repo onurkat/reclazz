@@ -4,6 +4,7 @@
  */
 package com.onurkat.reclazz.spring;
 
+import com.onurkat.reclazz.bootstrap.NativeListenerSetup;
 import com.onurkat.reclazz.platform.PlatformContext;
 import com.onurkat.reclazz.ui.Failures;
 import com.onurkat.reclazz.ui.ReloadEffects;
@@ -46,7 +47,7 @@ public final class SpringRabbitReloader {
         if (owners.get(type).registered || declaresRabbit(type, bytes)) return true;
         try {
             for (var scope : infrastructures()) for (var container : containers(scope.registry())) {
-                Object bean = listenerBean(messageListener(container.instance()));
+                Object bean = registrationBean(container.instance(), scope.processor());
                 if (AddedRabbitListenerAdapter.ownerOf(bean) == type || (bean != null && type.isInstance(bean))) return true;
             }
             return false;
@@ -77,11 +78,11 @@ public final class SpringRabbitReloader {
                 if (!(cache instanceof Map<?,?>)) throw new IllegalStateException("Rabbit negative scan cache is inaccessible");
                 for (var c : containers(scope.registry())) {
                     Object listener = messageListener(c.instance());
-                    Object bean = listenerBean(listener);
+                    Object bean = registrationBean(c.instance(), scope.processor());
                     if (AddedRabbitListenerAdapter.ownerOf(bean) != type && (bean == null || !type.isInstance(bean))) continue;
                     relevant = true;
                     owners.get(type).registered = true;
-                    if (!STANDARD_ADAPTERS.contains(listener.getClass().getName()))
+                    if (!nativeAdapter(scope, c.instance(), listener, bean))
                         throw new IllegalStateException("custom Rabbit listener adapter for " + c.id());
                     if (AddedRabbitListenerAdapter.ownerOf(bean) != type)
                         throw new IllegalStateException("proxy or subclass Rabbit listener receiver for " + c.id());
@@ -170,19 +171,32 @@ public final class SpringRabbitReloader {
                 for (int i = 0; i < delegate.methods().size(); i++) {
                     Method method = delegate.methods().get(i);
                     Object metadata = Arrays.stream(method.getDeclaredAnnotations()).filter(a -> a.annotationType() == annotation).findFirst().orElseThrow();
-                    try {
+                    String id = plan.ids().get(i);
+                    try (var guard = NativeListenerSetup.beforeStart(scope.processor(), delegate.bean(), (endpoint, candidate, adapter) -> {
+                        if (!nativeAdapter(scope, candidate, adapter, delegate.bean()))
+                            throw new IllegalStateException("custom Rabbit listener adapter lost its registered receiver");
+                        Object nativeFactory = NativeListenerSetup.factory(candidate);
+                        // Spring itself sets this flag during initialization. At factory return it distinguishes
+                        // an explicit per-container replacement from the default SimpleAsyncTaskExecutor.
+                        if (Reflect.readField(nativeFactory, "taskExecutor") == null
+                                && Boolean.TRUE.equals(Reflect.readField(candidate, "taskExecutorSet")))
+                            throw new IllegalStateException("Rabbit custom task executor is unsupported");
+                        requireLifecycle(new Container(scope.registry(), id, candidate));
+                    })) {
                         process.invoke(scope.processor(), metadata, method, delegate.bean(), name);
                     } finally {
                         Object registered = container(scope.registry(), plan.ids().get(i));
-                        if (registered != null && listenerBean(messageListener(registered)) == delegate.bean()) {
+                        if (registered != null && (NativeListenerSetup.produced(registered, scope.processor(), delegate.bean())
+                                || listenerBean(messageListener(registered)) == delegate.bean())) {
                             created.add(new Container(scope.registry(), plan.ids().get(i), registered));
                             owners.get(type).registered = true;
                         }
                     }
                     Object registered = container(scope.registry(), plan.ids().get(i));
                     if (registered == null) throw new IllegalStateException("Rabbit processor did not register " + plan.ids().get(i));
-                    if (!STANDARD_ADAPTERS.contains(messageListener(registered).getClass().getName()))
+                    if (!nativeAdapter(scope, registered, messageListener(registered), delegate.bean()))
                         throw new IllegalStateException("custom listener adapters require a restart");
+                    requireLifecycle(new Container(scope.registry(), plan.ids().get(i), registered));
                     changed = true;
                 }
             }
@@ -221,7 +235,7 @@ public final class SpringRabbitReloader {
                 if (a.values.get(i).equals("containerFactory")) name = (String) a.values.get(i + 1);
         requireFactory(scope, name);
     }
-    private static void requireFactory(Infrastructure scope, String name) throws Exception {
+    private static Object requireFactory(Infrastructure scope, String name) throws Exception {
         if (name.isEmpty()) {
             Object defaultName = Reflect.readField(scope.processor(), "defaultContainerFactoryBeanName");
             if (!(defaultName instanceof String value)) throw new IllegalStateException("Rabbit default factory inaccessible");
@@ -232,11 +246,20 @@ public final class SpringRabbitReloader {
         Object factory = SpringBeans.getBean(scope.context(), name);
         if (factory == null || !factory.getClass().getName().equals("org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory"))
             throw new IllegalStateException("standard SimpleRabbitListenerContainerFactory required: " + name);
-        for (String field : List.of("transactionManager", "taskExecutor", "containerCustomizer")) requireEmpty(factory, field);
+        for (String field : List.of("transactionManager", "taskExecutor", "containerCustomizer")) {
+            var property = Reflect.findField(factory.getClass(), field);
+            if (property == null || property.get(factory) != null && !NativeListenerSetup.observed(scope.processor(), factory))
+                throw new IllegalStateException("Rabbit " + field + " is unsupported without observed native setup");
+        }
+        requireBrokerManager(Reflect.readField(factory, "transactionManager"));
+        Object executor = Reflect.readField(factory, "taskExecutor");
+        if (executor != null && !asyncExecutor(executor))
+            throw new IllegalStateException("Rabbit taskExecutor requires a native asynchronous executor");
         requireNoAdvice(factory);
         var ack = Reflect.findField(factory.getClass(), "acknowledgeMode");
         if (ack == null || (ack.get(factory) != null && !ack.get(factory).toString().equals("AUTO")))
             throw new IllegalStateException("Rabbit AUTO acknowledgment required");
+        return factory;
     }
     private static void requireEmpty(Object target, String field) throws Exception {
         var metadata = Reflect.findField(target.getClass(), field);
@@ -308,29 +331,71 @@ public final class SpringRabbitReloader {
         return false;
     }
 
+    private static Object registrationBean(Object container, Object processor) throws Exception {
+        Object bean = NativeListenerSetup.originBean(container, processor);
+        return bean == null ? listenerBean(messageListener(container)) : bean;
+    }
+
+    private static boolean nativeAdapter(Infrastructure scope, Object container, Object adapter, Object receiver) throws Exception {
+        if (receiver == null || listenerBean(adapter) != receiver) return false;
+        if (NativeListenerSetup.originBean(container, scope.processor()) == null)
+            return STANDARD_ADAPTERS.contains(adapter.getClass().getName());
+        return NativeListenerSetup.originalAdapter(container, adapter, scope.processor(), receiver);
+    }
+
     private static Object listenerBean(Object listener) throws Exception {
         if (listener == null) return null;
-        Object handler = Reflect.readField(listener, "handlerAdapter");
+        Object handler = handlerAdapter(listener);
         return handler == null ? null : handler.getClass().getMethod("getBean").invoke(handler);
     }
+    private static Object handlerAdapter(Object listener) throws Exception {
+        Class<?> base = listener == null ? null : listener.getClass();
+        while (base != null && !base.getName().equals(ADAPTER)) base = base.getSuperclass();
+        if (base == null) return null;
+        var field = Reflect.findField(base, "handlerAdapter");
+        return field == null ? null : field.get(listener);
+    }
+
     private static Map<?,?> registryMap(Object registry) {
         Object value = Reflect.readField(registry, "listenerContainers");
         if (!(value instanceof Map<?,?> map)) throw new IllegalStateException("Rabbit registry map is inaccessible");
         return map;
     }
     private static void requireLifecycle(Container c) throws Exception {
-        if (!c.instance().getClass().getName().equals("org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer"))
-            throw new IllegalStateException("standard SimpleMessageListenerContainer required: " + c.id());
-        requireTracking(c.instance().getClass().getClassLoader());
+        requireShutdown(c);
         // A consumer batch that is still being collected is unacknowledged; AUTO requeues it when the
         // retiring channel closes, so batch containers keep the single-message delivery guarantee.
         if (!c.instance().getClass().getMethod("getAcknowledgeMode").invoke(c.instance()).toString().equals("AUTO"))
             throw new IllegalStateException("Rabbit AUTO acknowledgment containers required");
+        Object factory = NativeListenerSetup.factory(c.instance());
         Object executor = Reflect.readField(c.instance(), "taskExecutor");
-        if (executor == null || !executor.getClass().getName().equals("org.springframework.core.task.SimpleAsyncTaskExecutor"))
+        Object configured = Reflect.readField(factory, "taskExecutor");
+        if (configured == null ? executor == null || !executor.getClass().getName().equals("org.springframework.core.task.SimpleAsyncTaskExecutor")
+                : executor != configured || !asyncExecutor(executor))
             throw new IllegalStateException("Rabbit custom task executor is unsupported");
         requireNoAdvice(c.instance());
-        requireEmpty(c.instance(), "transactionManager");
+        var manager = Reflect.findField(c.instance().getClass(), "transactionManager");
+        if (manager == null || manager.get(c.instance()) != Reflect.readField(factory, "transactionManager"))
+            throw new IllegalStateException("Rabbit transactionManager differs from its native factory");
+        requireBrokerManager(manager.get(c.instance()));
+    }
+
+    private static void requireBrokerManager(Object manager) throws ClassNotFoundException {
+        if (manager != null && !Class.forName("org.springframework.amqp.rabbit.transaction.RabbitTransactionManager",
+                false, manager.getClass().getClassLoader()).isInstance(manager))
+            throw new IllegalStateException("Rabbit callback requires a RabbitTransactionManager");
+    }
+
+    private static boolean asyncExecutor(Object executor) {
+        // Unknown executors may run the listener loop on the registering thread.
+        return executor != null && Set.of("org.springframework.core.task.SimpleAsyncTaskExecutor",
+                "org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor").contains(executor.getClass().getName());
+    }
+
+    private static void requireShutdown(Container c) throws Exception {
+        if (!c.instance().getClass().getName().equals("org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer"))
+            throw new IllegalStateException("standard SimpleMessageListenerContainer required: " + c.id());
+        requireTracking(c.instance().getClass().getClassLoader());
         registryMap(c.registry());
         for (String method : List.of("destroy", "isRunning", "isActive", "getActiveConsumerCount"))
             c.instance().getClass().getMethod(method);
@@ -341,7 +406,7 @@ public final class SpringRabbitReloader {
             throw new IllegalStateException("Rabbit worker tracking unavailable; start with -javaagent");
     }
     private void stopAndRemove(List<Container> selected) throws Exception {
-        for (var c : selected) requireLifecycle(c);
+        for (var c : selected) requireShutdown(c);
         for (var c : selected) com.onurkat.reclazz.bootstrap.RabbitConsumerBridge.retire(c.instance());
         for (var c : selected) {
             FutureTask<Void> work = retirements.get(c.instance());
@@ -498,16 +563,16 @@ public final class SpringRabbitReloader {
             List<Container> owned = new ArrayList<>();
             for (var scope : scopes) for (var c : containers(scope.registry())) {
                 Object adapter = messageListener(c.instance());
-                Object receiver = listenerBean(adapter);
+                Object receiver = registrationBean(c.instance(), scope.processor());
                 if (receiver != bean && AddedRabbitListenerAdapter.ownerOf(receiver) != type) continue;
-                if (!STANDARD_ADAPTERS.contains(adapter.getClass().getName()))
+                if (!nativeAdapter(scope, c.instance(), adapter, receiver))
                     throw new IllegalStateException("custom dependent Rabbit adapter requires a restart");
                 requireLifecycle(c);
                 if (!c.instance().getClass().getName().equals("org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer"))
                     throw new IllegalStateException("standard simple Rabbit container required");
                 if (!Boolean.TRUE.equals(c.instance().getClass().getMethod("isRunning").invoke(c.instance())))
                     throw new IllegalStateException("dependent Rabbit consumer is inactive or shutting down: " + c.id());
-                Object handler = Reflect.readField(adapter, "handlerAdapter");
+                Object handler = handlerAdapter(adapter);
                 Object invoker = Reflect.readField(handler, "invokerHandlerMethod");
                 if (invoker == null || Reflect.readField(handler, "delegatingHandler") != null)
                     throw new IllegalStateException("single-method Rabbit callback required");
@@ -518,14 +583,16 @@ public final class SpringRabbitReloader {
                 String id = (String) ((java.lang.annotation.Annotation) metadata).annotationType().getMethod("id").invoke(metadata);
                 if (!id.equals(c.id()) || id.isBlank() || id.contains("${") || id.contains("#{"))
                     throw new IllegalStateException("dependent Rabbit callback requires a stable literal id");
-                requireFactory(scope, (String) ((java.lang.annotation.Annotation) metadata).annotationType().getMethod("containerFactory").invoke(metadata));
                 if (method.getReturnType() != void.class) throw new IllegalStateException("void dependent Rabbit callbacks required");
                 String factoryName = (String) ((java.lang.annotation.Annotation) metadata).annotationType().getMethod("containerFactory").invoke(metadata);
-                if (factoryName.isEmpty()) factoryName = (String) Reflect.readField(scope.processor(), "defaultContainerFactoryBeanName");
-                Object dependencyFactory = SpringBeans.getBean(scope.context(), factoryName);
-                if (Boolean.TRUE.equals(Reflect.readField(dependencyFactory, "channelTransacted"))
-                        || !Boolean.FALSE.equals(c.instance().getClass().getMethod("isChannelTransacted").invoke(c.instance())))
-                    throw new IllegalStateException("nontransacted Rabbit callback/factory required in this stage");
+                Object dependencyFactory = requireFactory(scope, factoryName);
+                boolean transacted = Boolean.TRUE.equals(c.instance().getClass().getMethod("isChannelTransacted").invoke(c.instance()));
+                // Spring coerces channelTransacted to true during initialization when a manager is configured.
+                boolean configured = Boolean.TRUE.equals(Reflect.readField(dependencyFactory, "channelTransacted"))
+                        || Reflect.readField(dependencyFactory, "transactionManager") != null;
+                if (transacted != configured || transacted && !NativeListenerSetup.installed(
+                        c.instance(), adapter, scope.processor(), receiver, dependencyFactory))
+                    throw new IllegalStateException("transacted Rabbit callback/factory requires matching native registration");
                 var annotation = (java.lang.annotation.Annotation) metadata;
                 for (Method option : annotation.annotationType().getDeclaredMethods())
                     if (!Set.of("id", "queues", "containerFactory", "concurrency").contains(option.getName())

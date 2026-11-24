@@ -92,6 +92,105 @@ class AddedKafkaListenerReloadTest {
             System.out.println("[added-kafka] existing=" + existing + " add/edit/topic/remove/private-restore/unannotate passed; single delivery, retired consumers, unrelated identity, context close verified");
         } finally { producerFactory.destroy(); }
     }
+    @Test void nativeFactoryPoliciesSurviveRegistrationAndRemoval() throws Exception {
+        nativeFactoryPolicies(tmp, broker.getBrokersAsString(), true);
+    }
+
+    static void nativeFactoryPolicies(Path root, String brokers, boolean legacy) throws Exception {
+        // One native record factory and one native batch-to-record factory, for each pinned Kafka version.
+        for (boolean batch : new boolean[]{false, true}) {
+            String policy = """
+                    factory.setRecordFilterStrategy(record -> {
+                        if (!"drop".equals(record.value())) return false;
+                        System.out.println("FILTERED:drop");
+                        return true;
+                    });
+                    factory.setContainerCustomizer(container -> {
+                        container.getContainerProperties().setPollTimeout(123);
+                        System.out.println("CUSTOMIZED:" + container.getListenerId());
+                    });
+                    """;
+            if (batch) policy += """
+                    factory.setBatchListener(true);
+                    factory.getContainerProperties().setAckMode(org.springframework.kafka.listener.ContainerProperties.AckMode.BATCH);
+                    factory.setBatchToRecordAdapter((messages, records, acknowledgment, consumer, callback) -> {
+                        System.out.println("BATCH-ADAPTER:" + records.size());
+                        new org.springframework.kafka.listener.adapter.DefaultBatchToRecordAdapter<Integer,String>()
+                            .adapt(messages, records, acknowledgment, consumer, callback);
+                    });
+                    """;
+            else if (legacy) policy += "factory.setRetryTemplate(new org.springframework.retry.support.RetryTemplate());";
+            if (!batch) policy = policy.replace("container.getContainerProperties().setPollTimeout(123);", """
+                    container.getContainerProperties().setPollTimeout(123);
+                    var original = (org.springframework.kafka.listener.MessageListener<Integer,String>) container.getContainerProperties().getMessageListener();
+                    var wrapper = new org.springframework.kafka.listener.adapter.FilteringMessageListenerAdapter<Integer,String>(original, record -> {
+                        System.out.println("WRAPPER:" + record.value());
+                        return false;
+                    }) { };
+                    container.setupMessageListener(wrapper);
+                    """);
+            String fixture = APP.replace("return factory;", policy + "return factory;");
+            for (boolean nativeStart : new boolean[]{true, false}) {
+                String topic = "factory-" + UUID.randomUUID(), base = topic + "-base", otherTopic = topic + "-other";
+                String initial = listener(true, 0, topic, base, "Component");
+                String added = listener(true, 1, topic, base, "Component");
+                if (legacy && !batch) {
+                    added = added.replace("System.out.println(\"ADDED:", """
+                            if (value.equals("keep")) {
+                                int attempt = org.springframework.retry.support.RetrySynchronizationManager.getContext().getRetryCount();
+                                System.out.println("RETRY:" + attempt);
+                                if (attempt == 0) throw new IllegalStateException("first invocation");
+                            }
+                            System.out.println("ADDED:""");
+                }
+                var builder = WatchedApp.in(root.resolve(topic)).classpath(System.getProperty("java.class.path"))
+                        .jvmArgs("-Dtest.brokers=" + brokers)
+                        .with("Listener", nativeStart ? added : initial).with("Other", other(otherTopic)).with("App", fixture);
+                if (nativeStart) builder.withoutAgent();
+                else builder.agentArgs("startupDelaySec=1,debounceMs=100,verbose=true");
+                var props = Map.<String,Object>of("bootstrap.servers", brokers,
+                        "key.serializer", org.apache.kafka.common.serialization.IntegerSerializer.class,
+                        "value.serializer", org.apache.kafka.common.serialization.StringSerializer.class);
+                try (var producer = new org.apache.kafka.clients.producer.KafkaProducer<Integer,String>(props);
+                     var app = builder.start()) {
+                    app.awaitOrFail("PORT=", "Kafka factory startup");
+                    int port = Integer.parseInt(app.latest("PORT=").substring(5));
+                    if (!nativeStart) {
+                        app.awaitOrFail("] Watching ", "watcher initialization");
+                        app.rewrite("Listener", added);
+                    }
+                    waitState(port, "added:assigned", app);
+                    app.awaitOrFail("CUSTOMIZED:added", "native factory customization");
+                    for (String value : List.of("drop", "keep"))
+                        producer.send(new org.apache.kafka.clients.producer.ProducerRecord<>(topic, 0, 0, value)).get(10, TimeUnit.SECONDS);
+                    String delivered = "ADDED:1:owner:" + topic + ":keep";
+                    app.awaitOrFail(delivered, "factory callback delivery");
+                    assertEquals(1, app.output().stream().filter(delivered::equals).count(), app.tail());
+                    assertEquals(1, app.output().stream().filter("FILTERED:drop"::equals).count(), app.tail());
+                    assertFalse(app.output().contains("ADDED:1:owner:" + topic + ":drop"), app.tail());
+                    if (batch) assertTrue(app.output().stream().anyMatch(line -> line.startsWith("BATCH-ADAPTER:")), app.tail());
+                    else assertEquals(1, app.output().stream().filter("WRAPPER:keep"::equals).count(), app.tail());
+                    if (legacy && !batch) {
+                        assertEquals(1, app.output().stream().filter("RETRY:0"::equals).count(), app.tail());
+                        assertEquals(1, app.output().stream().filter("RETRY:1"::equals).count(), app.tail());
+                    }
+                    if (!nativeStart) {
+                        http(port, "/snapshot");
+                        long before = reloads(app);
+                        app.rewrite("Listener", initial);
+                        long until = System.nanoTime() + TimeUnit.SECONDS.toNanos(30);
+                        while (reloads(app) == before && System.nanoTime() < until) Thread.sleep(25);
+                        assertEquals(before + 1, reloads(app), app.tail());
+                        String state = http(port, "/state");
+                        assertFalse(state.contains("added:"), state);
+                        assertTrue(state.contains("retiredRunning=0") && state.contains("otherSame=true"), state);
+                    }
+                    assertEquals("allStopped=true", http(port, "/close"));
+                }
+            }
+        }
+    }
+
     private static long reloads(WatchedApp app) {
         return app.output().stream().filter(s -> s.contains("Reloaded app.Listener ") || s.contains("Structural reload: app.Listener ")).count();
     }

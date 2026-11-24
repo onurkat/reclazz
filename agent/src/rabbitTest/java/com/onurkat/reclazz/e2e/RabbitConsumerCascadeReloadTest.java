@@ -3,6 +3,9 @@ package com.onurkat.reclazz.e2e;
 import java.io.File; import java.nio.file.Path; import java.util.*; import java.util.concurrent.TimeUnit;
 import com.onurkat.reclazz.e2e.harness.RabbitBroker; import org.springframework.amqp.rabbit.core.*;
 class RabbitConsumerCascadeReloadTest extends RabbitConsumerCascadeContract {
+    @org.junit.jupiter.api.Test void factoryAdapterRetainsTransactionAndWorkerAfterHelperRefresh() throws Exception {
+        try (var backend = open()) { verifyFactoryRefresh(backend); }
+    }
  Backend open()throws Exception{return new Env();}
  static class Env implements Backend {
 final RabbitBroker broker;final RabbitTemplate producer; final RabbitAdmin admin;

@@ -112,6 +112,80 @@ class ModernRabbitListenerReloadTest {
         }
     }
 
+    @Test void factoryCustomAdapterUsesOriginalExecutorAndTransactionManagerAfterReload() throws Exception {
+        String fixture = com.onurkat.reclazz.e2e.harness.CustomRabbitAdapterFixture.application(APP);
+        for (boolean nativeStart : new boolean[]{true, false}) {
+            String queue = "custom-" + UUID.randomUUID(), base = queue + "-base", otherQueue = queue + "-other";
+            var producer = new RabbitTemplate(broker.connectionFactory());
+            var admin = new RabbitAdmin(broker.connectionFactory());
+            for (String q : List.of(queue, base, otherQueue)) admin.declareQueue(new org.springframework.amqp.core.Queue(q));
+            String added = listener(true, false, 1, queue, base, "Component");
+            String initial = listener(true, false, 0, queue, base, "Component");
+            var builder = WatchedApp.in(tmp.resolve(queue)).classpath(rabbitClasspath())
+                    .jvmArgs("-Dtest.rabbit.port=" + broker.port(), "-Dtest.rabbit.password=" + broker.password(), "-Dtest.rabbit.originalQueue=" + base)
+                    .with("Listener", nativeStart ? added : initial).with("Other", other(otherQueue)).with("App", fixture);
+            if (nativeStart) builder.withoutAgent();
+            else builder.agentArgs("startupDelaySec=1,debounceMs=100,verbose=true");
+            try (var app = builder.start()) {
+                app.awaitOrFail("PORT=", "native Rabbit factory startup");
+                int port = Integer.parseInt(app.latest("PORT=").substring(5));
+                if (!nativeStart) {
+                    app.awaitOrFail("Last-known-good bytecode cache:", "watcher ready");
+                    app.rewrite("Listener", added);
+                }
+                waitState(port, "added:assigned", app);
+                deliver(producer, app, queue, "ADDED:1:owner:" + queue + ":retry", "retry");
+                assertEquals(1, app.output().stream().filter("ROLLBACK:retry"::equals).count(), app.tail());
+                assertEquals(2, app.output().stream().filter("CUSTOM:retry:true:true"::equals).count(), app.tail());
+                if (!nativeStart) {
+                    http(port, "/snapshot");
+                    long before = reloads(app);
+                    app.rewrite("Listener", initial);
+                    long until = System.nanoTime() + TimeUnit.SECONDS.toNanos(30);
+                    while (reloads(app) == before && System.nanoTime() < until) Thread.sleep(25);
+                    assertEquals(before + 1, reloads(app), app.tail());
+                    String state = http(port, "/state");
+                    assertFalse(state.contains("added:"), state);
+                    assertTrue(state.contains("retiredRunning=0") && state.contains("otherSame=true"), state);
+                    deliver(producer, app, otherQueue, "OTHER:next", "next");
+                    assertEquals(1, app.output().stream().filter("CUSTOM:next:true:true"::equals).count(), app.tail());
+                }
+                assertEquals("allStopped=true", http(port, "/close"));
+            }
+        }
+    }
+
+    @Test void manualAcknowledgmentRefusesBeforeRegistryInsertion() throws Exception {
+        String queue = "opaque-" + UUID.randomUUID(), base = queue + "-base", otherQueue = queue + "-other";
+        var producer = new RabbitTemplate(broker.connectionFactory());
+        var admin = new RabbitAdmin(broker.connectionFactory());
+        for (String q : List.of(queue, base, otherQueue)) admin.declareQueue(new org.springframework.amqp.core.Queue(q));
+        String fixture = APP.replace("return factory;", """
+                factory.setContainerCustomizer(container -> {
+                    if ("added".equals(container.getListenerId()))
+                        container.setAcknowledgeMode(org.springframework.amqp.core.AcknowledgeMode.MANUAL);
+                });
+                return factory;""");
+        fixture = com.onurkat.reclazz.e2e.harness.ListenerRegistryProbe.observe(fixture,"registry");
+        producer.convertAndSend(queue,"reserved");
+        try (var app = WatchedApp.in(tmp).classpath(rabbitClasspath())
+                .jvmArgs("-Dtest.rabbit.port=" + broker.port(), "-Dtest.rabbit.password=" + broker.password(), "-Dtest.rabbit.originalQueue=" + base)
+                .agentArgs("startupDelaySec=1,debounceMs=100,verbose=true")
+                .with("Listener",listener(true,false,0,queue,base,"Component")).with("Other",other(otherQueue)).with("App",fixture).start()) {
+            app.awaitOrFail("PORT=", "Rabbit app startup");
+            int port = Integer.parseInt(app.latest("PORT=").substring(5));
+            app.awaitOrFail("Last-known-good bytecode cache:", "watcher initialization");
+            app.rewrite("Listener",listener(true,false,1,queue,base,"Component"));
+            app.awaitOrFail("Rabbit AUTO acknowledgment", "policy must refuse before registration");
+            assertFalse(http(port,"/state").contains("added:"), app.tail());
+            assertFalse(app.output().contains("STAGED:added"), app.tail());
+            assertEquals("reserved", producer.receiveAndConvert(queue, 3000));
+            assertTrue(http(port,"/state").contains("otherSame=true"),app.tail());
+            deliver(producer,app,otherQueue,"OTHER:ok","ok");
+            assertEquals("allStopped=true",http(port,"/close"));
+        }
+    }
+
     private static long reloads(WatchedApp app) {
         return app.output().stream().filter(s -> s.contains("Reloaded app.Listener ") || s.contains("Structural reload: app.Listener ")).count();
     }

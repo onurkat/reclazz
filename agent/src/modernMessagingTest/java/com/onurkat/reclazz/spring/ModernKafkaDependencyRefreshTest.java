@@ -2,6 +2,7 @@
 package com.onurkat.reclazz.spring;
 
 import com.onurkat.reclazz.platform.PlatformContext;
+import com.onurkat.reclazz.bootstrap.NativeListenerSetup;
 import com.onurkat.reclazz.ui.RestartLedger;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
@@ -186,6 +187,33 @@ class ModernKafkaDependencyRefreshTest {
             s.message("rf14-guard-target",policy,policy+":10");
         }
     }
+    @Test void observedExternalManagerRefusesBeforeRetirement() throws Exception {
+        try (var s = new Scope()) {
+            var processor = s.context.getBean(KafkaListenerAnnotationBeanPostProcessor.class);
+            var factory = s.context.getBean(ConcurrentKafkaListenerContainerFactory.class);
+            Object endpoint = new Object();
+            NativeListenerSetup.constructed(processor);
+            NativeListenerSetup.constructed(factory);
+            NativeListenerSetup.annotated(endpoint,s.owner,processor);
+            NativeListenerSetup.created(s.target,endpoint,factory);
+            assertNotNull(s.prepare(s.context));
+            var live = s.target.getContainerProperties();
+            var external = (org.springframework.transaction.PlatformTransactionManager) Proxy.newProxyInstance(
+                    getClass().getClassLoader(),new Class<?>[]{org.springframework.transaction.PlatformTransactionManager.class},
+                    (proxy,method,args) -> null);
+            live.setTransactionManager(external);
+            factory.getContainerProperties().setTransactionManager(external);
+            try {
+                var refusal = assertThrows(Exception.class, () -> s.prepare(s.context));
+                assertTrue(com.onurkat.reclazz.ui.Failures.describe(refusal).contains("requires a KafkaTransactionManager"),refusal.toString());
+                s.unchanged();
+            } finally {
+                live.setTransactionManager(null);
+                factory.getContainerProperties().setTransactionManager(null);
+            }
+        }
+    }
+
     @Test void ownedConsumerWithSecondProcessorRefusesBeforeDestruction() throws Exception {
         try(var s=new Scope()) {
             s.message("rf14-guard-target","warm-extra","warm-extra:10");

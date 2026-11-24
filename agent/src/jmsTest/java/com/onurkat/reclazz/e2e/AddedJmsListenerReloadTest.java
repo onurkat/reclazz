@@ -90,6 +90,48 @@ class AddedJmsListenerReloadTest {
             System.out.println("[added-jms] existing=" + existing + " add/edit/topic/remove/private-restore/unannotate passed; single delivery, retired consumers, unrelated identity, context close verified");
         }
     }
+    @Test void nativeCustomAdapterReceivesTheMessageAfterAdditionAndRetiresOnRemoval() throws Exception {
+        String appSource = com.onurkat.reclazz.e2e.harness.CustomJmsAdapterFixture.application(APP, "javax.jms");
+        var producer = new JmsTemplate(new ActiveMQConnectionFactory(brokerUrl));
+        for (boolean nativeStart : new boolean[]{true, false}) {
+            String topic = "custom-" + UUID.randomUUID();
+            String original = topic + "-base";
+            String unrelated = topic + "-other";
+            var builder = WatchedApp.in(tmp.resolve(topic)).classpath(jmsClasspath())
+                    .jvmArgs("-Dtest.brokers=" + brokerUrl)
+                    .with("Listener", listener(true, nativeStart ? 1 : 0, topic, original, "Component"))
+                    .with("Other", other(unrelated)).with("App", appSource);
+            if (nativeStart) builder.withoutAgent();
+            else builder.agentArgs("startupDelaySec=1,debounceMs=100,verbose=true");
+            try (var app = builder.start()) {
+                app.awaitOrFail("PORT=", "custom JMS app did not start");
+                int port = Integer.parseInt(app.latest("PORT=").substring(5));
+                if (!nativeStart) {
+                    app.awaitOrFail("Last-known-good bytecode cache:", "watcher initialization");
+                    app.rewrite("Listener", listener(true, 1, topic, original, "Component"));
+                }
+                waitState(port, "added:assigned", app);
+                deliver(producer, app, topic, "ADDED:1:owner:" + topic + ":one", "one");
+                assertEquals(1, app.output().stream().filter("CUSTOM:one"::equals).count(), app.tail());
+                if (!nativeStart) {
+                    http(port, "/snapshot");
+                    long before = reloads(app);
+                    app.rewrite("Listener", listener(true, 4, topic, original, "Component"));
+                    long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(30);
+                    while (reloads(app) == before && System.nanoTime() < deadline) Thread.sleep(25);
+                    assertEquals(before + 1, reloads(app), app.tail());
+                    String state = http(port, "/state");
+                    assertFalse(state.contains("added:"), state);
+                    assertTrue(state.contains("retiredRunning=0"), state);
+                    assertTrue(state.contains("otherSame=true"), state);
+                    deliver(producer, app, unrelated, "OTHER:two", "two");
+                    assertEquals(1, app.output().stream().filter("CUSTOM:two"::equals).count(), app.tail());
+                }
+                assertEquals("allStopped=true", http(port, "/close"));
+            }
+        }
+    }
+
     private static long reloads(WatchedApp app) {
         return app.output().stream().filter(s -> s.contains("Reloaded app.Listener ") || s.contains("Structural reload: app.Listener ")).count();
     }

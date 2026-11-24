@@ -285,6 +285,21 @@ class SpringJmsReloaderTest {
             assertSame(c, s.container("original")); assertTrue(c.isActive());
         }
     }
+    @Test void manuallyReplacedOpaqueAdapterStillBelongsToItsOriginalReceiver() throws Exception {
+        try (var scope = new Scope()) {
+            register(scope, "original", scope.owner(), "first");
+            var container = scope.container("original");
+            var processor = scope.context.getBean(JmsListenerAnnotationBeanPostProcessor.class);
+            var endpoint = new Object();
+            com.onurkat.reclazz.bootstrap.NativeListenerSetup.annotated(endpoint, scope.owner(), processor);
+            com.onurkat.reclazz.bootstrap.NativeListenerSetup.created(container, endpoint, scope.factory());
+            container.setMessageListener((javax.jms.MessageListener) message -> {});
+            assertFalse(scope.reloader.beforeBeanRefresh(Owner.class), "must not skip an owned but unreadable consumer");
+            assertSame(container, scope.container("original"));
+            assertTrue(container.isActive());
+        }
+    }
+
     @Test void invalidMetadataCannotCreatePartialRegistration() throws Exception {
         try (var s = new Scope()) {
             var n=read(annotated("first", "id")); var a=annotation("second-id");

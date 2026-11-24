@@ -2261,8 +2261,14 @@ startup groups that share a callback method across listener IDs, or whose
 ownership could not be observed, requires a restart. If rollback cannot stop an
 owned container, the restart ledger identifies the affected group.
 
-Filtered/retry-template factories, a batch-to-record
-adapter and container customizers remain unsupported. Proxy/subclass receivers
+On Spring Kafka 2.9.13 and 3.2.4, Spring's observed record filter, batch-to-record
+adapter and container customizer run again when the factory creates a listener.
+The legacy 2.9.13 retry template retains its per-record retry count. A customizer
+can install a native filtering adapter subclass around the original callback.
+Factory callback support covers Spring Kafka 2.9.13 and 3.2.4, Spring AMQP
+2.4.17 and 3.1.7, and Spring JMS on Framework 5.3.39 and 6.1.14.
+Start the agent before Spring constructs the processor and factory. A changed
+or unreadable callback requires a restart. Proxy/subclass receivers
 are not unwrapped past advice. This
 scope does not cover class-level or repeatable listeners, expressions/placeholders
 in other listener attributes, container groups, arbitrary wrapper/container types,
@@ -2306,11 +2312,14 @@ factory `retryTemplate` field. Added listeners follow six saves, including topic
 changes, private restoration, removal, retired consumers and unrelated container
 identity. Native startup controls precede each watcher observer. The factory
 absence exception and endpoint-ID preparation apply only to package version
-3.2.4; this does not certify every Kafka 3.x release. Filtered and custom
-factories retain their restart requirements; the helper/property transaction is
+3.2.4; this does not certify every Kafka 3.x release. The standard factory supports the observed filtering and customization described
+above. Factory subclasses require a restart. The helper/property transaction is
 also measured with batch-listener callbacks on this lane. Native owner-expression controls
 verify context separation, prior-binding restoration and failed-registration
-cleanup. Modern Kafka reply, transactions, rebalance, late attach, hosted clusters
+cleanup. A helper save preserves the factory's Kafka transaction manager when
+the running container holds the same manager. A failing callback rolled back and
+its redelivery committed on both versions. Modern Kafka reply, broader transaction
+configurations, rebalance, late attach, hosted clusters
 and direct child-loader watcher behavior remain outside this measured scope.
 
 ### JMS listeners added after startup
@@ -2378,7 +2387,10 @@ compilation with `-parameters`.
 The verified infrastructure is the standard `JmsListenerAnnotationBeanPostProcessor`,
 `JmsListenerEndpointRegistry`, `DefaultJmsListenerContainerFactory` and
 `DefaultMessageListenerContainer` with Spring's `MessagingMessageListenerAdapter`.
-The application factory retains its conversion, selector and local session
+A processor that overrides only endpoint creation can return its own
+`MessagingMessageListenerAdapter` subclass with the native handler. The agent
+checks the factory, adapter and receiver before retiring it. Replacing a running
+container's adapter by hand requires a restart. The application factory retains its conversion, selector and local session
 transaction settings, and topic (`pubSubDomain`) and durable subscription
 settings. A durable subscription keeps the name a restart would give it: the
 `subscription` attribute when set, otherwise the listener class and method name
@@ -2504,19 +2516,20 @@ Reclazz preserves that framework behavior.
 
 Both original and added consumers require the standard
 `RabbitListenerAnnotationBeanPostProcessor`, `RabbitListenerEndpointRegistry`,
-`MessagingMessageListenerAdapter`, a plain receiver and
-`SimpleMessageListenerContainer`, with AUTO acknowledgment and the default
-`SimpleAsyncTaskExecutor`. Newly added consumers additionally require the standard
-simple factory without a customizer. Local channel transactions are preserved.
+a plain receiver and a standard simple listener container with AUTO acknowledgment.
+The standard factory may install a custom listener adapter that preserves the
+native handler, a named asynchronous executor and a Rabbit transaction manager.
+The running executor and manager must match the native factory. The agent waits
+for the original worker before releasing the listener ID. Local channel transactions are preserved.
 Batch factories (`setBatchListener`, `setConsumerBatchEnabled`) are supported with
 Spring's batch adapter and a `List` payload: a batch still being collected when a
 consumer retires is unacknowledged and goes back to the queue, and under
 continuous sending every message was received exactly once across adds, edits,
 removal and re-addition, with and without consumer batching, on Spring AMQP 2.4.17
-and 3.1.7. Manual/automatic-without-ack modes, external
-transaction managers, container advice, custom executors, direct/stream
-containers and custom listener adapters are refused for retirement of either
-original or added consumers.
+and 3.1.7. The observed executor types are `SimpleAsyncTaskExecutor` and
+`ThreadPoolTaskExecutor`. Manual/automatic-without-ack modes, container advice,
+unknown executors, direct/stream containers, and adapters with unverified callback
+ownership require a restart.
 Unsupported static metadata shapes and foreign added IDs are checked before owned
 consumers are retired. Queue expression parsing
 and evaluation occur later during native registration, after retirement; an

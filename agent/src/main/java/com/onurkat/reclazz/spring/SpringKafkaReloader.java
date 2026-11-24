@@ -4,6 +4,7 @@
  */
 package com.onurkat.reclazz.spring;
 
+import com.onurkat.reclazz.bootstrap.NativeListenerSetup;
 import com.onurkat.reclazz.platform.PlatformContext;
 import com.onurkat.reclazz.ui.Failures;
 import com.onurkat.reclazz.ui.ReloadEffects;
@@ -21,8 +22,10 @@ public final class SpringKafkaReloader {
     private static final String PROCESSOR = "org.springframework.kafka.annotation.KafkaListenerAnnotationBeanPostProcessor";
     private static final String REGISTRY = "org.springframework.kafka.config.KafkaListenerEndpointRegistry";
     private static final String RECORD_ADAPTER = "org.springframework.kafka.listener.adapter.RecordMessagingMessageListenerAdapter";
-    // Spring builds both standard adapters from the factory and the method alone; a factory's
-    // batchToRecordAdapter or any other customization is still refused in requireFactory.
+    private static final String ADAPTER_PACKAGE = "org.springframework.kafka.listener.adapter.";
+    private static final Set<String> FACTORY_WRAPPERS = Set.of(
+            ADAPTER_PACKAGE + "FilteringMessageListenerAdapter", ADAPTER_PACKAGE + "FilteringBatchMessageListenerAdapter",
+            ADAPTER_PACKAGE + "RetryingMessageListenerAdapter");
     private static final Set<String> STANDARD_ADAPTERS = Set.of(RECORD_ADAPTER,
             "org.springframework.kafka.listener.adapter.BatchMessagingMessageListenerAdapter");
     private final PlatformContext platform;
@@ -41,7 +44,7 @@ public final class SpringKafkaReloader {
         if (owners.get(type).registered || declaresKafka(type, bytes)) return true;
         try {
             for (var scope : infrastructures()) for (var c : containers(scope.registry())) {
-                Object bean = listenerBean(messageListener(c.instance()));
+                Object bean = registrationBean(c.instance(), messageListener(c.instance()), scope.processor());
                 if (AddedKafkaListenerAdapter.ownerOf(bean) == type || (bean != null && type.isInstance(bean))) return true;
             }
             return false;
@@ -79,12 +82,13 @@ public final class SpringKafkaReloader {
                 if (!(cache instanceof Set<?>)) throw new IllegalStateException("Kafka negative scan cache is inaccessible");
                 for (var c : containers(scope.registry())) {
                     Object listener = messageListener(c.instance());
-                    Object bean = listenerBean(listener);
+                    boolean ownedRetry = retryGroups.stream().anyMatch(group -> group.containers().contains(c));
+                    // Retry/DLT infrastructure can replace the endpoint receiver with its DLT handler.
+                    Object bean = ownedRetry ? listenerBean(listener) : registrationBean(c.instance(), listener, scope.processor());
                     if (AddedKafkaListenerAdapter.ownerOf(bean) != type && (bean == null || !type.isInstance(bean))) continue;
                     relevant = true;
                     owners.get(type).registered = true;
-                    boolean ownedRetry = retryGroups.stream().anyMatch(group -> group.containers().contains(c));
-                    if (!standardAdapter(listener, ownedRetry))
+                    if (callbackAdapter(scope, c.instance(), listener, bean, ownedRetry) == null)
                         throw unsupportedAdapter(listener, c.id());
                     if (AddedKafkaListenerAdapter.ownerOf(bean) != type)
                         throw new IllegalStateException("proxy or subclass Kafka listener receiver for " + c.id());
@@ -173,7 +177,15 @@ public final class SpringKafkaReloader {
                 for (var entry : additions.entrySet()) {
                     String id = entry.getKey();
                     Addition addition = entry.getValue();
-                    try {
+                    boolean retry = addition.probe() != null && addition.probe().matching();
+                    try (var guard = NativeListenerSetup.beforeStart(scope.processor(), delegate.bean(), (endpoint, candidate, adapter) -> {
+                        // Retry configuration can assign a separate handler to the dead-letter endpoint.
+                        Object receiver = retry ? endpoint.getClass().getMethod("getBean").invoke(endpoint) : delegate.bean();
+                        if (nativeCallback(adapter, receiver, true) == null)
+                            throw new IllegalStateException("custom Kafka listener adapter lost its registered receiver");
+                        var nativeFactory = NativeListenerSetup.factory(candidate);
+                        requireContainerTransactions(scope, candidate, nativeFactory, true);
+                    })) {
                         var group = SpringKafkaListenerExpressions.register(scope.processor(), annotation, addition.metadata(), addition.method(),
                                 delegate.bean(), owner, name, addition.probe());
                         if (group != null) {
@@ -183,7 +195,8 @@ public final class SpringKafkaReloader {
                     } finally {
                         Object registered = container(scope.registry(), id);
                         if ((addition.probe() == null || !addition.probe().matching()) && registered != null
-                                && listenerBean(messageListener(registered)) == delegate.bean()) {
+                                && (NativeListenerSetup.produced(registered, scope.processor(), delegate.bean())
+                                || listenerBean(messageListener(registered)) == delegate.bean())) {
                             var item = new Container(scope.registry(), id, registered);
                             if (!created.contains(item)) created.add(item);
                             owners.get(type).registered = true;
@@ -191,7 +204,8 @@ public final class SpringKafkaReloader {
                     }
                     Object registered = container(scope.registry(), id);
                     if (registered == null) throw new IllegalStateException("Kafka processor did not register " + id);
-                    if (!standardAdapter(messageListener(registered), addition.probe() != null && addition.probe().matching()))
+                    if (callbackAdapter(scope, registered, messageListener(registered), delegate.bean(),
+                            addition.probe() != null && addition.probe().matching()) == null)
                         throw new IllegalStateException("custom Kafka listener adapters require a restart");
                     changed = true;
                 }
@@ -252,7 +266,7 @@ public final class SpringKafkaReloader {
         requireFactory(scope, name);
     }
 
-    private static void requireFactory(Infrastructure scope, String name) throws Exception {
+    private static Object requireFactory(Infrastructure scope, String name) throws Exception {
         if (name.isEmpty()) {
             Object defaultName = Reflect.readField(scope.processor(), "defaultContainerFactoryBeanName");
             if (!(defaultName instanceof String value)) throw new IllegalStateException("Kafka default factory inaccessible");
@@ -271,9 +285,10 @@ public final class SpringKafkaReloader {
                 try { factory.getClass().getSuperclass().getDeclaredField(field); }
                 catch (NoSuchFieldException absentOnVerifiedVersion) { continue; }
             }
-            if (metadata == null || metadata.get(factory) != null)
-                throw new IllegalStateException("Kafka factory " + field + " is unsupported for added listeners");
+            if (metadata == null || metadata.get(factory) != null && !NativeListenerSetup.observed(scope.processor(), factory))
+                throw new IllegalStateException("Kafka factory " + field + " is unsupported without observed native setup");
         }
+        return factory;
     }
 
     private List<Infrastructure> infrastructures() throws Exception {
@@ -335,9 +350,55 @@ public final class SpringKafkaReloader {
         return false;
     }
 
-    private static boolean standardAdapter(Object adapter, boolean retry) throws ReflectiveOperationException {
-        if (retry) adapter = unwrapBackoffAdapter(adapter);
-        return adapter != null && STANDARD_ADAPTERS.contains(adapter.getClass().getName());
+    private static Object registrationBean(Object container, Object adapter, Object processor) throws Exception {
+        Object origin = NativeListenerSetup.originBean(container, processor);
+        return origin != null ? origin : listenerBean(adapter);
+    }
+
+    private static Object callbackAdapter(Infrastructure scope, Object container, Object installed,
+                                          Object receiver, boolean ownedRetry) throws Exception {
+        Object current = ownedRetry ? unwrapBackoffAdapter(installed) : installed;
+        if (current == null) return null;
+        boolean observed = NativeListenerSetup.originBean(container, scope.processor()) != null;
+        if (observed && !NativeListenerSetup.originalAdapter(container, current, scope.processor(), receiver)) return null;
+        return nativeCallback(current, receiver, observed);
+    }
+
+    private static Object nativeCallback(Object current, Object receiver, boolean observed) throws Exception {
+        Set<Object> visited = Collections.newSetFromMap(new IdentityHashMap<>());
+        while (current != null && !STANDARD_ADAPTERS.contains(current.getClass().getName())) {
+            // A native factory may install an application subclass of a measured filter/retry adapter.
+            // Read Spring's original delegate field to avoid dispatching to application overrides.
+            Class<?> base = current.getClass();
+            while (base != null && !FACTORY_WRAPPERS.contains(base.getName())) base = base.getSuperclass();
+            if (base == null || !observed || !visited.add(current)) return null;
+            var delegate = Reflect.findField(base, "delegate");
+            if (delegate == null) return null;
+            current = delegate.get(current);
+        }
+        if (current == null || !STANDARD_ADAPTERS.contains(current.getClass().getName())
+                || receiver == null || Reflect.readField(current, "bean") != receiver) return null;
+        return current;
+    }
+
+    private static void requireContainerTransactions(Infrastructure scope, Object container, Object factory,
+                                                     boolean nativeSetup) throws Exception {
+        Object actual = container.getClass().getMethod("getContainerProperties").invoke(container);
+        Object template = factory.getClass().getMethod("getContainerProperties").invoke(factory);
+        requireTransactionManager(actual, template, "getTransactionManager", nativeSetup);
+        if ("3.2.4".equals(scope.processor().getClass().getPackage().getImplementationVersion()))
+            requireTransactionManager(actual, template, "getKafkaAwareTransactionManager", nativeSetup);
+    }
+
+    private static void requireTransactionManager(Object actual, Object template, String getter, boolean nativeSetup) throws Exception {
+        Method method = actual.getClass().getMethod(getter);
+        Object live = method.invoke(actual);
+        Object configured = method.invoke(template);
+        if (live != configured || live != null && !nativeSetup)
+            throw new IllegalStateException("transactional Kafka callback/factory requires matching native transaction manager");
+        if (live != null && !Class.forName("org.springframework.kafka.transaction.KafkaTransactionManager", false,
+                template.getClass().getClassLoader()).isInstance(live))
+            throw new IllegalStateException("Kafka callback requires a KafkaTransactionManager");
     }
 
     private static boolean isBackoffAdapter(Object adapter) {
@@ -512,26 +573,24 @@ public final class SpringKafkaReloader {
             List<Container> owned = new ArrayList<>();
             for (var scope : scopes) for (var c : containers(scope.registry())) {
                 Object adapter = messageListener(c.instance());
-                Object receiver = listenerBean(adapter);
-                if (receiver != bean && AddedKafkaListenerAdapter.ownerOf(receiver) != type) continue;
                 var retryGroup = retryGroups.stream().filter(group -> group.containers().contains(c)).findFirst().orElse(null);
+                Object receiver = retryGroup != null ? listenerBean(adapter) : registrationBean(c.instance(), adapter, scope.processor());
+                if (receiver != bean && AddedKafkaListenerAdapter.ownerOf(receiver) != type) continue;
                 if (retryGroup != null && retryGroup.ownerType != type)
                     throw new IllegalStateException("Kafka retry callback belongs to another listener owner: " + c.id());
                 if (retryGroup != null && !retryGroup.mainId.equals(c.id())) continue;
-                if (!standardAdapter(adapter, retryGroup != null)) {
+                Object callback = callbackAdapter(scope, c.instance(), adapter, receiver, retryGroup != null);
+                if (callback == null) {
                     if (isBackoffAdapter(adapter)) throw unsupportedAdapter(adapter, c.id());
                     throw new IllegalStateException("custom dependent Kafka adapter requires a restart");
                 }
-                if (retryGroup != null) {
-                    retryGroup.verifyOwnership();
-                    adapter = unwrapBackoffAdapter(adapter);
-                }
+                if (retryGroup != null) retryGroup.verifyOwnership();
                 requireLifecycle(c);
                 if (!c.instance().getClass().getName().equals("org.springframework.kafka.listener.ConcurrentMessageListenerContainer"))
                     throw new IllegalStateException("standard concurrent Kafka container required");
                 if (!Boolean.TRUE.equals(c.instance().getClass().getMethod("isRunning").invoke(c.instance())))
                     throw new IllegalStateException("dependent Kafka consumer is inactive or shutting down: " + c.id());
-                Object handler = Reflect.readField(adapter, "handlerMethod");
+                Object handler = Reflect.readField(callback, "handlerMethod");
                 Object invoker = Reflect.readField(handler, "invokerHandlerMethod");
                 if (invoker == null || Reflect.readField(handler, "delegatingHandler") != null)
                     throw new IllegalStateException("single-method Kafka callback required");
@@ -552,21 +611,20 @@ public final class SpringKafkaReloader {
                         ((java.lang.annotation.Annotation) metadata).annotationType(),
                         metadata, method, bean, factory).matching())
                     throw new IllegalStateException("matching Kafka retry-topic configuration requires a restart; Spring Kafka does not expose a retry-destination unregister operation");
-                requireFactory(scope, (String) ((java.lang.annotation.Annotation) metadata).annotationType().getMethod("containerFactory").invoke(metadata));
-                if (method.getReturnType() != void.class) throw new IllegalStateException("void dependent Kafka callbacks required");
                 String factoryName = (String) ((java.lang.annotation.Annotation) metadata).annotationType().getMethod("containerFactory").invoke(metadata);
-                if (factoryName.isEmpty()) factoryName = (String) Reflect.readField(scope.processor(), "defaultContainerFactoryBeanName");
-                Object dependencyFactory = SpringBeans.getBean(scope.context(), factoryName);
-                Object actualProperties = c.instance().getClass().getMethod("getContainerProperties").invoke(c.instance());
-                Object templateProperties = dependencyFactory.getClass().getMethod("getContainerProperties").invoke(dependencyFactory);
-                for (Object properties : List.of(actualProperties, templateProperties)) {
-                    if (!Set.of("RECORD", "BATCH").contains(String.valueOf(properties.getClass().getMethod("getAckMode").invoke(properties)))
-                            || properties.getClass().getMethod("getTransactionManager").invoke(properties) != null)
-                        throw new IllegalStateException("nontransactional RECORD or BATCH acknowledgment required for Kafka callback/factory");
-                    if ("3.2.4".equals(scope.processor().getClass().getPackage().getImplementationVersion())
-                            && properties.getClass().getMethod("getKafkaAwareTransactionManager").invoke(properties) != null)
-                        throw new IllegalStateException("transactional Kafka callback/factory requires separate research");
+                Object dependencyFactory = requireFactory(scope, factoryName);
+                if (method.getReturnType() != void.class) throw new IllegalStateException("void dependent Kafka callbacks required");
+                Object actual = c.instance().getClass().getMethod("getContainerProperties").invoke(c.instance());
+                Object template = dependencyFactory.getClass().getMethod("getContainerProperties").invoke(dependencyFactory);
+                for (Object properties : List.of(actual, template)) {
+                    if (!Set.of("RECORD", "BATCH").contains(String.valueOf(properties.getClass().getMethod("getAckMode").invoke(properties))))
+                        throw new IllegalStateException("RECORD or BATCH acknowledgment required for Kafka callback/factory");
                 }
+                Object factoryAdapter = retryGroup == null ? adapter : unwrapBackoffAdapter(adapter);
+                boolean nativeSetup = NativeListenerSetup.installed(c.instance(), factoryAdapter, scope.processor(), receiver, dependencyFactory);
+                if (NativeListenerSetup.originBean(c.instance(), scope.processor()) != null && !nativeSetup)
+                    throw new IllegalStateException("Kafka callback factory changed after native registration");
+                requireContainerTransactions(scope, c.instance(), dependencyFactory, nativeSetup);
                 boolean added = receiver != bean;
                 if (added && (!receiver.getClass().isHidden()
                         || !(Reflect.readField(receiver, com.onurkat.reclazz.bootstrap.InjectedNames.PREFIX + "target") instanceof Supplier<?> current)

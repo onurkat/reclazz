@@ -1,5 +1,6 @@
 /* Copyright 2026 Onur Kat; SPDX-License-Identifier: Apache-2.0 */
 package com.onurkat.reclazz.spring;
+import com.onurkat.reclazz.bootstrap.NativeListenerSetup;
 import com.onurkat.reclazz.ui.RestartLedger;
 import com.onurkat.reclazz.bootstrap.RabbitConsumerBridge;
 import com.onurkat.reclazz.transform.RabbitConsumerTransformer;
@@ -163,6 +164,34 @@ class ModernRabbitDependencyRefreshTest {
             s.message("rf14-guard-target",policy,policy+":10");s.message("rf14-guard-other",policy,"other:"+policy);
         }
     }
+    @Test void observedExternalManagerRefusesBeforeRetirement() throws Exception {
+        try (var s = new Scope()) {
+            var processor = s.context.getBean(RabbitListenerAnnotationBeanPostProcessor.class);
+            var factory = s.context.getBean(SimpleRabbitListenerContainerFactory.class);
+            Object endpoint = new Object();
+            NativeListenerSetup.constructed(processor);
+            NativeListenerSetup.constructed(factory);
+            NativeListenerSetup.annotated(endpoint,s.owner,processor);
+            NativeListenerSetup.created(s.target,endpoint,factory);
+            assertNotNull(s.prepare(s.context));
+            var manager = (org.springframework.transaction.PlatformTransactionManager) java.lang.reflect.Proxy.newProxyInstance(
+                    getClass().getClassLoader(),new Class<?>[]{org.springframework.transaction.PlatformTransactionManager.class},
+                    (proxy,method,args) -> null);
+            factory.setTransactionManager(manager);
+            s.target.setTransactionManager(manager);
+            s.target.setChannelTransacted(true); // Spring enables this when initializing a managed container.
+            try {
+                var refusal = assertThrows(Exception.class, () -> s.prepare(s.context));
+                assertTrue(com.onurkat.reclazz.ui.Failures.describe(refusal).contains("requires a RabbitTransactionManager"),refusal.toString());
+                s.unchanged();
+            } finally {
+                s.target.setChannelTransacted(false);
+                s.target.setTransactionManager(null);
+                factory.setTransactionManager(null);
+            }
+        }
+    }
+
     @Test void ownedConsumerWithSecondProcessorRefusesBeforeDestruction() throws Exception {
         try(var s=new Scope()) {
             s.message("rf14-guard-target","warm-extra","warm-extra:10");

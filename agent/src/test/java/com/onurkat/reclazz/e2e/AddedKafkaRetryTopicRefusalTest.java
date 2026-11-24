@@ -49,7 +49,7 @@ class AddedKafkaRetryTopicRefusalTest {
                 .with("Listener", listener(topic, false)).with("App", appWithRetryConfiguration()).start()) {
             app.awaitOrFail("PORT=", "Kafka app did not start");
             int port = Integer.parseInt(app.latest("PORT=").substring(5));
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitOrFail("Last-known-good bytecode cache:", "watcher did not start");
             app.rewrite("Listener", listener(topic, true));
             app.awaitOrFail("added @KafkaListener registered", "listener registration");
             producer.send(destination, "g1").get(10, TimeUnit.SECONDS);
@@ -69,7 +69,7 @@ class AddedKafkaRetryTopicRefusalTest {
                 .agentArgs("startupDelaySec=1,debounceMs=100,verbose=true")
                 .with("Listener", listener(topic, false)).with("App", appWithRetryConfiguration()).start()) {
             app.awaitOrFail("PORT=", "Kafka app did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitOrFail("Last-known-good bytecode cache:", "watcher did not start");
             long before = reloads(app);
             app.rewrite("Listener", listener(topic, true));
             app.awaitOrFail("added @KafkaListener registered", "matched retry configuration must register");
@@ -192,7 +192,7 @@ class AddedKafkaRetryTopicRefusalTest {
                 } finally { vm.detach(); }
 
             }
-            app.awaitOrFail("] Watching ", "watcher ready");
+            app.awaitOrFail("Last-known-good bytecode cache:", "watcher ready");
             if (!startup) {
                 app.rewrite("Listener", added);
                 app.awaitOrFail("added @KafkaListener registered", "retry listener installed");
@@ -301,7 +301,7 @@ class AddedKafkaRetryTopicRefusalTest {
                 .with("App", fixture).start()) {
             app.awaitOrFail("PORT=", "partial registration fixture startup");
             int port = Integer.parseInt(app.latest("PORT=").substring(5));
-            app.awaitOrFail("] Watching ", "watcher ready");
+            app.awaitOrFail("Last-known-good bytecode cache:", "watcher ready");
             app.rewrite("Listener", listener(topic, true));
             app.awaitOrFail("failure after second retry container insertion", "injected native registration failure");
             assertTrue(retryIds(port).isEmpty(), "partial registration left a container");
@@ -309,6 +309,36 @@ class AddedKafkaRetryTopicRefusalTest {
             app.rewrite("Other", listener(topic, true).replace("class Listener", "class Other"));
             app.awaitOrFail("added @KafkaListener registered", "same id and routes can be installed after rollback");
             assertEquals(3, retryIds(port).size());
+        }
+    }
+
+    @Test void substitutedRetryCallbackRefusesBeforeRegistryInsertion() throws Exception {
+        substitutedRetryCallback(tmp, broker.getBrokersAsString());
+    }
+
+    static void substitutedRetryCallback(Path root, String brokers) throws Exception {
+        String topic = "retry-callback-" + java.util.UUID.randomUUID();
+        String fixture = appWithRetryConfiguration().replace("return factory;", """
+                factory.setContainerCustomizer(container -> {
+                    if ("retry-added".equals(container.getListenerId()))
+                        container.setupMessageListener((org.springframework.kafka.listener.MessageListener<Integer,String>)
+                                record -> System.out.println("SUBSTITUTED:" + record.value()));
+                });
+                return factory;""");
+        fixture = com.onurkat.reclazz.e2e.harness.ListenerRegistryProbe.observe(fixture,
+                "ctx.getBean(org.springframework.kafka.config.KafkaListenerEndpointRegistry.class)");
+        try (var app = WatchedApp.in(root).classpath(System.getProperty("java.class.path"))
+                .jvmArgs("-Dtest.brokers=" + brokers, "-Dtest.retry.topic=" + topic)
+                .agentArgs("startupDelaySec=1,debounceMs=100,verbose=true")
+                .with("Listener",listener(topic,false)).with("App",fixture).start()) {
+            app.awaitOrFail("PORT=", "retry application startup");
+            int port = Integer.parseInt(app.latest("PORT=").substring(5));
+            app.awaitOrFail("Last-known-good bytecode cache:", "watcher ready");
+            app.rewrite("Listener",listener(topic,true));
+            app.awaitOrFail("could not apply", "substituted retry callback must refuse");
+            assertFalse(app.output().contains("STAGED:retry-added"), app.tail());
+            assertTrue(retryIds(port).isEmpty(), app.tail());
+            assertTrue(retryState(port,"topics").isEmpty(), app.tail());
         }
     }
 
@@ -365,7 +395,7 @@ class AddedKafkaRetryTopicRefusalTest {
                 .with("Other", listener(topic,false).replace("class Listener", "class Other")).start()) {
             app.awaitOrFail("PORT=", "fault fixture startup");
             int port = Integer.parseInt(app.latest("PORT=").substring(5));
-            app.awaitOrFail("] Watching ", "watcher ready");
+            app.awaitOrFail("Last-known-good bytecode cache:", "watcher ready");
             app.rewrite("Listener", listener(topic,true));
             app.awaitOrFail("injected retry start failure", "second container failed during activation");
             if (timeout) {
@@ -428,7 +458,7 @@ class AddedKafkaRetryTopicRefusalTest {
                 app.awaitOrFail("PORT=", "retry application startup");
                 int port = Integer.parseInt(app.latest("PORT=").substring(5));
                 if (!nativeOnly) {
-                    app.awaitOrFail("] Watching ", "watcher ready");
+                    app.awaitOrFail("Last-known-good bytecode cache:", "watcher ready");
                     app.rewrite("Listener", failing);
                     app.awaitOrFail("added @KafkaListener registered", "native main, retry and DLT route must register");
                 }

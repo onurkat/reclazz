@@ -87,6 +87,75 @@ abstract class KafkaConsumerCascadeContract {
             }
         }
     }
+    void verifyFactoryTransactions(Backend backend, boolean modern) throws Exception {
+        String fixture = backend.app(false).replace("return factory;", """
+                var producerConfig = new java.util.HashMap<String,Object>();
+                producerConfig.put("bootstrap.servers", System.getProperty("test.brokers"));
+                producerConfig.put("key.serializer", org.apache.kafka.common.serialization.IntegerSerializer.class);
+                producerConfig.put("value.serializer", org.apache.kafka.common.serialization.StringSerializer.class);
+                var producers = new org.springframework.kafka.core.DefaultKafkaProducerFactory<Integer,String>(producerConfig);
+                producers.setTransactionIdPrefix("tx-" + java.util.UUID.randomUUID());
+                var manager = new org.springframework.kafka.transaction.KafkaTransactionManager<Integer,String>(producers) {
+                    @Override protected void doCommit(org.springframework.transaction.support.DefaultTransactionStatus status) {
+                        super.doCommit(status); App.outcome("COMMIT");
+                    }
+                    @Override protected void doRollback(org.springframework.transaction.support.DefaultTransactionStatus status) {
+                        super.doRollback(status); App.outcome("ROLLBACK");
+                    }
+                };
+                factory.getContainerProperties().SET_MANAGER(manager);
+                return factory;""".replace("SET_MANAGER", modern ? "setKafkaAwareTransactionManager" : "setTransactionManager"))
+                .replace("public class App {", """
+                        public class App {
+                            static final ThreadLocal<String> delivery = new ThreadLocal<>();
+                            static final java.util.Set<String> first = java.util.concurrent.ConcurrentHashMap.newKeySet();
+                            public static void mark(String value, int seed) {
+                                delivery.set(value + ":" + seed);
+                                if (first.add(value)) throw new IllegalStateException("fail the first delivery");
+                            }
+                            static void outcome(String operation) {
+                                if (delivery.get() != null) System.out.println(operation + ":" + delivery.get());
+                                delivery.remove();
+                            }
+                        """);
+        for (boolean nativeStart : new boolean[]{true, false}) {
+            String topic = "factory-tx-" + UUID.randomUUID(), unrelated = topic + "-other";
+            backend.prepare(topic, unrelated);
+            Path root = tmp.resolve(topic);
+            Files.createDirectories(root.resolve("classes"));
+            Files.writeString(root.resolve("classes/application.properties"), "helper.seed=10\n");
+            String receiver = listener(backend, topic, true, false).replace("System.out.println(", "App.mark(value,seed);System.out.println(");
+            var builder = WatchedApp.in(root).classpath(backend.classpath()).jvmArgs(backend.args())
+                    .with("App", fixture).with("Helper", helper("dependency", nativeStart ? 20 : 10))
+                    .with("Listener", receiver)
+                    .with("Other", "package app; @org.springframework.stereotype.Component public class Other { "
+                            + backend.annotation("other", unrelated) + " public void receive(String value) {} }");
+            if (nativeStart) builder.withoutAgent();
+            else builder.agentArgs("startupDelaySec=1,debounceMs=100,verbose=true");
+            try (var app = builder.start()) {
+                int port = port(app);
+                ready(backend, app, port);
+                if (!nativeStart) {
+                    app.awaitOrFail("Last-known-good bytecode cache:", "watcher started");
+                    backend.send(topic, "before");
+                    app.awaitOrFail("COMMIT:before:10", "initial delivery eventually commits");
+                    http(port, "/snapshot");
+                    app.rewrite("Helper", helper("dependency",20));
+                    app.awaitOrFail("Reloaded app.Helper", "helper reloaded");
+                    ready(backend, app, port);
+                }
+                backend.send(topic, "after");
+                app.awaitOrFail("ROLLBACK:after:20", "first delivery rolled back on the configured Kafka manager");
+                app.awaitOrFail("COMMIT:after:20", "redelivery committed on the configured Kafka manager");
+                assertEquals(1, app.output().stream().filter("ROLLBACK:after:20"::equals).count(), app.tail());
+                assertEquals(1, app.output().stream().filter("COMMIT:after:20"::equals).count(), app.tail());
+                String state = http(port,"/state");
+                assertTrue(state.contains("otherSame=true;") && state.contains("oldRunning=0;"), state);
+                assertEquals("allStopped=true",http(port,"/close"));
+            }
+        }
+    }
+
     private WatchedApp start(Backend b,Path root,String trigger,int seed,String q,String other,boolean annotated,boolean nativeOnly,boolean ownValue,boolean nativeDefaultBatch)throws Exception {
         Files.createDirectories(root.resolve("classes"));Files.writeString(root.resolve("classes/application.properties"),"helper.seed="+seed+"\n");
         var x=WatchedApp.in(root).classpath(b.classpath()).jvmArgs(b.args()).agentArgs("startupDelaySec=1,debounceMs=100,verbose=true")

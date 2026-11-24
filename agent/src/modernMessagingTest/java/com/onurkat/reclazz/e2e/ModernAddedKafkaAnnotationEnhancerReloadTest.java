@@ -72,6 +72,10 @@ class ModernAddedKafkaAnnotationEnhancerReloadTest {
         }
     }
 
+    @Test void nativeFactoryPoliciesSurviveRegistrationAndRemoval() throws Exception {
+        AddedKafkaListenerReloadTest.nativeFactoryPolicies(tmp, broker.getBrokersAsString(), false);
+    }
+
     @Test void helperRefreshRebindsAddedRetryListener() throws Exception {
         AddedKafkaRetryTopicRefusalTest.retryDependency(tmp, broker.getBrokersAsString(), false);
     }
@@ -94,6 +98,10 @@ class ModernAddedKafkaAnnotationEnhancerReloadTest {
 
     @Test void stopTimeoutQuarantinesRetryGroupAndRecordsRestart() throws Exception {
         AddedKafkaRetryTopicRefusalTest.startFailure(tmp, broker.getBrokersAsString(), true);
+    }
+
+    @Test void substitutedRetryCallbackRefusesBeforeRegistryInsertion() throws Exception {
+        AddedKafkaRetryTopicRefusalTest.substitutedRetryCallback(tmp, broker.getBrokersAsString());
     }
 
     @Test void retryDeliveryMatchesNativeStartupAcrossEditAndRemoval() throws Exception {

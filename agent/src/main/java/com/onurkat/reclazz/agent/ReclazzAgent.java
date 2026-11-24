@@ -505,8 +505,11 @@ public class ReclazzAgent {
                     com.onurkat.reclazz.spring.NativeKafkaRetryOwnership.install();
                     var routes = new com.onurkat.reclazz.transform.KafkaRetryResolverTransformer();
                     instrumentation.addTransformer(routes, true);
+                    var listeners = new com.onurkat.reclazz.transform.NativeListenerSetupTransformer();
+                    instrumentation.addTransformer(listeners, true);
                     for (Class<?> loaded : instrumentation.getAllLoadedClasses()) {
-                        if (routes.targets(loaded.getName().replace('.', '/')))
+                        String name = loaded.getName().replace('.', '/');
+                        if (routes.targets(name) || listeners.targets(name))
                             instrumentation.retransformClasses(loaded);
                     }
                 } catch (Exception | LinkageError unavailable) {

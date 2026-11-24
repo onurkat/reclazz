@@ -4,10 +4,19 @@ import java.io.File; import java.nio.file.Path; import java.util.*; import java.
 import org.springframework.kafka.test.EmbeddedKafkaBroker; import org.springframework.kafka.test.utils.KafkaTestUtils; import org.springframework.kafka.core.*;
 class KafkaConsumerCascadeReloadTest extends KafkaConsumerCascadeContract {
  Backend open()throws Exception{return new Env();}
+ @org.junit.jupiter.api.Test void factoryTransactionRollsBackAndCommitsAfterHelperRefresh() throws Exception {
+     try (var backend = new Env(true)) {
+         verifyFactoryTransactions(backend, false);
+     }
+ }
  static class Env implements Backend {
 final EmbeddedKafkaBroker broker=new EmbeddedKafkaBroker(1,false,1);
         final DefaultKafkaProducerFactory<Integer,String> factory;final KafkaTemplate<Integer,String> producer;
-        Env(){broker.afterPropertiesSet();factory=new DefaultKafkaProducerFactory<>(KafkaTestUtils.producerProps(broker));producer=new KafkaTemplate<>(factory);}
+        Env(){this(false);}
+        Env(boolean transactions){
+            if (transactions) broker.brokerProperties(Map.of("transaction.state.log.replication.factor","1",
+                    "transaction.state.log.min.isr","1","offsets.topic.replication.factor","1"));
+            broker.afterPropertiesSet();factory=new DefaultKafkaProducerFactory<>(KafkaTestUtils.producerProps(broker));producer=new KafkaTemplate<>(factory);}
         public String[] args(){return new String[]{"-Dtest.brokers="+broker.getBrokersAsString()};}
         public void prepare(String q,String other){broker.addTopics(q,other);}
         public void send(String q,String value)throws Exception{producer.send(q,value).get(10,TimeUnit.SECONDS);}

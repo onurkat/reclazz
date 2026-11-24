@@ -285,7 +285,7 @@
       "level": 3,
       "title": "Kafka listeners added after startup",
       "id": "kafka-listeners-added-after-startup",
-      "body_sha256": "ae75321de9b2bab5f5f45e6acd631c76f726532036840c9631f369bfaa9d4581",
+      "body_sha256": "01e58313f334d2b0a81a1af6ee4f58654a277b449e5966d122b74b87fedde017",
       "heading": "### Kafka listeners added after startup\n"
     },
     {
@@ -298,7 +298,7 @@
       "level": 3,
       "title": "JMS listeners added after startup",
       "id": "jms-listeners-added-after-startup",
-      "body_sha256": "2c91b0107b5a669390cb3a6ff0f95c8d11a2b0a851c322089b8ca1012c13ccca",
+      "body_sha256": "937a2fe9ce78955ae767bcb8d1b3c7d572ff332b77a6296f4165ce87f543c524",
       "heading": "### JMS listeners added after startup\n"
     },
     {
@@ -311,7 +311,7 @@
       "level": 3,
       "title": "Rabbit listeners added after startup",
       "id": "rabbit-listeners-added-after-startup",
-      "body_sha256": "a4a744795d3d580eed90ba73e3be7a8679142af8450a6480e94a2a102387f72d",
+      "body_sha256": "2dada14ea545f3e8aa3ab31965a1c81b87fafce09d1bab584010237766ae870d",
       "heading": "### Rabbit listeners added after startup\n"
     },
     {

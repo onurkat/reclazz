@@ -35,6 +35,8 @@ public final class KafkaRetryResolverTransformer implements ClassFileTransformer
             if (!MEASURED.get(name).contains(digest)) return null;
             if (Class.forName("com.onurkat.reclazz.bootstrap.KafkaRetryRoutes", false, loader)
                     != com.onurkat.reclazz.bootstrap.KafkaRetryRoutes.class
+                    || name.equals(PROCESSOR) && Class.forName(NativeListenerSetupTransformer.BRIDGE.replace('/', '.'), false, loader)
+                    != com.onurkat.reclazz.bootstrap.NativeListenerSetup.class
                     || Class.forName(BRIDGE.replace('/', '.'), false, loader) != com.onurkat.reclazz.bootstrap.KafkaStartupRetry.class)
                 return null;
         } catch (LinkageError | ClassNotFoundException | java.security.NoSuchAlgorithmException unavailable) { return null; }
@@ -43,8 +45,14 @@ public final class KafkaRetryResolverTransformer implements ClassFileTransformer
         reader.accept(new ClassVisitor(Opcodes.ASM9, writer) {
             @Override public MethodVisitor visitMethod(int access, String method, String desc, String sig, String[] exceptions) {
                 var mv = super.visitMethod(access, method, desc, sig, exceptions);
+                if (name.equals(PROCESSOR) && method.equals("<init>"))
+                    return NativeListenerSetupTransformer.observeConstruction(mv);
                 return new MethodVisitor(Opcodes.ASM9, mv) {
                     @Override public void visitMethodInsn(int op, String owner, String callee, String descriptor, boolean itf) {
+                        if (name.equals(PROCESSOR) && method.equals("processKafkaListenerAnnotation")
+                                && owner.equals(KAFKA + "config/MethodKafkaListenerEndpoint") && callee.equals("setBean")
+                                && descriptor.equals("(Ljava/lang/Object;)V"))
+                            NativeListenerSetupTransformer.rememberEndpoint(mv);
                         if (name.equals(PROCESSOR) && owner.equals(CONFIGURER) && callee.equals("processMainAndRetryListeners")) {
                             super.visitLdcInsn(new Handle(Opcodes.H_INVOKEVIRTUAL, owner, callee, descriptor, false));
                             super.visitMethodInsn(Opcodes.INVOKESTATIC, BRIDGE, "configure", "(" + OBJECT.repeat(6)

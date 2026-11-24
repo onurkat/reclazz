@@ -86,6 +86,55 @@ abstract class RabbitConsumerCascadeContract {
             }
         }
     }
+    void verifyFactoryRefresh(Backend b) throws Exception {
+        // Factory leaves channelTransacted unset. Spring enables it when initializing a managed container.
+        String fixture = com.onurkat.reclazz.e2e.harness.CustomRabbitAdapterFixture.application(b.app());
+        fixture = fixture.replace("rabbitListenerContainerFactory(org.springframework.amqp.rabbit.connection.CachingConnectionFactory cf)",
+                        "rabbitListenerContainerFactory(org.springframework.amqp.rabbit.connection.CachingConnectionFactory cf, org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor workers)")
+                .replace("new org.springframework.core.task.SimpleAsyncTaskExecutor(\"native-rabbit-worker-\")", "workers")
+                .replace("public static void main", """
+                        @org.springframework.context.annotation.Bean
+                        public static org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor workers() {
+                            var workers = new org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor();
+                            workers.setCorePoolSize(4);
+                            workers.setThreadNamePrefix("native-rabbit-worker-");
+                            return workers;
+                        }
+                        public static void main""");
+        for (boolean nativeStart : new boolean[]{true,false}) {
+            String q = "rabbit-tx-" + UUID.randomUUID(), unrelated = q + "-other";
+            b.prepare(q, unrelated);
+            Path root = tmp.resolve(q);
+            Files.createDirectories(root.resolve("classes"));
+            Files.writeString(root.resolve("classes/application.properties"), "helper.seed=10\n");
+            var builder = WatchedApp.in(root).classpath(b.classpath()).jvmArgs(b.args())
+                    .with("App",fixture).with("Helper",helper("dependency",nativeStart ? 20 : 10))
+                    .with("Listener",listener(b,q,true,false))
+                    .with("Other","package app; @org.springframework.stereotype.Component public class Other { "
+                            + b.annotation("other",unrelated) + " public void receive(String value) {} }");
+            if (nativeStart) builder.withoutAgent();
+            else builder.agentArgs("startupDelaySec=1,debounceMs=100,verbose=true");
+            try (var app = builder.start()) {
+                int port = port(app);
+                ready(b,app,port);
+                if (!nativeStart) {
+                    app.awaitOrFail("Last-known-good bytecode cache:", "watcher ready");
+                    http(port,"/snapshot");
+                    app.rewrite("Helper",helper("dependency",20));
+                    app.awaitOrFail("Reloaded app.Helper", "helper reload");
+                    ready(b,app,port);
+                }
+                var checks = new ArrayList<org.junit.jupiter.api.function.Executable>();
+                message(b,app,q,"after",20,checks,false);
+                assertAll(checks);
+                assertEquals(1,app.output().stream().filter("CUSTOM:after:true:true"::equals).count(),app.tail());
+                String state = http(port,"/state");
+                assertTrue(state.contains("otherSame=true;") && state.contains("oldRunning=0"),state);
+                assertEquals("allStopped=true",http(port,"/close"));
+            }
+        }
+    }
+
     private WatchedApp start(Backend b,Path root,String trigger,int seed,String q,String other,boolean annotated,boolean nativeOnly,boolean ownValue)throws Exception {
         Files.createDirectories(root.resolve("classes"));Files.writeString(root.resolve("classes/application.properties"),"helper.seed="+seed+"\n");
         var x=WatchedApp.in(root).classpath(b.classpath()).jvmArgs(b.args()).agentArgs("startupDelaySec=1,debounceMs=100,verbose=true")
