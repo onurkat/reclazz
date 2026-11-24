@@ -407,6 +407,8 @@ dependencies {
     // Real Jakarta MVC async lifecycle and local HTTP tests; never packaged.
     add(springSevenTests.implementationConfigurationName, "org.springframework:spring-webmvc:7.0.10")
     add(springSevenTests.implementationConfigurationName, "org.springframework:spring-test:7.0.10")
+    // R35: the Jakarta EL e2e (compiled from src/springSixTest) needs an EL implementation here too.
+    add(springSevenTests.implementationConfigurationName, "org.apache.tomcat.embed:tomcat-embed-el:11.0.27")
     add(springSevenTests.implementationConfigurationName, "org.apache.tomcat.embed:tomcat-embed-core:11.0.27") {
         // jakarta.annotation-api below already supplies these classes.
         exclude(group = "org.apache.tomcat", module = "tomcat-annotations-api")

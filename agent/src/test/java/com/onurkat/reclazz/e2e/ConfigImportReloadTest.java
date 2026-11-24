@@ -31,7 +31,7 @@ class ConfigImportReloadTest {
         Files.writeString(main, "svc.note=base\nsvc.timeout=1\n");
         Files.writeString(a, "svc.note=a\n");
         Files.writeString(b, "svc:\n  note: b0\n  timeout: 2\n---\nsvc:\n  extra: b1\n");
-        Files.writeString(nested, "svc.note=nested\nspring.config.import=optional:file:" + a + "\n");
+        Files.writeString(nested, "svc.note=nested\nspring.config.import=optional:file:" + u(a) + "\n");
         String snake = Arrays.stream(System.getProperty("java.class.path").split(File.pathSeparator))
                 .filter(p -> Path.of(p).getFileName().toString().startsWith("snakeyaml-")).findFirst().orElseThrow();
         String classpath = WatchedApp.springClasspath() + File.pathSeparator + snake;
@@ -41,11 +41,11 @@ class ConfigImportReloadTest {
             app.awaitOrFail("] Watching ", "watcher did not start");
             assertTrue(probe(app, 0).startsWith("base:1:none:base|"), app.tail());
 
-            Files.writeString(main, "svc.note=base\nsvc.timeout=1\nspring.config.import=optional:file:" + a + ",file:" + b + "\n");
+            Files.writeString(main, "svc.note=base\nsvc.timeout=1\nspring.config.import=optional:file:" + u(a) + ",file:" + u(b) + "\n");
             assertNotNull(await(app, 1, "b0:2:b1:b0|"), "imports added: " + app.tail());
 
             Files.writeString(a, "svc.note=a2\n");
-            Files.writeString(main, "svc.note=base\nsvc.timeout=1\nspring.config.import=file:" + b + ",optional:file:" + a + "\n");
+            Files.writeString(main, "svc.note=base\nsvc.timeout=1\nspring.config.import=file:" + u(b) + ",optional:file:" + u(a) + "\n");
             String live = await(app, 2, "a2:2:b1:a2|");
             assertNotNull(live, "an edited imported file and a reordered list: " + app.tail());
 
@@ -55,15 +55,15 @@ class ConfigImportReloadTest {
                 assertEquals(restarted.latest("ONCE=").substring(5), live, "a restart on the same files builds the same sources and values");
             }
 
-            Files.writeString(main, "svc.note=base\nsvc.timeout=1\nspring.config.import=file:" + nested + "\n");
+            Files.writeString(main, "svc.note=base\nsvc.timeout=1\nspring.config.import=file:" + u(nested) + "\n");
             String nestedLive = await(app, 5, "a2:1:none:a2|");
             assertNotNull(nestedLive, "a nested import applies, the nested file above its importer: " + app.tail());
             assertRestartEqual(classpath, main, nestedLive);
             Files.writeString(nested, "svc.note=nested\nspring.profiles.active=dev\n");
-            Files.writeString(main, "svc.note=base\nsvc.timeout=1\nspring.config.import=file:" + nested + ",optional:file:" + a + "\n");
+            Files.writeString(main, "svc.note=base\nsvc.timeout=1\nspring.config.import=file:" + u(nested) + ",optional:file:" + u(a) + "\n");
             app.awaitOrFail("profile changes in imported files require a restart", "a profile change inside an imported file was not held");
-            Files.writeString(nested, "svc.note=nested\nspring.config.import=optional:file:" + a + "\n");
-            Files.writeString(main, "svc.note=base\nsvc.timeout=1\nspring.config.import=file:" + conf.resolve("missing.properties") + "\n");
+            Files.writeString(nested, "svc.note=nested\nspring.config.import=optional:file:" + u(a) + "\n");
+            Files.writeString(main, "svc.note=base\nsvc.timeout=1\nspring.config.import=file:" + u(conf.resolve("missing.properties")) + "\n");
             app.awaitOrFail("names a location that does not exist", "a missing required import was not held");
             assertNotNull(await(app, 3, "a2:1:none:a2|"), "held saves changed nothing: " + app.tail());
 
@@ -96,9 +96,9 @@ class ConfigImportReloadTest {
                 // unprefixed and relative to the importer, with its own nested unprefixed import
                 {"svc:\n  note: base\n  timeout: 1\nspring:\n  config:\n    import: sub/r.properties\n---\nsvc:\n  extra: second\n", "r:1:second:r|"},
                 // a directory and a wildcard, imported from two different documents
-                {"svc:\n  note: base\n  timeout: 1\nspring:\n  config:\n    import: file:" + conf + "/D/\n---\nsvc:\n  extra: second\nspring:\n  config:\n    import: file:" + conf + "/W/*/\n", "wx:4:wy:wx|"},
+                {"svc:\n  note: base\n  timeout: 1\nspring:\n  config:\n    import: file:" + u(conf) + "/D/\n---\nsvc:\n  extra: second\nspring:\n  config:\n    import: file:" + u(conf) + "/W/*/\n", "wx:4:wy:wx|"},
                 // a config tree
-                {"svc:\n  note: base\n  timeout: 1\nspring:\n  config:\n    import: configtree:" + conf + "/T/\n---\nsvc:\n  extra: second\n", "tree:1:second:tree|"},
+                {"svc:\n  note: base\n  timeout: 1\nspring:\n  config:\n    import: configtree:" + u(conf) + "/T/\n---\nsvc:\n  extra: second\n", "tree:1:second:tree|"},
                 // everything removed again
                 {"svc:\n  note: base\n  timeout: 1\n---\nsvc:\n  extra: second\n", "base:1:second:base|"},
         };
@@ -157,7 +157,7 @@ class ConfigImportReloadTest {
             assertNotNull(outerGone, agentLines(app));
             assertRestartEqual(classpath, null, outerGone);
             // A config tree value ends with a new line; Boot trims it.
-            Files.writeString(main, "svc.note=base\nsvc.timeout=1\nspring.config.import=configtree:" + classes.resolve("T") + "/\n");
+            Files.writeString(main, "svc.note=base\nsvc.timeout=1\nspring.config.import=configtree:" + u(classes.resolve("T")) + "/\n");
             String treeLive = await(app, 35, "tree:1:none:tree|");
             assertNotNull(treeLive, agentLines(app));
             assertRestartEqual(classpath, null, treeLive);
@@ -197,6 +197,9 @@ class ConfigImportReloadTest {
             assertEquals(restarted.latest("ONCE=").substring(5), live, "a restart on the same files builds the same sources and values");
         }
     }
+
+    /** A path as written into a config file: forward slashes, since a backslash is an escape in .properties (Windows). */
+    private static String u(Path path) { return path.toString().replace('\\', '/'); }
 
     private String probe(WatchedApp app, int n) throws Exception {
         Files.createFile(tmp.resolve("probe" + n));

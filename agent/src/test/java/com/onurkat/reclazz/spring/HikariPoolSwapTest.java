@@ -219,4 +219,21 @@ class HikariPoolSwapTest {
         assertEquals(2, ds.getMinimumIdle(), "the live pool's minimum idle is back once nothing drains");
         assertEquals("gamma", marker(ds));
     }
+
+    @Test void whenTheNewerOldPoolRetiresFirstTheLivePoolStillGetsTheJmxName() throws Exception {
+        String alpha = db("alpha"), beta = db("beta"), gamma = db("gamma");
+        HikariDataSource ds = pool(alpha);
+        ds.setRegisterMbeans(true);
+        assertEquals("alpha", marker(ds));
+        Connection held = ds.getConnection();
+        assertNull(HikariPoolSwap.swap(ds, beta, null, null).refused());
+        assertNull(HikariPoolSwap.swap(ds, gamma, null, null).refused());
+        // The beta pool drains and retires while alpha's connection is still held (the order seen on Windows).
+        Thread.sleep(HikariPoolSwap.graceMillis + 2_000);
+        held.close();
+        assertTrue(retiredWithin(10_000));
+        var name = new javax.management.ObjectName("com.zaxxer.hikari:type=Pool (swap-" + run + ")");
+        assertTrue(ManagementFactory.getPlatformMBeanServer().isRegistered(name), "the name moves to the live pool once the last old pool is gone");
+        assertSame(livePool(ds), ds.getHikariPoolMXBean());
+    }
 }

@@ -69,6 +69,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   installs every constructor initializer before leaving its record cohort; ordinary
   dispatch retargeting cancels a pending cohort for the same owner.
 
+### Fixed
+
+- A HikariCP pool switched twice in a row keeps its JMX and metrics registration even when
+  the newer old pool finishes draining first (seen on Windows): whichever old pool retires
+  last hands the names to the pool that is live then.
+- A `spring.config.import` directory wildcard (`dir/*/`) works on Windows, where `*` is not
+  a valid path character.
+
 ## [1.9.0] - 2026-11-22
 
 ### Added

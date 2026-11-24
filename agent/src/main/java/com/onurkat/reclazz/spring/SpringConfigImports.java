@@ -282,7 +282,7 @@ final class SpringConfigImports {
 
             List<Resource> found = new ArrayList<>();
             boolean directory = path.endsWith("/");
-            List<Path> targets = wildcard(absolute(path, base), entry, optional);
+            List<Path> targets = wildcard(path, base, entry);
             if (targets == null) return missing(entry, optional);
             for (Path target : targets) {
                 if (directory) {
@@ -346,14 +346,17 @@ final class SpringConfigImports {
                     target.toFile().getCanonicalFile().toPath(), new Base(target.getParent(), null), extension, false));
         }
 
-        /** Expands one {@code *} path segment to the existing subdirectories in name order; null when nothing matches. */
-        private List<Path> wildcard(Path path, String entry, boolean optional) throws Exception {
-            String text = path.toString();
-            int star = text.indexOf('*');
-            if (star < 0) return List.of(path);
-            if (text.indexOf('*', star + 1) >= 0) throw new IllegalStateException("The import " + entry + " has more than one wildcard; a restart would fail too");
-            Path parent = Path.of(text.substring(0, star));
-            String rest = text.substring(star + 1).replaceFirst("^/", "");
+        /**
+         * Expands one {@code *} path segment to the existing subdirectories in name order; null when nothing matches. Works
+         * on the location text: {@code *} is not a valid character in a Windows path.
+         */
+        private List<Path> wildcard(String path, Path base, String entry) throws Exception {
+            int star = path.indexOf('*');
+            if (star < 0) return List.of(absolute(path, base));
+            if (path.indexOf('*', star + 1) >= 0) throw new IllegalStateException("The import " + entry + " has more than one wildcard; a restart would fail too");
+            String prefix = path.substring(0, star);
+            Path parent = absolute(prefix.isEmpty() ? "." : prefix, base);
+            String rest = path.substring(star + 1).replaceFirst("^[/\\\\]", "");
             if (!Files.isDirectory(parent)) return null;
             List<Path> dirs = new ArrayList<>();
             try (var list = Files.list(parent)) {

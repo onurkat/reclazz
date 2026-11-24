@@ -183,6 +183,10 @@ final class HikariPoolSwap {
         }
     }
 
+    /** Old pools of each DataSource still draining; the last one to finish hands the monitoring names to the live pool. */
+    private static final java.util.Map<Object, java.util.concurrent.atomic.AtomicInteger> DRAINING =
+            java.util.Collections.synchronizedMap(new java.util.WeakHashMap<>());
+
     /** Grace before the first "nothing borrowed" reading: a caller that read the old pool just before the switch borrows in it. */
     static long graceMillis = 1_000;
 
@@ -190,6 +194,7 @@ final class HikariPoolSwap {
     private static void retire(Object old, Object fresh, Object hikari, Field pool, Object oldConfig, int minimumIdle, Object copy,
                                Field registerMbeans, boolean mbeans, Object factory, Object registry) {
         try { poolMethod(old, "softEvictConnections").invoke(old); } catch (Throwable ignored) { }
+        synchronized (hikari) { DRAINING.computeIfAbsent(hikari, k -> new java.util.concurrent.atomic.AtomicInteger()).incrementAndGet(); }
         Thread drain = new Thread(() -> {
             long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(drainMillis);
             try {
@@ -207,19 +212,21 @@ final class HikariPoolSwap {
             synchronized (hikari) {
                 // hikari's own getters report the user's minimum idle again (a copy's value dies with its pool).
                 try { if (oldConfig == hikari) call(hikari, "setMinimumIdle", minimumIdle); } catch (Throwable ignored) { }
+                // JMX and metrics names are shared by every pool of this DataSource: only once the last draining pool is
+                // gone is the name free, so whichever retirement finishes last registers the pool that is live then.
+                if (DRAINING.get(hikari).decrementAndGet() > 0) return;
                 try {
-                    // Only the pool that is still the live one gets the restored minimum idle and the monitoring names:
-                    // a later switch or a close() may have replaced or shut it meanwhile.
-                    if (pool.get(hikari) != fresh || Boolean.TRUE.equals(call(hikari, "isClosed"))) return;
-                    if (factory != null) poolMethod(fresh, "setMetricsTrackerFactory", Class.forName(
-                            "com.zaxxer.hikari.metrics.MetricsTrackerFactory", false, fresh.getClass().getClassLoader()))
-                            .invoke(fresh, factory);
-                    else if (registry != null) poolMethod(fresh, "setMetricRegistry", Object.class).invoke(fresh, registry);
+                    Object live = pool.get(hikari);
+                    if (live == null || Boolean.TRUE.equals(call(hikari, "isClosed"))) return;
+                    if (factory != null) poolMethod(live, "setMetricsTrackerFactory", Class.forName(
+                            "com.zaxxer.hikari.metrics.MetricsTrackerFactory", false, live.getClass().getClassLoader()))
+                            .invoke(live, factory);
+                    else if (registry != null) poolMethod(live, "setMetricRegistry", Object.class).invoke(live, registry);
                     if (mbeans) {
-                        // The new pool's own configuration is the copy, which was built with JMX off.
-                        registerMbeans.setBoolean(copy, true);
-                        Method handle = Reflect.findMethod(fresh.getClass(), "handleMBeans", fresh.getClass(), boolean.class);
-                        if (handle != null) { handle.setAccessible(true); handle.invoke(fresh, fresh, true); }
+                        // The live pool's own configuration is a copy built with JMX off.
+                        registerMbeans.setBoolean(poolConfig(live), true);
+                        Method handle = Reflect.findMethod(live.getClass(), "handleMBeans", live.getClass(), boolean.class);
+                        if (handle != null) { handle.setAccessible(true); handle.invoke(live, live, true); }
                     }
                 } catch (Throwable notRegistered) {
                     // The pool works without them; only the monitoring entry is missing.
