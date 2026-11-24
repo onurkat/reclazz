@@ -236,10 +236,8 @@ class SpringJmsReloaderTest {
     }
     @Test void unsupportedFactoriesAreRefusedBeforeRegistration() throws Exception {
         try (var s = new Scope()) {
-            s.factory().setSubscriptionDurable(true);
-            assertFalse(s.reloader.reloadJmsListeners(Owner.class, ADDED, annotated("first", "id")));
-            assertTrue(s.registry.getListenerContainerIds().isEmpty());
-            s.factory().setSubscriptionDurable(false); s.factory().setTaskExecutor(Runnable::run);
+            // Topic and durable factories are supported (AddedJmsTopicListenerReloadTest); a custom executor is not.
+            s.factory().setTaskExecutor(Runnable::run);
             assertFalse(s.reloader.reloadJmsListeners(Owner.class, ADDED, annotated("first", "id")));
             assertTrue(s.registry.getListenerContainerIds().isEmpty());
         }
@@ -284,7 +282,7 @@ class SpringJmsReloaderTest {
         }
     }
     @Test void unsupportedShapesAndMethodAdviceAreExplicitlyRefused() throws Exception {
-        for (var pair : List.of(List.of("subscription","durable"),List.of("id","${id}"), List.of("concurrency","3-1"))) {
+        for (var pair : List.of(List.of("subscription","#{null}"),List.of("id","${id}"), List.of("concurrency","3-1"))) {
             var n=read(annotated("first","id")); var a=method(n,"first").visibleAnnotations.get(0);
             a.values.addAll(pair); assertFalse(AddedJmsListenerAdapter.inspect(write(n),ADDED).refused().isEmpty());
         }

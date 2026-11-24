@@ -22,6 +22,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Listeners on batch container factories reload without a restart: `@KafkaListener` and
+  `@RabbitListener` methods taking a `List`, on a Kafka batch factory or a Rabbit
+  batch/consumer-batch factory, can be added, edited and removed after startup, and the
+  helper and constructor-property refresh also covers them. A Rabbit batch still being
+  collected when its consumer is replaced goes back to the queue.
+- `@JmsListener` methods on topic and durable subscription factories can be added, edited
+  and removed after startup, and the `subscription` attribute is accepted. A durable
+  subscription keeps the name a restart would give it, so messages published while the
+  listener is replaced or removed reach the next saved body once.
+
 - Gson sees fields added to a watched class after startup: an existing Gson instance
   serializes and deserializes them on a stock JVM, and drops them again when they are
   removed. Live Gson instances clear their type adapter cache after such a reload.

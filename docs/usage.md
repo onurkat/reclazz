@@ -2212,9 +2212,12 @@ retained messages according to the application's offset policy.
 
 Use the standard `KafkaListenerAnnotationBeanPostProcessor`,
 `KafkaListenerEndpointRegistry` and `ConcurrentKafkaListenerContainerFactory`
-in record mode. Added listeners refuse annotation enhancers, retry-topic
-configuration, filtered/retry-template/batch factories and container
-customizers. Proxy/subclass receivers are not unwrapped past advice. This
+with Spring's record or batch listener adapter. On a batch factory
+(`setBatchListener(true)`) an added method takes a `List` payload, and its edits,
+removal and re-addition next to a batch listener present at startup are measured
+like record listeners, on Spring Kafka 2.9.13 and 3.2.4. Added listeners refuse annotation enhancers, retry-topic
+configuration, filtered/retry-template factories, a batch-to-record adapter and
+container customizers. Proxy/subclass receivers are not unwrapped past advice. This
 scope does not cover class-level or repeatable listeners, expressions/placeholders
 in other listener attributes, container groups, arbitrary wrapper/container types,
 scoped/prototype beans or sharing one registry between multiple contexts.
@@ -2226,8 +2229,9 @@ A separately bounded [Kafka helper/property transaction](spring-constructor-depe
 recreates one plain local leaf listener after helper-body or scalar constructor
 property saves, including a same-key scalar on the listener constructor. It is
 measured on Framework5.3.39/Kafka2.9.13 and Framework6.1.14/Kafka3.2.4,
-JDK17/21, with nontransactional RECORD and native-default BATCH acknowledgment.
-BATCH acknowledgment is distinct from batch-listener callbacks; other
+JDK17/21, with nontransactional RECORD and native-default BATCH acknowledgment
+for record callbacks, and with batch-listener callbacks on explicit and
+native-default BATCH acknowledgment (Kafka refuses RECORD for them); other
 reconstruction paths and broader closures remain outside this transaction. Existing Spring bean recreation/lifecycle effects remain. The hidden
 method's declaring class differs from the original, so custom conversion or
 argument factories depending on exact declaring-class identity are outside the
@@ -2256,8 +2260,9 @@ factory `retryTemplate` field. Added listeners follow six saves, including topic
 changes, private restoration, removal, retired consumers and unrelated container
 identity. Native startup controls precede each watcher observer. The factory
 absence exception and endpoint-ID preparation apply only to package version
-3.2.4; this does not certify every Kafka 3.x release. Filtered, batch and custom
-factories retain their restart requirements. Native owner-expression controls
+3.2.4; this does not certify every Kafka 3.x release. Filtered and custom
+factories retain their restart requirements; the helper/property transaction is
+also measured with batch-listener callbacks on this lane. Native owner-expression controls
 verify context separation, prior-binding restoration and failed-registration
 cleanup. Modern Kafka reply, transactions, rebalance, late attach, hosted clusters
 and direct child-loader watcher behavior remain outside this measured scope.
@@ -2328,8 +2333,18 @@ The verified infrastructure is the standard `JmsListenerAnnotationBeanPostProces
 `JmsListenerEndpointRegistry`, `DefaultJmsListenerContainerFactory` and
 `DefaultMessageListenerContainer` with Spring's `MessagingMessageListenerAdapter`.
 The application factory retains its conversion, selector and local session
-transaction settings. Added listeners refuse custom factories/executors,
-external transaction managers and topic/durable/shared subscription factories.
+transaction settings, and topic (`pubSubDomain`) and durable subscription
+settings. A durable subscription keeps the name a restart would give it: the
+`subscription` attribute when set, otherwise the listener class and method name
+(for example `app.Listener.onOrder`). Messages published while that listener is
+being replaced, or while it is removed, wait on the subscription and reach the
+next saved body once, and no second subscription is created. A plain topic
+delivers only to subscribers that exist, so a message published between the old
+consumer closing and the new one subscribing is not received, as across a
+restart. The same holds for the helper and constructor-property refresh of a
+listener on a topic factory. Measured with Spring JMS 5.3.39/ActiveMQ 5.19.11 and
+Spring JMS 6.1.14/ActiveMQ 6.1.3. Added listeners refuse custom factories/executors
+and external transaction managers. Shared subscriptions (JMS 2.0) were not exercised.
 Proxies and subclass receivers are not unwrapped. Repeatable/composed listeners,
 scoped/prototype beans and registries shared between contexts are
 outside this scope. Custom argument factories that depend on the exact original
@@ -2447,9 +2462,15 @@ Both original and added consumers require the standard
 `SimpleMessageListenerContainer`, with AUTO acknowledgment and the default
 `SimpleAsyncTaskExecutor`. Newly added consumers additionally require the standard
 simple factory without a customizer. Local channel transactions are preserved.
-Manual/automatic-without-ack modes, external transaction managers, container
-advice, custom executors, direct/stream/batch containers and custom listener
-adapters are refused for retirement of either original or added consumers.
+Batch factories (`setBatchListener`, `setConsumerBatchEnabled`) are supported with
+Spring's batch adapter and a `List` payload: a batch still being collected when a
+consumer retires is unacknowledged and goes back to the queue, and under
+continuous sending every message was received exactly once across adds, edits,
+removal and re-addition, with and without consumer batching, on Spring AMQP 2.4.17
+and 3.1.7. Manual/automatic-without-ack modes, external
+transaction managers, container advice, custom executors, direct/stream
+containers and custom listener adapters are refused for retirement of either
+original or added consumers.
 Unsupported static metadata shapes, foreign added IDs and mixed Rabbit/JMS/Kafka
 owners are checked before owned consumers are retired. Queue expression parsing
 and evaluation occur later during native registration, after retirement; an

@@ -203,11 +203,6 @@ public final class SpringJmsReloader {
             if (metadata == null || metadata.get(factory) != null)
                 throw new IllegalStateException("JMS factory " + field + " is unsupported for added listeners");
         }
-        for (String field : List.of("pubSubDomain", "subscriptionDurable", "subscriptionShared")) {
-            var metadata = Reflect.findField(factory.getClass(), field);
-            if (metadata == null || Boolean.TRUE.equals(metadata.get(factory)))
-                throw new IllegalStateException("JMS topic/subscription factories require a restart");
-        }
     }
 
     private List<Infrastructure> infrastructures() throws Exception {

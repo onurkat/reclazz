@@ -17,6 +17,8 @@ abstract class RabbitConsumerCascadeContract {
         String classpath(); String app(); String annotation(String id,String destination);
         String[] args(); void prepare(String target,String other)throws Exception;
         void send(String destination,String value)throws Exception;
+        /** A listener method whose body prints with {@code value} in scope; batch backends loop over a List. */
+        default String receiver(String body){return "public void receive(String value){"+body+"}";}
     }
     abstract Backend open()throws Exception;
     @ParameterizedTest @CsvSource({"dependency,false,false","property,false,false","dependency,true,false","property,true,false","property,false,true","property,true,true"})
@@ -88,7 +90,7 @@ abstract class RabbitConsumerCascadeContract {
         Files.createDirectories(root.resolve("classes"));Files.writeString(root.resolve("classes/application.properties"),"helper.seed="+seed+"\n");
         var x=WatchedApp.in(root).classpath(b.classpath()).jvmArgs(b.args()).agentArgs("startupDelaySec=1,debounceMs=100,verbose=true")
             .with("App",b.app()).with("Helper",helper(trigger,seed)).with("Listener",listener(b,q,annotated,ownValue))
-            .with("Other","package app; @org.springframework.stereotype.Component public class Other { "+b.annotation("other",other)+" public void receive(String value){System.out.println(\"OTHER:\"+value);} }");
+            .with("Other","package app; @org.springframework.stereotype.Component public class Other { "+b.annotation("other",other)+" "+b.receiver("System.out.println(\"OTHER:\"+value);")+" }");
         if(nativeOnly)x.withoutAgent();return x.start();
     }
     private static String helper(String trigger,int seed) {
@@ -100,7 +102,7 @@ abstract class RabbitConsumerCascadeContract {
         return "package app; @org.springframework.stereotype.Component public class Listener { public final int seed,id,own; public Listener(Helper helper"
                 + parameter + "){seed=helper.seed;own=" + (ownValue ? "value" : "-1")
                 + ";id=App.born();} public String use(){return \"used\";} "
-                + (annotated ? b.annotation("target",q)+" public void receive(String value){System.out.println(\"DATA:\"+value+\":\"+seed+\":\"+id+\":\"+own);}" : "") + " }";
+                + (annotated ? b.annotation("target",q)+" "+b.receiver("System.out.println(\"DATA:\"+value+\":\"+seed+\":\"+id+\":\"+own);") : "") + " }";
     }
 
     private static int port(WatchedApp app){app.awaitOrFail("PORT=","SETUP: native app failed to start");return Integer.parseInt(app.latest("PORT=").substring(5));}

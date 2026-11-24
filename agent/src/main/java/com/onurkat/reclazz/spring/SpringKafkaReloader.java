@@ -21,6 +21,10 @@ public final class SpringKafkaReloader {
     private static final String PROCESSOR = "org.springframework.kafka.annotation.KafkaListenerAnnotationBeanPostProcessor";
     private static final String REGISTRY = "org.springframework.kafka.config.KafkaListenerEndpointRegistry";
     private static final String RECORD_ADAPTER = "org.springframework.kafka.listener.adapter.RecordMessagingMessageListenerAdapter";
+    // Spring builds both standard adapters from the factory and the method alone; a factory's
+    // batchToRecordAdapter or any other customization is still refused in requireFactory.
+    private static final Set<String> STANDARD_ADAPTERS = Set.of(RECORD_ADAPTER,
+            "org.springframework.kafka.listener.adapter.BatchMessagingMessageListenerAdapter");
     private final PlatformContext platform;
     private static final class OwnerState { volatile boolean registered; }
     private final ClassValue<OwnerState> owners = new ClassValue<>() {
@@ -65,8 +69,8 @@ public final class SpringKafkaReloader {
                     if (AddedKafkaListenerAdapter.ownerOf(bean) != type && (bean == null || !type.isInstance(bean))) continue;
                     relevant = true;
                     owners.get(type).registered = true;
-                    if (!listener.getClass().getName().equals(RECORD_ADAPTER))
-                        throw new IllegalStateException("custom or batch Kafka listener adapter for " + c.id());
+                    if (!STANDARD_ADAPTERS.contains(listener.getClass().getName()))
+                        throw new IllegalStateException("custom Kafka listener adapter for " + c.id());
                     if (AddedKafkaListenerAdapter.ownerOf(bean) != type)
                         throw new IllegalStateException("proxy or subclass Kafka listener receiver for " + c.id());
                     // Validate every selected entry before stopping any of them.
@@ -135,8 +139,8 @@ public final class SpringKafkaReloader {
                     }
                     Object registered = container(scope.registry(), plan.ids().get(i));
                     if (registered == null) throw new IllegalStateException("Kafka processor did not register " + plan.ids().get(i));
-                    if (!messageListener(registered).getClass().getName().equals(RECORD_ADAPTER))
-                        throw new IllegalStateException("custom or batch listener adapters require a restart");
+                    if (!STANDARD_ADAPTERS.contains(messageListener(registered).getClass().getName()))
+                        throw new IllegalStateException("custom Kafka listener adapters require a restart");
                     changed = true;
                 }
             }
@@ -198,8 +202,6 @@ public final class SpringKafkaReloader {
             if (metadata == null || metadata.get(factory) != null)
                 throw new IllegalStateException("Kafka factory " + field + " is unsupported for added listeners");
         }
-        if (Boolean.TRUE.equals(factory.getClass().getMethod("isBatchListener").invoke(factory)))
-            throw new IllegalStateException("batch Kafka factories require a restart for added listeners");
     }
 
     private List<Infrastructure> infrastructures() throws Exception {
@@ -387,7 +389,7 @@ public final class SpringKafkaReloader {
                 Object adapter = messageListener(c.instance());
                 Object receiver = listenerBean(adapter);
                 if (receiver != bean && AddedKafkaListenerAdapter.ownerOf(receiver) != type) continue;
-                if (!adapter.getClass().getName().equals(RECORD_ADAPTER))
+                if (!STANDARD_ADAPTERS.contains(adapter.getClass().getName()))
                     throw new IllegalStateException("custom dependent Kafka adapter requires a restart");
                 requireLifecycle(c);
                 if (!c.instance().getClass().getName().equals("org.springframework.kafka.listener.ConcurrentMessageListenerContainer"))

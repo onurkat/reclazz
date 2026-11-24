@@ -17,6 +17,10 @@ abstract class KafkaConsumerCascadeContract {
         String classpath(); String app(boolean nativeDefaultBatch); String annotation(String id,String destination);
         String[] args(); void prepare(String target,String other)throws Exception;
         void send(String destination,String value)throws Exception;
+        /** A listener method whose body prints with {@code value} in scope; batch backends loop over a List. */
+        default String receiver(String body){return "public void receive(String value){"+body+"}";}
+        /** Acknowledgment mode the app must report; a batch listener only allows BATCH, set or native. */
+        default String ack(boolean nativeDefaultBatch){return nativeDefaultBatch?"BATCH":"RECORD";}
     }
     abstract Backend open()throws Exception;
     @ParameterizedTest @CsvSource({"dependency,false,false,false","property,false,false,false","dependency,true,false,false","property,true,false,false","property,false,true,false","property,true,true,false","dependency,false,false,true","property,false,false,true","dependency,true,false,true","property,true,false,true","property,false,true,true","property,true,true,true"})
@@ -26,7 +30,7 @@ abstract class KafkaConsumerCascadeContract {
             for(int seed:new int[]{10,20,30,40}) {
                 Path root=tmp.resolve("native-"+seed);String q="native-"+UUID.randomUUID();b.prepare(q,q+"-other");
                 try(var app=start(b,root,trigger,seed,q,q+"-other",true,true,ownValue,nativeDefaultBatch)) {
-                    int port=port(app);ready(b,app,port);assertAck(port,nativeDefaultBatch);
+                    int port=port(app);ready(b,app,port);assertAck(port,b.ack(nativeDefaultBatch));
                     var nativeChecks=new ArrayList<org.junit.jupiter.api.function.Executable>();message(b,app,q,"native"+seed,seed,nativeChecks,ownValue);assertAll("SETUP: native expected seed "+seed,nativeChecks);
                     other(b,app,q+"-other","native"+seed);
                     assertEquals("allStopped=true",http(port,"/close"),app.tail());
@@ -43,7 +47,7 @@ abstract class KafkaConsumerCascadeContract {
                         app.rewrite("Listener",listener(b,q,true,ownValue));
                         assertTrue(app.awaits("Reloaded app.Listener",20)||app.awaits("Structural reload: app.Listener",5),"SETUP: listener warmup reload missing\n"+app.tail());
                     }
-                    ready(b,app,port);assertAck(port,nativeDefaultBatch);
+                    ready(b,app,port);assertAck(port,b.ack(nativeDefaultBatch));
                     System.out.println("RF14_WARM "+getClass().getSimpleName()+" trigger="+trigger+" added="+added+" "+http(port,"/state"));
                     var checks=new ArrayList<org.junit.jupiter.api.function.Executable>();
                     message(b,app,q,"warm",10,checks,ownValue);other(b,app,q+"-other","warm");
@@ -61,7 +65,7 @@ abstract class KafkaConsumerCascadeContract {
                         while(System.nanoTime()<until && app.output().stream().filter(x->x.contains(needle)).count()<=count)Thread.sleep(25);
                         boolean completed=app.output().stream().filter(x->x.contains(needle)).count()>count;
                         checks.add(()->assertTrue(completed,"SAVE_NOT_APPLIED: watcher completion did not advance for " + needle + "\n" + app.tail()));
-                        assertAck(port,nativeDefaultBatch);String state=http(port,"/state");System.out.println("RF14_STATE "+getClass().getSimpleName()+" trigger="+trigger+" added="+added+" stage="+stage+" "+state);
+                        assertAck(port,b.ack(nativeDefaultBatch));String state=http(port,"/state");System.out.println("RF14_STATE "+getClass().getSimpleName()+" trigger="+trigger+" added="+added+" stage="+stage+" "+state);
                         other(b,app,q+"-other","save"+stage);
                         message(b,app,q,"save"+stage,expected,checks,ownValue);
                         checks.add(()->assertTrue(state.contains("oldRunning=0"),"old target worker still active: "+state));
@@ -87,7 +91,7 @@ abstract class KafkaConsumerCascadeContract {
         Files.createDirectories(root.resolve("classes"));Files.writeString(root.resolve("classes/application.properties"),"helper.seed="+seed+"\n");
         var x=WatchedApp.in(root).classpath(b.classpath()).jvmArgs(b.args()).agentArgs("startupDelaySec=1,debounceMs=100,verbose=true")
             .with("App",b.app(nativeDefaultBatch)).with("Helper",helper(trigger,seed)).with("Listener",listener(b,q,annotated,ownValue))
-            .with("Other","package app; @org.springframework.stereotype.Component public class Other { "+b.annotation("other",other)+" public void receive(String value){System.out.println(\"OTHER:\"+value);} }");
+            .with("Other","package app; @org.springframework.stereotype.Component public class Other { "+b.annotation("other",other)+" "+b.receiver("System.out.println(\"OTHER:\"+value);")+" }");
         if(nativeOnly)x.withoutAgent();return x.start();
     }
     private static String helper(String trigger,int seed) {
@@ -99,11 +103,10 @@ abstract class KafkaConsumerCascadeContract {
         return "package app; @org.springframework.stereotype.Component public class Listener { public final int seed,id,own; public Listener(Helper helper"
                 + parameter + "){seed=helper.seed;own=" + (ownValue ? "value" : "-1")
                 + ";id=App.born();} public String use(){return \"used\";} "
-                + (annotated ? b.annotation("target",q)+" public void receive(String value){System.out.println(\"DATA:\"+value+\":\"+seed+\":\"+id+\":\"+own);}" : "") + " }";
+                + (annotated ? b.annotation("target",q)+" "+b.receiver("System.out.println(\"DATA:\"+value+\":\"+seed+\":\"+id+\":\"+own);") : "") + " }";
     }
 
-    private static void assertAck(int port, boolean nativeDefaultBatch) throws Exception {
-        String expected=nativeDefaultBatch?"BATCH":"RECORD";
+    private static void assertAck(int port, String expected) throws Exception {
         String state=http(port,"/state");
         assertTrue(state.contains("targetAck="+expected+";factoryAck="+expected+";"),"native acknowledgment mode changed: "+state);
     }

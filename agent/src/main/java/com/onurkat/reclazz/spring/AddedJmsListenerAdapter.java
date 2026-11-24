@@ -21,7 +21,7 @@ public final class AddedJmsListenerAdapter {
     private static final String SEND_TO = "Lorg/springframework/messaging/handler/annotation/SendTo;";
     private static final Set<String> RESULTS = Set.of("V", "Ljava/lang/String;", "[B", "Ljava/util/Map;",
             "Ljavax/jms/Message;", "Ljakarta/jms/Message;", "Lorg/springframework/messaging/Message;");
-    private static final Set<String> OPTIONS = Set.of("id", "destination", "containerFactory", "selector", "concurrency");
+    private static final Set<String> OPTIONS = Set.of("id", "destination", "containerFactory", "selector", "subscription", "concurrency");
     private static final Set<String> CLASS_ANNOTATIONS = Set.of("Lorg/springframework/stereotype/Component;",
             "Lorg/springframework/stereotype/Service;", "Lorg/springframework/stereotype/Repository;", "Ljava/lang/Deprecated;");
     private static final Set<String> PARAMETERS = Set.of("Lorg/springframework/messaging/handler/annotation/Payload;",
@@ -73,6 +73,8 @@ public final class AddedJmsListenerAdapter {
                 // resolved by Reclazz itself, so it stays a literal.
                 if (options.containsKey("containerFactory")) literal(options.get("containerFactory"), "containerFactory");
                 if (options.containsKey("selector")) destination(options.get("selector"), "selector");
+                // A durable or shared topic subscription keeps this name across saves, as across restarts.
+                if (options.containsKey("subscription")) destination(options.get("subscription"), "subscription");
                 if (options.containsKey("concurrency")) {
                     String[] limits = literal(options.get("concurrency"), "concurrency").split("-", -1);
                     if (limits.length > 2 || Integer.parseInt(limits[0]) <= 0
@@ -94,6 +96,20 @@ public final class AddedJmsListenerAdapter {
         if (!(value instanceof String s) || s.isBlank() || s.contains("#{") || s.contains("${"))
             throw new IllegalArgumentException(name + " must be a nonempty literal");
         return (String) value;
+    }
+    private static boolean hasValue(AnnotationNode a, String name) {
+        if (a.values != null) for (int i = 0; i < a.values.size(); i += 2) if (name.equals(a.values.get(i))) return true;
+        return false;
+    }
+    /**
+     * Spring names a durable or shared topic subscription after the handler's bean type and method when
+     * {@code subscription} is unset. Here that type is the generated delegate, whose name differs from the
+     * listener class and between saves, so the name a restart would use is written into the copy instead.
+     */
+    private static AnnotationVisitor defaultSubscription(AnnotationVisitor target, String name) {
+        return new AnnotationVisitor(Opcodes.ASM9, target) {
+            @Override public void visitEnd() { super.visit("subscription", name); super.visitEnd(); }
+        };
     }
     private static boolean typeVariables(String signature) {
         if (signature == null) return false;
@@ -122,7 +138,10 @@ public final class AddedJmsListenerAdapter {
         ctor.visitInsn(Opcodes.RETURN); ctor.visitMaxs(0, 0); ctor.visitEnd();
         for (var m : plan.methods()) {
             var mv = writer.visitMethod(Opcodes.ACC_PUBLIC, m.name, m.desc, m.signature, m.exceptions.toArray(String[]::new));
-            for (var a : m.visibleAnnotations) a.accept(mv.visitAnnotation(a.desc, true));
+            for (var a : m.visibleAnnotations) {
+                var av = mv.visitAnnotation(a.desc, true);
+                a.accept(a.desc.equals(JMS) && !hasValue(a, "subscription") ? defaultSubscription(av, owner.getName() + "." + m.name) : av);
+            }
             if (m.parameters != null) for (var p : m.parameters) mv.visitParameter(p.name, p.access);
             if (m.visibleParameterAnnotations != null) for (int i = 0; i < m.visibleParameterAnnotations.length; i++)
                 if (m.visibleParameterAnnotations[i] != null) for (var a : m.visibleParameterAnnotations[i]) a.accept(mv.visitParameterAnnotation(i, a.desc, true));

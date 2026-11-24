@@ -21,6 +21,9 @@ public final class SpringRabbitReloader {
     private static final String PROCESSOR = "org.springframework.amqp.rabbit.annotation.RabbitListenerAnnotationBeanPostProcessor";
     private static final String REGISTRY = "org.springframework.amqp.rabbit.listener.RabbitListenerEndpointRegistry";
     private static final String ADAPTER = "org.springframework.amqp.rabbit.listener.adapter.MessagingMessageListenerAdapter";
+    // Spring builds the batch adapter from the factory and the method alone, like the single-message one.
+    private static final Set<String> STANDARD_ADAPTERS = Set.of(ADAPTER,
+            "org.springframework.amqp.rabbit.listener.adapter.BatchMessagingMessageListenerAdapter");
     private final PlatformContext platform;
     private static final class OwnerState { volatile boolean registered; }
     private final ClassValue<OwnerState> owners = new ClassValue<>() {
@@ -82,7 +85,7 @@ public final class SpringRabbitReloader {
                     if (AddedRabbitListenerAdapter.ownerOf(bean) != type && (bean == null || !type.isInstance(bean))) continue;
                     relevant = true;
                     owners.get(type).registered = true;
-                    if (!listener.getClass().getName().equals(ADAPTER))
+                    if (!STANDARD_ADAPTERS.contains(listener.getClass().getName()))
                         throw new IllegalStateException("custom Rabbit listener adapter for " + c.id());
                     if (AddedRabbitListenerAdapter.ownerOf(bean) != type)
                         throw new IllegalStateException("proxy or subclass Rabbit listener receiver for " + c.id());
@@ -174,7 +177,7 @@ public final class SpringRabbitReloader {
                     }
                     Object registered = container(scope.registry(), plan.ids().get(i));
                     if (registered == null) throw new IllegalStateException("Rabbit processor did not register " + plan.ids().get(i));
-                    if (!messageListener(registered).getClass().getName().equals(ADAPTER))
+                    if (!STANDARD_ADAPTERS.contains(messageListener(registered).getClass().getName()))
                         throw new IllegalStateException("custom listener adapters require a restart");
                     changed = true;
                 }
@@ -227,11 +230,6 @@ public final class SpringRabbitReloader {
             throw new IllegalStateException("standard SimpleRabbitListenerContainerFactory required: " + name);
         for (String field : List.of("transactionManager", "taskExecutor", "containerCustomizer")) requireEmpty(factory, field);
         requireNoAdvice(factory);
-        for (String field : List.of("batchListener", "consumerBatchEnabled")) {
-            var metadata = Reflect.findField(factory.getClass(), field);
-            if (metadata == null || Boolean.TRUE.equals(metadata.get(factory)))
-                throw new IllegalStateException("Rabbit batch factories require a restart");
-        }
         var ack = Reflect.findField(factory.getClass(), "acknowledgeMode");
         if (ack == null || (ack.get(factory) != null && !ack.get(factory).toString().equals("AUTO")))
             throw new IllegalStateException("Rabbit AUTO acknowledgment required");
@@ -299,9 +297,10 @@ public final class SpringRabbitReloader {
         if (!c.instance().getClass().getName().equals("org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer"))
             throw new IllegalStateException("standard SimpleMessageListenerContainer required: " + c.id());
         requireTracking(c.instance().getClass().getClassLoader());
-        if (!c.instance().getClass().getMethod("getAcknowledgeMode").invoke(c.instance()).toString().equals("AUTO")
-                || !Boolean.FALSE.equals(Reflect.readField(c.instance(), "consumerBatchEnabled")))
-            throw new IllegalStateException("Rabbit AUTO single-message containers required");
+        // A consumer batch that is still being collected is unacknowledged; AUTO requeues it when the
+        // retiring channel closes, so batch containers keep the single-message delivery guarantee.
+        if (!c.instance().getClass().getMethod("getAcknowledgeMode").invoke(c.instance()).toString().equals("AUTO"))
+            throw new IllegalStateException("Rabbit AUTO acknowledgment containers required");
         Object executor = Reflect.readField(c.instance(), "taskExecutor");
         if (executor == null || !executor.getClass().getName().equals("org.springframework.core.task.SimpleAsyncTaskExecutor"))
             throw new IllegalStateException("Rabbit custom task executor is unsupported");
@@ -476,7 +475,7 @@ public final class SpringRabbitReloader {
                 Object adapter = messageListener(c.instance());
                 Object receiver = listenerBean(adapter);
                 if (receiver != bean && AddedRabbitListenerAdapter.ownerOf(receiver) != type) continue;
-                if (!adapter.getClass().getName().equals(ADAPTER))
+                if (!STANDARD_ADAPTERS.contains(adapter.getClass().getName()))
                     throw new IllegalStateException("custom dependent Rabbit adapter requires a restart");
                 requireLifecycle(c);
                 if (!c.instance().getClass().getName().equals("org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer"))

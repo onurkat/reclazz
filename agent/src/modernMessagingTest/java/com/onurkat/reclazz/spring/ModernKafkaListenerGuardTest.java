@@ -27,13 +27,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class ModernKafkaListenerGuardTest extends SpringKafkaReloaderTest {
     public static class CustomFactory extends ConcurrentKafkaListenerContainerFactory<Integer,String> { }
 
-    @ParameterizedTest @ValueSource(strings={"filter","batch","customizer","custom"})
+    @ParameterizedTest @ValueSource(strings={"filter","batchToRecord","customizer","custom"})
     void modernFactoryOptionsRemainRefused(String option) throws Exception {
         try (var context = new AnnotationConfigApplicationContext(Config.class)) {
             var factory = context.getBean(ConcurrentKafkaListenerContainerFactory.class);
             switch (option) {
                 case "filter" -> factory.setRecordFilterStrategy(record -> false);
-                case "batch" -> factory.setBatchListener(true);
+                case "batchToRecord" -> { factory.setBatchListener(true); factory.setBatchToRecordAdapter(new org.springframework.kafka.listener.adapter.DefaultBatchToRecordAdapter<>()); }
                 case "customizer" -> factory.setContainerCustomizer(container -> { });
                 case "custom" -> factory = new CustomFactory();
                 default -> fail(option);
@@ -43,12 +43,21 @@ class ModernKafkaListenerGuardTest extends SpringKafkaReloaderTest {
             assertInstanceOf(IllegalStateException.class, failure.getCause());
             assertTrue(failure.getCause().getMessage().contains(switch(option) {
                 case "filter" -> "recordFilterStrategy";
-                case "batch" -> "batch Kafka factories";
+                case "batchToRecord" -> "batchToRecordAdapter";
                 case "customizer" -> "containerCustomizer";
                 default -> "standard ConcurrentKafkaListenerContainerFactory";
             }), failure.getCause().toString());
             assertTrue(context.getBean(org.springframework.kafka.config.KafkaListenerEndpointRegistry.class)
                     .getListenerContainerIds().isEmpty());
+        }
+    }
+
+    @org.junit.jupiter.api.Test
+    void plainBatchFactoryIsAccepted() throws Exception {
+        try (var context = new AnnotationConfigApplicationContext(Config.class)) {
+            var factory = context.getBean(ConcurrentKafkaListenerContainerFactory.class);
+            factory.setBatchListener(true);
+            checkFactory(factory);
         }
     }
 
