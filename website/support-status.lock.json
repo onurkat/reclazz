@@ -42,7 +42,7 @@
   "property-route": "conditional",
   "consumer-helper": "conditional",
   "rabbit-helper": "conditional",
-  "mixed-listener": "restart",
+  "mixed-listener": "conditional",
   "messaging-advanced": "unverified",
   "boot-properties": "conditional",
   "boot-yaml": "conditional",

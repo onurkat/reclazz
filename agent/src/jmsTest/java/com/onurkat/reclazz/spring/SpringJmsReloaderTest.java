@@ -177,7 +177,7 @@ class SpringJmsReloaderTest {
             assertFalse(s.reloader.beforeBeanRefresh(Owner.class, annotated("first", "added")));
         }
     }
-    @Test void mixedBrokerRefusalPrecedesAnyJmsOrKafkaRetirement() throws Exception {
+    @Test void mixedJmsKafkaOwnerRetiresNothingUntilBothValidatedThenBoth() throws Exception {
         try (var s = new Scope(true)) {
             register(s, "original", s.owner(), "first"); var prior = s.container("original");
             var kr = s.context.getBean(org.springframework.kafka.config.KafkaListenerEndpointRegistry.class);
@@ -190,13 +190,18 @@ class SpringJmsReloaderTest {
             assertNotNull(kafkaPrior);
             // No Kafka annotation in saved bytes: discover the actual existing
             // Spring container's owner, including an annotation removed by a save.
-            assertFalse(s.reloader.beforeBeanRefresh(Owner.class, annotated("second", "added"), new SpringKafkaReloader(s.platform)));
-            assertSame(prior, s.container("original")); assertTrue(prior.isActive());
-            assertSame(kafkaPrior, kr.getListenerContainer("kafka-original"));
-            assertTrue(RestartLedger.digest().stream().anyMatch(v -> v.contains("mixed Kafka/JMS")));
+            var jmsPart = s.reloader.prepareBeanRefresh(Owner.class, annotated("second", "added"));
+            var kafkaPart = new SpringKafkaReloader(s.platform).prepareBeanRefresh(Owner.class, annotated("second", "added"));
+            assertNotSame(ListenerRetirement.REFUSED, jmsPart, RestartLedger.digest().toString());
+            assertNotSame(ListenerRetirement.REFUSED, kafkaPart, RestartLedger.digest().toString());
+            assertSame(prior, s.container("original")); assertTrue(prior.isActive(), "validation must not retire a JMS consumer");
+            assertSame(kafkaPrior, kr.getListenerContainer("kafka-original"), "validation must not retire a Kafka consumer");
+            assertTrue(jmsPart.commit()); assertTrue(kafkaPart.commit());
+            assertNull(s.container("original")); assertFalse(prior.isActive());
+            assertNull(kr.getListenerContainer("kafka-original"));
         }
     }
-    @Test void mixedRabbitJmsOwnerWithRemovedAnnotationsIsRefusedBeforeEitherRetires() throws Exception {
+    @Test void mixedRabbitJmsOwnerWithRemovedAnnotationsRetiresBothOnlyOnCommit() throws Exception {
         try (var s = new Scope(false, true)) {
             register(s, "jms-original", s.owner(), "first"); var jms = s.container("jms-original");
             var registry = s.context.getBean(org.springframework.amqp.rabbit.listener.RabbitListenerEndpointRegistry.class);
@@ -206,10 +211,17 @@ class SpringJmsReloaderTest {
             var handler = new DefaultMessageHandlerMethodFactory(); handler.afterPropertiesSet(); endpoint.setMessageHandlerMethodFactory(handler);
             registry.registerListenerContainer(endpoint, s.context.getBean(org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory.class), false);
             var rabbit = registry.getListenerContainer("rabbit-original");
-            assertFalse(new SpringRabbitReloader(s.platform, 200).beforeBeanRefresh(Owner.class, original(), null, s.reloader));
-            assertSame(jms, s.container("jms-original")); assertTrue(jms.isActive());
-            assertSame(rabbit, registry.getListenerContainer("rabbit-original"));
-            assertTrue(RestartLedger.digest().stream().anyMatch(v -> v.contains("mixed Rabbit/Kafka/JMS")));
+            // Saved bytes carry neither annotation: both owners are found from the live registries.
+            var rabbitPart = new SpringRabbitReloader(s.platform, 200).prepareBeanRefresh(Owner.class, original(), Set.of());
+            var jmsPart = s.reloader.prepareBeanRefresh(Owner.class, original());
+            assertNotSame(ListenerRetirement.REFUSED, rabbitPart, RestartLedger.digest().toString());
+            assertNotSame(ListenerRetirement.REFUSED, jmsPart, RestartLedger.digest().toString());
+            assertNotSame(ListenerRetirement.NONE, rabbitPart);
+            assertSame(jms, s.container("jms-original")); assertTrue(jms.isActive(), "validation must not retire a JMS consumer");
+            assertSame(rabbit, registry.getListenerContainer("rabbit-original"), "validation must not retire a Rabbit consumer");
+            assertTrue(rabbitPart.commit()); assertTrue(jmsPart.commit());
+            assertNull(registry.getListenerContainer("rabbit-original"));
+            assertNull(s.container("jms-original")); assertFalse(jms.isActive());
         }
     }
     @Test void unfinishedShutdownAndRepeatedWaitKeepRegistryOwnership() throws Exception {
@@ -316,4 +328,22 @@ class SpringJmsReloaderTest {
     private static ClassNode read(byte[] bytes) { var n=new ClassNode(); new ClassReader(bytes).accept(n,0); return n; }
     private static MethodNode method(ClassNode n,String name) { return n.methods.stream().filter(m->m.name.equals(name)).findFirst().orElseThrow(); }
     private static byte[] write(ClassNode n) { var w=new ClassWriter(0);n.accept(w);return w.toByteArray(); }
+
+    // Another broker's dependency refresh asks this broker whether a bean it would
+    // destroy also receives these messages: through an added listener's delegate
+    // too, and an unreadable receiver counts as one that does.
+    @Test void listensForSeesAddedDelegatesAndCountsUnreadableReceivers() throws Exception {
+        try (var s = new Scope()) {
+            List<Object> contexts = List.of(s.context);
+            assertFalse(SpringJmsReloader.listensFor(contexts, List.of(s.owner())));
+            assertTrue(s.reloader.reloadJmsListeners(Owner.class, ADDED, annotated("second", "added")), RestartLedger.digest().toString());
+            assertTrue(SpringJmsReloader.listensFor(contexts, List.of(s.owner())), "an added delegate of the owner counts");
+            assertFalse(SpringJmsReloader.listensFor(contexts, List.of(new Object())));
+            var custom = new org.springframework.jms.config.SimpleJmsListenerEndpoint();
+            custom.setId("custom"); custom.setDestination("unused");
+            custom.setMessageListener(message -> { });
+            s.registry.registerListenerContainer(custom, s.context.getBean(org.springframework.jms.config.DefaultJmsListenerContainerFactory.class), false);
+            assertTrue(SpringJmsReloader.listensFor(contexts, List.of(new Object())), "an unreadable receiver counts");
+        }
+    }
 }

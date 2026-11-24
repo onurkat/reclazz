@@ -209,7 +209,7 @@ class SpringRabbitReloaderTest {
             assertFalse(s.reloader.beforeBeanRefresh(Owner.class, annotated("first", "added")));
         }
     }
-    @Test void mixedBrokerRefusalPrecedesAnyRabbitOrKafkaRetirement() throws Exception {
+    @Test void mixedOwnerRetiresNothingUntilEveryBrokerValidatedThenBoth() throws Exception {
         try (var s = new Scope(true)) {
             register(s, "original", s.owner(), "first"); var prior = s.container("original");
             var kr = s.context.getBean(org.springframework.kafka.config.KafkaListenerEndpointRegistry.class);
@@ -222,10 +222,15 @@ class SpringRabbitReloaderTest {
             assertNotNull(kafkaPrior);
             // No Kafka annotation in saved bytes: discover the actual existing
             // Spring container's owner, including an annotation removed by a save.
-            assertFalse(s.reloader.beforeBeanRefresh(Owner.class, annotated("second", "added"), new SpringKafkaReloader(s.platform), null));
-            assertSame(prior, s.container("original")); assertFalse(prior.isActive());
-            assertSame(kafkaPrior, kr.getListenerContainer("kafka-original"));
-            assertTrue(RestartLedger.digest().stream().anyMatch(v -> v.contains("mixed Rabbit/Kafka/JMS")));
+            var rabbitPart = s.reloader.prepareBeanRefresh(Owner.class, annotated("second", "added"), Set.of());
+            var kafkaPart = new SpringKafkaReloader(s.platform).prepareBeanRefresh(Owner.class, annotated("second", "added"));
+            assertNotSame(ListenerRetirement.REFUSED, rabbitPart, RestartLedger.digest().toString());
+            assertNotSame(ListenerRetirement.REFUSED, kafkaPart, RestartLedger.digest().toString());
+            assertNotSame(ListenerRetirement.NONE, kafkaPart);
+            assertSame(prior, s.container("original"), "validation must not retire a Rabbit consumer");
+            assertSame(kafkaPrior, kr.getListenerContainer("kafka-original"), "validation must not retire a Kafka consumer");
+            assertTrue(rabbitPart.commit()); assertTrue(kafkaPart.commit());
+            assertNull(s.container("original")); assertNull(kr.getListenerContainer("kafka-original"));
         }
     }
     @Test void unsupportedFactoriesAreRefusedBeforeRegistration() throws Exception {
@@ -433,4 +438,22 @@ class SpringRabbitReloaderTest {
     private static ClassNode read(byte[] bytes) { var n=new ClassNode(); new ClassReader(bytes).accept(n,0); return n; }
     private static MethodNode method(ClassNode n,String name) { return n.methods.stream().filter(m->m.name.equals(name)).findFirst().orElseThrow(); }
     private static byte[] write(ClassNode n) { var w=new ClassWriter(0);n.accept(w);return w.toByteArray(); }
+
+    // Another broker's dependency refresh asks this broker whether a bean it would
+    // destroy also receives these messages: through an added listener's delegate
+    // too, and an unreadable receiver counts as one that does.
+    @Test void listensForSeesAddedDelegatesAndCountsUnreadableReceivers() throws Exception {
+        try (var s = new Scope()) {
+            List<Object> contexts = List.of(s.context);
+            assertFalse(SpringRabbitReloader.listensFor(contexts, List.of(s.owner())));
+            assertTrue(s.reloader.reloadRabbitListeners(Owner.class, ADDED, annotated("second", "added")), RestartLedger.digest().toString());
+            assertTrue(SpringRabbitReloader.listensFor(contexts, List.of(s.owner())), "an added delegate of the owner counts");
+            assertFalse(SpringRabbitReloader.listensFor(contexts, List.of(new Object())));
+            var custom = new org.springframework.amqp.rabbit.config.SimpleRabbitListenerEndpoint();
+            custom.setId("custom"); custom.setQueueNames("unused");
+            custom.setMessageListener(message -> { });
+            s.registry.registerListenerContainer(custom, s.context.getBean(org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory.class), false);
+            assertTrue(SpringRabbitReloader.listensFor(contexts, List.of(new Object())), "an unreadable receiver counts");
+        }
+    }
 }

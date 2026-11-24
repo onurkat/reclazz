@@ -34,7 +34,7 @@ public final class SpringKafkaReloader {
     private record Infrastructure(Object context, Object processor, Object registry) { }
     private record Container(Object registry, String id, Object instance) { }
 
-    /** Read-only preflight for refusing mixed JMS/Kafka owners before shutdown. */
+    /** Read-only: whether this bean owns or declares Kafka consumers. */
     synchronized boolean hasListeners(Class<?> type, byte[] bytes) {
         if (owners.get(type).registered || declaresKafka(type, bytes)) return true;
         try {
@@ -44,8 +44,8 @@ public final class SpringKafkaReloader {
             }
             return false;
         } catch (Throwable unavailable) {
-            // Only called for a JMS-relevant bean. Uncertain Kafka ownership
-            // must be resolved before the JMS side retires any consumers.
+            // Uncertain Kafka ownership is treated as ownership, so the bean is
+            // recreated as a listener owner rather than kept.
             return true;
         }
     }
@@ -55,6 +55,11 @@ public final class SpringKafkaReloader {
     }
 
     public synchronized boolean beforeBeanRefresh(Class<?> type, byte[] bytes) {
+        return prepareBeanRefresh(type, bytes).commit();
+    }
+
+    /** Validates this broker's part of a bean refresh; nothing retires until commit. */
+    synchronized ListenerRetirement prepareBeanRefresh(Class<?> type, byte[] bytes) {
         boolean relevant = owners.get(type).registered;
         try {
             relevant |= declaresKafka(type, bytes);
@@ -78,12 +83,24 @@ public final class SpringKafkaReloader {
                     selected.add(c);
                 }
             }
+            boolean owning = relevant;
+            return ListenerRetirement.of(!selected.isEmpty(), () -> commitBeanRefresh(type, scopes, selected, owning));
+        } catch (Throwable failure) {
+            // An optional unsupported Kafka stack must not stop an unrelated
+            // controller/service from following its ordinary reload path.
+            if (!relevant) return ListenerRetirement.NONE;
+            report(type, "bean recreation deferred: " + Failures.describe(failure));
+            return ListenerRetirement.REFUSED;
+        }
+    }
+
+    private synchronized boolean commitBeanRefresh(Class<?> type, List<Infrastructure> scopes, List<Container> selected,
+                                                   boolean relevant) {
+        try {
             stopAndRemove(selected);
             for (var scope : scopes) ((Set<?>) Reflect.readField(scope.processor(), "nonAnnotatedClasses")).remove(type);
             return true;
         } catch (Throwable failure) {
-            // An optional unsupported Kafka stack must not stop an unrelated
-            // controller/service from following its ordinary reload path.
             if (!relevant) return true;
             report(type, "bean recreation deferred: " + Failures.describe(failure));
             return false;
@@ -242,6 +259,27 @@ public final class SpringKafkaReloader {
         Object properties = container.getClass().getMethod("getContainerProperties").invoke(container);
         return properties.getClass().getMethod("getMessageListener").invoke(properties);
     }
+    /**
+     * Whether a Kafka consumer in these contexts is received by one of these beans or by an
+     * added delegate of one. A consumer whose receiver cannot be read counts as one.
+     */
+    static boolean listensFor(List<Object> contexts, List<Object> beans) throws Exception {
+        for (var scope : infrastructures(contexts)) for (var c : containers(scope.registry())) {
+            Object listener = messageListener(c.instance());
+            Object receiver = listenerBean(listener);
+            if (receiver == null) {
+                // A listener this broker cannot read could call one of these
+                // beans, so it counts as one that does.
+                String name = listener == null ? null : listener.getClass().getName();
+                if (name == null || !STANDARD_ADAPTERS.contains(name)) return true;
+                continue;
+            }
+            for (Object bean : beans)
+                if (bean != null && (receiver == bean || AddedKafkaListenerAdapter.ownerOf(receiver) == bean.getClass())) return true;
+        }
+        return false;
+    }
+
     private static Object listenerBean(Object listener) throws Exception {
         if (listener == null) return null;
         Class<?> delegating = Class.forName("org.springframework.kafka.listener.DelegatingMessageListener", false, listener.getClass().getClassLoader());
@@ -456,20 +494,19 @@ public final class SpringKafkaReloader {
         if (contexts.size() != 1 || contexts.get(0) != context || scopes.size() != 1
                 || scopes.get(0).context() != context || owners.size() != dependents.length)
             throw new IllegalStateException("Kafka dependency refresh requires one root context and only direct Kafka leaf owners");
-        for (String other : List.of("org.springframework.jms.annotation.JmsListenerAnnotationBeanPostProcessor",
-                "org.springframework.amqp.rabbit.annotation.RabbitListenerAnnotationBeanPostProcessor")) {
-            try {
-                Class<?> type = Class.forName(other, false, factory.getClass().getClassLoader());
-                String[] names = (String[]) factory.getClass().getMethod("getBeanNamesForType", Class.class, boolean.class, boolean.class)
-                        .invoke(factory, type, true, false);
-                if (names.length != 0) throw new IllegalStateException("mixed broker contexts require a restart for Kafka dependency refresh");
-            } catch (ClassNotFoundException absent) { /* Optional module absent. */ }
-        }
         Object rootBean = factory.getClass().getMethod("getSingleton", String.class).invoke(factory, root);
         Object raw = factory.getClass().getMethod("getBeanDefinition", String.class).invoke(factory, root);
         if (rootBean == null || !plainRoot(raw, rootBean)
                 || ((String[]) factory.getClass().getMethod("getDependenciesForBean", String.class).invoke(factory, root)).length != 0)
             throw new IllegalStateException("Kafka dependency refresh requires a plain directly constructed helper");
+        // Other brokers in the same context are independent of this transaction.
+        // A helper or owner that also receives JMS or Rabbit messages would need
+        // those consumers retired too, which this transaction does not do.
+        var involved = new ArrayList<Object>();
+        involved.add(rootBean);
+        for (var owner : owners) involved.add(owner.bean());
+        if (SpringJmsReloader.listensFor(contexts, involved) || SpringRabbitReloader.listensFor(contexts, involved))
+            throw new IllegalStateException("a Kafka dependency owner that also listens on another broker requires a restart");
         for (var scope : scopes) for (var c : containers(scope.registry())) {
             if (AddedKafkaListenerAdapter.ownerOf(listenerBean(messageListener(c.instance()))) == rootBean.getClass())
                 throw new IllegalStateException("a Kafka consumer cannot also be the dependency root");

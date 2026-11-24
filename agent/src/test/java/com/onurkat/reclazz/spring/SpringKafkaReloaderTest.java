@@ -364,4 +364,27 @@ class SpringKafkaReloaderTest {
     private static MethodNode method(ClassNode node, String name) { return node.methods.stream().filter(m -> m.name.equals(name)).findFirst().orElseThrow(); }
     private static ClassNode read(byte[] bytes) { var n = new ClassNode(); new ClassReader(bytes).accept(n, 0); return n; }
     private static byte[] write(ClassNode node) { var w = new ClassWriter(0); node.accept(w); return w.toByteArray(); }
+
+    // Another broker's dependency refresh asks this broker whether a bean it would
+    // destroy also receives these messages: through an added listener's delegate
+    // too, and an unreadable receiver counts as one that does.
+    @Test void listensForSeesAddedDelegatesAndCountsUnreadableReceivers() throws Exception {
+        try (var scope = new Scope()) {
+            List<Object> contexts = List.of(scope.context);
+            assertFalse(SpringKafkaReloader.listensFor(contexts, List.of(scope.owner())));
+            assertTrue(scope.reloader.reloadKafkaListeners(Owner.class, ADDED, annotated("second", "added")), RestartLedger.digest().toString());
+            assertTrue(SpringKafkaReloader.listensFor(contexts, List.of(scope.owner())), "an added delegate of the owner counts");
+            assertFalse(SpringKafkaReloader.listensFor(contexts, List.of(new Object())));
+            var custom = new org.springframework.kafka.config.MethodKafkaListenerEndpoint<Integer,String>();
+            custom.setId("custom"); custom.setTopics("unused"); custom.setGroupId("custom");
+            custom.setBean(new Object()); custom.setMethod(Object.class.getMethod("toString"));
+            var handler = new org.springframework.messaging.handler.annotation.support.DefaultMessageHandlerMethodFactory();
+            handler.afterPropertiesSet(); custom.setMessageHandlerMethodFactory(handler);
+            scope.registry.registerListenerContainer(custom, scope.factory(), false);
+            // A plain listener set on the container: Spring keeps no handler method to read.
+            scope.registry.getListenerContainer("custom").setupMessageListener(
+                    (org.springframework.kafka.listener.MessageListener<Integer,String>) record -> { });
+            assertTrue(SpringKafkaReloader.listensFor(contexts, List.of(new Object())), "an unreadable receiver counts");
+        }
+    }
 }

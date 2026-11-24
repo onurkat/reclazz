@@ -317,9 +317,14 @@ public class SpringReloadOrchestrator {
             boolean listenerOwner = jmsReloader.hasListeners(reloadedClass, newBytecode)
                     || kafkaReloader.hasListeners(reloadedClass, newBytecode)
                     || rabbitReloader.hasListeners(reloadedClass, newBytecode);
-            if (!rabbitReloader.beforeBeanRefresh(reloadedClass, newBytecode, addedMethodSigs, kafkaReloader, jmsReloader)) return;
-            if (!jmsReloader.beforeBeanRefresh(reloadedClass, newBytecode, kafkaReloader)) return;
-            if (!kafkaReloader.beforeBeanRefresh(reloadedClass, newBytecode)) return;
+            // Every broker validates its consumers of this bean before any of
+            // them retires one, so a refusal on one broker leaves the bean's
+            // consumers running on all of them.
+            if (!ListenerRetirement.retireAll(className, java.util.List.of(
+                    ListenerRetirement.broker("Kafka", () -> kafkaReloader.prepareBeanRefresh(reloadedClass, newBytecode)),
+                    ListenerRetirement.broker("JMS", () -> jmsReloader.prepareBeanRefresh(reloadedClass, newBytecode)),
+                    ListenerRetirement.broker("Rabbit", () -> rabbitReloader.prepareBeanRefresh(reloadedClass, newBytecode, addedMethodSigs)))))
+                return;
             if (!lifecycle.install()) return;
             // Repository products have one refresh owner, including when their
             // interface also carries the ordinary Spring @Repository stereotype.

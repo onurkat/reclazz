@@ -282,6 +282,13 @@ val rabbitTests = sourceSets.create("rabbitTest") {
 }
 configurations[rabbitTests.implementationConfigurationName].extendsFrom(configurations.testImplementation.get())
 configurations[rabbitTests.runtimeOnlyConfigurationName].extendsFrom(configurations.testRuntimeOnly.get())
+dependencies {
+    // A bean listening on Kafka, Rabbit and JMS at once is tested beside the
+    // Docker Rabbit broker, so JMS joins this test-only graph. The Rabbit-only
+    // apps here leave spring-jms off their classpath.
+    add(rabbitTests.implementationConfigurationName, "org.springframework:spring-jms:5.3.39")
+    add(rabbitTests.implementationConfigurationName, "org.apache.activemq:activemq-broker:5.19.11")
+}
 val rabbitTest = tasks.register("rabbitTest", Test::class) {
     group = "verification"
     description = "Real RabbitMQ broker tests (requires Docker; explicit Windows CI opt-out only)"

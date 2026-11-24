@@ -2471,13 +2471,27 @@ and 3.1.7. Manual/automatic-without-ack modes, external
 transaction managers, container advice, custom executors, direct/stream
 containers and custom listener adapters are refused for retirement of either
 original or added consumers.
-Unsupported static metadata shapes, foreign added IDs and mixed Rabbit/JMS/Kafka
-owners are checked before owned consumers are retired. Queue expression parsing
+Unsupported static metadata shapes and foreign added IDs are checked before owned
+consumers are retired. Queue expression parsing
 and evaluation occur later during native registration, after retirement; an
 expression failure does not restore the old consumers. Original consumers are
 checked against the runtime lifecycle restrictions above, not the added-method
 metadata restrictions. Unknown broker ownership also requires a restart. Unsupported Rabbit infrastructure does not block unrelated
 beans.
+
+One bean may listen on Rabbit, JMS and Kafka at once. On a save, every broker checks
+that bean's consumers before any broker retires one: when one broker refuses, all of
+the bean's consumers keep running on every broker and the reason is recorded; when
+all accept, the bean's consumers are retired on each broker and the bean is recreated
+once. Each broker's own conditions above apply to its listeners. With Framework 5.3.39
+(Kafka 2.9.13, AMQP 2.4.17, ActiveMQ 5.19.11) and Framework 6.1.14 (Kafka 3.2.4,
+AMQP 3.1.7, ActiveMQ 6.1.3), a message sent to each broker just before a save arrived
+exactly once, and listeners added on all three brokers in one save were delivered.
+The retirements themselves run one broker after another and are not one transaction:
+if a later broker's retirement fails (its shutdown does not finish in time, or its
+consumers changed since the check), the consumers already retired on an earlier broker
+stay retired and the bean is not recreated. The restart list names the brokers whose
+consumers stayed retired.
 
 Start with `-javaagent`. The Java agent tracks each actual simple-container worker
 from construction through its complete `run()` exit, including queued tasks and

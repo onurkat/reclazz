@@ -22,6 +22,7 @@ class ModernRabbitDependencyRefreshTest {
     static BlockingQueue<String> received;
     static CountDownLatch entered, release;
     static boolean block;
+    static String[] foreignBrokers = {};
     public static class Helper { final int seed = next; }
     public static class Owner {
         final int seed;
@@ -66,7 +67,9 @@ class ModernRabbitDependencyRefreshTest {
             context.registerBean("helper", Helper.class);
             if (propertyOwner) context.registerBean("owner", PropertyOwner.class);
             else context.registerBean("owner", Owner.class);
-            context.registerBean("other", Other.class); context.refresh();
+            context.registerBean("other", Other.class);
+            for (String b : foreignBrokers) ModernForeignBrokers.register(context, b);
+            context.refresh();
             registry = context.getBean(RabbitListenerEndpointRegistry.class);
             target = (SimpleMessageListenerContainer) registry.getListenerContainer("target");
             other = (SimpleMessageListenerContainer) registry.getListenerContainer("other");
@@ -114,7 +117,7 @@ class ModernRabbitDependencyRefreshTest {
     }
     @BeforeEach void cleanQueues(){var admin=new RabbitAdmin(broker.connectionFactory());for(String q:List.of("rf14-guard-target","rf14-guard-other"))admin.purgeQueue(q,false);}
     @AfterAll static void stop()throws Exception {broker.close();}
-    @AfterEach void reset() { RestartLedger.clear(); }
+    @AfterEach void reset() { RestartLedger.clear(); foreignBrokers = new String[0]; }
     @Test void readOnlyPreflightAndRepeatedCurrentReceivers() throws Exception {
         try (var s = new Scope()) {
             assertNotNull(s.prepare(s.context)); s.unchanged();
@@ -289,6 +292,39 @@ class ModernRabbitDependencyRefreshTest {
             assertTrue(RestartLedger.digest().stream().anyMatch(x->x.contains("shutdown incomplete")));
             release.countDown();assertTrue(RabbitConsumerBridge.awaitStopped(s.target,System.nanoTime()+TimeUnit.SECONDS.toNanos(10)));
             assertEquals("held:10",received.poll(5,TimeUnit.SECONDS));
+        }
+    }
+
+    // Another broker running in the same context is independent of this
+    // transaction: it refreshes, and the other broker's container keeps its identity.
+    @ParameterizedTest @ValueSource(strings={"jms","kafka"})
+    void anotherBrokerInTheSameContextLeavesTheRefreshAvailable(String foreign) throws Exception {
+        foreignBrokers = new String[]{foreign};
+        try (var s = new Scope()) {
+            Object neighbour = ModernForeignBrokers.neighbour(s.context, foreign);
+            assertNotNull(neighbour);
+            next = 20;
+            var refresh = s.prepare(s.context);
+            assertNotNull(refresh, RestartLedger.digest().toString());
+            refresh.recreate();
+            assertEquals(20, ((Owner) s.context.getBeanFactory().getSingleton("owner")).seed);
+            assertSame(neighbour, ModernForeignBrokers.neighbour(s.context, foreign));
+            s.message("rf14-guard-target", "mixed-" + foreign, "mixed-" + foreign + ":20");
+        }
+    }
+
+    // A helper or owner that also receives another broker's messages would need
+    // that consumer retired too: refused before any consumer or singleton changes.
+    @ParameterizedTest @ValueSource(strings={"jms:owner","jms:helper","kafka:owner","kafka:helper"})
+    void aHelperOrOwnerAlsoListeningOnAnotherBrokerRefusesBeforeAnyChange(String foreign) throws Exception {
+        foreignBrokers = new String[]{foreign.split(":")[0]};
+        try (var s = new Scope()) {
+            if (foreign.endsWith(":helper")) ModernForeignBrokers.listenOn(s.context, foreignBrokers[0], s.helper, Object.class.getMethod("toString"));
+            else ModernForeignBrokers.listenOn(s.context, foreignBrokers[0], s.owner, Owner.class.getMethod("receive", String.class));
+            var failure = assertThrows(Exception.class, () -> s.prepare(s.context));
+            assertTrue(String.valueOf(failure.getMessage()).contains("also listens on another broker"), failure.toString());
+            s.unchanged();
+            s.message("rf14-guard-target", "refused-" + foreign, "refused-" + foreign + ":10");
         }
     }
 }

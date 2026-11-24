@@ -62,15 +62,11 @@ public final class SpringRabbitReloader {
     }
 
     public synchronized boolean beforeBeanRefresh(Class<?> type, byte[] bytes, Set<String> added) {
-        return beforeBeanRefresh(type, bytes, added, null, null);
+        return prepareBeanRefresh(type, bytes, added).commit();
     }
 
-    synchronized boolean beforeBeanRefresh(Class<?> type, byte[] bytes, SpringKafkaReloader kafka, SpringJmsReloader jms) {
-        return beforeBeanRefresh(type, bytes, Set.of(), kafka, jms);
-    }
-
-    synchronized boolean beforeBeanRefresh(Class<?> type, byte[] bytes, Set<String> added,
-                                            SpringKafkaReloader kafka, SpringJmsReloader jms) {
+    /** Validates this broker's part of a bean refresh; nothing retires until commit. */
+    synchronized ListenerRetirement prepareBeanRefresh(Class<?> type, byte[] bytes, Set<String> added) {
         boolean relevant = owners.get(type).registered;
         try {
             relevant |= declaresRabbit(type, bytes);
@@ -94,10 +90,6 @@ public final class SpringRabbitReloader {
                     selected.add(c);
                 }
             }
-            // Both brokers would otherwise retire consumers in sequence. Refuse
-            // this unsupported combination before either one mutates its registry.
-            if (relevant && ((kafka != null && kafka.hasListeners(type, bytes)) || (jms != null && jms.hasListeners(type, bytes))))
-                throw new IllegalStateException("mixed Rabbit/Kafka/JMS listener beans require a restart");
             if (relevant) {
                 requireTracking(type.getClassLoader());
                 if (bytes != null) {
@@ -117,12 +109,24 @@ public final class SpringRabbitReloader {
                     }
                 }
             }
+            boolean owning = relevant;
+            return ListenerRetirement.of(!selected.isEmpty(), () -> commitBeanRefresh(type, scopes, selected, owning));
+        } catch (Throwable failure) {
+            // An optional unsupported Rabbit stack must not stop an unrelated
+            // controller/service from following its ordinary reload path.
+            if (!relevant) return ListenerRetirement.NONE;
+            report(type, "bean recreation deferred: " + Failures.describe(failure));
+            return ListenerRetirement.REFUSED;
+        }
+    }
+
+    private synchronized boolean commitBeanRefresh(Class<?> type, List<Infrastructure> scopes, List<Container> selected,
+                                                   boolean relevant) {
+        try {
             stopAndRemove(selected);
             for (var scope : scopes) ((Map<?,?>) Reflect.readField(scope.processor(), "typeCache")).remove(type);
             return true;
         } catch (Throwable failure) {
-            // An optional unsupported Rabbit stack must not stop an unrelated
-            // controller/service from following its ordinary reload path.
             if (!relevant) return true;
             report(type, "bean recreation deferred: " + Failures.describe(failure));
             return false;
@@ -283,6 +287,27 @@ public final class SpringRabbitReloader {
     private static Object messageListener(Object container) throws Exception {
         return container.getClass().getMethod("getMessageListener").invoke(container);
     }
+    /**
+     * Whether a Rabbit consumer in these contexts is received by one of these beans or by an
+     * added delegate of one. A consumer whose receiver cannot be read counts as one.
+     */
+    static boolean listensFor(List<Object> contexts, List<Object> beans) throws Exception {
+        for (var scope : infrastructures(contexts)) for (var c : containers(scope.registry())) {
+            Object listener = messageListener(c.instance());
+            Object receiver = listenerBean(listener);
+            if (receiver == null) {
+                // A listener this broker cannot read could call one of these
+                // beans, so it counts as one that does.
+                String name = listener == null ? null : listener.getClass().getName();
+                if (name == null || !STANDARD_ADAPTERS.contains(name)) return true;
+                continue;
+            }
+            for (Object bean : beans)
+                if (bean != null && (receiver == bean || AddedRabbitListenerAdapter.ownerOf(receiver) == bean.getClass())) return true;
+        }
+        return false;
+    }
+
     private static Object listenerBean(Object listener) throws Exception {
         if (listener == null) return null;
         Object handler = Reflect.readField(listener, "handlerAdapter");
@@ -537,20 +562,19 @@ public final class SpringRabbitReloader {
         if (contexts.size() != 1 || contexts.get(0) != context || scopes.size() != 1
                 || scopes.get(0).context() != context || owners.size() != dependents.length)
             throw new IllegalStateException("Rabbit dependency refresh requires one root context and only direct Rabbit leaf owners");
-        for (String other : List.of("org.springframework.jms.annotation.JmsListenerAnnotationBeanPostProcessor",
-                "org.springframework.kafka.annotation.KafkaListenerAnnotationBeanPostProcessor")) {
-            try {
-                Class<?> type = Class.forName(other, false, factory.getClass().getClassLoader());
-                String[] names = (String[]) factory.getClass().getMethod("getBeanNamesForType", Class.class, boolean.class, boolean.class)
-                        .invoke(factory, type, true, false);
-                if (names.length != 0) throw new IllegalStateException("mixed broker contexts require a restart for Rabbit dependency refresh");
-            } catch (ClassNotFoundException absent) { /* Optional module absent. */ }
-        }
         Object rootBean = factory.getClass().getMethod("getSingleton", String.class).invoke(factory, root);
         Object raw = factory.getClass().getMethod("getBeanDefinition", String.class).invoke(factory, root);
         if (rootBean == null || !plainRoot(raw, rootBean)
                 || ((String[]) factory.getClass().getMethod("getDependenciesForBean", String.class).invoke(factory, root)).length != 0)
             throw new IllegalStateException("Rabbit dependency refresh requires a plain directly constructed helper");
+        // Other brokers in the same context are independent of this transaction.
+        // A helper or owner that also receives JMS or Kafka messages would need
+        // those consumers retired too, which this transaction does not do.
+        var involved = new ArrayList<Object>();
+        involved.add(rootBean);
+        for (var owner : owners) involved.add(owner.bean());
+        if (SpringJmsReloader.listensFor(contexts, involved) || SpringKafkaReloader.listensFor(contexts, involved))
+            throw new IllegalStateException("a Rabbit dependency owner that also listens on another broker requires a restart");
         for (var scope : scopes) for (var c : containers(scope.registry())) {
             if (AddedRabbitListenerAdapter.ownerOf(listenerBean(messageListener(c.instance()))) == rootBean.getClass())
                 throw new IllegalStateException("a Rabbit consumer cannot also be the dependency root");

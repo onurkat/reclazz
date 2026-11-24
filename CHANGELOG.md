@@ -31,6 +31,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   and removed after startup, and the `subscription` attribute is accepted. A durable
   subscription keeps the name a restart would give it, so messages published while the
   listener is replaced or removed reach the next saved body once.
+- One bean can listen on Kafka, Rabbit and JMS at once and still reload: every broker checks
+  the bean's consumers before any of them is retired, so a save one broker refuses leaves
+  all of them running. Messages sent just before a save arrive once, and listeners can be
+  added on all three brokers in one save. If a broker's retirement fails after another
+  broker's consumers were already retired, those stay retired until a restart, and the
+  restart list names them.
+- The helper and constructor-property refresh of a Kafka, Rabbit or JMS listener no longer
+  needs a restart only because the application also uses another broker. It still does
+  when the refreshed owner also receives that other broker's messages.
 
 - Gson sees fields added to a watched class after startup: an existing Gson instance
   serializes and deserializes them on a stock JVM, and drops them again when they are
