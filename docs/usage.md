@@ -2899,7 +2899,8 @@ Editing `spring.config.import` applies without a restart: entries can be added,
 removed and reordered, and the result is what a restart on the saved files builds
 (the same sources, in the same order, with the same names). This covers nested
 imports, unprefixed locations (relative to the importing file, or to its classpath
-folder), `file:` and `classpath:` locations, `optional:`, directories (every
+folder; as in Spring Boot, to the working directory when the importing file's
+location has no `/`, such as a Windows `file:C:\conf\application.yml`), `file:` and `classpath:` locations, `optional:`, directories (every
 `spring.config.name`, `.yaml`, `.yml`, `.xml`, `.properties`), a `*` directory
 wildcard, `configtree:`, the profile companions (`name-<profile>.ext`, or
 `-default` when no profile is active) and imports from any document of a

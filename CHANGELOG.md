@@ -81,6 +81,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- A relative `spring.config.import` in a config file named by a location without a `/`
+  (for example a Windows `file:C:\conf\application.yml`) is resolved against the working
+  directory, as Spring Boot resolves it, instead of the file's own directory. Before, such
+  an import was applied while a restart would have failed to find it.
 - A HikariCP pool switched twice in a row keeps its JMX and metrics registration even when
   the newer old pool finishes draining first (seen on Windows): whichever old pool retires
   last hands the names to the pool that is live then.

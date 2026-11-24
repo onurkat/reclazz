@@ -36,7 +36,7 @@ class ConfigImportReloadTest {
                 .filter(p -> Path.of(p).getFileName().toString().startsWith("snakeyaml-")).findFirst().orElseThrow();
         String classpath = WatchedApp.springClasspath() + File.pathSeparator + snake;
         try (var app = WatchedApp.in(tmp).classpath(classpath).agentArgs("startupDelaySec=1,debounceMs=100")
-                .jvmArgs("-Dconfig.file=" + main, "-Dprobe.dir=" + tmp).with("App", APP).with("Settings", SETTINGS).start()) {
+                .jvmArgs("-Dconfig.file=" + u(main), "-Dprobe.dir=" + tmp).with("App", APP).with("Settings", SETTINGS).start()) {
             app.awaitOrFail("READY", "Boot application did not start");
             app.awaitOrFail("] Watching ", "watcher did not start");
             assertTrue(probe(app, 0).startsWith("base:1:none:base|"), app.tail());
@@ -50,7 +50,7 @@ class ConfigImportReloadTest {
             assertNotNull(live, "an edited imported file and a reordered list: " + app.tail());
 
             try (var restarted = WatchedApp.in(fresh).classpath(classpath).agentArgs("startupDelaySec=1")
-                    .jvmArgs("-Dconfig.file=" + main, "-Donce=true").with("App", APP).with("Settings", SETTINGS).start()) {
+                    .jvmArgs("-Dconfig.file=" + u(main), "-Donce=true").with("App", APP).with("Settings", SETTINGS).start()) {
                 restarted.awaitOrFail("ONCE=", "restarted application did not report");
                 assertEquals(restarted.latest("ONCE=").substring(5), live, "a restart on the same files builds the same sources and values");
             }
@@ -103,7 +103,7 @@ class ConfigImportReloadTest {
                 {"svc:\n  note: base\n  timeout: 1\n---\nsvc:\n  extra: second\n", "base:1:second:base|"},
         };
         try (var app = WatchedApp.in(tmp).classpath(classpath).agentArgs("startupDelaySec=1,debounceMs=100")
-                .jvmArgs("-Dconfig.file=" + main, "-Dprobe.dir=" + tmp).with("App", APP).with("Settings", SETTINGS).start()) {
+                .jvmArgs("-Dconfig.file=" + u(main), "-Dprobe.dir=" + tmp).with("App", APP).with("Settings", SETTINGS).start()) {
             app.awaitOrFail("READY", "Boot application did not start");
             app.awaitOrFail("] Watching ", "watcher did not start");
             for (int i = 0; i < steps.length; i++) {
@@ -121,6 +121,37 @@ class ConfigImportReloadTest {
      * startup, nested imports added and removed in either order, a config tree value with a trailing new line, and an
      * import shared by two files.
      */
+    /**
+     * Boot resolves an unprefixed import against the importer's location text up to its last '/'. A Windows location
+     * written with backslashes has none, so Boot looks in the working directory and a restart fails; the agent must not
+     * apply the import from the file's own directory instead.
+     */
+    @Test void aBackslashLocationResolvesImportsAgainstTheWorkingDirectoryLikeBoot() throws Exception {
+        org.junit.jupiter.api.Assumptions.assumeTrue(File.separatorChar == '\\', "Windows paths only");
+        Path conf = Files.createDirectories(tmp.resolve("classes"));
+        Path main = conf.resolve("application.properties");
+        Files.createDirectories(conf.resolve("sub"));
+        Files.writeString(conf.resolve("sub/r.properties"), "svc.note=r\n");
+        Files.writeString(main, "svc.note=base\nsvc.timeout=1\n");
+        String snake = Arrays.stream(System.getProperty("java.class.path").split(File.pathSeparator))
+                .filter(p -> Path.of(p).getFileName().toString().startsWith("snakeyaml-")).findFirst().orElseThrow();
+        String classpath = WatchedApp.springClasspath() + File.pathSeparator + snake;
+        assertTrue(main.toString().indexOf('/') < 0, main.toString());
+        try (var app = WatchedApp.in(tmp).classpath(classpath).agentArgs("startupDelaySec=1,debounceMs=100")
+                .jvmArgs("-Dconfig.file=" + main, "-Dprobe.dir=" + tmp).with("App", APP).with("Settings", SETTINGS).start()) {
+            app.awaitOrFail("READY", "Boot application did not start");
+            app.awaitOrFail("] Watching ", "watcher did not start");
+            assertTrue(probe(app, 0).startsWith("base:1:none:base|"), app.tail());
+            Files.writeString(main, "svc.note=base\nsvc.timeout=1\nspring.config.import=sub/r.properties\n");
+            assertTrue(app.awaits("a restart would fail too", 30), agentLines(app));
+            assertTrue(probe(app, 1).startsWith("base:1:none:base|"), app.tail());
+        }
+        try (var restarted = WatchedApp.in(fresh).classpath(classpath).agentArgs("startupDelaySec=1")
+                .jvmArgs("-Dconfig.file=" + main, "-Donce=true").with("App", APP).with("Settings", SETTINGS).start()) {
+            assertTrue(restarted.awaits("does not exist", 60), "a restart fails on the same files: " + restarted.tail());
+        }
+    }
+
     @Test void classpathImportsPresentAtStartupMatchARestart() throws Exception {
         Path classes = Files.createDirectories(tmp.resolve("classes"));
         Path sub = Files.createDirectories(classes.resolve("sub")), tree = Files.createDirectories(classes.resolve("T/svc"));
@@ -190,7 +221,7 @@ class ConfigImportReloadTest {
                 }
             }
         }
-        String[] jvm = main == null ? new String[]{"-Donce=true"} : new String[]{"-Dconfig.file=" + main, "-Donce=true"};
+        String[] jvm = main == null ? new String[]{"-Donce=true"} : new String[]{"-Dconfig.file=" + u(main), "-Donce=true"};
         try (var restarted = WatchedApp.in(run).classpath(classpath).agentArgs("startupDelaySec=1")
                 .jvmArgs(jvm).with("App", APP).with("Settings", SETTINGS).start()) {
             restarted.awaitOrFail("ONCE=", "restarted application did not report");

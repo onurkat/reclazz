@@ -191,12 +191,12 @@ final class SpringConfigImports {
     }
 
     /** Where an importing document's unprefixed imports resolve: its directory, or its classpath folder. */
-    private record Base(Path dir, String classpathDir) {
-        private static final java.util.regex.Pattern FILE = java.util.regex.Pattern.compile("^Config resource 'file \\[(.+?)\\]' via location");
+    record Base(Path dir, String classpathDir) {
+        private static final java.util.regex.Pattern FILE = java.util.regex.Pattern.compile("^Config resource 'file \\[(.+?)\\]' via location '(.*?)'");
         private static final java.util.regex.Pattern CLASSPATH = java.util.regex.Pattern.compile("^Config resource 'class path resource \\[(.+?)\\]' via location");
         static Base of(String name, Path fallback) {
             java.util.regex.Matcher file = FILE.matcher(name);
-            if (file.find()) return new Base(dirOf(Path.of(file.group(1))), null);
+            if (file.find()) return fileBase(Path.of(file.group(1)), file.group(2));
             java.util.regex.Matcher classpath = CLASSPATH.matcher(name);
             if (classpath.find()) {
                 String path = classpath.group(1);
@@ -208,6 +208,25 @@ final class SpringConfigImports {
     }
 
     private static Path dirOf(Path file) { return file == null ? null : file.getParent(); }
+
+    /**
+     * Boot resolves an unprefixed import against its importer's resource location text up to the last {@code /}
+     * ({@code StandardConfigDataLocationResolver.getResourceLocation}); with no {@code /} in it, for example a Windows
+     * {@code file:C:\\conf\\application.yml}, against the working directory. Such a document was itself located
+     * relative to the working directory, so {@code location} without a {@code /} resolving there to the same file marks it;
+     * a bare name imported next to a {@code /} importer resolves elsewhere and keeps that directory.
+     */
+    static Base fileBase(Path file, String location) {
+        String text = location.startsWith("optional:") ? location.substring("optional:".length()) : location;
+        if (text.startsWith("file:")) text = text.substring("file:".length());
+        if (text.indexOf('/') < 0 && !text.isEmpty()) {
+            try {
+                Path cwd = Path.of(System.getProperty("user.dir"));
+                if (cwd.resolve(text).toAbsolutePath().normalize().equals(file.toAbsolutePath().normalize())) return new Base(null, null);
+            } catch (java.nio.file.InvalidPathException notAPath) { /* the directory rule below */ }
+        }
+        return new Base(dirOf(file), null);
+    }
 
     /** One resource an import names; {@code base} is where its own unprefixed imports resolve (Boot's spelling, not canonical). */
     private record Resource(Object resource, String name, Path file, Base base, String extension, boolean tree) { }
@@ -343,7 +362,7 @@ final class SpringConfigImports {
             Object resource = Class.forName("org.springframework.core.io.FileSystemResource", true, loader)
                     .getConstructor(java.io.File.class).newInstance(target.toFile());
             found.add(new Resource(resource, "Config resource '" + call(resource, "getDescription") + "' via location '" + entry + "'",
-                    target.toFile().getCanonicalFile().toPath(), new Base(target.getParent(), null), extension, false));
+                    target.toFile().getCanonicalFile().toPath(), fileBase(target, entry), extension, false));
         }
 
         /**
