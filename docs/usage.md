@@ -2219,9 +2219,27 @@ applied; an enhancer that changes an unsupported option is refused with the
 attribute named in the restart diagnostic. On a batch factory
 (`setBatchListener(true)`) an added method takes a `List` payload, and its edits,
 removal and re-addition next to a batch listener present at startup are measured
-like record listeners, on Spring Kafka 2.9.13 and 3.2.4. A retry-topic configuration
-that does not match an added listener no longer blocks it; a listener that a
-retry-topic configuration matches still requires a restart. Filtered/retry-template factories, a batch-to-record
+like record listeners, on Spring Kafka 2.9.13 and 3.2.4.
+
+When a `RetryTopicConfiguration` matches an added listener, Spring builds its
+main, retry and dead-letter endpoints. A save retires the entire group before
+replacing its routes. Removal cleans up its generated topic beans. Kafka keeps
+the broker topics and their records. Records on a permanently removed listener's
+retry and dead-letter topics remain unconsumed by that listener. Reclazz requires
+disjoint topic names across managed groups on both supported versions, including
+Spring Kafka 3 where the native resolver also indexes by listener ID. An overlap
+diagnostic names the topic and the existing consumers keep running.
+A configuration for unrelated topics leaves the listener on its ordinary path.
+For a retry listener created at startup, the agent records the containers and
+topic beans that Spring creates. A helper refresh rebinds the startup listener,
+and a listener body edit takes effect on its next delivery. Both preserve topic
+beans supplied by the application. Once a reload creates the route table,
+retired startup routes stay hidden for the lifetime of that context. Refreshing
+startup groups that share a callback method across listener IDs, or whose
+ownership could not be observed, requires a restart. If rollback cannot stop an
+owned container, the restart ledger identifies the affected group.
+
+Filtered/retry-template factories, a batch-to-record
 adapter and container customizers remain unsupported. Proxy/subclass receivers
 are not unwrapped past advice. This
 scope does not cover class-level or repeatable listeners, expressions/placeholders

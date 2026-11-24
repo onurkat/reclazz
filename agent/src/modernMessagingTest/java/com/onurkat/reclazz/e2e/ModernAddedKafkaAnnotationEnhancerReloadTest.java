@@ -72,6 +72,34 @@ class ModernAddedKafkaAnnotationEnhancerReloadTest {
         }
     }
 
+    @Test void helperRefreshRebindsAddedRetryListener() throws Exception {
+        AddedKafkaRetryTopicRefusalTest.retryDependency(tmp, broker.getBrokersAsString(), false);
+    }
+
+    @Test void lateAttachPreservesUnobservedStartupRetryGroup() throws Exception {
+        AddedKafkaRetryTopicRefusalTest.retryDependency(tmp, broker.getBrokersAsString(), true, true);
+    }
+
+    @Test void helperRefreshRebindsStartupRetryListener() throws Exception {
+        AddedKafkaRetryTopicRefusalTest.retryDependency(tmp, broker.getBrokersAsString(), true);
+    }
+
+    @Test void partialRetryRegistrationLeavesNoContainersOrProducts() throws Exception {
+        AddedKafkaRetryTopicRefusalTest.partialRegistration(tmp, broker.getBrokersAsString());
+    }
+
+    @Test void startFailureRollsBackTheWholeRetryGroup() throws Exception {
+        AddedKafkaRetryTopicRefusalTest.startFailure(tmp, broker.getBrokersAsString(), false);
+    }
+
+    @Test void stopTimeoutQuarantinesRetryGroupAndRecordsRestart() throws Exception {
+        AddedKafkaRetryTopicRefusalTest.startFailure(tmp, broker.getBrokersAsString(), true);
+    }
+
+    @Test void retryDeliveryMatchesNativeStartupAcrossEditAndRemoval() throws Exception {
+        AddedKafkaRetryTopicRefusalTest.retryLifecycle(tmp, broker.getBrokersAsString());
+    }
+
     @Test void unrelatedRetryTopicAllowsAddedListenerWithoutRetryContainers() throws Exception {
         String topic = "reclazz-unrelated-" + UUID.randomUUID();
         String destination = topic + "-enhanced";
@@ -99,7 +127,7 @@ class ModernAddedKafkaAnnotationEnhancerReloadTest {
         }
     }
 
-    @Test void matchingRetryTopicConfigurationIsRefusedBeforeContainerRegistration() throws Exception {
+    @Test void matchingRetryTopicConfigurationInstallsTheNativeGraph() throws Exception {
         String topic = "reclazz-retry-" + UUID.randomUUID();
         String original = topic + "-base";
         broker.addTopics(original, original + "-enhanced");
@@ -113,12 +141,15 @@ class ModernAddedKafkaAnnotationEnhancerReloadTest {
             app.awaitOrFail("] Watching ", "watcher did not start");
             long before = reloads(app);
             app.rewrite("Listener", listener(original, topic, true));
-            long until = System.nanoTime() + TimeUnit.SECONDS.toNanos(30);
-            while ((!app.output().stream().anyMatch(s -> s.contains("matching Kafka retry-topic configuration requires a restart"))
-                    || reloads(app) != before + 1) && System.nanoTime() < until) Thread.sleep(25);
-            assertTrue(app.output().stream().anyMatch(s -> s.contains("matching Kafka retry-topic configuration requires a restart")), app.tail());
+            app.awaitOrFail("added @KafkaListener registered", "matched retry configuration must register");
             assertEquals(before + 1, reloads(app), app.tail());
-            assertFalse(currentState(Integer.parseInt(app.latest("PORT=").substring(5))).contains("added:"), app.tail());
+            int port = Integer.parseInt(app.latest("PORT=").substring(5));
+            awaitState(port, "added:assigned", app);
+            awaitState(port, "original:assigned", app);
+            var ids = Arrays.stream(currentState(port).split(";")).map(value -> value.split(":")[0]).toList();
+            assertEquals(4, ids.size(), ids.toString());
+            assertTrue(ids.stream().anyMatch(id -> id.startsWith("added-retry")), ids.toString());
+            assertTrue(ids.stream().anyMatch(id -> id.startsWith("added-dlt")), ids.toString());
         }
     }
 

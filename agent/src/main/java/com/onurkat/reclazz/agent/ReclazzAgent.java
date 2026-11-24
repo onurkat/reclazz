@@ -501,6 +501,17 @@ public class ReclazzAgent {
                     if (message.contains("failed")) StatusReporter.warn(message);
                     else StatusReporter.detail(message);
                 });
+                try {
+                    com.onurkat.reclazz.spring.NativeKafkaRetryOwnership.install();
+                    var routes = new com.onurkat.reclazz.transform.KafkaRetryResolverTransformer();
+                    instrumentation.addTransformer(routes, true);
+                    for (Class<?> loaded : instrumentation.getAllLoadedClasses()) {
+                        if (routes.targets(loaded.getName().replace('.', '/')))
+                            instrumentation.retransformClasses(loaded);
+                    }
+                } catch (Exception | LinkageError unavailable) {
+                    StatusReporter.detail("Kafka retry route observation unavailable: " + unavailable.getClass().getSimpleName());
+                }
                 CacheDependencyLedger.configure(!attached);
                 try {
                     instrumentation.addTransformer(new CacheComputationTransformer(), true);

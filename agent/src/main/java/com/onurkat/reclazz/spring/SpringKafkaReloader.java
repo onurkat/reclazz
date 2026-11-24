@@ -26,13 +26,15 @@ public final class SpringKafkaReloader {
     private static final Set<String> STANDARD_ADAPTERS = Set.of(RECORD_ADAPTER,
             "org.springframework.kafka.listener.adapter.BatchMessagingMessageListenerAdapter");
     private final PlatformContext platform;
-    private static final class OwnerState { volatile boolean registered; }
+    private static final class OwnerState {
+        volatile boolean registered;
+    }
     private final ClassValue<OwnerState> owners = new ClassValue<>() {
         @Override protected OwnerState computeValue(Class<?> type) { return new OwnerState(); }
     };
     public SpringKafkaReloader(PlatformContext platform) { this.platform = platform; }
     private record Infrastructure(Object context, Object processor, Object registry) { }
-    private record Container(Object registry, String id, Object instance) { }
+    record Container(Object registry, String id, Object instance) { }
 
     /** Read-only: whether this bean owns or declares Kafka consumers. */
     synchronized boolean hasListeners(Class<?> type, byte[] bytes) {
@@ -65,7 +67,14 @@ public final class SpringKafkaReloader {
             relevant |= declaresKafka(type, bytes);
             List<Infrastructure> scopes = infrastructures();
             List<Container> selected = new ArrayList<>();
+            List<SpringKafkaRetryRegistration> retryGroups = new ArrayList<>();
             for (var scope : scopes) {
+                for (var group : SpringKafkaRetryRegistration.groups(SpringBeans.getBeanFactory(scope.context())))
+                    if (group.ownerType == type) {
+                        relevant = true;
+                        group.verifyOwnership();
+                        retryGroups.add(group);
+                    }
                 Object cache = Reflect.readField(scope.processor(), "nonAnnotatedClasses");
                 if (!(cache instanceof Set<?>)) throw new IllegalStateException("Kafka negative scan cache is inaccessible");
                 for (var c : containers(scope.registry())) {
@@ -74,8 +83,9 @@ public final class SpringKafkaReloader {
                     if (AddedKafkaListenerAdapter.ownerOf(bean) != type && (bean == null || !type.isInstance(bean))) continue;
                     relevant = true;
                     owners.get(type).registered = true;
-                    if (!STANDARD_ADAPTERS.contains(listener.getClass().getName()))
-                        throw new IllegalStateException("custom Kafka listener adapter for " + c.id());
+                    boolean ownedRetry = retryGroups.stream().anyMatch(group -> group.containers().contains(c));
+                    if (!standardAdapter(listener, ownedRetry))
+                        throw unsupportedAdapter(listener, c.id());
                     if (AddedKafkaListenerAdapter.ownerOf(bean) != type)
                         throw new IllegalStateException("proxy or subclass Kafka listener receiver for " + c.id());
                     // Validate every selected entry before stopping any of them.
@@ -83,8 +93,13 @@ public final class SpringKafkaReloader {
                     selected.add(c);
                 }
             }
+            for (var group : retryGroups)
+                for (var container : group.containers()) if (!selected.contains(container)) {
+                    requireLifecycle(container);
+                    selected.add(container);
+                }
             boolean owning = relevant;
-            return ListenerRetirement.of(!selected.isEmpty(), () -> commitBeanRefresh(type, scopes, selected, owning));
+            return ListenerRetirement.of(!selected.isEmpty(), () -> commitBeanRefresh(type, scopes, selected, retryGroups, owning));
         } catch (Throwable failure) {
             // An optional unsupported Kafka stack must not stop an unrelated
             // controller/service from following its ordinary reload path.
@@ -95,9 +110,10 @@ public final class SpringKafkaReloader {
     }
 
     private synchronized boolean commitBeanRefresh(Class<?> type, List<Infrastructure> scopes, List<Container> selected,
-                                                   boolean relevant) {
+                                                   List<SpringKafkaRetryRegistration> retryGroups, boolean relevant) {
         try {
             stopAndRemove(selected);
+            removeRetryProducts(retryGroups);
             for (var scope : scopes) ((Set<?>) Reflect.readField(scope.processor(), "nonAnnotatedClasses")).remove(type);
             return true;
         } catch (Throwable failure) {
@@ -118,6 +134,7 @@ public final class SpringKafkaReloader {
             return false;
         }
         boolean changed = false, found = false;
+        List<SpringKafkaRetryRegistration> groups = new ArrayList<>();
         List<Container> created = new ArrayList<>();
         try {
             for (var scope : infrastructures()) {
@@ -151,38 +168,62 @@ public final class SpringKafkaReloader {
                         throw new IllegalStateException("listener id already belongs to an existing container: " + id);
                     var probe = hasRetryBeans ? SpringKafkaListenerExpressions.probeRetryTopicConfiguration(
                             scope.processor(), annotation, metadata, method, owner, factory) : null;
-                    if (probe != null && probe.matching())
-                        throw new IllegalStateException("matching Kafka retry-topic configuration requires a restart; Spring Kafka does not expose a retry-destination unregister operation");
                     additions.put(id, new Addition(method, metadata, probe));
                 }
                 for (var entry : additions.entrySet()) {
                     String id = entry.getKey();
                     Addition addition = entry.getValue();
                     try {
-                        SpringKafkaListenerExpressions.register(scope.processor(), annotation, addition.metadata(), addition.method(),
+                        var group = SpringKafkaListenerExpressions.register(scope.processor(), annotation, addition.metadata(), addition.method(),
                                 delegate.bean(), owner, name, addition.probe());
+                        if (group != null) {
+                            groups.add(group);
+                            owners.get(type).registered = true;
+                        }
                     } finally {
                         Object registered = container(scope.registry(), id);
-                        if (registered != null && listenerBean(messageListener(registered)) == delegate.bean()) {
-                            created.add(new Container(scope.registry(), id, registered));
+                        if ((addition.probe() == null || !addition.probe().matching()) && registered != null
+                                && listenerBean(messageListener(registered)) == delegate.bean()) {
+                            var item = new Container(scope.registry(), id, registered);
+                            if (!created.contains(item)) created.add(item);
                             owners.get(type).registered = true;
                         }
                     }
                     Object registered = container(scope.registry(), id);
                     if (registered == null) throw new IllegalStateException("Kafka processor did not register " + id);
-                    if (!STANDARD_ADAPTERS.contains(messageListener(registered).getClass().getName()))
+                    if (!standardAdapter(messageListener(registered), addition.probe() != null && addition.probe().matching()))
                         throw new IllegalStateException("custom Kafka listener adapters require a restart");
                     changed = true;
                 }
             }
             if (!found) throw new IllegalStateException("no matching singleton with a Kafka listener processor was found");
         } catch (Throwable failure) {
-            try { stopAndRemove(created); } catch (Throwable cleanup) { failure.addSuppressed(cleanup); }
+            rollbackRegistrations(created, groups, failure);
             report(type, Failures.describe(failure));
             return false;
         }
         if (changed) ReloadEffects.note("added @KafkaListener registered");
         return changed;
+    }
+
+    private static void rollbackRegistrations(List<Container> ordinary, List<SpringKafkaRetryRegistration> groups,
+                                              Throwable failure) {
+        for (var group : groups) group.rollback(failure);
+        try { stopAndRemove(ordinary); }
+        catch (Exception | LinkageError cleanup) { failure.addSuppressed(cleanup); }
+    }
+
+    private static void removeRetryProducts(List<SpringKafkaRetryRegistration> groups) throws Exception {
+        Exception incomplete = null;
+        for (var group : groups) {
+            try { group.removeProducts(); }
+            catch (ReflectiveOperationException | RuntimeException | LinkageError failure) {
+                group.quarantine(failure);
+                if (incomplete == null) incomplete = new IllegalStateException("Kafka retry cleanup incomplete; restart required");
+                incomplete.addSuppressed(failure);
+            }
+        }
+        if (incomplete != null) throw incomplete;
     }
 
     private static boolean declaresKafka(Class<?> type, byte[] bytes) {
@@ -256,7 +297,7 @@ public final class SpringKafkaReloader {
         }
         return result;
     }
-    private static Object container(Object registry, String id) throws Exception {
+    static Object container(Object registry, String id) throws ReflectiveOperationException {
         return registry.getClass().getMethod("getListenerContainer", String.class).invoke(registry, id);
     }
     private static List<Container> containers(Object registry) throws Exception {
@@ -294,6 +335,27 @@ public final class SpringKafkaReloader {
         return false;
     }
 
+    private static boolean standardAdapter(Object adapter, boolean retry) throws ReflectiveOperationException {
+        if (retry) adapter = unwrapBackoffAdapter(adapter);
+        return adapter != null && STANDARD_ADAPTERS.contains(adapter.getClass().getName());
+    }
+
+    private static boolean isBackoffAdapter(Object adapter) {
+        return adapter != null && adapter.getClass().getName().equals(
+                "org.springframework.kafka.listener.adapter.KafkaBackoffAwareMessageListenerAdapter");
+    }
+
+    private static IllegalStateException unsupportedAdapter(Object adapter, String id) {
+        if (isBackoffAdapter(adapter))
+            return new IllegalStateException("Kafka retry registration ownership unavailable for " + id
+                    + "; its startup destinations and generated bean identities cannot be verified; restart required");
+        return new IllegalStateException("custom Kafka listener adapter for " + id);
+    }
+
+    private static Object unwrapBackoffAdapter(Object adapter) throws ReflectiveOperationException {
+        return isBackoffAdapter(adapter) ? adapter.getClass().getMethod("getDelegate").invoke(adapter) : adapter;
+    }
+
     private static Object listenerBean(Object listener) throws Exception {
         if (listener == null) return null;
         Class<?> delegating = Class.forName("org.springframework.kafka.listener.DelegatingMessageListener", false, listener.getClass().getClassLoader());
@@ -309,7 +371,7 @@ public final class SpringKafkaReloader {
         c.instance().getClass().getMethod("stop", Runnable.class);
         c.instance().getClass().getMethod("isRunning");
     }
-    private static void stopAndRemove(List<Container> selected) throws Exception {
+    static void stopAndRemove(List<Container> selected) throws Exception {
         CountDownLatch stopped = new CountDownLatch(selected.size());
         for (var c : selected) requireLifecycle(c);
         for (var c : selected) c.instance().getClass().getMethod("stop", Runnable.class).invoke(c.instance(), (Runnable) stopped::countDown);
@@ -322,9 +384,19 @@ public final class SpringKafkaReloader {
         for (var c : selected) {
             if ((Boolean) c.instance().getClass().getMethod("isRunning").invoke(c.instance()))
                 throw new IllegalStateException("Kafka container is still running: " + c.id());
-            if (container(c.registry(), c.id()) != c.instance())
-                throw new IllegalStateException("Kafka container ownership changed during shutdown: " + c.id());
-            c.registry().getClass().getMethod("unregisterListenerContainer", String.class).invoke(c.registry(), c.id());
+            Object registry = c.registry();
+            String version = registry.getClass().getPackage().getImplementationVersion();
+            if (REGISTRY.equals(registry.getClass().getName()) && ("2.9.13".equals(version) || "3.2.4".equals(version))
+                    && Reflect.readField(registry, "listenerContainers") instanceof java.util.concurrent.ConcurrentMap<?,?> registrations) {
+                // Native unregister is a single map.remove(id). Compare and remove in one
+                // operation so a concurrent replacement remains registered under its ID.
+                if (!registrations.remove(c.id(), c.instance()))
+                    throw new IllegalStateException("Kafka container ownership changed during shutdown: " + c.id());
+            } else {
+                if (container(registry, c.id()) != c.instance())
+                    throw new IllegalStateException("Kafka container ownership changed during shutdown: " + c.id());
+                registry.getClass().getMethod("unregisterListenerContainer", String.class).invoke(registry, c.id());
+            }
         }
     }
     private static Supplier<Object> currentSingleton(Object factory, String name, Class<?> type) throws Exception {
@@ -432,6 +504,7 @@ public final class SpringKafkaReloader {
         List<DependencyOwner> owners = new ArrayList<>();
         List<Container> selected = new ArrayList<>();
         List<SavedCallback> callbacks = new ArrayList<>();
+        var retryGroups = SpringKafkaRetryRegistration.groups(factory);
         for (String name : dependents) {
             Object bean = factory.getClass().getMethod("getSingleton", String.class).invoke(factory, name);
             if (bean == null) continue;
@@ -441,8 +514,18 @@ public final class SpringKafkaReloader {
                 Object adapter = messageListener(c.instance());
                 Object receiver = listenerBean(adapter);
                 if (receiver != bean && AddedKafkaListenerAdapter.ownerOf(receiver) != type) continue;
-                if (!STANDARD_ADAPTERS.contains(adapter.getClass().getName()))
+                var retryGroup = retryGroups.stream().filter(group -> group.containers().contains(c)).findFirst().orElse(null);
+                if (retryGroup != null && retryGroup.ownerType != type)
+                    throw new IllegalStateException("Kafka retry callback belongs to another listener owner: " + c.id());
+                if (retryGroup != null && !retryGroup.mainId.equals(c.id())) continue;
+                if (!standardAdapter(adapter, retryGroup != null)) {
+                    if (isBackoffAdapter(adapter)) throw unsupportedAdapter(adapter, c.id());
                     throw new IllegalStateException("custom dependent Kafka adapter requires a restart");
+                }
+                if (retryGroup != null) {
+                    retryGroup.verifyOwnership();
+                    adapter = unwrapBackoffAdapter(adapter);
+                }
                 requireLifecycle(c);
                 if (!c.instance().getClass().getName().equals("org.springframework.kafka.listener.ConcurrentMessageListenerContainer"))
                     throw new IllegalStateException("standard concurrent Kafka container required");
@@ -465,7 +548,7 @@ public final class SpringKafkaReloader {
                 String id = (String) ((java.lang.annotation.Annotation) metadata).annotationType().getMethod("id").invoke(metadata);
                 if (!id.equals(c.id()) || id.isBlank() || id.contains("${") || id.contains("#{"))
                     throw new IllegalStateException("dependent Kafka callback requires a stable literal id");
-                if (SpringKafkaListenerExpressions.probeRetryTopicConfiguration(scope.processor(),
+                if (retryGroup == null && SpringKafkaListenerExpressions.probeRetryTopicConfiguration(scope.processor(),
                         ((java.lang.annotation.Annotation) metadata).annotationType(),
                         metadata, method, bean, factory).matching())
                     throw new IllegalStateException("matching Kafka retry-topic configuration requires a restart; Spring Kafka does not expose a retry-destination unregister operation");
@@ -491,8 +574,18 @@ public final class SpringKafkaReloader {
                     throw new IllegalStateException("dependent Kafka delegate does not own the current singleton");
                 if (!added && method.getDeclaringClass() != type)
                     throw new IllegalStateException("inherited dependent Kafka callback requires a restart");
-                callbacks.add(new SavedCallback(scope, c, name, type, receiver, method, metadata, added));
-                owned.add(c);
+                callbacks.add(new SavedCallback(scope, c, name, type, receiver, method, metadata, added, retryGroup));
+                if (retryGroup == null) {
+                    owned.add(c);
+                } else {
+                    for (var member : retryGroup.containers()) {
+                        requireLifecycle(member);
+                        if (container(scope.registry(), member.id()) != member.instance()
+                                || !Boolean.TRUE.equals(member.instance().getClass().getMethod("isRunning").invoke(member.instance())))
+                            throw new IllegalStateException("dependent Kafka retry container changed or stopped: " + member.id());
+                        owned.add(member);
+                    }
+                }
             }
             if (!owned.isEmpty()) {
                 var cache = SpringConstructorDependencies.prepare(contexts, context, name);
@@ -511,7 +604,7 @@ public final class SpringKafkaReloader {
             if (!Set.of("2.9.13", "3.2.4").contains(scope.processor().getClass().getPackage().getImplementationVersion()))
                 throw new IllegalStateException("unverified Kafka processor version");
         }
-        if (owners.size() != 1 || selected.size() != 1) throw new IllegalStateException("one Kafka leaf owner/callback required in this stage");
+        if (owners.size() != 1 || callbacks.size() != 1) throw new IllegalStateException("one Kafka leaf owner/callback required in this stage");
         if (contexts.size() != 1 || contexts.get(0) != context || scopes.size() != 1
                 || scopes.get(0).context() != context || owners.size() != dependents.length)
             throw new IllegalStateException("Kafka dependency refresh requires one root context and only direct Kafka leaf owners");
@@ -575,7 +668,7 @@ public final class SpringKafkaReloader {
 
     private record DependencyOwner(String name, Object bean, SpringConstructorDependencies.Prepared cache) { }
     private record SavedCallback(Infrastructure scope, Container container, String name, Class<?> type,
-                                 Object receiver, Method method, Object metadata, boolean added) { }
+                                 Object receiver, Method method, Object metadata, boolean added, SpringKafkaRetryRegistration retryGroup) { }
 
     static final class DependencyRefresh {
         private final List<Object> contexts;
@@ -610,11 +703,14 @@ public final class SpringKafkaReloader {
             }
             // Timeout leaves helper/owner singletons intact. An inactive retirement
             // is refused on later saves, not started concurrently a second time.
-            try { stopAndRemove(selected); }
-            catch (Exception failure) {
+            try {
+                stopAndRemove(selected);
+                removeRetryProducts(callbacks.stream().map(SavedCallback::retryGroup).filter(Objects::nonNull).distinct().toList());
+            } catch (Exception failure) {
                 RestartLedger.note(root, "dependent Kafka shutdown incomplete; helper and owner singletons retained; restart required");
                 throw failure;
             }
+            var restoredGroups = new ArrayList<SpringKafkaRetryRegistration>();
             try {
                 for (var owner : owners) owner.cache().apply();
                 for (var callback : callbacks)
@@ -623,9 +719,13 @@ public final class SpringKafkaReloader {
                 for (var owner : owners) context.getClass().getMethod("getBean", String.class).invoke(context, owner.name());
                 for (var callback : callbacks) if (callback.added()) {
                     Object current = factory.getClass().getMethod("getSingleton", String.class).invoke(factory, callback.name());
-                    SpringKafkaListenerExpressions.register(callback.scope().processor(),
-                            Class.forName("org.springframework.kafka.annotation.KafkaListener", false, callback.type().getClassLoader()),
-                            callback.metadata(), callback.method(), callback.receiver(), current, callback.name(), null);
+                    var annotation = Class.forName("org.springframework.kafka.annotation.KafkaListener", false, callback.type().getClassLoader());
+                    var probe = SpringKafkaListenerExpressions.hasRetryConfigurationBeans(annotation, factory)
+                            ? SpringKafkaListenerExpressions.probeRetryTopicConfiguration(callback.scope().processor(), annotation,
+                                    callback.metadata(), callback.method(), current, factory) : null;
+                    var group = SpringKafkaListenerExpressions.register(callback.scope().processor(), annotation,
+                            callback.metadata(), callback.method(), callback.receiver(), current, callback.name(), probe);
+                    if (group != null) restoredGroups.add(group);
                 }
                 for (var callback : callbacks) {
                     Object container = container(callback.scope().registry(), callback.container().id());
@@ -649,7 +749,16 @@ public final class SpringKafkaReloader {
                             && AddedKafkaListenerAdapter.ownerOf(listenerBean(messageListener(value))) == callback.type())
                         created.add(new Container(callback.scope().registry(), callback.container().id(), value));
                 }
-                try { stopAndRemove(created); } catch (Exception cleanup) { failure.addSuppressed(cleanup); }
+                try {
+                    for (var callback : callbacks) {
+                        if (callback.added() || callback.retryGroup() == null) continue;
+                        for (var group : SpringKafkaRetryRegistration.groups(factory))
+                            if (group != callback.retryGroup() && callback.method().equals(group.nativeCallback)
+                                    && group.mainId.equals(callback.container().id())) restoredGroups.add(group);
+                    }
+                    for (var group : restoredGroups) created.removeAll(group.containers());
+                    rollbackRegistrations(created, restoredGroups, failure);
+                } catch (Exception cleanup) { failure.addSuppressed(cleanup); }
                 RestartLedger.note(root, "dependent Kafka refresh partially applied; restart required");
                 throw failure;
             }

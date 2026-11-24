@@ -285,7 +285,7 @@
       "level": 3,
       "title": "Kafka listeners added after startup",
       "id": "kafka-listeners-added-after-startup",
-      "body_sha256": "458ece90dbaec9170e25ed10a98bcec58b3af9083e23cea05c0e433067a242bb",
+      "body_sha256": "ae75321de9b2bab5f5f45e6acd631c76f726532036840c9631f369bfaa9d4581",
       "heading": "### Kafka listeners added after startup\n"
     },
     {

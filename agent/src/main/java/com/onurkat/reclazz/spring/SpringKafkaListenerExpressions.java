@@ -25,7 +25,9 @@ final class SpringKafkaListenerExpressions {
         }
     }
 
-    record RetryProbe(String[] topics, Object partitions, boolean matching) { }
+    record RetryProbe(String[] topics, Object partitions, Object configuration) {
+        boolean matching() { return configuration != null; }
+    }
 
     // AddedKafkaListenerAdapter accepts no retry annotation on the class or method. For these
     // listeners a local configuration bean is the only other source used by Spring Kafka.
@@ -67,7 +69,7 @@ final class SpringKafkaListenerExpressions {
                 Object provider = providerType.getConstructor(factoryType).newInstance(beanFactory);
                 Object configuration = required(providerType, "findRetryConfigurationFor", String[].class,
                         Method.class, Object.class).invoke(provider, candidates, method, owner);
-                return new RetryProbe(topics, partitions, configuration != null);
+                return new RetryProbe(topics, partitions, configuration);
             } catch (java.lang.reflect.InvocationTargetException failure) {
                 Throwable cause = failure.getCause();
                 if (cause instanceof RuntimeException runtime) throw runtime;
@@ -79,7 +81,7 @@ final class SpringKafkaListenerExpressions {
         }
     }
 
-    static void register(Object processor, Class<?> annotation, Object metadata, Method method,
+    static SpringKafkaRetryRegistration register(Object processor, Class<?> annotation, Object metadata, Method method,
                          Object delegate, Object owner, String beanName, RetryProbe probe) throws ReflectiveOperationException {
         // Native processKafkaListener uses this same monitor for its temporary
         // listener scope. Keep other registrations from observing our binding.
@@ -111,7 +113,10 @@ final class SpringKafkaListenerExpressions {
                 Object resolvedPartitions = probe == null ? partitions.invoke(processor, metadata) : probe.partitions();
                 // Match and register against the same subscription. The processor still
                 // owns group selection, conversion, factory lookup and container registration.
+                if (probe != null && probe.matching())
+                    return SpringKafkaRetryRegistration.register(processor, annotation, metadata, delegate, beanName, endpoint, probe);
                 process.invoke(processor, endpoint, metadata, delegate, beanName, resolvedTopics, resolvedPartitions);
+                return null;
             } finally {
                 if (previous == null) remove.invoke(scope, key);
                 else add.invoke(scope, key, previous);
