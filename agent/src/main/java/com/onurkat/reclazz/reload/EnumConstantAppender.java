@@ -44,8 +44,8 @@ import com.onurkat.reclazz.ui.RestartLedger;
  * <p>The change must keep every existing ordinal. An append does; so does an
  * insert in the middle when it is applied as an append (the new constant takes the
  * next free ordinal until a restart), unless a loaded JPA entity stores the enum by
- * ordinal. A removal before the last constant or a reorder renumbers, and nothing
- * in memory or in a database survives that; it is refused with its own message.
+ * ordinal. A reorder keeps the existing runtime order. Removing a constant
+ * before the physical end requires a restart.
  *
  * <p>The JDK must have the shapes this reaches into. They are not a contract,
  * so a JDK that moves one of them makes this decline, and the reload falls back
@@ -58,6 +58,10 @@ import com.onurkat.reclazz.ui.RestartLedger;
  */
 public final class EnumConstantAppender {
 
+    public static void observeHibernateFactories() {
+        com.onurkat.reclazz.bootstrap.HibernateFactories.onInitialized(HibernateEnumStorage::factoryInitialized);
+    }
+
     private EnumConstantAppender() {
     }
 
@@ -67,11 +71,31 @@ public final class EnumConstantAppender {
      * @param change the diff taken before the redefinition
      * @return true when the constants are live in the JVM
      */
-    public static boolean applyOrExplain(String className, Class<?> loaded, byte[] newBytecode,
+    public static synchronized boolean applyOrExplain(String className, Class<?> loaded, byte[] newBytecode,
                                           EnumConstantChange.Change change,
                                           Instrumentation instrumentation) {
         if (change == null) return false;
+        if (!EnumConstantChange.ordinalMismatch(loaded, newBytecode))
+            return apply(className, loaded, newBytecode, change, instrumentation);
 
+        // Reserve the prospective order before inspecting any factory. Provider constructors never
+        // wait for enum surgery (a Spring context can itself be waiting for that constructor).
+        var observation = HibernateEnumStorage.beginOrderChange(loaded);
+        if (observation == null) {
+            String reason = "a destructive persistence-unit rebuild is in progress; retry the enum save after it finishes";
+            StatusReporter.warn("Enum " + className + " keeps its running order because " + reason);
+            RestartLedger.note(className, reason);
+            return false;
+        }
+        try {
+            return apply(className, loaded, newBytecode, change, instrumentation);
+        } finally {
+            HibernateEnumStorage.finishOrderChange(loaded, observation);
+        }
+    }
+
+    private static boolean apply(String className, Class<?> loaded, byte[] newBytecode,
+                                 EnumConstantChange.Change change, Instrumentation instrumentation) {
         // A removal from the end is the append's mirror: nothing renumbers,
         // so the ordinal argument that refuses every other removal does not
         // apply, and the surgery is the shrink instead of the grow.
@@ -102,7 +126,7 @@ public final class EnumConstantAppender {
         java.util.LinkedHashMap<String, Integer> inserted = new java.util.LinkedHashMap<>();
         if (!EnumConstantChange.isAppendOnly(loaded, newBytecode)) {
             inserted = EnumConstantChange.insertedNames(loaded, newBytecode);
-            if (inserted.isEmpty()) {
+            if (!change.removed().isEmpty() || (inserted.isEmpty() && !change.reordered())) {
                 EnumConstantChange.reportNotAppendOnly(className, change);
                 return false;
             }
@@ -110,13 +134,17 @@ public final class EnumConstantAppender {
             // by ordinal (audit F6), so the persistence check applies to every enum.
             String persisted = ordinalPersistence(loaded, instrumentation);
             if (persisted != null) {
-                StatusReporter.warn("Enum " + className + " " + change.describe() + " in the middle. " + persisted
-                        + " may store it by ordinal: on this JVM the new constant would get the next free ordinal and, after a "
-                        + "restart, its source position, so rows written now would read back as another constant. "
+                StatusReporter.warn("Enum " + className + " " + change.describe() + ". " + persisted
+                        + " may store it by ordinal. Source and running ordinals differ, so rows could read back as another constant. "
                         + "Restart to pick this up. Everything else in this class reloaded.");
                 RestartLedger.note(className, change.describe()
-                        + " in the middle of an enum persisted by ordinal (" + persisted + ")");
+                        + " with unproven ordinal safety (" + persisted + ")");
                 return false;
+            }
+            if (inserted.isEmpty()) {
+                EnumConstantChange.accepted(loaded, newBytecode);
+                reportReordered(className);
+                return true;
             }
         }
 
@@ -182,6 +210,7 @@ public final class EnumConstantAppender {
         int mappers = JacksonEnumCaches.flush(); GsonCaches.flush();
 
         EnumConstantChange.reportAppended(className, outcome.appended(), tables, mappers);
+        if (change.reordered()) reportReordered(className);
         if (!inserted.isEmpty()) {
             int ordinal = countConstants(loaded) - inserted.size();
             List<String> positions = new ArrayList<>();
@@ -206,6 +235,11 @@ public final class EnumConstantAppender {
                     + "before using the value on a model.");
         }
         return true;
+    }
+
+    private static void reportReordered(String className) {
+        StatusReporter.success("Enum " + className + " reordered in source. Existing constants kept their running ordinals; "
+                + "values(), compareTo and EnumSet/EnumMap iteration use the running order until restart.");
     }
 
     /** Accept only the simple native generated code=name constructor, never replay user code. */
@@ -339,10 +373,17 @@ public final class EnumConstantAppender {
      * Reads annotations by name; no persistence class is loaded for this.
      */
     static String ordinalPersistence(Class<?> enumType, Instrumentation instrumentation) {
+        Class<?>[] loaded = instrumentation == null ? new Class<?>[0] : instrumentation.getAllLoadedClasses();
+        for (Class<?> type : loaded) {
+            if (type.getName().equals(com.onurkat.reclazz.transform.HibernateFactoryTransformer.FACTORY)) {
+                String storage = HibernateEnumStorage.refusal(enumType, loaded, JPA_MARKERS);
+                return storage == null ? externalOrdinalConsumer(enumType, loaded) : storage;
+            }
+        }
         String xml = xmlMappings(enumType.getClassLoader());
         if (xml != null) return xml;
-        if (instrumentation == null) return null;
-        for (Class<?> type : instrumentation.getAllLoadedClasses()) {
+        if (instrumentation == null) return externalOrdinalConsumer(enumType, loaded);
+        for (Class<?> type : loaded) {
             try {
                 if (type.getClassLoader() == null || !annotated(type.getDeclaredAnnotations(), PERSISTENT_TYPES)) continue;
                 for (Field field : type.getDeclaredFields())
@@ -366,8 +407,76 @@ public final class EnumConstantAppender {
         // F3a/F5a/F5b). So once JPA is in use anywhere in this JVM, an insert is not proven safe.
         String inUse = jpaInUse(instrumentation);
         if (inUse != null) return "JPA in this JVM (" + inUse + ")";
+        return externalOrdinalConsumer(enumType, loaded);
+    }
+    private static String externalOrdinalConsumer(Class<?> target, Class<?>[] loaded) {
+        String table = "$SWITCH_TABLE$" + target.getName().replace('.', '$');
+        try {
+            for (var annotation : target.getDeclaredAnnotations()) {
+                if (!annotation.annotationType().getName().equals("com.fasterxml.jackson.annotation.JsonFormat")) continue;
+                String shape = String.valueOf(annotation.annotationType().getMethod("shape").invoke(annotation));
+                if (shape.startsWith("NUMBER") || shape.equals("ARRAY")) return "Jackson @JsonFormat(shape=" + shape + ")";
+            }
+            for (Object mapper : com.onurkat.reclazz.bootstrap.JacksonMapperRegistry.live()) {
+                String reason = indexedMapper(mapper);
+                if (reason != null) return reason;
+            }
+            for (Class<?> type : loaded) {
+                if (type.getName().equals("org.apache.ibatis.type.EnumOrdinalTypeHandler"))
+                    return "loaded MyBatis EnumOrdinalTypeHandler";
+                if (type.getClassLoader() == null || type.isArray() || type.isHidden()) continue;
+                try {
+                    for (Field field : ReflectionBridge.physicalDeclaredFields(type)) {
+                        if (field.getName().equals(table) && field.getType() == int[].class)
+                            return "Eclipse switch table " + type.getName() + "." + table;
+                    }
+                } catch (LinkageError missingDependency) {
+                    // Unresolved field types must not load optional application dependencies.
+                    if (hasCompilerTable(type, target, table, false)) return "Eclipse switch table in " + type.getName();
+                }
+                if (type.getName().endsWith("$WhenMappings") && hasCompilerTable(type, target, table, true))
+                    return "Kotlin WhenMappings for " + target.getName() + " in " + type.getName();
+            }
+            return null;
+        } catch (ReflectiveOperationException | java.io.IOException | LinkageError | RuntimeException unknown) {
+            return "cannot inspect compiled switch tables or enum serialization (" + unknown.getClass().getSimpleName() + ")";
+        }
+    }
+
+    private static boolean hasCompilerTable(Class<?> holder, Class<?> target, String table, boolean kotlin)
+            throws java.io.IOException {
+        try (var bytes = holder.getResourceAsStream("/" + holder.getName().replace('.', '/') + ".class")) {
+            if (bytes == null) return true;
+            var node = new ClassNode();
+            new ClassReader(bytes).accept(node, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+            if (!kotlin) return node.fields.stream().anyMatch(f -> f.name.equals(table) && f.desc.equals("[I"));
+            if (node.fields.stream().noneMatch(f -> f.name.startsWith("$EnumSwitchMapping$") && f.desc.equals("[I"))) return false;
+            String owner = target.getName().replace('.', '/');
+            for (var method : node.methods) for (var insn : method.instructions) {
+                if (insn instanceof MethodInsnNode call && call.owner.equals(owner)
+                        || insn instanceof FieldInsnNode field && field.owner.equals(owner)) return true;
+            }
+            return false;
+        }
+    }
+
+    private static String indexedMapper(Object mapper) throws ReflectiveOperationException {
+        for (Class<?> type = mapper.getClass(); type != null; type = type.getSuperclass()) {
+            boolean modern = type.getName().equals("tools.jackson.databind.ObjectMapper");
+            if (!modern && !type.getName().equals("com.fasterxml.jackson.databind.ObjectMapper")) continue;
+            ClassLoader loader = type.getClassLoader();
+            Class<?> feature = Class.forName(modern ? "tools.jackson.databind.cfg.EnumFeature"
+                    : "com.fasterxml.jackson.databind.SerializationFeature", false, loader);
+            Class<?> parameter = modern ? Class.forName("tools.jackson.databind.cfg.DatatypeFeature", false, loader) : feature;
+            var enabled = type.getMethod("isEnabled", parameter);
+            for (String flag : List.of("WRITE_ENUMS_USING_INDEX", "WRITE_ENUM_KEYS_USING_INDEX")) {
+                if (Boolean.TRUE.equals(enabled.invoke(mapper, feature.getField(flag).get(null)))) return "Jackson " + flag;
+            }
+            break;
+        }
         return null;
     }
+
     private static final Set<String> JPA_MARKERS = Set.of(
             "jakarta.persistence.EntityManagerFactory", "javax.persistence.EntityManagerFactory",
             "jakarta.persistence.Entity", "javax.persistence.Entity",

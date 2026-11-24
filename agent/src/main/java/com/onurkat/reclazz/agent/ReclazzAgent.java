@@ -484,6 +484,11 @@ public class ReclazzAgent {
                 }
             }
 
+            if (bootstrapInstalled && !attached) {
+                com.onurkat.reclazz.reload.EnumConstantAppender.observeHibernateFactories();
+                instrumentation.addTransformer(new com.onurkat.reclazz.transform.HibernateFactoryTransformer(), false);
+            }
+
             if (bootstrapInstalled) {
                 com.onurkat.reclazz.bootstrap.OrikaBridge.reporter((subject, active) -> {
                     String reason = com.onurkat.reclazz.bootstrap.OrikaBridge.REMOVED_MAPPING;
@@ -1473,6 +1478,7 @@ public class ReclazzAgent {
         events.values().forEach(event -> paths.put(new org.objectweb.asm.ClassReader(event.getBytes()).getClassName().replace('/', '.'), event.getPath()));
         Map<String, String> pendingRefused = new java.util.LinkedHashMap<>(preflight.refused());
         capturePendingEnums(bytes, paths, preflight.plans(), pendingRefused, loaded);
+        SwitchMapPreflight.refuseDirectSwitches(bytes, loaded, pendingRefused);
         ChangeEvent context = captured.isEmpty() ? null : captured.get(0);
         if (context != null) bytes.forEach((name, value) -> {
             Path path = paths.get(name).toAbsolutePath().normalize();
@@ -1557,6 +1563,7 @@ public class ReclazzAgent {
             catch (Exception unavailable) { /* Needed enum origins are refused by capture. */ }
         }
         capturePendingEnums(accepted, paths, preflight.plans(), refused, loaded);
+        SwitchMapPreflight.refuseDirectSwitches(accepted, loaded, refused);
         finishNativePreflight(nativeSave, accepted.keySet().stream().filter(name -> !refused.containsKey(name))
                 .collect(java.util.stream.Collectors.toSet()));
         if (nativeSave != null) { refused.putAll(nativeSave.refusals()); recordRejected.putAll(nativeSave.refusals()); }

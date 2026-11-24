@@ -1019,13 +1019,13 @@
           "path": "docs/product-reference.md",
           "line": 20,
           "quote": "| Method body changes |",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 13,
           "quote": "### P1-BODY-SUPER",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "Held Derived answers d1/b1, d2/b1, d2/b2, d3/b2; all printed values have two halves.",
@@ -1059,13 +1059,13 @@
           "path": "docs/product-reference.md",
           "line": 20,
           "quote": "| Method body changes |",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 37,
           "quote": "### P1-BODY-VIRTUAL",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "Held Derived answers b1:dh then b2:dh; startup PID/nonce unchanged and emitted once.",
@@ -1099,19 +1099,19 @@
           "path": "docs/product-reference.md",
           "line": 22,
           "quote": "| Add instance fields |",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "docs/usage.md",
-          "line": 4056,
+          "line": 4062,
           "quote": "### New Field Values on Objects That Already Existed",
-          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
+          "sha256": "6b99696522fef5e989c416a1802a537b4fb2da171b8826265d9fe5f843a29672"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 61,
           "quote": "### P1-FIELD-OLD",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "New list sizes1 then2, integer retries3 and computed label HOLDER!; first-read explanation and no initializer warning.",
@@ -1145,19 +1145,19 @@
           "path": "docs/product-reference.md",
           "line": 22,
           "quote": "| Add instance fields |",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "docs/usage.md",
-          "line": 4056,
+          "line": 4062,
           "quote": "### New Field Values on Objects That Already Existed",
-          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
+          "sha256": "6b99696522fef5e989c416a1802a537b4fb2da171b8826265d9fe5f843a29672"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 85,
           "quote": "### P1-FIELD-PARAM-REFUSAL",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "Held name x survives; added upper stays null and warning names upper/constructor parameter.",
@@ -1191,19 +1191,19 @@
           "path": "docs/product-reference.md",
           "line": 22,
           "quote": "| Add instance fields |",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "docs/usage.md",
-          "line": 4056,
+          "line": 4062,
           "quote": "### New Field Values on Objects That Already Existed",
-          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
+          "sha256": "6b99696522fef5e989c416a1802a537b4fb2da171b8826265d9fe5f843a29672"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 109,
           "quote": "### P1-FIELD-FAILURE",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "null:1|healthy:1 becomes recovered:2|healthy:1; successful neighbor is not reinitialized.",
@@ -1237,19 +1237,19 @@
           "path": "docs/product-reference.md",
           "line": 22,
           "quote": "| Add instance fields |",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "docs/usage.md",
-          "line": 4056,
+          "line": 4062,
           "quote": "### New Field Values on Objects That Already Existed",
-          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
+          "sha256": "6b99696522fef5e989c416a1802a537b4fb2da171b8826265d9fe5f843a29672"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 133,
           "quote": "### P1-FIELD-CONDITIONAL",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "Four held objects produce on1/true, off1/false and explicit-null outcomes with per-object branch counts.",
@@ -1283,19 +1283,19 @@
           "path": "docs/product-reference.md",
           "line": 22,
           "quote": "| Add instance fields |",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "docs/usage.md",
-          "line": 4056,
+          "line": 4062,
           "quote": "### New Field Values on Objects That Already Existed",
-          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
+          "sha256": "6b99696522fef5e989c416a1802a537b4fb2da171b8826265d9fe5f843a29672"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 157,
           "quote": "### P1-FIELD-NEW-ROUTES",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "Old constructor count4 stays fixed; new three constructor routes give off3/false with total7 constructors/2 delegations and one initializer call each.",
@@ -1329,19 +1329,19 @@
           "path": "docs/product-reference.md",
           "line": 22,
           "quote": "| Add instance fields |",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "docs/usage.md",
-          "line": 4056,
+          "line": 4062,
           "quote": "### New Field Values on Objects That Already Existed",
-          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
+          "sha256": "6b99696522fef5e989c416a1802a537b4fb2da171b8826265d9fe5f843a29672"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 181,
           "quote": "### P1-FIELD-UNREAD-LATER",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "Unread object uses on2/true after the second save, while earlier values remain unchanged.",
@@ -1375,19 +1375,19 @@
           "path": "docs/product-reference.md",
           "line": 22,
           "quote": "| Add instance fields |",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "docs/usage.md",
-          "line": 4056,
+          "line": 4062,
           "quote": "### New Field Values on Objects That Already Existed",
-          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
+          "sha256": "6b99696522fef5e989c416a1802a537b4fb2da171b8826265d9fe5f843a29672"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 205,
           "quote": "### P1-FIELD-NULL-KEEP",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "user/true and explicit null survive repeated saves; existing application field77 remains77.",
@@ -1421,19 +1421,19 @@
           "path": "docs/product-reference.md",
           "line": 22,
           "quote": "| Add instance fields |",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "docs/usage.md",
-          "line": 4056,
+          "line": 4062,
           "quote": "### New Field Values on Objects That Already Existed",
-          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
+          "sha256": "6b99696522fef5e989c416a1802a537b4fb2da171b8826265d9fe5f843a29672"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 229,
           "quote": "### P1-FIELD-SIDE-EFFECT-BOUNDS",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "Constructor count4 across edits, unrelated block count8 in each of four stages; selected arm counts and new constructor ordering verified.",
@@ -1467,19 +1467,19 @@
           "path": "docs/product-reference.md",
           "line": 23,
           "quote": "| Add static fields |",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "docs/usage.md",
-          "line": 4023,
+          "line": 4029,
           "quote": "### Added Static Field Values",
-          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
+          "sha256": "6b99696522fef5e989c416a1802a537b4fb2da171b8826265d9fe5f843a29672"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 253,
           "quote": "### P1-STATIC-CONDITIONAL",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "Selected condition/left/right counters progress 1:1:0 then2:1:1 across three saves.",
@@ -1513,19 +1513,19 @@
           "path": "docs/product-reference.md",
           "line": 23,
           "quote": "| Add static fields |",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "docs/usage.md",
-          "line": 4023,
+          "line": 4029,
           "quote": "### Added Static Field Values",
-          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
+          "sha256": "6b99696522fef5e989c416a1802a537b4fb2da171b8826265d9fe5f843a29672"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 277,
           "quote": "### P1-STATIC-NULL-KEEP",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "NULLABLE remains null and CHOICE=user survives later saves.",
@@ -1559,19 +1559,19 @@
           "path": "docs/product-reference.md",
           "line": 23,
           "quote": "| Add static fields |",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "docs/usage.md",
-          "line": 4023,
+          "line": 4029,
           "quote": "### Added Static Field Values",
-          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
+          "sha256": "6b99696522fef5e989c416a1802a537b4fb2da171b8826265d9fe5f843a29672"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 301,
           "quote": "### P1-STATIC-LATER-KEEP",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "LATER=right after the flag changes; existing77 remains77 and earlier CHOICE=user.",
@@ -1612,19 +1612,19 @@
           "path": "docs/product-reference.md",
           "line": 23,
           "quote": "| Add static fields |",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "docs/usage.md",
-          "line": 4023,
+          "line": 4029,
           "quote": "### Added Static Field Values",
-          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
+          "sha256": "6b99696522fef5e989c416a1802a537b4fb2da171b8826265d9fe5f843a29672"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 325,
           "quote": "### P1-STATIC-BLOCK-NO-REPLAY",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "Original block count1 or2 stays fixed across three edits, including isolated switch and unrelated handler fixture.; Original block count1 or2 stays fixed across three edits, including isolated switch and unrelated handler fixture.",
@@ -1658,19 +1658,19 @@
           "path": "docs/product-reference.md",
           "line": 21,
           "quote": "| Add / remove methods |",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "src/main/resources/META-INF/plugin.xml",
           "line": 68,
           "quote": "A member you delete stops being visible to reflection",
-          "sha256": "7df19b1305d19d1b8584f55a7e32a3b1a71faa8691b7f329922e38ad872d883d"
+          "sha256": "a3aeb164868e710d0ec2d939825bc56012d797eea4e5a9badf7d5af1f16a6d26"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 349,
           "quote": "### P1-METHOD-ADD",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, the added extra method is visible through meta-reflection and the added field is also visible; same PID/nonce.",
@@ -1704,19 +1704,19 @@
           "path": "docs/product-reference.md",
           "line": 21,
           "quote": "| Add / remove methods |",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "src/main/resources/META-INF/plugin.xml",
           "line": 68,
           "quote": "A member you delete stops being visible to reflection",
-          "sha256": "7df19b1305d19d1b8584f55a7e32a3b1a71faa8691b7f329922e38ad872d883d"
+          "sha256": "a3aeb164868e710d0ec2d939825bc56012d797eea4e5a9badf7d5af1f16a6d26"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 373,
           "quote": "### P1-METHOD-REMOVE-HELD",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "Held object/Field survive add/remove/restore/repeat; held Method and pre-existing Legacy caller get NoSuchMethodError while gone is removed and the restored body after restore; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, the added extra method is visible through meta-reflection and the added field is also visible; same PID/nonce.",
@@ -1750,19 +1750,19 @@
           "path": "docs/product-reference.md",
           "line": 21,
           "quote": "| Add / remove methods |",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "src/main/resources/META-INF/plugin.xml",
           "line": 68,
           "quote": "A member you delete stops being visible to reflection",
-          "sha256": "7df19b1305d19d1b8584f55a7e32a3b1a71faa8691b7f329922e38ad872d883d"
+          "sha256": "a3aeb164868e710d0ec2d939825bc56012d797eea4e5a9badf7d5af1f16a6d26"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 397,
           "quote": "### P1-REMOVED-REFLECTION",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, the added extra method is visible through meta-reflection and the added field is also visible; same PID/nonce.",
@@ -1796,19 +1796,19 @@
           "path": "docs/product-reference.md",
           "line": 21,
           "quote": "| Add / remove methods |",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "src/main/resources/META-INF/plugin.xml",
           "line": 68,
           "quote": "A member you delete stops being visible to reflection",
-          "sha256": "7df19b1305d19d1b8584f55a7e32a3b1a71faa8691b7f329922e38ad872d883d"
+          "sha256": "a3aeb164868e710d0ec2d939825bc56012d797eea4e5a9badf7d5af1f16a6d26"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 421,
           "quote": "### P1-MEMBER-RESTORE",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, the added extra method is visible through meta-reflection and the added field is also visible; same PID/nonce.",
@@ -1842,19 +1842,19 @@
           "path": "docs/product-reference.md",
           "line": 21,
           "quote": "| Add / remove methods |",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "src/main/resources/META-INF/plugin.xml",
           "line": 68,
           "quote": "A member you delete stops being visible to reflection",
-          "sha256": "7df19b1305d19d1b8584f55a7e32a3b1a71faa8691b7f329922e38ad872d883d"
+          "sha256": "a3aeb164868e710d0ec2d939825bc56012d797eea4e5a9badf7d5af1f16a6d26"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 445,
           "quote": "### P1-FIELD-REMOVE",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, the added extra method is visible through meta-reflection and the added field is also visible; same PID/nonce.",
@@ -1893,27 +1893,27 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 3890,
+          "line": 3896,
           "quote": "### Cross-class access to added instance fields",
-          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
+          "sha256": "6b99696522fef5e989c416a1802a537b4fb2da171b8826265d9fe5f843a29672"
         },
         {
           "path": "docs/product-reference.md",
           "line": 609,
           "quote": "| Add new fields |",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "CHANGELOG.md",
-          "line": 1051,
+          "line": 1053,
           "quote": "- Separately reloaded watched callers directly read/write added instance fields",
-          "sha256": "c5f97dda96c8bc577888f151bb25d2471dbd07351dc0f9c010f3536e5972ea1e"
+          "sha256": "1c2f9c87c6e15d6bd2b00a6cb7a68629f6726c91039b090bbb571fc16e7897b7"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 469,
           "quote": "### P1-FIELD-CROSS-CLASS",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "External direct read sees42; direct write sets91 for both caller and owner; owner initializer edit does not reset91; accessor agrees with same PID/nonce.; Two held objects independently keep int/long/double/String first-read values; direct writes and null survive owner/caller saves; original fields and unwatched Point.x retain values; null receiver reads/writes throw NPE with unchanged PID/nonce.",
@@ -1947,13 +1947,13 @@
           "path": "docs/product-reference.md",
           "line": 63,
           "quote": "| A lambda added to an edited method body |",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 493,
           "quote": "### P1-LAMBDA-RELOAD",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "Three sequential body edits return current local/this captures, a-b stream value and added private helper; existing state user and PID/nonce retained; ObjectOutputStream fails with NotSerializableException.",
@@ -1987,13 +1987,13 @@
           "path": "docs/product-reference.md",
           "line": 63,
           "quote": "| A lambda added to an edited method body |",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 517,
           "quote": "### P1-LAMBDA-SERIALIZATION-LIMIT",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "Three sequential body edits return current local/this captures, a-b stream value and added private helper; existing state user and PID/nonce retained; ObjectOutputStream fails with NotSerializableException.",
@@ -2017,8 +2017,8 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.CoreEnumReloadTest#appendTailAndReorderKeepOldCollectionsAndExposeOldArrayLimit",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/CoreEnumReloadTest.java",
-          "source_sha256": "a8b85caf0e39742dd6e60b630ad7040a985848e1e03ccf6b0bcd3712108c9373",
-          "assertions": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and warns; same PID/nonce.",
+          "source_sha256": "8b8108502abdf93517dfc08491600d354d7f229820a98406bf0895751ed9c581",
+          "assertions": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and reports the accepted source order; same PID/nonce.",
           "kind": "watcher"
         }
       ],
@@ -2027,16 +2027,16 @@
           "path": "docs/product-reference.md",
           "line": 25,
           "quote": "| Add enum values (on the end) |",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 541,
           "quote": "### P1-ENUM-APPEND-VALUES",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
-      "observable": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and warns; same PID/nonce.",
+      "observable": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and reports the accepted source order; same PID/nonce.",
       "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
       "verdict": "PROVEN_WITH_SCOPE",
       "execution_lanes": [
@@ -2057,8 +2057,8 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.CoreEnumReloadTest#appendTailAndReorderKeepOldCollectionsAndExposeOldArrayLimit",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/CoreEnumReloadTest.java",
-          "source_sha256": "a8b85caf0e39742dd6e60b630ad7040a985848e1e03ccf6b0bcd3712108c9373",
-          "assertions": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and warns; same PID/nonce.",
+          "source_sha256": "8b8108502abdf93517dfc08491600d354d7f229820a98406bf0895751ed9c581",
+          "assertions": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and reports the accepted source order; same PID/nonce.",
           "kind": "watcher"
         }
       ],
@@ -2067,16 +2067,16 @@
           "path": "docs/product-reference.md",
           "line": 25,
           "quote": "| Add enum values (on the end) |",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 565,
           "quote": "### P1-ENUM-APPEND-SWITCH",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
-      "observable": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and warns; same PID/nonce.",
+      "observable": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and reports the accepted source order; same PID/nonce.",
       "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
       "verdict": "PROVEN_WITH_SCOPE",
       "execution_lanes": [
@@ -2097,8 +2097,8 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.CoreEnumReloadTest#appendTailAndReorderKeepOldCollectionsAndExposeOldArrayLimit",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/CoreEnumReloadTest.java",
-          "source_sha256": "a8b85caf0e39742dd6e60b630ad7040a985848e1e03ccf6b0bcd3712108c9373",
-          "assertions": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and warns; same PID/nonce.",
+          "source_sha256": "8b8108502abdf93517dfc08491600d354d7f229820a98406bf0895751ed9c581",
+          "assertions": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and reports the accepted source order; same PID/nonce.",
           "kind": "watcher"
         }
       ],
@@ -2107,16 +2107,16 @@
           "path": "docs/product-reference.md",
           "line": 25,
           "quote": "| Add enum values (on the end) |",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 589,
           "quote": "### P1-ENUM-OLD-COLLECTIONS",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
-      "observable": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and warns; same PID/nonce.",
+      "observable": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and reports the accepted source order; same PID/nonce.",
       "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
       "verdict": "PROVEN_WITH_SCOPE",
       "execution_lanes": [
@@ -2137,8 +2137,8 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.CoreEnumReloadTest#appendTailAndReorderKeepOldCollectionsAndExposeOldArrayLimit",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/CoreEnumReloadTest.java",
-          "source_sha256": "a8b85caf0e39742dd6e60b630ad7040a985848e1e03ccf6b0bcd3712108c9373",
-          "assertions": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and warns; same PID/nonce.",
+          "source_sha256": "8b8108502abdf93517dfc08491600d354d7f229820a98406bf0895751ed9c581",
+          "assertions": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and reports the accepted source order; same PID/nonce.",
           "kind": "watcher"
         }
       ],
@@ -2147,16 +2147,16 @@
           "path": "docs/product-reference.md",
           "line": 26,
           "quote": "| Remove the LAST enum value |",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 613,
           "quote": "### P1-ENUM-TAIL",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
-      "observable": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and warns; same PID/nonce.",
+      "observable": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and reports the accepted source order; same PID/nonce.",
       "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
       "verdict": "PROVEN_WITH_SCOPE",
       "execution_lanes": [
@@ -2170,15 +2170,15 @@
     },
     {
       "id": "P1-ENUM-REORDER-REFUSAL",
-      "statement": "A reorder does not change live native ordinals and is restart-reported.",
+      "statement": "A source reorder keeps the running ordinals and can be accepted, including when the save inserts constants. Unsafe or unproven persistence mappings still require restart.",
       "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
       "bounds": "Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.",
       "tests": [
         {
           "symbol": "com.onurkat.reclazz.e2e.CoreEnumReloadTest#appendTailAndReorderKeepOldCollectionsAndExposeOldArrayLimit",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/CoreEnumReloadTest.java",
-          "source_sha256": "a8b85caf0e39742dd6e60b630ad7040a985848e1e03ccf6b0bcd3712108c9373",
-          "assertions": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and warns; same PID/nonce.",
+          "source_sha256": "8b8108502abdf93517dfc08491600d354d7f229820a98406bf0895751ed9c581",
+          "assertions": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and reports the accepted source order; same PID/nonce.",
           "kind": "watcher"
         }
       ],
@@ -2187,16 +2187,16 @@
           "path": "docs/product-reference.md",
           "line": 27,
           "quote": "| Insert or reorder enum values |",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 637,
           "quote": "### P1-ENUM-REORDER-REFUSAL",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
-      "observable": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and warns; same PID/nonce.",
+      "observable": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and reports the accepted source order; same PID/nonce.",
       "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
       "verdict": "EXPECTED",
       "execution_lanes": [
@@ -2204,7 +2204,7 @@
         "sapmachine-21-macos-arm64"
       ],
       "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
-      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "limitation": "Runtime order stays fixed until restart. A switch compiled with direct source ordinal case keys, missing factory coverage, ordinal or opaque storage can require restart. Check native SQL and application-written ordinals separately.",
       "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
       "next_action": "Independent Claude audit of these records and their raw runs."
     },
@@ -2217,8 +2217,8 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.CoreEnumReloadTest#appendTailAndReorderKeepOldCollectionsAndExposeOldArrayLimit",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/CoreEnumReloadTest.java",
-          "source_sha256": "a8b85caf0e39742dd6e60b630ad7040a985848e1e03ccf6b0bcd3712108c9373",
-          "assertions": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and warns; same PID/nonce.",
+          "source_sha256": "8b8108502abdf93517dfc08491600d354d7f229820a98406bf0895751ed9c581",
+          "assertions": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and reports the accepted source order; same PID/nonce.",
           "kind": "watcher"
         }
       ],
@@ -2227,16 +2227,16 @@
           "path": "docs/product-reference.md",
           "line": 25,
           "quote": "| Add enum values (on the end) |",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 661,
           "quote": "### P1-ENUM-OLD-ARRAY-LIMIT",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
-      "observable": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and warns; same PID/nonce.",
+      "observable": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and reports the accepted source order; same PID/nonce.",
       "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
       "verdict": "EXPECTED",
       "execution_lanes": [
@@ -2267,13 +2267,13 @@
           "path": "docs/product-reference.md",
           "line": 28,
           "quote": "| Add / remove an interface |",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 685,
           "quote": "### P1-INTERFACE-STOCK-REFUSAL",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "Old Holder remains instanceof Tag=false, interfaces=[], same Class/state29; body v1->v2->v3, named interface refusal, unchanged PID/nonce.",
@@ -2299,13 +2299,13 @@
           "path": "docs/product-reference.md",
           "line": 28,
           "quote": "| Add / remove an interface |",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 709,
           "quote": "### P1-INTERFACE-ENHANCED",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "No observing test executed for this current advertised promise.",
@@ -2339,19 +2339,19 @@
           "path": "docs/product-reference.md",
           "line": 29,
           "quote": "| Change superclass |",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "src/main/resources/META-INF/plugin.xml",
           "line": 68,
           "quote": "Reclazz keeps a loaded class's existing superclass",
-          "sha256": "7df19b1305d19d1b8584f55a7e32a3b1a71faa8691b7f329922e38ad872d883d"
+          "sha256": "a3aeb164868e710d0ec2d939825bc56012d797eea4e5a9badf7d5af1f16a6d26"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 733,
           "quote": "### P1-SUPERCLASS-REFUSAL-SALVAGE",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "Seven versions: same original Class/loader/self/state19/superclassA; safe body edits apply, dependent c pinned, typed B saves refuse, recovery works with same status-session ID.",
@@ -2375,15 +2375,15 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 4108,
+          "line": 4114,
           "quote": "Concurrent first-read computations can overlap",
-          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
+          "sha256": "6b99696522fef5e989c416a1802a537b4fb2da171b8826265d9fe5f843a29672"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 757,
           "quote": "### P1-CONCURRENCY",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "No observing test executed for this current advertised promise.",
@@ -2424,19 +2424,19 @@
           "path": "docs/product-reference.md",
           "line": 23,
           "quote": "| Add static fields |",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "docs/usage.md",
-          "line": 4023,
+          "line": 4029,
           "quote": "### Added Static Field Values",
-          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
+          "sha256": "6b99696522fef5e989c416a1802a537b4fb2da171b8826265d9fe5f843a29672"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 781,
           "quote": "### P1-STATIC-CONSTANTS",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "Constant plan reads MAX50 and NAMEreclazz with no refusal.; Boolean/char/byte/short/int constant values keep native wrapper types.",
@@ -2477,13 +2477,13 @@
           "path": "docs/product-reference.md",
           "line": 24,
           "quote": "| Added static field whose initialiser is entangled",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 805,
           "quote": "### P1-STATIC-ENTANGLED",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "No emitted slice; computed-earlier reason recorded.; Eleven named guarded/shared/local/loop/handler/object/array-write shapes emit no partial code and retain refusal keys.",
@@ -2524,19 +2524,19 @@
           "path": "docs/product-reference.md",
           "line": 23,
           "quote": "| Add static fields |",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "docs/usage.md",
-          "line": 4023,
+          "line": 4029,
           "quote": "### Added Static Field Values",
-          "sha256": "c163b2bcb5351a6e244999458bdd0cdb4a625bfd51b37f5e541ced72b974dbc6"
+          "sha256": "6b99696522fef5e989c416a1802a537b4fb2da171b8826265d9fe5f843a29672"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 829,
           "quote": "### P1-STATIC-LOWERINGS",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "Two flag arms verify object identity, nested int, long, double, null, object constructor, short-circuit boolean and source order; existing99 and old blocks unchanged.; Isolated switch plan accepts VALUE:I.",
@@ -2605,13 +2605,13 @@
           "path": "docs/product-reference.md",
           "line": 661,
           "quote": "**Nothing about reflection.**",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 853,
           "quote": "### P1-LOAD-METADATA",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "Original method has one runtime annotation.; Three repeated annotations remain.; Native ParameterizedType remains List<String>.; Native argument remains Map<String,Integer>.; IOException/SQLException declared exceptions remain.; Varargs bit remains set.",
@@ -2659,19 +2659,19 @@
           "path": "docs/product-reference.md",
           "line": 683,
           "quote": "**`serialVersionUID` is pinned.**",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "src/main/resources/META-INF/plugin.xml",
           "line": 84,
           "quote": "<b>serialVersionUID is unchanged.</b>",
-          "sha256": "7df19b1305d19d1b8584f55a7e32a3b1a71faa8691b7f329922e38ad872d883d"
+          "sha256": "a3aeb164868e710d0ec2d939825bc56012d797eea4e5a9badf7d5af1f16a6d26"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 877,
           "quote": "### P1-LOAD-SERIAL-UID",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "Native computed UIDs match before/after transform.; Object written as plain Ser reads as transformed Ser with name n and count3.; Explicit UID4242 retained.",
@@ -2719,13 +2719,13 @@
           "path": "docs/product-reference.md",
           "line": 689,
           "quote": "**Fields added by a reload are runtime-only.**",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 901,
           "quote": "### P1-FIELD-CLONE",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "Clone second/original first values stay independent.; Original changed/clone first values stay independent.; Three named stored values round-trip.",
@@ -2766,13 +2766,13 @@
           "path": "docs/product-reference.md",
           "line": 689,
           "quote": "**Fields added by a reload are runtime-only.**",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 925,
           "quote": "### P1-FIELD-SERIALIZATION",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "Injected __reclazz$ext carries the transient modifier.; Unserializable stored Object does not block serialization; original name n survives and transient storage is null after deserialization.",
@@ -2798,13 +2798,13 @@
           "path": "docs/product-reference.md",
           "line": 667,
           "quote": "**Stack traces gain a frame.**",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 949,
           "quote": "### P1-LOAD-STACK",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "No observing test executed for this current advertised promise.",
@@ -2852,13 +2852,13 @@
           "path": "docs/product-reference.md",
           "line": 736,
           "quote": "**`synchronized` survives.**",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 973,
           "quote": "### P1-SYNCHRONIZED",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "Two 300ms calls exclude before/after edit, elapsed >=540ms.; Different thread can reenter after exceptional exit: monitor FREE before/after.; Two static calls remain >=540ms after structural edit.",
@@ -2884,13 +2884,13 @@
           "path": "docs/product-reference.md",
           "line": 573,
           "quote": "Reclazz targets JDK 17+ with the standard `java.lang.instrument` API. Structural reload uses the documented companion path on stock JVMs. The vendor list below describes intended compatibility, not acceptance evidence for every listed vendor or version. The difference is reflective visibility, not whether the change takes effect.",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 997,
           "quote": "### P1-JDK-PROVIDERS",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "No observing test executed for this current advertised promise.",
@@ -2916,13 +2916,13 @@
           "path": "docs/product-reference.md",
           "line": 25,
           "quote": "| Add enum values (on the end) |",
-          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1021,
           "quote": "### P1-JDK26-ENUM",
-          "sha256": "5a6693a64787d99c309e38a06b927fdee132c17894b81c4ac51d7666213d1678"
+          "sha256": "3fec078f1c767e9ff1dc46bffdb76fa1d6e3cfb185d8dbd80ab591079d37538f"
         }
       ],
       "observable": "No observing test executed for this current advertised promise.",
@@ -2991,5 +2991,83 @@
         "current_sha256": "7fe8d055393e1a595825bf2ff19f00f4dc45783d06f1e7a9020d248c8da24fec"
       }
     ]
+  },
+  "history_before_r32_enum_order": {
+    "base_commit": "a9fe5ef6",
+    "note": "Earlier unconditional refusal. This is the original claim and its original source hashes. Existing P1 lane receipts remain historical. Current scoped runs are recorded in r32_enum_order_refresh.",
+    "claim": {
+      "id": "P1-ENUM-REORDER-REFUSAL",
+      "statement": "A reorder does not change live native ordinals and is restart-reported.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.CoreEnumReloadTest#appendTailAndReorderKeepOldCollectionsAndExposeOldArrayLimit",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/CoreEnumReloadTest.java",
+          "source_sha256": "8b8108502abdf93517dfc08491600d354d7f229820a98406bf0895751ed9c581",
+          "assertions": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and warns; same PID/nonce.",
+          "kind": "watcher"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "docs/product-reference.md",
+          "line": 27,
+          "quote": "| Insert or reorder enum values |",
+          "sha256": "b9cab357c23845403334e6abb472f98aebeb94dad82f22b1ec307781aade8e29"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 637,
+          "quote": "### P1-ENUM-REORDER-REFUSAL",
+          "sha256": "96e51d4109d532904dde7466f727c754fa5d5153f89ba6e14182c3e07a0d434b"
+        }
+      ],
+      "observable": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and warns; same PID/nonce.",
+      "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
+      "verdict": "EXPECTED",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    }
+  },
+  "r32_round4": {
+    "source": "agent/src/test/java/com/onurkat/reclazz/e2e/CoreEnumReloadTest.java",
+    "source_sha256": "8b8108502abdf93517dfc08491600d354d7f229820a98406bf0895751ed9c581",
+    "jdk17": {
+      "passed": 5,
+      "skipped_jdk21_direct_switch": 1
+    },
+    "jdk21": {
+      "passed": 6,
+      "skipped": 0
+    },
+    "negative_control": "On JDK 21 the original enum and enclosing-class switch both selected default for BLUE after the insert.",
+    "evidence": [
+      ".collab/lanes/r32-extension/research/round4-switch-before.xml",
+      ".collab/lanes/r32-extension/research/round4-jdk17.log",
+      ".collab/lanes/r32-extension/research/round4-jdk21-final.log",
+      ".collab/lanes/r32-extension/research/round4-hibernate-overlap.log"
+    ]
+  },
+  "r32_enum_order_refresh": {
+    "base_commit": "a9fe5ef6",
+    "source": "agent/src/test/java/com/onurkat/reclazz/e2e/CoreEnumReloadTest.java",
+    "source_sha256": "cd09672faf787d7a5e5b4aea7f045922d8ad6af538cd704059b63ad7bc98a2bc",
+    "runtime": "SapMachine 17 and 21, macOS arm64",
+    "command": "./gradlew -Preclazz.testJava=<17|21> -Dreclazz.fixtureRelease=<17|21> :agent:e2eTest --rerun --tests '*CoreEnumReloadTest' -x :agent:rabbitTest -x :agent:jmsE2eTest",
+    "tests_per_jdk": 5,
+    "failures_per_jdk": 0,
+    "skips_per_jdk": 0,
+    "evidence": [
+      ".collab/lanes/r32-extension/research/e2-jdk17.log",
+      ".collab/lanes/r32-extension/research/e2-jdk21.log"
+    ],
+    "limits": "The original P1 execution lanes predate this change. These targeted runs cover the accepted reorder and mixed second save. The provider checks use the isolated Hibernate 6.5.3.Final and H2 graph."
   }
 }

@@ -58,6 +58,8 @@ final class JpaPreparedSchemaRefresh {
     static boolean install(Class<?> entity, Object bean, Field nativeField, Object fresh) throws Exception {
         boolean swapped = false;
         try {
+            var unsafe = HibernateEnumStorage.freshFactoryProblems(fresh);
+            if (!unsafe.isEmpty()) throw new IllegalStateException(String.join(", ", unsafe));
             if (!JpaSchemaAdvice.managesEntity(fresh, entity)) return false;
             Object old = nativeField.get(bean);
             nativeField.set(bean, fresh);

@@ -103,12 +103,9 @@ public final class EnumConstantChange {
         List<String> removed = new ArrayList<>(loadedConstants);
         removed.removeAll(declared);
 
-        // The same names in a different order is not nothing. Every ordinal
-        // after the move changes, so the running enum and the source disagree
-        // about which constant is which, and a set comparison would have called
-        // that no change at all and said so by staying silent.
-        boolean reordered = added.isEmpty() && removed.isEmpty()
-                && !loadedConstants.equals(new ArrayList<>(declared));
+        List<String> surviving = new ArrayList<>(declared);
+        surviving.retainAll(loadedConstants);
+        boolean reordered = removed.isEmpty() && !surviving.equals(loadedConstants);
 
         if (added.isEmpty() && removed.isEmpty() && !reordered) return null;
         return new Change(added, removed, reordered);
@@ -160,7 +157,8 @@ public final class EnumConstantChange {
     /** The inserted constants in source order, with the ordinal each one will have after a restart. */
     public static java.util.LinkedHashMap<String, Integer> insertedNames(Class<?> loaded, byte[] newBytecode) {
         var result = new java.util.LinkedHashMap<String, Integer>();
-        if (!isInsertOnly(loaded, newBytecode)) return result;
+        Change change = check(loaded, newBytecode);
+        if (change == null || !change.removed().isEmpty() || isAppendOnly(loaded, newBytecode)) return result;
         List<String> before = logicalConstants(loaded);
         List<String> after = new ArrayList<>(constantsIn(newBytecode));
         for (int i = 0; i < after.size(); i++) if (!before.contains(after.get(i))) result.put(after.get(i), i);
@@ -271,10 +269,9 @@ public final class EnumConstantChange {
     /** Said when the change moves ordinals, which cannot be applied. */
     public static void reportNotAppendOnly(String className, Change change) {
         StatusReporter.warn("Enum " + className + " " + change.describe()
-                + ". Only the end of an enum can change on a running JVM, added or removed: "
-                + "anything else renumbers the constants after the change, and everything "
-                + "indexed by ordinal is then wrong, including any @Enumerated column already in "
-                + "your database. Restart to pick this up. Everything else in this class reloaded.");
+                + ". Removing an enum constant before the physical end would renumber existing values. "
+                + "EnumMap and EnumSet use those ordinals as indexes. Restart to pick this up and check any stored ordinals. "
+                + "Everything else in this class reloaded.");
         RestartLedger.note(className,
                 change.describe() + ", which renumbers ordinals and cannot be applied to a running JVM");
     }
@@ -314,6 +311,7 @@ public final class EnumConstantChange {
 
     /** Records the source order of a save whose constant change was applied. */
     public static void accepted(Class<?> loaded, byte[] newBytecode) {
+        HibernateEnumStorage.recordOrder(loaded, ordinalMismatch(loaded, newBytecode));
         try { ACCEPTED.get(loaded).set(List.copyOf(constantsIn(newBytecode))); } catch (RuntimeException unreadable) { ACCEPTED.get(loaded).set(null); }
     }
 
@@ -336,6 +334,35 @@ public final class EnumConstantChange {
         } catch (Throwable t) {
             return null;
         }
+    }
+
+    // A compiler event can carry the enum only in memory. A later, consumer-only save
+    // must still see that source order even if the enum edit itself was refused.
+    private static final ClassValue<java.util.concurrent.atomic.AtomicReference<List<String>>> COMPILED = new ClassValue<>() {
+        @Override protected java.util.concurrent.atomic.AtomicReference<List<String>> computeValue(Class<?> type) {
+            return new java.util.concurrent.atomic.AtomicReference<>();
+        }
+    };
+
+    static void compiledOrder(Class<?> type, byte[] declaration) {
+        COMPILED.get(type).set(List.copyOf(constantsIn(declaration)));
+    }
+
+    static boolean compiledOrdinalMismatch(Class<?> type) {
+        var order = COMPILED.get(type).get();
+        return order != null && ordinalMismatch(type, order);
+    }
+
+    /** Whether a source index can select a different live constant (including one removed in source). */
+    static boolean ordinalMismatch(Class<?> type, byte[] declaration) {
+        return ordinalMismatch(type, declaration == null ? logicalConstants(type) : List.copyOf(constantsIn(declaration)));
+    }
+
+    private static boolean ordinalMismatch(Class<?> type, List<String> source) {
+        List<String> live = liveConstants(type);
+        if (live == null || source == null) return true;
+        int common = Math.min(live.size(), source.size());
+        return !live.subList(0, common).equals(source.subList(0, common));
     }
 
     /** The constant names a class file declares, in declaration order. */

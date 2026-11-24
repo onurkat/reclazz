@@ -7,7 +7,7 @@
   "static-reset": "conditional",
   "inlined-constant": "conditional",
   "enum-tail": "conditional",
-  "enum-reorder": "restart",
+  "enum-reorder": "conditional",
   "interface": "conditional",
   "superclass": "restart",
   "reflection": "restart",

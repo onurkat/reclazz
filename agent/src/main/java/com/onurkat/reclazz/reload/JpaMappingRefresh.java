@@ -46,8 +46,8 @@ import com.onurkat.reclazz.ui.RestartLedger;
  *   <li>the VM has enhanced class redefinition, because on a stock JDK the
  *       loaded class never physically gains the field, so a rebuilt metamodel
  *       still could not see it;</li>
- *   <li>{@code hbm2ddl.auto} is update, create or create-drop, because those
- *       are the settings where the rebuild itself creates the column; at
+ *   <li>{@code hbm2ddl.auto} is update, create or create-drop; schema recreation follows the configured startup policy;
+ *       a pending or accepted divergent enum order prevents destructive bootstrap; at
  *       validate the rebuilt factory would refuse to exist, and at none the
  *       refreshed mapping would point at a column that is not there;</li>
  *   <li>the entity's owning factory bean is an
@@ -140,7 +140,8 @@ public final class JpaMappingRefresh {
             // the rebuild reuses it, so the new class has to be added to the
             // unit info first (measured: without this the rebuild ran and the
             // fresh metamodel still did not carry the entity).
-            if (!addManagedClass(factoryBean, className)) {
+            var managed = managedClasses(factoryBean);
+            if (managed == null) {
                 StatusReporter.warn("New entity " + className
                         + " could not be added to the persistence unit's managed classes; "
                         + "a restart maps it.");
@@ -149,11 +150,14 @@ public final class JpaMappingRefresh {
                         + "managed classes");
                 return;
             }
-            Result result = rebuild(className, entityClass,
-                    new JpaEntityChange.Change(java.util.List.of("its first mapping"), java.util.List.of()), factoryBean, ddlAuto);
-            if (!result.refreshed()) {
-                StatusReporter.warn("New entity " + className
-                        + " could not be mapped:" + result.appendix());
+            boolean added = !managed.contains(className);
+            if (added) managed.add(className);
+            try {
+                Result result = rebuild(className, entityClass,
+                        new JpaEntityChange.Change(java.util.List.of("its first mapping"), java.util.List.of()), factoryBean, ddlAuto);
+                if (!result.refreshed()) StatusReporter.warn("New entity " + className + " could not be mapped:" + result.appendix());
+            } finally {
+                if (added && nativeField.get(factoryBean) == current) managed.remove(className);
             }
         } catch (Throwable t) {
             Throwable root = t;
@@ -217,7 +221,7 @@ public final class JpaMappingRefresh {
     }
 
     /** Put the class on the unit info the rebuild will read. */
-    private static boolean addManagedClass(Object factoryBean, String className) {
+    private static java.util.List<String> managedClasses(Object factoryBean) {
         try {
             for (Class<?> c = factoryBean.getClass(); c != null; c = c.getSuperclass()) {
                 Field info;
@@ -228,17 +232,16 @@ public final class JpaMappingRefresh {
                 }
                 info.setAccessible(true);
                 Object unitInfo = info.get(factoryBean);
-                if (unitInfo == null) return false;
+                if (unitInfo == null) return null;
                 @SuppressWarnings("unchecked")
                 java.util.List<String> managed = (java.util.List<String>) unitInfo.getClass()
                         .getMethod("getManagedClassNames").invoke(unitInfo);
-                if (!managed.contains(className)) managed.add(className);
-                return true;
+                return managed;
             }
         } catch (Throwable t) {
-            return false;
+            return null;
         }
-        return false;
+        return null;
     }
 
     /** The one factory bean across every context, or null when it is not one. */
@@ -362,6 +365,77 @@ public final class JpaMappingRefresh {
                                   JpaEntityChange.Change change, Object factoryBean,
                                   String ddlAuto) throws Exception {
         Field nativeField = nativeFactoryField(factoryBean);
+        Object old = nativeField.get(factoryBean);
+        Object unitInfo = factoryBean.getClass().getMethod("getPersistenceUnitInfo").invoke(factoryBean);
+        Map<?, ?> live = (Map<?, ?>) old.getClass().getMethod("getProperties").invoke(old);
+        Map<?, ?> unit = unitInfo == null ? Map.of() : (Map<?, ?>) unitInfo.getClass().getMethod("getProperties").invoke(unitInfo);
+        Map<?, ?> overrides = (Map<?, ?>) factoryBean.getClass().getMethod("getJpaPropertyMap").invoke(factoryBean);
+        boolean destructive = destructiveAction(live) || destructiveAction(unit) || destructiveAction(overrides);
+        if (destructive && !HibernateEnumStorage.beginDestructiveRebuild()) {
+            String reason = "destructive schema bootstrap cannot preserve the current tables while enum order differs or is changing";
+            RestartLedger.note(className, reason);
+            return new Result(false, " Retained the previous persistence factory: " + reason + ".");
+        }
+        try {
+            // Inspect the exact observer before bootstrap; leave it armed if construction fails.
+            DropOnClose oldDrop = destructive ? DropOnClose.find(old, live) : null;
+            return replaceFactory(className, entityClass, change, factoryBean, ddlAuto, nativeField, old, oldDrop);
+        } finally {
+            if (destructive) HibernateEnumStorage.finishDestructiveRebuild();
+        }
+    }
+
+    private static boolean destructiveAction(Map<?, ?> settings) {
+        for (var entry : settings.entrySet()) {
+            String key = String.valueOf(entry.getKey());
+            if (!(key.equals("hibernate.hbm2ddl.auto") || key.startsWith("hibernate.hbm2ddl.auto.")
+                    || key.startsWith("jakarta.persistence.schema-generation.database.action")
+                    || key.startsWith("javax.persistence.schema-generation.database.action"))) continue;
+            if (java.util.Set.of("create", "drop", "create-drop", "drop-and-create").contains(actionName(entry.getValue())))
+                return true;
+        }
+        return false;
+    }
+
+    private static String actionName(Object value) {
+        String text = value instanceof Enum<?> action ? action.name() : String.valueOf(value);
+        return text.trim().toLowerCase(java.util.Locale.ROOT).replace('_', '-');
+    }
+
+    /** Hibernate installs one schema-export observer per factory. Only the retired observer loses its close action. */
+    private record DropOnClose(Object observer, Field field) {
+        static DropOnClose find(Object old, Map<?, ?> settings) throws ReflectiveOperationException {
+            boolean configured = settings.entrySet().stream().anyMatch(e -> String.valueOf(e.getKey()).startsWith("hibernate.hbm2ddl.auto")
+                    && "create-drop".equals(actionName(e.getValue())));
+            if (!configured) return null;
+            if (!old.getClass().getName().equals("org.hibernate.internal.SessionFactoryImpl"))
+                throw new IllegalStateException("cannot verify the retiring factory's Hibernate create-drop action");
+            Object chain = readField(old, "observer");
+            if (!chain.getClass().getName().equals("org.hibernate.internal.SessionFactoryObserverChain"))
+                throw new IllegalStateException("unrecognized Hibernate observer chain");
+            DropOnClose found = null;
+            for (Object observer : (java.util.List<?>)readField(chain, "observers")) {
+                if (!observer.getClass().getName().equals("org.hibernate.boot.internal.SessionFactoryObserverForSchemaExport")) continue;
+                Field field = observer.getClass().getDeclaredField("delayedDropAction");
+                if (!field.getType().getName().equals("org.hibernate.tool.schema.spi.DelayedDropAction")
+                        || !field.trySetAccessible() || found != null)
+                    throw new IllegalStateException("cannot isolate the retiring factory's schema drop action");
+                found = new DropOnClose(observer, field);
+            }
+            if (found == null) throw new IllegalStateException("retiring factory has no recognized schema-export observer");
+            return found;
+        }
+
+        private static Object readField(Object bean, String name) throws ReflectiveOperationException {
+            Field field = bean.getClass().getDeclaredField(name);
+            if (!field.trySetAccessible()) throw new IllegalAccessException(name);
+            return field.get(bean);
+        }
+    }
+
+    private static Result replaceFactory(String className, Class<?> entityClass, JpaEntityChange.Change change,
+                                         Object factoryBean, String ddlAuto, Field nativeField, Object old,
+                                         DropOnClose oldDrop) throws Exception {
         Class<?> declaring = nativeField.getDeclaringClass();
         Method create = declaring.getDeclaredMethod("createNativeEntityManagerFactory");
         create.setAccessible(true);
@@ -370,11 +444,14 @@ public final class JpaMappingRefresh {
         Object fresh = create.invoke(factoryBean);
         long wallMs = (System.nanoTime() - start) / 1_000_000;
 
-        Object old = nativeField.get(factoryBean);
-        nativeField.set(factoryBean, fresh);
-        if (old != null) {
-            old.getClass().getMethod("close").invoke(old);
+        var unsafe = HibernateEnumStorage.freshFactoryProblems(fresh);
+        if (!unsafe.isEmpty()) {
+            fresh.getClass().getMethod("close").invoke(fresh);
+            return new Result(false, " Retained the previous persistence factory: " + String.join(", ", unsafe));
         }
+        nativeField.set(factoryBean, fresh);
+        if (oldDrop != null) oldDrop.field().set(oldDrop.observer(), null);
+        old.getClass().getMethod("close").invoke(old);
 
         if (!JpaSchemaAdvice.managesEntity(fresh, entityClass)) {
             // The swap already happened and is not undone: the fresh factory is

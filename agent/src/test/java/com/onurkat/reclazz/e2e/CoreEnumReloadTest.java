@@ -41,7 +41,7 @@ class CoreEnumReloadTest {
             probe(app, 4, appended(5), id);
             reload(app, color("BLUE, RED, GREEN", 6));
             probe(app, 5, appended(6), id);
-            assertTrue(app.output().stream().anyMatch(s -> s.contains("reordered") && s.toLowerCase(java.util.Locale.ROOT).contains("restart")), app.tail());
+            assertTrue(app.output().stream().anyMatch(s -> s.contains("reordered") && s.contains("kept their running ordinals")), app.tail());
             assertEquals(1, app.output().stream().filter(s -> s.startsWith("READY=")).count());
         }
     }
@@ -75,7 +75,32 @@ class CoreEnumReloadTest {
             reload(app, color("RED, GREEN, BLUE, YELLOW", 4));
             assertTrue(app.output().stream().anyMatch(s -> s.contains("gained [YELLOW]")), "an append after an insert applies: " + app.tail());
             reload(app, color("GREEN, RED, BLUE, YELLOW", 5));
-            assertTrue(app.output().stream().anyMatch(s -> s.contains("reordered") && s.toLowerCase(java.util.Locale.ROOT).contains("restart")), "a genuine reorder still refuses: " + app.tail());
+            assertTrue(app.output().stream().anyMatch(s -> s.contains("reordered") && s.contains("kept their running ordinals")), "a genuine reorder is accepted: " + app.tail());
+        }
+    }
+
+    @Test
+    void mixedInsertAndReorderKeepsRunningOrderAcrossTheNextSave() throws Exception {
+        try (var app = WatchedApp.in(dir).jvmArgs("-Dprobe.dir=" + dir)
+                .with("Color", color("RED, BLUE", 1))
+                .with("Labels", """
+                        package app;
+                        public class Labels {
+                            public static String label(Color c) {
+                                switch (c) { case RED: return "red"; case BLUE: return "blue"; default: return "other"; }
+                            }
+                        }
+                        """).with("App", driver()).start()) {
+            app.awaitOrFail("READY=", "existing collections and switch must be initialized");
+            app.awaitOrFail("] Watching 1 director", "watcher ready");
+            String id = app.latest("READY=").substring(6);
+            probe(app, 0, "[RED, BLUE]:ord=0,1:blue=old:green=absent:arrayLength=2:marker=v1", id);
+            reload(app, color("BLUE, GREEN, RED", 2));
+            probe(app, 1, appended(2), id);
+            reload(app, color("BLUE, GREEN, RED", 3));
+            probe(app, 2, appended(3), id);
+            assertEquals(1, app.output().stream().filter(line -> line.contains("kept their running ordinals")).count(),
+                    "a second body save must use the accepted source order: " + app.tail());
         }
     }
 
@@ -114,6 +139,55 @@ class CoreEnumReloadTest {
             Files.createFile(dir.resolve("native-probe"));
             app.awaitOrFail("NATIVE_CHECK=","native code and retained objects must work");
             assertEquals("NATIVE_CHECK=NEXT:State:1:BASE:true:true:0:next:true:other:2 id="+identity,app.latest("NATIVE_CHECK="),app.tail());
+        }
+    }
+
+    @Test
+    @org.junit.jupiter.api.condition.EnabledForJreRange(min = org.junit.jupiter.api.condition.JRE.JAVA_21)
+    void directSwitchKeepsItsBranchOnInsertAndReorder() throws Exception {
+        String host = """
+                package app;
+                public class Host {
+                    public enum Color { %s;
+                        public String label() {
+                            return switch (this) { case RED -> "R"; case BLUE -> "B"; default -> "?"; };
+                        }
+                    }
+                    public static String label(Color c) {
+                        return switch (c) { case RED -> "r"; case BLUE -> "b"; default -> "?"; };
+                    }
+                }
+                """;
+        String driver = """
+                package app;
+                import java.nio.file.*;
+                public class App {
+                    public static void main(String[] args) throws Exception {
+                        for (int i = 0; i < 3; i++) {
+                            if (i > 0) while (!Files.exists(Path.of(System.getProperty("probe.dir"), "probe" + i))) Thread.sleep(10);
+                            System.out.println("BRANCH" + i + "=" + Host.Color.RED.label() + Host.Color.BLUE.label()
+                                    + Host.label(Host.Color.RED) + Host.label(Host.Color.BLUE));
+                        }
+                    }
+                }
+                """;
+        try (var app = WatchedApp.in(dir).jvmArgs("-Dprobe.dir=" + dir)
+                .with("Host", host.formatted("RED, BLUE")).with("App", driver).start()) {
+            app.awaitOrFail("BRANCH0=RBrb", "warm both switch sites");
+            app.awaitOrFail("] Watching 1 director", "watcher ready");
+            int step = 0;
+            for (String order : java.util.List.of("RED, GREEN, BLUE", "BLUE, RED")) {
+                long before = app.output().size();
+                app.rewrite("Host", host.formatted(order));
+                long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(20);
+                while (app.output().stream().skip(before).noneMatch(line -> line.contains("direct ordinal switch")
+                        || line.contains("gained [GREEN]") || line.contains("kept their running ordinals"))
+                        && System.nanoTime() < deadline) Thread.sleep(50);
+                Files.createFile(dir.resolve("probe" + ++step));
+                app.awaitOrFail("BRANCH" + step + "=", "inspect the running bodies");
+                assertEquals("BRANCH" + step + "=RBrb", app.latest("BRANCH" + step + "="), app.tail());
+                assertTrue(app.output().stream().skip(before).anyMatch(line -> line.contains("direct ordinal switch")), app.tail());
+            }
         }
     }
 
@@ -186,6 +260,10 @@ class CoreEnumReloadTest {
                                 String index;
                                 try { index = array[extra.ordinal()].name(); }
                                 catch (ArrayIndexOutOfBoundsException e) { index = e.getClass().getSimpleName(); }
+                                if (Color.RED.compareTo(Color.BLUE) >= 0 || Color.BLUE.compareTo(extra) >= 0
+                                        || !oldSet.toString().equals("[BLUE, GREEN]")
+                                        || !oldMap.keySet().toString().equals("[BLUE, GREEN]")
+                                        || !Labels.label(Color.BLUE).equals("blue")) throw new AssertionError();
                                 green = extra.ordinal() + "/" + oldMap.get(extra) + "/" + oldSet.contains(extra) + "/" + Labels.label(extra) + "/" + index;
                             } catch (IllegalArgumentException absent) { green = "absent"; }
                             System.out.println("CHECK" + stage + "=" + Arrays.toString(Color.values())

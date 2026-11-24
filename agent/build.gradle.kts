@@ -323,12 +323,22 @@ configurations[hibernateTests.implementationConfigurationName].extendsFrom(confi
 configurations[hibernateTests.runtimeOnlyConfigurationName].extendsFrom(configurations.testRuntimeOnly.get())
 dependencies {
     add(hibernateTests.implementationConfigurationName, "org.hibernate.orm:hibernate-core:6.5.3.Final")
+    add(hibernateTests.implementationConfigurationName, "org.springframework:spring-context:6.1.14")
+    add(hibernateTests.implementationConfigurationName, "org.springframework:spring-orm:6.1.14")
     add(hibernateTests.implementationConfigurationName, "org.hibernate.orm:hibernate-jcache:6.5.3.Final")
     add(hibernateTests.implementationConfigurationName, "com.github.ben-manes.caffeine:jcache:3.3.1")
 }
 val hibernateTest = tasks.register("hibernateTest", Test::class) {
     group = "verification"
     description = "Real Hibernate ORM L2 cache regressions on H2 with isolated dependencies"
+    val agentJar = tasks.named<org.gradle.jvm.tasks.Jar>("shadowJar").flatMap { it.archiveFile }
+    dependsOn(agentJar)
+    inputs.file(agentJar)
+    doFirst {
+        systemProperty("reclazz.hibernate.agent", agentJar.get().asFile.absolutePath)
+        val childClasspath = hibernateTests.runtimeClasspath - sourceSets.main.get().output - premium.output
+        systemProperty("reclazz.hibernate.classpath", (childClasspath + files(agentJar)).asPath)
+    }
     useJUnitPlatform()
     testClassesDirs = hibernateTests.output.classesDirs
     classpath = hibernateTests.runtimeClasspath
