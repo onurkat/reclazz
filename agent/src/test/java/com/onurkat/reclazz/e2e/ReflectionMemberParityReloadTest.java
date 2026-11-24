@@ -17,6 +17,44 @@ import static org.junit.jupiter.api.Assertions.*;
 class ReflectionMemberParityReloadTest {
     @TempDir Path tmp;
 
+    @org.junit.jupiter.api.Test
+    void addedCovariantOverrideDispatchesThroughBothBaseReflectionPaths() throws Exception {
+        String base = "package app; public class Base<T> { %s }";
+        String sub = "package app; public class Sub extends Base<String> { %s }";
+        var saved = new java.util.LinkedHashMap<String,String>();
+        saved.put("Base",base.formatted("public T make(){ return null; }"));
+        saved.put("Sub",sub.formatted("public String make(){ return \"child\"; }"));
+        String probe = """
+                package app;
+                import java.lang.invoke.MethodHandles;
+                public class App {
+                    public static void main(String[] args) throws Throwable {
+                        Sub held = new Sub();
+                        System.out.println("HELD");
+                        for (;;) {
+                            try {
+                                var method = Base.class.getDeclaredMethod("make");
+                                System.out.println("RESULT " + method.invoke(held) + "/" +
+                                        MethodHandles.lookup().unreflect(method).invoke(held));
+                            } catch (NoSuchMethodException absent) { }
+                            Thread.sleep(100);
+                        }
+                    }
+                }
+                """;
+        try (var nativeApp = WatchedApp.in(tmp.resolve("native")).withoutAgent()
+                .with("Base",saved.get("Base")).with("Sub",saved.get("Sub")).with("App",probe).start()) {
+            nativeApp.awaitOrFail("RESULT child/child","native covariant dispatch");
+        }
+        try (var live = WatchedApp.in(tmp.resolve("live")).agentArgs("startupDelaySec=1,debounceMs=100")
+                .with("Base",base.formatted("")).with("Sub",sub.formatted("")).with("App",probe).start()) {
+            live.awaitOrFail("HELD","initialize subclass");
+            live.awaitOrFail("] Watching ","watcher ready");
+            live.rewriteAll(saved);
+            assertTrue(live.awaits("RESULT child/child",15),live::tail);
+        }
+    }
+
     @ParameterizedTest @ValueSource(booleans={false,true})
     void logicalMembersKeepAccessMetadataStorageAndConstructionAcrossSaves(boolean childLoader) throws Exception {
         var builder=WatchedApp.in(tmp).agentArgs("startupDelaySec=1,debounceMs=100,verbose=true")

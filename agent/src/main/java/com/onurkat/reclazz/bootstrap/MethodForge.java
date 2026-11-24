@@ -168,8 +168,15 @@ public final class MethodForge {
                 var actual=new ArrayList<Object>();
                 if(!statik)actual.add(receiver);
                 for(int i=0;i<values.length;i++)actual.add(JacksonBridge.checkedValue(parameters[i],values[i]));
-                try {return target.invokeWithArguments(actual);}
-                catch(Throwable failure){throw new InvocationTargetException(failure);}
+                try {
+                    if (metadata == null && !statik && !Modifier.isPrivate(modifiers)
+                            && !Modifier.isFinal(modifiers) && receiver.getClass() != owner) {
+                        // A normal reflected factory still invokes the override on the live receiver.
+                        // Snapshot roots retain their explicitly prepared target.
+                        return invokeVirtual(method, receiver, actual.subList(1, actual.size()).toArray(), target);
+                    }
+                    return target.invokeWithArguments(actual);
+                } catch(Throwable failure){throw new InvocationTargetException(failure);}
             };
             Object accessor=metadata==null?Proxy.newProxyInstance(null,new Class<?>[]{accessorType},invoke)
                     :snapshotAccessor(owner,target,metadata,accessorType,invoke);
@@ -327,6 +334,10 @@ public final class MethodForge {
     }
 
     private static Object invokeVirtual(Method method,Object receiver,Object[] values) throws Throwable {
+        return invokeVirtual(method, receiver, values, entry(method).target);
+    }
+
+    private static Object invokeVirtual(Method method, Object receiver, Object[] values, MethodHandle fallback) throws Throwable {
         java.util.Objects.requireNonNull(receiver);
         Class<?> owner=method.getDeclaringClass();
         if(!owner.isInstance(receiver))throw new ClassCastException("Wrong method receiver");
@@ -334,9 +345,19 @@ public final class MethodForge {
             int visibility=method.getModifiers() & (Modifier.PUBLIC|Modifier.PROTECTED|Modifier.PRIVATE);
             if(visibility==0 && !samePackage(owner,type))continue;
             Method override=null;
-            for(Method candidate:type.getDeclaredMethods())if(candidate.getName().equals(method.getName())
-                    && java.util.Arrays.equals(candidate.getParameterTypes(),method.getParameterTypes())
-                    && !Modifier.isStatic(candidate.getModifiers()) && !Modifier.isPrivate(candidate.getModifiers())){override=candidate;break;}
+            for (Method candidate : type.getDeclaredMethods()) {
+                if (!candidate.getName().equals(method.getName()) || Modifier.isStatic(candidate.getModifiers())
+                        || Modifier.isPrivate(candidate.getModifiers())
+                        || !java.util.Arrays.equals(candidate.getParameterTypes(), method.getParameterTypes())) continue;
+                Class<?> result = candidate.getReturnType();
+                if (result == method.getReturnType()) {
+                    override = candidate;
+                    break;
+                }
+                // A forged covariant override may have no physical bridge method.
+                if (method.getReturnType().isAssignableFrom(result)
+                        && (override == null || override.getReturnType().isAssignableFrom(result))) override = candidate;
+            }
             if(override!=null) {
                 Entry next=entry(override);
                 if(next!=null){var args=new ArrayList<Object>();args.add(receiver);java.util.Collections.addAll(args,values);return next.target.invokeWithArguments(args);}
@@ -344,8 +365,8 @@ public final class MethodForge {
                 try{return override.invoke(receiver,values);}catch(InvocationTargetException failure){throw failure.getCause();}
             }
         }
-        Entry entry=entry(method);var args=new ArrayList<Object>();args.add(receiver);java.util.Collections.addAll(args,values);
-        return entry.target.invokeWithArguments(args);
+        var args=new ArrayList<Object>();args.add(receiver);java.util.Collections.addAll(args,values);
+        return fallback.invokeWithArguments(args);
     }
 
     /** Annotation instances are parsed against the metadata carrier's constant pool, never the owner's. */

@@ -28,6 +28,8 @@ public final class SpringAddedBeanReloader {
                          AtomicReference<WeakReference<Object>> instance, List<String> aliases) { }
     private static final class Registry {
         final Map<String, Owned> definitions = new ConcurrentHashMap<>();
+        final Map<String,String> hierarchyOwners = new HashMap<>();
+        final Map<String,byte[]> hierarchyMethods = new HashMap<>();
         boolean observing;
         final Map<String, byte[]> rawMethods = new HashMap<>();
     }
@@ -35,10 +37,11 @@ public final class SpringAddedBeanReloader {
     public SpringAddedBeanReloader(PlatformContext platform) { this.platform = platform; }
 
     public synchronized boolean reloadBeanMethods(Class<?> type, Set<String> added, byte[] bytes) {
-        if (bytes == null) return true;
+        if (bytes == null) return !hierarchyEdits.containsKey(type) || batchDepth > 0 || finishHierarchy();
         var plan = AddedBeanAdapter.inspect(bytes, added);
         try {
             PreparedRawConfigs raw = prepareRaw(type, added, bytes);
+            if (hierarchyEdits.containsKey(type)) return batchDepth > 0 || finishHierarchy();
             if (!raw.scopes.isEmpty()) return reloadRaw(type, plan, bytes, raw);
         } catch (Throwable failure) {
             refuse(type, Failures.describe(failure)); return false;
@@ -153,9 +156,12 @@ public final class SpringAddedBeanReloader {
     void afterRawPreflight(Runnable action) { afterRawPreflight = Objects.requireNonNull(action); }
 
     synchronized PreparedRawConfigs prepareRaw(Class<?> type, Set<String> added, byte[] bytes) throws Exception {
-        if (bytes == null) return new PreparedRawConfigs(List.of());
+        if (bytes == null) {
+            byte[] inherited = hierarchyEdits.get(type);
+            return inherited == null ? new PreparedRawConfigs(List.of()) : captureHierarchy(type, inherited);
+        }
         var plan = AddedBeanAdapter.inspect(bytes, added);
-        if (!plan.full()) return new PreparedRawConfigs(List.of());
+        if (!plan.full()) return captureHierarchy(type, bytes);
         List<RawScope> scopes = new ArrayList<>();
         Set<Object> seen = Collections.newSetFromMap(new IdentityHashMap<>());
         for (Object context : platform.getAllApplicationContexts()) {
@@ -199,6 +205,221 @@ public final class SpringAddedBeanReloader {
             scopes.add(scope);
         }
         return new PreparedRawConfigs(scopes);
+    }
+
+    private int batchDepth;
+    private final Map<Class<?>,byte[]> hierarchyEdits = new LinkedHashMap<>();
+    private final Map<SpringHierarchyBeans.Scope,RawScope> hierarchyScopes = new LinkedHashMap<>();
+
+    synchronized void beginBatch() { batchDepth++; }
+    synchronized void endBatch() {
+        if (batchDepth > 0 && --batchDepth == 0) finishHierarchy();
+    }
+
+    synchronized void clearUnbatchedHierarchy() {
+        if (batchDepth == 0) {
+            hierarchyScopes.clear();
+            hierarchyEdits.clear();
+        }
+    }
+
+    synchronized void nativeHierarchy(Class<?> type, byte[] bytes) {
+        if (type == null || bytes == null) return;
+        try { captureHierarchy(type, bytes); }
+        catch (Throwable failure) { refuse(type, Failures.describe(failure)); }
+    }
+
+    synchronized void hierarchyHelper(Class<?> type, byte[] bytes) {
+        if (bytes == null) {
+            if (batchDepth == 0 && hierarchyEdits.containsKey(type)) finishHierarchy();
+            return;
+        }
+        try {
+            captureHierarchy(type, bytes);
+            if (batchDepth == 0) finishHierarchy();
+        } catch (Throwable failure) { refuse(type, Failures.describe(failure)); }
+    }
+
+    private PreparedRawConfigs captureHierarchy(Class<?> type, byte[] bytes) throws Exception {
+        List<RawScope> preserve = new ArrayList<>();
+        for (var scope : SpringHierarchyBeans.scopes(platform.getAllApplicationContexts(), type)) {
+            Registry registry = owned.get(scope.factory());
+            boolean previouslyOwned = registry != null && registry.hierarchyOwners.containsValue(scope.name());
+            Map<Class<?>,byte[]> current = new LinkedHashMap<>(hierarchyEdits);
+            current.put(type, bytes);
+            if (!SpringHierarchyBeans.relevant(scope, current, previouslyOwned)) {
+                // Keep the latest creation evidence even for a save that adds no factory.
+                scope.inventory().savedHierarchy.put(type.getName(), bytes);
+                continue;
+            }
+            var raw = new RawScope(scope.context(), scope.factory(), call(scope.factory(), "getBeanDefinition", scope.name()),
+                    scope.name(), scope.receiver(), List.of());
+            requireCurrent(raw);
+            hierarchyScopes.putIfAbsent(scope, raw);
+            hierarchyEdits.put(type, bytes);
+            if (scope.receiver().getClass() == type) preserve.add(raw);
+        }
+        return new PreparedRawConfigs(preserve);
+    }
+
+    private record Product(SpringHierarchyBeans.Scope scope, SpringHierarchyBeans.Selection selected, Registry registry) {
+        String name() { return selected.method().name(); }
+    }
+
+    private boolean finishHierarchy() {
+        if (hierarchyScopes.isEmpty()) return true;
+        var desired = new ArrayList<Product>();
+        var staged = new LinkedHashMap<Product,Owned>();
+        try {
+            Map<Object,Set<String>> claimed = new IdentityHashMap<>();
+            for (var entry : hierarchyScopes.entrySet()) {
+                var scope = entry.getKey();
+                requireCurrent(entry.getValue());
+                Registry registry = owned.computeIfAbsent(scope.factory(), ignored -> new Registry());
+                ClassLoader spring = scope.factory().getClass().getClassLoader();
+                Object environment = scope.context().getClass().getMethod("getEnvironment").invoke(scope.context());
+                for (var selected : SpringHierarchyBeans.select(scope, hierarchyEdits)) {
+                    var method = selected.method();
+                    if (method.conditional()
+                            ? SpringBeanConditions.shouldSkip(selected.classfile(), method.method(), scope.context(), scope.factory(), spring)
+                            : !profileAccepted(environment, spring, method.profiles())) continue;
+                    if (startupOverride(scope, selected, registry)) continue;
+                    rejectInfrastructure(selected.resolved().getReturnType(), spring);
+                    preflightName(selected.declaring(), scope.factory(), method);
+                    Set<String> names = claimed.computeIfAbsent(scope.factory(), ignored -> new HashSet<>());
+                    for (String name : method.names()) if (!names.add(name))
+                        throw new IllegalStateException("multiple inherited factories claim " + name);
+                    desired.add(new Product(scope, selected, registry));
+                }
+                for (var previous : registry.hierarchyOwners.entrySet()) {
+                    if (scope.name().equals(previous.getValue())
+                            && !stillOwned(scope.factory(), previous.getKey(), registry.definitions.get(previous.getKey())))
+                        throw new IllegalStateException("inherited registration was replaced: " + previous.getKey());
+                }
+            }
+            for (Product product : desired) {
+                requireCurrent(hierarchyScopes.get(product.scope()));
+                observeCreations(product.scope().factory(), product.registry());
+                if (!product.registry().definitions.containsKey(product.name())) {
+                    preflightName(product.selected().declaring(), product.scope().factory(), product.selected().method());
+                    stageInherited(product, staged);
+                }
+            }
+            for (var product : staged.keySet()) {
+                requireCurrent(hierarchyScopes.get(product.scope()));
+                if (!stillOwned(product.scope().factory(), product.name(), product.registry().definitions.get(product.name())))
+                    throw new IllegalStateException("staged inherited factory changed: " + product.name());
+            }
+        } catch (Throwable failure) {
+            discardStaged(staged, failure);
+            return hierarchyFailure(failure);
+        }
+        try {
+            for (var scope : hierarchyScopes.keySet()) {
+                requireCurrent(hierarchyScopes.get(scope));
+                var registry = owned.get(scope.factory());
+                for (var entry : List.copyOf(registry.hierarchyOwners.entrySet())) {
+                    if (!entry.getValue().equals(scope.name())) continue;
+                    var next = desired.stream().filter(p -> p.scope().equals(scope) && p.name().equals(entry.getKey()))
+                            .findFirst().orElse(null);
+                    if (next != null && Arrays.equals(registry.hierarchyMethods.get(next.name()), fingerprint(next.selected().method())))
+                        continue;
+                    var old = registry.definitions.get(entry.getKey());
+                    if (!removeOwned(scope.factory(), entry.getKey(), old))
+                        throw new IllegalStateException("inherited registration was replaced: " + entry.getKey());
+                    registry.definitions.remove(entry.getKey(), old);
+                    registry.hierarchyOwners.remove(entry.getKey());
+                    registry.hierarchyMethods.remove(entry.getKey());
+                    if (next != null) {
+                        stageInherited(next, staged);
+                    }
+                }
+            }
+            for (var product : staged.keySet()) {
+                var method = product.selected().method();
+                if (!method.lazy() && !method.prototype())
+                    initialize(product.scope().factory(), product.name(), product.registry().definitions);
+            }
+            for (var scope : hierarchyScopes.keySet()) {
+                hierarchyEdits.forEach((type, bytes) -> {
+                    if (type.isInstance(scope.receiver())) scope.inventory().savedHierarchy.put(type.getName(), bytes);
+                });
+            }
+            return true;
+        } catch (Throwable failure) {
+            discardStaged(staged, failure);
+            return hierarchyFailure(failure);
+        } finally { hierarchyScopes.clear(); hierarchyEdits.clear(); }
+    }
+
+    private void stageInherited(Product product, Map<Product,Owned> staged) throws Throwable {
+        byte[] signature = fingerprint(product.selected().method());
+        registerInherited(product.scope(), product.selected(), product.registry());
+        staged.put(product, product.registry().definitions.get(product.name()));
+        product.registry().hierarchyOwners.put(product.name(), product.scope().name());
+        product.registry().hierarchyMethods.put(product.name(), signature);
+    }
+
+    private static void discardStaged(Map<Product,Owned> staged, Throwable failure) {
+        var products = List.copyOf(staged.keySet());
+        for (int i = products.size() - 1; i >= 0; i--) {
+            Product product = products.get(i);
+            var registry = product.registry();
+            var registration = registry.definitions.get(product.name());
+            if (registration != null && registration == staged.get(product))
+                discardFailed(product.scope().factory(), product.name(), registration, registry.definitions, failure);
+            if (!registry.definitions.containsKey(product.name())) {
+                registry.hierarchyOwners.remove(product.name());
+                registry.hierarchyMethods.remove(product.name());
+            }
+        }
+    }
+
+    private boolean hierarchyFailure(Throwable failure) {
+        for (Class<?> changed : hierarchyEdits.keySet()) refuse(changed, Failures.describe(failure));
+        hierarchyScopes.clear();
+        hierarchyEdits.clear();
+        return false;
+    }
+
+    private static boolean startupOverride(SpringHierarchyBeans.Scope scope, SpringHierarchyBeans.Selection selected,
+                                           Registry registry) throws Exception {
+        String name = selected.method().name();
+        if (registry.definitions.containsKey(name) || !Boolean.TRUE.equals(call(scope.factory(), "containsBeanDefinition", name)))
+            return false;
+        Object definition = call(scope.factory(), "getMergedBeanDefinition", name);
+        Object owner = definition.getClass().getMethod("getFactoryBeanName").invoke(definition);
+        if (!scope.name().equals(owner)) return false;
+        var method = startupFactoryMethod(scope.factory(), name, definition, scope.receiver().getClass());
+        return method != null
+                && selected.declaring() != method.getDeclaringClass() && selected.declaring().isAssignableFrom(method.getDeclaringClass())
+                && method.getName().equals(selected.resolved().getName())
+                && Arrays.equals(method.getParameterTypes(), selected.resolved().getParameterTypes());
+    }
+
+    static java.lang.reflect.Method startupFactoryMethod(Object factory, String name, Object definition,
+                                                         Class<?> configuration) throws Exception {
+        Object resolved = definition.getClass().getMethod("getResolvedFactoryMethod").invoke(definition);
+        if (resolved instanceof java.lang.reflect.Method method) return method;
+        // A scanned lazy definition has ASM method metadata before any product is instantiated.
+        Object original = call(factory, "getBeanDefinition", name);
+        var getter = Reflect.findMethod(original.getClass(), "getFactoryMethodMetadata");
+        Object metadata = getter == null ? null : getter.invoke(original);
+        if (metadata == null) return null;
+        var api = Class.forName("org.springframework.core.type.MethodMetadata", false, metadata.getClass().getClassLoader());
+        String declaringName = (String) api.getMethod("getDeclaringClassName").invoke(metadata);
+        Class<?> declaring = Class.forName(declaringName, false, configuration.getClassLoader());
+        if (!declaring.isAssignableFrom(configuration)) return null;
+        String methodName = (String) api.getMethod("getMethodName").invoke(metadata);
+        String result = (String) api.getMethod("getReturnTypeName").invoke(metadata);
+        java.lang.reflect.Method match = null;
+        for (var candidate : declaring.getDeclaredMethods()) {
+            if (candidate.isBridge() || !candidate.getName().equals(methodName)
+                    || !candidate.getReturnType().getTypeName().equals(result)) continue;
+            if (match != null) return null;
+            match = candidate;
+        }
+        return match;
     }
 
     private boolean hasRawOwner(Object factory, Class<?> type) {
@@ -432,9 +653,34 @@ public final class SpringAddedBeanReloader {
             return product;
         };
         Class<?> definitionType = Class.forName("org.springframework.beans.factory.support.RootBeanDefinition", true, spring);
-        Class<?> definitionInterface = Class.forName("org.springframework.beans.factory.config.BeanDefinition", false, spring);
         Object definition = definitionType.getConstructor(Class.class).newInstance(resultType);
         definitionType.getMethod("setInstanceSupplier", Supplier.class).invoke(definition, checked);
+        SpringAddedFactoryValues.attach(factory, definition, type, configName, method.method().name,
+                full, savedParameters.get(), checked);
+        publishDefinition(type, factory, definition, method, registrations);
+    }
+
+    private void registerInherited(SpringHierarchyBeans.Scope scope, SpringHierarchyBeans.Selection selected,
+                                   Registry registry) throws Throwable {
+        var method = selected.method();
+        var resolved = selected.resolved();
+        ClassLoader loader = scope.factory().getClass().getClassLoader();
+        var root = Class.forName("org.springframework.beans.factory.support.RootBeanDefinition", false, loader);
+        Object definition = root.getConstructor().newInstance();
+        root.getMethod("setTargetType", Class.class).invoke(definition, resolved.getReturnType());
+        call(definition, "setFactoryBeanName", scope.name());
+        call(definition, "setUniqueFactoryMethodName", resolved.getName());
+        root.getMethod("setResolvedFactoryMethod", java.lang.reflect.Method.class).invoke(definition, resolved);
+        root.getMethod("setAutowireMode", int.class).invoke(definition, 3);
+        publishDefinition(selected.declaring(), scope.factory(), definition, method, registry.definitions);
+    }
+
+    private static void publishDefinition(Class<?> type, Object factory, Object definition,
+            AddedBeanAdapter.Factory method, Map<String,Owned> registrations) throws Throwable {
+        ClassLoader spring = factory.getClass().getClassLoader();
+        Class<?> definitionType = definition.getClass();
+        Class<?> definitionInterface = Class.forName("org.springframework.beans.factory.config.BeanDefinition", false, spring);
+        String name = method.name();
         call(definition, "setInitMethodName", method.init());
         call(definition, "setDestroyMethodName", method.destroy());
         definitionType.getMethod("setPrimary", boolean.class).invoke(definition, method.primary());
@@ -449,8 +695,6 @@ public final class SpringAddedBeanReloader {
                     "org.springframework.beans.factory.annotation.Qualifier", method.qualifier());
             definitionType.getMethod("addQualifier", qualifierType).invoke(definition, qualifier);
         }
-        SpringAddedFactoryValues.attach(factory, definition, type, configName, method.method().name,
-                full, savedParameters.get(), checked);
         factory.getClass().getMethod("registerBeanDefinition", String.class, definitionInterface).invoke(factory, name, definition);
         Owned registration = new Owned(new WeakReference<>(type), new WeakReference<>(definition),
                 new AtomicReference<>(new WeakReference<>(null)), method.aliases());

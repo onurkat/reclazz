@@ -25,6 +25,110 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SpringAddedBeanTest {
+    static class UnwitnessedBase {
+        @org.springframework.context.annotation.Bean public Product existing() { return new Product(1); }
+    }
+    static class BodyEdit extends UnwitnessedBase { private int helper() { return 2; } }
+
+    @Configuration(proxyBeanMethods = false)
+    static class LazyFactoryOwner {
+        @org.springframework.context.annotation.Lazy
+        @org.springframework.context.annotation.Bean
+        public String lazySample() { throw new AssertionError("must not initialize to discover the method"); }
+    }
+
+    @Test void anUnresolvedNativeLazyDefinitionExposesTheStartupMethodBeforeInstantiation() throws Exception {
+        try (var context = new AnnotationConfigApplicationContext()) {
+            var reader = new org.springframework.core.type.classreading.SimpleMetadataReaderFactory(
+                    LazyFactoryOwner.class.getClassLoader()).getMetadataReader(LazyFactoryOwner.class.getName());
+            var scanned = new org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition(reader.getAnnotationMetadata());
+            context.registerBeanDefinition("lazyFactoryOwner", scanned);
+            var processor = new org.springframework.context.annotation.ConfigurationClassPostProcessor();
+            var factory = context.getDefaultListableBeanFactory();
+            processor.postProcessBeanDefinitionRegistry(factory);
+            var merged = (RootBeanDefinition) factory.getMergedBeanDefinition("lazySample");
+            assertNull(merged.getResolvedFactoryMethod());
+            assertEquals(LazyFactoryOwner.class.getDeclaredMethod("lazySample"),
+                    SpringAddedBeanReloader.startupFactoryMethod(factory, "lazySample", merged, LazyFactoryOwner.class));
+            assertFalse(factory.containsSingleton("lazySample"));
+        }
+    }
+
+    public static class FactoryBase {
+        public String sample() { return "first"; }
+        public String later() { return "second"; }
+    }
+    @Configuration(proxyBeanMethods = false)
+    public static class FactoryOwner extends FactoryBase { }
+
+    private record ConfigurationMetadata(String getBeanName, String getClassName) {
+        public ConfigurationMetadata getMetadata() { return this; }
+    }
+    private record ParserSnapshot(Object registry, Map<?,?> configurationClasses, Map<?,?> knownSuperclasses) { }
+
+    @Test void onlyTheOutermostBatchPublishesAndAbandonedWorkCannotLeakIntoIt() throws Exception {
+        try (Scope scope = new Scope(false)) {
+            scope.context.registerBean("rawOwner", FactoryOwner.class);
+            scope.context.getBean("rawOwner");
+            var metadata = new ConfigurationMetadata("rawOwner", FactoryOwner.class.getName());
+            SpringConfigurationOwners.parsed(new ParserSnapshot(scope.context.getBeanFactory(), Map.of("rawOwner",metadata),
+                    Map.of(FactoryBase.class.getName(),metadata)));
+            for (var type : List.of(FactoryOwner.class, FactoryBase.class))
+                com.onurkat.reclazz.transform.AdmittedBytes.admitted(type, SpringConfigurationOwners.fileBytes(type));
+            SpringConfigurationOwners.refreshed(scope.context);
+            ClassNode source = read(SpringConfigurationOwners.fileBytes(FactoryBase.class));
+            method(source, "sample").visibleAnnotations = new ArrayList<>(List.of(bean()));
+            var saved = write(source);
+            var reloader = reloader(scope);
+            // A native capture whose framework callback returned early must be forgotten.
+            reloader.nativeHierarchy(FactoryBase.class, saved);
+            reloader.clearUnbatchedHierarchy();
+            reloader.beginBatch();
+            reloader.endBatch();
+            assertFalse(scope.context.containsBeanDefinition("sample"));
+            reloader.beginBatch();
+            reloader.beginBatch();
+            reloader.nativeHierarchy(FactoryBase.class, saved);
+            reloader.endBatch();
+            assertFalse(scope.context.containsBeanDefinition("sample"));
+            reloader.endBatch();
+            assertEquals("first", scope.context.getBean("sample"));
+        } finally {
+            for (var type : List.of(FactoryOwner.class, FactoryBase.class))
+                com.onurkat.reclazz.transform.AdmittedBytes.invalidate(type);
+        }
+    }
+
+    @Test void anAncestorClassfileAheadOfItsReloadDoesNotPublishOrRefuse() throws Exception {
+        var receiver = new BodyEdit();
+        var inventory = new SpringConfigurationOwners.Inventory();
+        byte[] current = SpringConfigurationOwners.fileBytes(BodyEdit.class);
+        var admitted = new SpringConfigurationOwners.Baseline(
+                com.onurkat.reclazz.transform.CreationBaseline.digest(current), List.of(), Set.of());
+        inventory.baseline.put(BodyEdit.class.getName(), admitted);
+        var previous = read(SpringConfigurationOwners.fileBytes(UnwitnessedBase.class));
+        method(previous, "existing").visibleAnnotations = null;
+        byte[] beforeAnnotation = write(previous);
+        inventory.baseline.put(UnwitnessedBase.class.getName(), new SpringConfigurationOwners.Baseline(
+                com.onurkat.reclazz.transform.CreationBaseline.digest(beforeAnnotation), List.of(), Set.of()));
+        // The directory now contains @Bean. The VM has the same class from before that edit.
+        com.onurkat.reclazz.transform.AdmittedBytes.admitted(UnwitnessedBase.class, beforeAnnotation);
+        try {
+            var scope = new SpringHierarchyBeans.Scope(null, null, "configuration", receiver, inventory);
+            assertTrue(SpringHierarchyBeans.select(scope, Map.of(BodyEdit.class, current)).isEmpty());
+        } finally {
+            com.onurkat.reclazz.transform.AdmittedBytes.invalidate(UnwitnessedBase.class);
+        }
+    }
+
+    @Test void anUneditedAncestorCannotIntroduceAFactoryDuringABodyEdit() {
+        var inventory = new SpringConfigurationOwners.Inventory();
+        inventory.baseline.put(BodyEdit.class.getName(), new SpringConfigurationOwners.Baseline("", List.of(), Set.of()));
+        var scope = new SpringHierarchyBeans.Scope(null, null, "configuration", new BodyEdit(), inventory);
+        assertFalse(SpringHierarchyBeans.relevant(scope,
+                Map.of(BodyEdit.class, SpringConfigurationOwners.fileBytes(BodyEdit.class)), false));
+    }
+
     @Configuration(proxyBeanMethods = false)
     public static class Config {
         int version = 1;

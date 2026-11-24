@@ -21,6 +21,12 @@ public class ApplicationContextHolder {
 
     private static final List<WeakReference<Object>> contexts = new CopyOnWriteArrayList<>();
 
+    private static volatile java.util.function.Consumer<Object> refreshObserver = context -> { };
+
+    public static void setRefreshObserver(java.util.function.Consumer<Object> observer) {
+        refreshObserver = java.util.Objects.requireNonNull(observer);
+    }
+
     /**
      * Register an ApplicationContext. Called by instrumented AbstractApplicationContext.refresh().
      */
@@ -33,6 +39,7 @@ public class ApplicationContextHolder {
             return existing == null || existing == applicationContext;
         });
 
+        refreshObserver.accept(applicationContext);
         contexts.add(new WeakReference<>(applicationContext));
 
         // A refreshed context is the application saying it is far enough along

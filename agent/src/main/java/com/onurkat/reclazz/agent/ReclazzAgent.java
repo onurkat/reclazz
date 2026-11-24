@@ -568,6 +568,8 @@ public class ReclazzAgent {
                 if (bootstrapInstalled) {
                     instrumentation.addTransformer(new com.onurkat.reclazz.transform.BootLoggingBaselineTransformer(), false);
                 }
+                com.onurkat.reclazz.platform.ApplicationContextHolder.setRefreshObserver(
+                        com.onurkat.reclazz.spring.SpringConfigurationOwners::refreshed);
                 SpringContextInterceptTransformer contextTransformer = new SpringContextInterceptTransformer();
                 instrumentation.addTransformer(contextTransformer, false);
                 if (config.isVerbose()) StatusReporter.info("Spring context intercept transformer registered");
@@ -2044,6 +2046,8 @@ public class ReclazzAgent {
             }:null)) {
             boolean ownedConfiguration=nativeSave!=null&&nativeSave.repairs!=null&&nativeSave.repairs.ownsConfiguration(type);
             if(!ownedConfiguration) {
+            if (structural == null && work.result.getNewBytecode() == null)
+                work.spring.onNativeHierarchyReloaded(type, work.bytes);
             if (work.result.isSpringBean()) {
                 work.spring.onClassReloaded(work.className, type, work.result.isStructuralReload(),
                         work.result.isAnnotationsChanged(), work.result.isMethodsAdded(),
@@ -2074,6 +2078,7 @@ public class ReclazzAgent {
             recordOutcome(work.className, true, kindOf(work.result)
                     + "; the framework refresh after it did not finish: " + why, work.source);
         } finally {
+            if (!deferred) work.spring.clearUnbatchedHierarchy();
             ReloadEffects.end();
         }
     }

@@ -51,6 +51,10 @@ public final class AddedBeanAdapter {
     record Plan(List<Factory> factories, List<String> refused, boolean full) { }
 
     static Plan inspect(byte[] bytes, Set<String> added) {
+        return inspect(bytes, added, false);
+    }
+
+    static Plan inspect(byte[] bytes, Set<String> added, boolean inheritedLite) {
         List<Factory> factories = new ArrayList<>();
         List<String> refused = new ArrayList<>();
         if (bytes == null) return new Plan(factories, refused, false);
@@ -59,9 +63,10 @@ public final class AddedBeanAdapter {
         new ClassReader(bytes).accept(source, ClassReader.SKIP_FRAMES);
         AnnotationNode config = annotation(source.visibleAnnotations, CONFIGURATION);
         boolean full = config != null && !Boolean.FALSE.equals(value(config, "proxyBeanMethods", true));
-        boolean supportedClass = config != null
-                && "java/lang/Object".equals(source.superName) && source.interfaces.isEmpty()
-                && !extraAnnotations(source.visibleAnnotations, CONFIGURATION);
+        boolean supportedClass = inheritedLite
+                ? !full && !extraAnnotations(source.visibleAnnotations, CONFIGURATION)
+                : config != null && "java/lang/Object".equals(source.superName) && source.interfaces.isEmpty()
+                        && !extraAnnotations(source.visibleAnnotations, CONFIGURATION);
         for (MethodNode method : source.methods) {
             if (!added.contains(method.name + ":" + method.desc)) continue;
             AnnotationNode bean = annotation(method.visibleAnnotations, BEAN);

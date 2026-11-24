@@ -32,6 +32,10 @@ public class SpringContextInterceptTransformer implements ClassFileTransformer {
                             Class<?> classBeingRedefined,
                             ProtectionDomain protectionDomain,
                             byte[] classfileBuffer) {
+        if ("org/springframework/context/annotation/ConfigurationClassParser".equals(className))
+            return instrumentConfiguration(classfileBuffer, false);
+        if ("org/springframework/context/annotation/ConfigurationClassBeanDefinitionReader".equals(className))
+            return instrumentConfiguration(classfileBuffer, true);
         if ("org/springframework/beans/factory/xml/XmlBeanDefinitionReader".equals(className)) {
             return instrumentXmlReader(classfileBuffer);
         }
@@ -54,6 +58,39 @@ public class SpringContextInterceptTransformer implements ClassFileTransformer {
             StatusReporter.warn("Failed to instrument AbstractApplicationContext: " + Failures.describe(e));
             return null;
         }
+    }
+
+    private static byte[] instrumentConfiguration(byte[] bytes, boolean readerHook) {
+        try {
+            String sha = java.util.HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(bytes));
+            var supported = readerHook
+                    ? java.util.Set.of("c8c41daa6b847dfe5320ceb76d865178eee2895a4df0cbe7dcce4bde6dabe9c8",
+                                      "68035e8d2d66267559421f6323e6bce4f0308dac12f413a6c1a1d5e470fdd3d4")
+                    : java.util.Set.of("f8473bcddf6600bce163ad716f59d556068d1a9b411e14082833c67609065435",
+                                      "79784d67eb1010714d05c9e6eb0dd3678dcffe435490c677cceefa127bdda2c7");
+            if (!supported.contains(sha)) return null;
+        } catch (java.security.NoSuchAlgorithmException unavailable) { return null; }
+        ClassReader reader = new ClassReader(bytes);
+        ClassWriter writer = new ClassWriter(reader, ClassWriter.COMPUTE_MAXS);
+        reader.accept(new ClassVisitor(Opcodes.ASM9, writer) {
+            @Override public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+                MethodVisitor target = super.visitMethod(access, name, descriptor, signature, exceptions);
+                if (!name.equals(readerHook ? "loadBeanDefinitions" : "parse") || !descriptor.equals("(Ljava/util/Set;)V")) return target;
+                return new MethodVisitor(Opcodes.ASM9, target) {
+                    @Override public void visitInsn(int opcode) {
+                        if (opcode == Opcodes.RETURN) {
+                            super.visitVarInsn(Opcodes.ALOAD, 0);
+                            if (readerHook) super.visitVarInsn(Opcodes.ALOAD, 1);
+                            super.visitMethodInsn(Opcodes.INVOKESTATIC, "com/onurkat/reclazz/spring/SpringConfigurationOwners",
+                                    readerHook ? "definitionsLoaded" : "parsed",
+                                    readerHook ? "(Ljava/lang/Object;Ljava/util/Set;)V" : "(Ljava/lang/Object;)V", false);
+                        }
+                        super.visitInsn(opcode);
+                    }
+                };
+            }
+        }, 0);
+        return writer.toByteArray();
     }
 
     private byte[] instrumentXmlReader(byte[] bytes) {

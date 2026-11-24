@@ -24,6 +24,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Spring 5.3.39 and 6.1.14 can register an instance `@Bean` added to a watched lite configuration or its application superclass. Shared superclasses use the factory owner Spring selected at startup. Enhanced JVMs also support default factories on a newly implemented interface or an existing interface.
+
 - Added Kafka listeners and listener rescans apply Spring's native annotation
   enhancer; an enhancer that changes an unsupported option names it in the restart
   message. On Spring Kafka 2.9.13 and 3.2.4, an added listener with matching retry

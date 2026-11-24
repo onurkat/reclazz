@@ -161,6 +161,7 @@ public class ReclazzTransformer implements ClassFileTransformer {
             // on interfaces is not supported.
             ClassReader peek = new ClassReader(classfileBuffer);
             if ((peek.getAccess() & Opcodes.ACC_INTERFACE) != 0) {
+                if (classBeingRedefined == null) AdmittedBytes.defined(loader, className, classfileBuffer);
                 if (config.isVerbose()) {
                     StatusReporter.info("Skipping interface (hot-reload not supported): " +
                             className.replace('/', '.'));

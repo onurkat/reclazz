@@ -129,12 +129,14 @@ public class SpringReloadOrchestrator {
      * reload sweeps the singletons once instead of once per class.
      */
     public void beginBatch() {
+        addedBeanReloader.beginBatch();
         beanReloader.beginBatch();
         operationSourceReloader.beginBatch();
     }
 
     public void endBatch() {
-        try { beanReloader.endBatch(); } finally { operationSourceReloader.endBatch(); }
+        try { addedBeanReloader.endBatch(); }
+        finally { try { beanReloader.endBatch(); } finally { operationSourceReloader.endBatch(); } }
     }
 
     private java.util.Set<String> previousOperationDescriptors;
@@ -147,6 +149,14 @@ public class SpringReloadOrchestrator {
     }
     public void closeOperationRepairs() { operationSourceReloader.close(); }
 
+    public void clearUnbatchedHierarchy() {
+        addedBeanReloader.clearUnbatchedHierarchy();
+    }
+
+    public void onNativeHierarchyReloaded(Class<?> type, byte[] admitted) {
+        addedBeanReloader.nativeHierarchy(type, admitted);
+    }
+
     public void onHelperReloaded(String className, Class<?> type) {
         onHelperReloaded(className, type, false, false, false, java.util.Set.of(), null);
     }
@@ -156,6 +166,7 @@ public class SpringReloadOrchestrator {
                                  boolean addedMethods, java.util.Set<String> addedMethodSigs,
                                  byte[] newBytecode) {
         if (type == null) return;
+        addedBeanReloader.hierarchyHelper(type, newBytecode);
         operationSourceReloader.beginReload(type,isStructural||annotationsChanged);
         if((isStructural||annotationsChanged)&&SpringProxyRecreation.annotated(type))injectionMetadataReloader.reload();
         beanReloader.refreshPlainProxy(type);

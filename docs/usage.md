@@ -773,10 +773,32 @@ enable configuration-free registration or early infrastructure factories.
 Supported factories carry direct `@Bean` and return a non-generic object
 (not a primitive, array or `void`). Private instance methods work with
 `@Configuration(proxyBeanMethods=false)`; static methods can also be private.
-Native and abstract methods do not work. The class must carry direct
-`@Configuration`, extend only `Object`, implement no interfaces and have exactly
-one local configuration singleton in each affected bean factory. Lite
-configuration (`proxyBeanMethods=false`) requires an unproxied instance; default
+Native and abstract methods do not work. The direct factory path requires
+`@Configuration`, a class extending `Object` without interfaces, and exactly
+one local configuration singleton in each affected bean factory.
+
+Spring Framework 5.3.39 and 6.1.14 also support instance factories added to
+an existing, unproxied `@Configuration(proxyBeanMethods=false)` singleton
+with watched application superclasses. A save of the superclass alone can
+register its factory. When two configurations share the superclass, Spring's
+startup parser determines which singleton owns the factory. Changing registration
+order can change that owner. The factory uses the held configuration instance.
+Compile the related classes together when editing both declarations.
+
+On a JVM with enhanced redefinition, a configuration can gain a factory
+interface once existing instances actually implement it. An existing interface
+can also gain a default factory method when the JVM installs that method.
+On a stock JVM, either structural interface change requires a restart.
+If the same added default method would register a bean name on two existing
+configurations, restart to let Spring resolve the competing registrations.
+Changes to inherited fields, constructor bodies or initialization callbacks,
+a library superclass, and unresolved factory type variables also require a
+restart. The configuration and its ancestors must be loaded from watched
+class directories. Imported configurations use the name assigned by the
+native Spring definition reader. Spring infrastructure configurations retain
+their startup lifecycle.
+
+Lite configuration (`proxyBeanMethods=false`) requires an unproxied instance; default
 configuration uses Spring's direct enhanced subclass or the bounded Spring 7.0.10
 raw-configuration path described below. Extra runtime class annotations are limited to
 `@Deprecated`; methods additionally allow direct `@Primary`, `@Qualifier`,
