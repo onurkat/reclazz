@@ -39,10 +39,20 @@ public final class AddedBeanAdapter {
     private AddedBeanAdapter() { }
 
     record Factory(MethodNode method, List<String> names, String init, String destroy,
-                   boolean primary, String qualifier, boolean lazy, String scope, List<String> profiles) {
+                   boolean primary, String qualifier, boolean lazy, String scope, String proxyMode, List<String> profiles) {
         String name() { return names.get(0); }
         List<String> aliases() { return names.subList(1, names.size()); }
         boolean prototype() { return "prototype".equals(scope); }
+        boolean scoped() { return !prototype() && !"singleton".equals(scope); }
+        boolean proxied() { return "TARGET_CLASS".equals(proxyMode) || "INTERFACES".equals(proxyMode); }
+        String targetName() { return "scopedTarget." + name(); }
+        List<String> registrationNames() {
+            if (!proxied()) return names;
+            var all = new ArrayList<>(names);
+            all.add(targetName());
+            return all;
+        }
+        boolean onDemand() { return lazy || (!proxied() && !"singleton".equals(scope)); }
         boolean conditional() {
             return method.visibleAnnotations != null && method.visibleAnnotations.stream()
                     .anyMatch(a -> a.desc.equals(CONDITIONAL) || BOOT_CONDITIONS.contains(a.desc));
@@ -124,15 +134,16 @@ public final class AddedBeanAdapter {
                         qualifier == null ? null : (String) value(qualifier, "value", ""),
                         lazyFlag(annotation(method.visibleAnnotations, LAZY)),
                         scopeName(annotation(method.visibleAnnotations, SCOPE)),
+                        proxyMode(annotation(method.visibleAnnotations, SCOPE)),
                         profileList(annotation(method.visibleAnnotations, PROFILE))));
             } catch (IllegalArgumentException failure) {
                 refused.add(method.name + method.desc + ": " + failure.getMessage());
             }
         }
         Map<String, Long> counts = new HashMap<>();
-        for (Factory factory : factories) for (String name : factory.names()) counts.merge(name, 1L, Long::sum);
+        for (Factory factory : factories) for (String name : factory.registrationNames()) counts.merge(name, 1L, Long::sum);
         factories.removeIf(factory -> {
-            String conflict = factory.names().stream().filter(name -> counts.get(name) > 1).findFirst().orElse(null);
+            String conflict = factory.registrationNames().stream().filter(name -> counts.get(name) > 1).findFirst().orElse(null);
             if (conflict == null) return false;
             refused.add(factory.method().name + factory.method().desc + ": duplicate added bean name or alias '" + conflict + "'");
             return true;
@@ -181,19 +192,24 @@ public final class AddedBeanAdapter {
         return lazy != null && !Boolean.FALSE.equals(value(lazy, "value", Boolean.TRUE));
     }
 
-    // Only singleton and prototype are supported. Web/custom scopes and scoped
-    // proxies need a proxy Reclazz does not build here, so they are refused.
     private static String scopeName(AnnotationNode scope) {
         if (scope == null) return "singleton";
-        String[] proxyMode = (String[]) value(scope, "proxyMode", null);
-        if (proxyMode != null && proxyMode.length == 2
-                && !proxyMode[1].equals("DEFAULT") && !proxyMode[1].equals("NO"))
-            throw new IllegalArgumentException("scoped-proxy @Scope is not supported");
-        String name = (String) value(scope, "value", value(scope, "scopeName", ""));
-        if (name == null || name.isEmpty()) name = "singleton";
-        if (!name.equals("singleton") && !name.equals("prototype"))
-            throw new IllegalArgumentException("only singleton and prototype @Scope are supported, not '" + name + "'");
-        return name;
+        String value = (String) value(scope, "value", "");
+        String alias = (String) value(scope, "scopeName", "");
+        if (!value.isEmpty() && !alias.isEmpty() && !value.equals(alias))
+            throw new IllegalArgumentException("conflicting @Scope value and scopeName");
+        String name = value.isEmpty() ? alias : value;
+        return name.isEmpty() ? "singleton" : name;
+    }
+
+    private static String proxyMode(AnnotationNode scope) {
+        if (scope == null) return "NO";
+        String[] mode = (String[]) value(scope, "proxyMode", null);
+        if (mode == null || mode[1].equals("DEFAULT") || mode[1].equals("NO")) return "NO";
+        if (!Set.of("TARGET_CLASS", "INTERFACES").contains(mode[1])
+                || Set.of("singleton", "prototype").contains(scopeName(scope)))
+            throw new IllegalArgumentException("scoped-proxy mode requires a web or custom scope");
+        return mode[1];
     }
 
     @SuppressWarnings("unchecked")

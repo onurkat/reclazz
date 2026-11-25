@@ -427,10 +427,80 @@ class SpringAddedBeanTest {
         }
     }
 
+    public static class FailingProxyRegistry extends org.springframework.beans.factory.support.DefaultListableBeanFactory {
+        boolean failPublicWrite;
+        boolean sawTarget;
+        @Override public void registerBeanDefinition(String name, org.springframework.beans.factory.config.BeanDefinition bean) {
+            super.registerBeanDefinition(name, bean);
+            if (failPublicWrite && name.equals("first")) {
+                sawTarget = containsBeanDefinition("scopedTarget.first");
+                throw new IllegalStateException("injected public definition failure");
+            }
+        }
+    }
+
+    @Test void scopedPairRollsBackBothOwnedDefinitionsAfterPublicWriteFails() throws Exception {
+        var beanFactory = new FailingProxyRegistry();
+        try (var scope = new Scope(true, beanFactory)) {
+            beanFactory.registerScope("audit", new org.springframework.context.support.SimpleThreadScope());
+            beanFactory.failPublicWrite = true;
+            assertFalse(reload(reloader(scope), scopedFactory()));
+            assertTrue(beanFactory.sawTarget, "target registration preceded the injected failure");
+            assertFalse(beanFactory.containsBeanDefinition("first"));
+            assertFalse(beanFactory.containsBeanDefinition("scopedTarget.first"));
+        }
+    }
+
+    @Test void derivedNameCollisionPreservesTheForeignDefinitionAndAlias() throws Exception {
+        try (var scope = new Scope()) {
+            var factory = scope.context.getDefaultListableBeanFactory();
+            factory.setAllowBeanDefinitionOverriding(true);
+            factory.registerScope("audit", new org.springframework.context.support.SimpleThreadScope());
+            var existing = new RootBeanDefinition(Dependency.class);
+            factory.registerBeanDefinition("scopedTarget.first",existing);
+            factory.registerAlias("scopedTarget.first","foreignAlias");
+            Object original = factory.getBean("foreignAlias");
+            assertFalse(reload(reloader(scope), scopedFactory()));
+            assertSame(existing, factory.getBeanDefinition("scopedTarget.first"));
+            assertSame(original, factory.getBean("foreignAlias"));
+            assertFalse(factory.containsBean("first"));
+        }
+    }
+
+    @ParameterizedTest @ValueSource(booleans = {true, false})
+    void removalPreservesEachReplacedHalfOfAScopedProxy(boolean replacePublic) throws Exception {
+        try (var scope = new Scope()) {
+            var factory = scope.context.getDefaultListableBeanFactory();
+            factory.registerScope("audit", new org.springframework.context.support.SimpleThreadScope());
+            var reloader = reloader(scope);
+            assertTrue(reload(reloader, scopedFactory()), RestartLedger.digest()::toString);
+            String foreign = replacePublic ? "first" : "scopedTarget.first";
+            String ours = replacePublic ? "scopedTarget.first" : "first";
+            var replacement = new RootBeanDefinition(Dependency.class);
+            factory.registerBeanDefinition(foreign, replacement);
+            assertTrue(reload(reloader, original()));
+            assertSame(replacement, factory.getBeanDefinition(foreign));
+            assertFalse(factory.containsBeanDefinition(ours), ours);
+        }
+    }
+
+    private static byte[] scopedFactory() throws Exception {
+        ClassNode source = read(annotated("first"));
+        var scope = new AnnotationNode("Lorg/springframework/context/annotation/Scope;");
+        scope.values = new ArrayList<>(List.of("value", "audit", "proxyMode",
+                new String[]{"Lorg/springframework/context/annotation/ScopedProxyMode;", "TARGET_CLASS"}));
+        method(source, "first").visibleAnnotations.add(scope);
+        return write(source);
+    }
+
     private static final class Scope implements AutoCloseable {
-        final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+        final AnnotationConfigApplicationContext context;
         Scope() throws Exception { this(true); }
         Scope(boolean configuration) throws Exception {
+            this(configuration, new org.springframework.beans.factory.support.DefaultListableBeanFactory());
+        }
+        Scope(boolean configuration, org.springframework.beans.factory.support.DefaultListableBeanFactory beans) throws Exception {
+            context = new AnnotationConfigApplicationContext(beans);
             LookupCapture.store(Config.class, MethodHandles.privateLookupIn(Config.class, MethodHandles.lookup()));
             if (configuration) context.registerBean("config", Config.class);
             context.registerBean("dependency", Dependency.class);

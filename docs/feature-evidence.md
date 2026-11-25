@@ -1430,7 +1430,7 @@ Added factories convert measured int, long and double Value arguments.
 
 Factory Set/Collection/reference-array arguments use native resolution.
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `6edc4abc61d143b110faf7bcbb16f14bb82362829da95ccaa45910c764c428b7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4d5075c73eb9f7c6f3939c4f80523cc1c516652e47f2e91dce0c9539b5c761e1`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1452,7 +1452,7 @@ Factory Set/Collection/reference-array arguments use native resolution.
 
 All eight primitive Value conversions and reference nulls work.
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `6edc4abc61d143b110faf7bcbb16f14bb82362829da95ccaa45910c764c428b7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4d5075c73eb9f7c6f3939c4f80523cc1c516652e47f2e91dce0c9539b5c761e1`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1760,7 +1760,7 @@ Full factory calls preserve supported explicit/prototype arguments and held meth
 
 Static companion factories register/replace/retire products with native lifecycle.
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `6edc4abc61d143b110faf7bcbb16f14bb82362829da95ccaa45910c764c428b7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4d5075c73eb9f7c6f3939c4f80523cc1c516652e47f2e91dce0c9539b5c761e1`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 

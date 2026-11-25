@@ -2706,12 +2706,12 @@
         {
           "path": "docs/usage.md",
           "quote": "One-dimensional reference arrays",
-          "block_sha256": "6edc4abc61d143b110faf7bcbb16f14bb82362829da95ccaa45910c764c428b7"
+          "block_sha256": "4d5075c73eb9f7c6f3939c4f80523cc1c516652e47f2e91dce0c9539b5c761e1"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-BEAN-ARRAY-SET-ARGS",
-          "block_sha256": "792a3323762b4c7cdbc440672d7e232e540d512794caa114f26dde0522895018"
+          "block_sha256": "c4af1388ab428e1b3d40c5cca1ce5f685e19e8071d2413faf4c5b449cfeb57be"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -2744,12 +2744,12 @@
         {
           "path": "docs/usage.md",
           "quote": "including all eight primitive types",
-          "block_sha256": "6edc4abc61d143b110faf7bcbb16f14bb82362829da95ccaa45910c764c428b7"
+          "block_sha256": "4d5075c73eb9f7c6f3939c4f80523cc1c516652e47f2e91dce0c9539b5c761e1"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-BEAN-ALL-PRIMITIVES",
-          "block_sha256": "9b449aaf4f6a0a732fcdfd36682eeb4bce3c51d441ff8801e8014feeaa38c2dc"
+          "block_sha256": "7997d1d11a40dcf9f6aa87b180e25381b430a6e839c59982c9aa6d262c9434dd"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -3276,12 +3276,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Static and instance factories share",
-          "block_sha256": "6edc4abc61d143b110faf7bcbb16f14bb82362829da95ccaa45910c764c428b7"
+          "block_sha256": "4d5075c73eb9f7c6f3939c4f80523cc1c516652e47f2e91dce0c9539b5c761e1"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-BEAN-STATIC",
-          "block_sha256": "96c86a2c6b7088ff59a25fd7f22d35e6af31e57d92a1ba39333aa2ac28f6815e"
+          "block_sha256": "67767186a55974dc0b07ad587f16c20c1675bc4134f2b46024675e40d15a5a8b"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",

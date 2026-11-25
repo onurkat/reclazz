@@ -25,7 +25,8 @@ public final class SpringAddedBeanReloader {
     // Values must not retain the factory key through a supplier/bean/context.
     private final Map<Object, Registry> owned = new WeakHashMap<>();
     private record Owned(WeakReference<Class<?>> owner, WeakReference<Object> definition,
-                         AtomicReference<WeakReference<Object>> instance, List<String> aliases) { }
+                         AtomicReference<WeakReference<Object>> instance, List<String> aliases,
+                         String targetName, WeakReference<Object> targetDefinition) { }
     private static final class Registry {
         final Map<String, Owned> definitions = new ConcurrentHashMap<>();
         final Map<String,String> hierarchyOwners = new HashMap<>();
@@ -109,11 +110,11 @@ public final class SpringAddedBeanReloader {
                 // or prototype bean is left for its first getBean instead.
                 for (var method : prepared) {
                     try {
-                        if (method.lazy() || method.prototype()) {
+                        if (method.onDemand()) {
                             ReloadEffects.note("added bean " + method.name()
-                                    + " registered (" + (method.lazy() ? "lazy" : "prototype") + ", created on demand)");
+                                    + " registered (" + (method.lazy() ? "lazy" : method.scope()) + ", created on demand)");
                             StatusReporter.detail("Added @Bean registered: " + method.name()
-                                    + " (" + (method.lazy() ? "lazy" : "prototype") + ")");
+                                    + " (" + (method.lazy() ? "lazy" : method.scope()) + ")");
                             continue;
                         }
                         initialize(factory, method.name(), registrations);
@@ -337,7 +338,7 @@ public final class SpringAddedBeanReloader {
             }
             for (var product : staged.keySet()) {
                 var method = product.selected().method();
-                if (!method.lazy() && !method.prototype())
+                if (!method.onDemand())
                     initialize(product.scope().factory(), product.name(), product.registry().definitions);
             }
             for (var scope : hierarchyScopes.keySet()) {
@@ -510,10 +511,11 @@ public final class SpringAddedBeanReloader {
         Owned previous = registry == null ? null : registry.definitions.get(method.name());
         boolean ours = previous != null && previous.owner().get() == type && stillOwned(factory, method.name(), previous);
         Map<?, ?> bindings = method.aliases().isEmpty() ? Map.of() : aliasBindings(factory);
-        for (String name : method.names()) {
+        requireScope(factory, method);
+        for (String name : method.registrationNames()) {
             boolean occupied = Boolean.TRUE.equals(call(factory, "containsBean", name))
                     || Boolean.TRUE.equals(call(factory, "containsBeanDefinition", name)) || Boolean.TRUE.equals(call(factory, "isAlias", name));
-            if (occupied && !(ours && (name.equals(method.name()) || previous.aliases().contains(name) && method.name().equals(bindings.get(name)))))
+            if (occupied && !(ours && (name.equals(method.name()) || name.equals(previous.targetName()) || previous.aliases().contains(name) && method.name().equals(bindings.get(name)))))
                 throw new IllegalStateException("bean name or alias '" + name + "' is already in use");
         }
     }
@@ -599,7 +601,7 @@ public final class SpringAddedBeanReloader {
         }
         SpringConfigurationCalls.publish(type, plan);
         for (RawScope scope : prepared.scopes) for (var method : scope.methods) {
-            if (method.lazy() || method.prototype() || failed.get(scope).contains(method.name())) continue;
+            if (method.onDemand() || failed.get(scope).contains(method.name())) continue;
             try { initialize(scope.factory, method.name(), owned.get(scope.factory).definitions); }
             catch (Throwable failure) { success = false; refuse(type, Failures.describe(failure)); }
         }
@@ -619,7 +621,8 @@ public final class SpringAddedBeanReloader {
     private void registerDefinition(Class<?> type, Object factory, String configName,
                           AddedBeanAdapter.Factory method, Map<String, Owned> registrations, boolean full) throws Throwable {
         String name = method.name();
-        for (String candidate : method.names()) {
+        requireScope(factory, method);
+        for (String candidate : method.registrationNames()) {
             if (Boolean.TRUE.equals(call(factory, "containsBean", candidate))
                     || Boolean.TRUE.equals(call(factory, "containsBeanDefinition", candidate))
                     || Boolean.TRUE.equals(call(factory, "isAlias", candidate)))
@@ -695,17 +698,56 @@ public final class SpringAddedBeanReloader {
                     "org.springframework.beans.factory.annotation.Qualifier", method.qualifier());
             definitionType.getMethod("addQualifier", qualifierType).invoke(definition, qualifier);
         }
-        factory.getClass().getMethod("registerBeanDefinition", String.class, definitionInterface).invoke(factory, name, definition);
-        Owned registration = new Owned(new WeakReference<>(type), new WeakReference<>(definition),
-                new AtomicReference<>(new WeakReference<>(null)), method.aliases());
-        registrations.put(name, registration);
+        requireScope(factory, method);
+        String targetName = method.proxied() ? method.targetName() : null;
+        Object publicDefinition = definition;
+        Owned registration = null;
         try {
+            if (targetName != null) {
+                for (String reserved : method.registrationNames()) {
+                    if (Boolean.TRUE.equals(call(factory, "containsBean", reserved))
+                            || Boolean.TRUE.equals(call(factory, "containsBeanDefinition", reserved))
+                            || Boolean.TRUE.equals(call(factory, "isAlias", reserved)))
+                        throw new IllegalStateException("bean name or alias '" + reserved + "' is already in use");
+                }
+                Class<?> holder = Class.forName("org.springframework.beans.factory.config.BeanDefinitionHolder", false, spring);
+                Class<?> registry = Class.forName("org.springframework.beans.factory.support.BeanDefinitionRegistry", false, spring);
+                Object original = holder.getConstructor(definitionInterface, String.class).newInstance(definition, name);
+                Class<?> utils = Class.forName("org.springframework.aop.scope.ScopedProxyUtils", false, spring);
+                Object proxy = utils.getMethod("createScopedProxy", holder, registry, boolean.class)
+                        .invoke(null, original, factory, "TARGET_CLASS".equals(method.proxyMode()));
+                publicDefinition = holder.getMethod("getBeanDefinition").invoke(proxy);
+            }
+            registration = new Owned(new WeakReference<>(type), new WeakReference<>(publicDefinition),
+                    new AtomicReference<>(new WeakReference<>(null)), method.aliases(), targetName, new WeakReference<>(definition));
+            factory.getClass().getMethod("registerBeanDefinition", String.class, definitionInterface)
+                    .invoke(factory, name, publicDefinition);
+            registrations.put(name, registration);
             for (String alias : method.aliases())
                 factory.getClass().getMethod("registerAlias", String.class, String.class).invoke(factory, name, alias);
         } catch (Throwable failure) {
-            discardFailed(factory, name, registration, registrations, failure);
+            if (registration != null) discardFailed(factory, name, registration, registrations, failure);
+            else if (targetName != null) {
+                try { removeScopedTarget(factory, targetName, definition); }
+                catch (Exception cleanup) { failure.addSuppressed(cleanup); }
+            }
             throw failure;
         }
+    }
+
+    private static void requireScope(Object factory, AddedBeanAdapter.Factory method) throws Exception {
+        if (method.scoped() && call(factory, "getRegisteredScope", method.scope()) == null)
+            throw new IllegalArgumentException("scope '" + method.scope() + "' is not registered in this bean factory");
+    }
+
+    private static boolean removeScopedTarget(Object factory, String name, Object definition) throws Exception {
+        if (!Boolean.TRUE.equals(call(factory, "containsBeanDefinition", name))) return false;
+        if (call(factory, "getBeanDefinition", name) != definition) {
+            StatusReporter.detail("Added @Bean keeps externally replaced definition " + name);
+            return false;
+        }
+        call(factory, "removeBeanDefinition", name);
+        return true;
     }
 
     private static void initialize(Object factory, String name, Map<String, Owned> registrations) throws Throwable {
@@ -738,9 +780,16 @@ public final class SpringAddedBeanReloader {
     }
 
     private static boolean removeOwned(Object factory, String name, Owned registration) throws Exception {
-        if (!stillOwned(factory, name, registration)) return false;
+        if (registration.targetName() != null) {
+            if (!ownsPublicDefinition(factory, name, registration)) {
+                StatusReporter.detail("Added @Bean keeps externally replaced binding " + name);
+                return removeScopedTarget(factory, registration.targetName(), registration.targetDefinition().get());
+            }
+        } else if (!stillOwned(factory, name, registration)) return false;
         Map<?, ?> bindings = registration.aliases().isEmpty() ? Map.of() : aliasBindings(factory);
         call(factory, "removeBeanDefinition", name);
+        if (registration.targetName() != null)
+            removeScopedTarget(factory, registration.targetName(), registration.targetDefinition().get());
         // Destruction callbacks may have installed a new owner of this name.
         if (Boolean.TRUE.equals(call(factory, "containsBeanDefinition", name))
                 || call(factory, "getSingleton", name) != null) return true;
@@ -762,9 +811,16 @@ public final class SpringAddedBeanReloader {
         return map;
     }
 
+    private static boolean ownsPublicDefinition(Object factory, String name, Owned registration) throws Exception {
+        return Boolean.TRUE.equals(call(factory, "containsBeanDefinition", name))
+                && call(factory, "getBeanDefinition", name) == registration.definition().get();
+    }
+
     private static boolean stillOwned(Object factory, String name, Owned registration) throws Exception {
-        if (!Boolean.TRUE.equals(call(factory, "containsBeanDefinition", name))
-                || call(factory, "getBeanDefinition", name) != registration.definition().get()) return false;
+        if (!ownsPublicDefinition(factory, name, registration)) return false;
+        if (registration.targetName() != null)
+            return Boolean.TRUE.equals(call(factory, "containsBeanDefinition", registration.targetName()))
+                    && call(factory, "getBeanDefinition", registration.targetName()) == registration.targetDefinition().get();
         Object singleton = call(factory, "getSingleton", name);
         // A vanished singleton may have been destroyed during configuration
         // refresh. An externally installed replacement is somebody else's bean.

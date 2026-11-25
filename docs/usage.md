@@ -809,12 +809,23 @@ keeps it eager. A direct `@Scope("prototype")` gives every lookup a new instance
 `@Scope("singleton")` is the default. A direct `@Profile` registers the bean only
 when the running environment accepts its expression, evaluated by Spring's own
 `Environment`, and a later save that changes the expression re-evaluates it, so a
-bean can join or leave on an edit. Web or custom scopes,
-scoped-proxy `@Scope`, advice, class-level primary/qualifier policies, other composed
+bean can join or leave on an edit. Advice, class-level primary/qualifier policies, other composed
 annotations and additional proxies require a restart. A prototype bean is not
 tracked for destruction by Spring, so its destroy method and `close()` are not
 called when the context closes; a lazy singleton is destroyed normally once it
 has been created.
+
+A direct `@Scope` on an added factory can select a registered request, session,
+application or custom scope. `proxyMode=TARGET_CLASS` and `proxyMode=INTERFACES`
+use Spring’s scoped proxy and its `scopedTarget.<beanName>` definition. Both
+names must be available. The scope creates and destroys its targets. Reclazz refuses the factory
+if the bean factory has not registered the requested scope.
+
+After a factory edit, an open session keeps the target it already obtained.
+A new session gets the updated product. Removing the factory removes the name
+for new lookups. Existing session targets still receive their destruction
+callback once when their session ends. A process restart also discards the
+running in-memory sessions. Custom scopes control their own callback timing.
 
 A direct `@Conditional(MyCondition.class)` on a supported added factory uses
 Spring's native condition evaluator in the `REGISTER_BEAN` phase, just as a

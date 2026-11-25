@@ -66,7 +66,7 @@ class AddedBeanConditionalTest {
     }
 
     @Test
-    void scopedProxyRequestScopeAndMalformedConditionalAreRefused() throws Exception {
+    void requestScopeIsParsedWhilePrototypeProxyAndMalformedConditionAreRefused() throws Exception {
         ClassNode source = beans("scopedProxyBean", "requestBean", "conditionalBean");
         AnnotationNode proxy = new AnnotationNode(SCOPE);
         proxy.values = new ArrayList<>(List.of("value", "prototype", "proxyMode", new String[]{PROXY_MODE, "TARGET_CLASS"}));
@@ -76,10 +76,10 @@ class AddedBeanConditionalTest {
         method(source, "conditionalBean").visibleAnnotations.add(new AnnotationNode(CONDITIONAL));
 
         var plan = AddedBeanAdapter.inspect(write(source), signatures(source));
-        assertTrue(plan.factories().isEmpty(), "no unsupported factory should register");
-        assertEquals(3, plan.refused().size(), plan.refused()::toString);
+        assertEquals(1, plan.factories().size());
+        assertEquals("request", factory(plan,"requestBean").scope());
+        assertEquals(2, plan.refused().size(), plan.refused()::toString);
         assertTrue(plan.refused().stream().anyMatch(r -> r.contains("scopedProxyBean") && r.contains("scoped-proxy")), plan.refused()::toString);
-        assertTrue(plan.refused().stream().anyMatch(r -> r.contains("requestBean") && r.contains("singleton and prototype")), plan.refused()::toString);
         assertTrue(plan.refused().stream().anyMatch(r -> r.contains("conditionalBean")), plan.refused()::toString);
     }
 
