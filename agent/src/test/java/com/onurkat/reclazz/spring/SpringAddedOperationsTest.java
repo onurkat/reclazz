@@ -162,14 +162,69 @@ class SpringAddedOperationsTest {
 
     @Test void extraAdviceIsRefusedRatherThanBypassed() throws Throwable {
         try (var scope = new Scope(true)) {
-            ((org.springframework.aop.framework.Advised) scope.bean).addAdvice(
-                    (org.aopalliance.intercept.MethodInterceptor) invocation -> { throw new SecurityException("denied"); });
             scope.publish(Metadata.class);
             var value = site("value", MethodType.methodType(String.class, Owner.class, String.class));
+            assertEquals("before:1", invoke(value, scope.bean, "before"));
+            ((org.springframework.aop.framework.Advised) scope.bean).addAdvice(
+                    (org.aopalliance.intercept.MethodInterceptor) invocation -> { throw new SecurityException("denied"); });
             var failure = assertThrows(IllegalStateException.class, () -> invoke(value, scope.bean, "a"));
             assertTrue(failure.getMessage().contains("additional proxy advisor"));
-            assertEquals(0, scope.target.calls);
+            assertThrows(IllegalStateException.class, () -> invoke(value, scope.bean, "a"));
+            var notes = com.onurkat.reclazz.ui.RestartLedger.digest();
+            assertTrue(notes.stream().anyMatch(line -> line.contains("additional proxy advisor")));
+            assertFalse(notes.stream().anyMatch(line -> line.contains("2 times")));
+            assertEquals(1, scope.target.calls);
         }
+    }
+
+    public static class AspectOwner {
+        public String added(Object value) { return "added"; }
+        public String sibling(Object value) { return "sibling"; }
+    }
+
+    @org.aspectj.lang.annotation.Aspect
+    public static class SiblingAspect {
+        @org.aspectj.lang.annotation.Before("execution(* com.onurkat.reclazz.spring.SpringAddedOperationsTest.AspectOwner.sibling(..))")
+        public void advice() {}
+    }
+
+    @org.aspectj.lang.annotation.Aspect
+    public static class AddedAspect {
+        @org.aspectj.lang.annotation.Before("execution(* com.onurkat.reclazz.spring.SpringAddedOperationsTest.AspectOwner.added(..))")
+        public void advice() {}
+    }
+
+    @org.aspectj.lang.annotation.Aspect
+    public static class RuntimeAspect {
+        @org.aspectj.lang.annotation.Before("execution(* *.added(..)) && args(java.lang.String)")
+        public void advice() {}
+    }
+
+    @org.aspectj.lang.annotation.Aspect
+    public static class BeanAspect {
+        @org.aspectj.lang.annotation.Before("bean(owner) && execution(* *.added(..))")
+        public void advice() {}
+    }
+
+    private static Advisor aspectAdvisor(Object aspect) {
+        var factory = new org.springframework.aop.aspectj.annotation.SingletonMetadataAwareAspectInstanceFactory(aspect, "probe");
+        return new org.springframework.aop.aspectj.annotation.ReflectiveAspectJAdvisorFactory().getAdvisors(factory).get(0);
+    }
+
+    @Test void unrelatedAspectIsExcludedOnlyForTheExactOwnerMethod() throws Exception {
+        var owner = AspectOwner.class;
+        var saved = owner.getDeclaredMethod("added", Object.class);
+        var bridgeMethods = List.of(saved);
+        com.onurkat.reclazz.bootstrap.ReflectionBridge.replaceClassState(owner, bridgeMethods, List.of());
+        try {
+            assertTrue(SpringAddedOperations.excludesAddedMethod(aspectAdvisor(new SiblingAspect()), owner, saved, owner.getClassLoader()));
+            assertFalse(SpringAddedOperations.excludesAddedMethod(aspectAdvisor(new AddedAspect()), owner, saved, owner.getClassLoader()));
+            assertFalse(SpringAddedOperations.excludesAddedMethod(aspectAdvisor(new RuntimeAspect()), owner, saved, owner.getClassLoader()));
+            assertFalse(SpringAddedOperations.excludesAddedMethod(aspectAdvisor(new BeanAspect()), owner, saved, owner.getClassLoader()));
+        } finally {
+            com.onurkat.reclazz.bootstrap.ReflectionBridge.replaceClassState(owner, List.of(), List.of());
+        }
+        assertFalse(SpringAddedOperations.excludesAddedMethod(aspectAdvisor(new SiblingAspect()), owner, saved, owner.getClassLoader()));
     }
 
     @Test void extraMethodAnnotationIsRefusedBeforeItsBody() throws Throwable {
