@@ -1,6 +1,7 @@
 /* Copyright 2026 Onur Kat. SPDX-License-Identifier: Apache-2.0 */
 package com.onurkat.reclazz.spring.xml;
 
+import com.onurkat.reclazz.spring.SpringMemberLayout;
 import com.onurkat.reclazz.util.Reflect;
 import java.lang.reflect.*;
 import java.nio.file.Path;
@@ -10,7 +11,6 @@ import java.util.concurrent.locks.Lock;
 /** Resource-owned future-definition publication without destroying existing consumers. */
 final class XmlDefinitionTransaction {
     private XmlDefinitionTransaction(){}
-    private static final Set<String> VERSIONS=Set.of("5.3.39","6.1.14","6.2.12","7.0.10");
     private static final Set<String> DEFINITIONS=Set.of("org.springframework.beans.factory.support.GenericBeanDefinition","org.springframework.beans.factory.support.RootBeanDefinition","org.springframework.beans.factory.support.ChildBeanDefinition");
     private static final Set<String> RESETTERS=Set.of("org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor","org.springframework.context.annotation.CommonAnnotationBeanPostProcessor","org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor");
     record Edit(String name,Object previous,Object candidate){}
@@ -162,11 +162,11 @@ final class XmlDefinitionTransaction {
         Class<?> contract=Class.forName("org.springframework.beans.factory.support.MergedBeanDefinitionPostProcessor",false,factory.getClass().getClassLoader());
         for(Object processor:(List<?>)call(factory,"getBeanPostProcessors"))if(contract.isInstance(processor)) {
             Method reset=processor.getClass().getMethod("resetBeanDefinition",String.class);
-            String type=processor.getClass().getName(),version=processor.getClass().getPackage().getImplementationVersion();
-            boolean nativeReset=RESETTERS.contains(type)&&VERSIONS.contains(version);
-            // These exact ORM reset implementations only remove the named injection metadata cache entry.
-            if(type.equals("org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"))nativeReset=Set.of("6.1.14","6.2.12","7.0.10").contains(version);
-            require(reset.getDeclaringClass()==contract||nativeReset,"unverified merged-definition reset callback: "+type);
+            if (reset.getDeclaringClass() == contract) continue;
+            String type = processor.getClass().getName();
+            require(RESETTERS.contains(type) || type.equals("org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor"),
+                    "unverified merged-definition reset callback: " + type);
+            SpringMemberLayout.RESET_CALLBACK.require(processor.getClass());
         }
     }
     private static void unchangedCreation(Snapshot snapshot)throws Exception {
@@ -189,7 +189,8 @@ final class XmlDefinitionTransaction {
     }
     private static void clearTypes(Object factory)throws Exception {Method clear=Reflect.findMethod(factory.getClass(),"clearByTypeCache");require(clear!=null,"type cache invalidation unavailable");clear.invoke(factory);}
     private static void standard(Object factory)throws Exception {
-        require(factory.getClass().getName().equals("org.springframework.beans.factory.support.DefaultListableBeanFactory")&&VERSIONS.contains(factory.getClass().getPackage().getImplementationVersion()),"unsupported definition factory/version");
+        require(factory.getClass().getName().equals("org.springframework.beans.factory.support.DefaultListableBeanFactory"),"unsupported definition factory");
+        SpringMemberLayout.XML.require(factory.getClass());
         require(!Boolean.TRUE.equals(required(factory,"singletonsCurrentlyInDestruction")),"factory is closing");
         require(Boolean.TRUE.equals(call(factory,"isAllowBeanDefinitionOverriding")),"definition overriding is disabled");
     }

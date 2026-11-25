@@ -22,6 +22,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /** The same real Spring constructor contract runs on isolated Spring 5 and 6 graphs. */
 public abstract class ConstructorDependencyContract {
+    @org.junit.jupiter.api.BeforeEach
+    void verifyRequestedSpringPatch() throws Exception {
+        com.onurkat.reclazz.e2e.harness.SpringPatchWitness.verify();
+    }
+
     public static class Helper { static int next = 10; final int seed = next; }
     public static class Owner {
         static int creations;

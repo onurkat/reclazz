@@ -471,6 +471,27 @@ val springSevenTest = tasks.register("springSevenTest", Test::class) {
     testLogging { events("passed", "failed", "skipped") }
 }
 
+// Opt-in patch witness; production and the default test graphs keep their declared versions.
+providers.gradleProperty("reclazz.springPatch").orNull?.let { patch ->
+    val graph = when {
+        patch.matches(Regex("5[.]3[.][0-9]+")) -> sourceSets.test.get()
+        patch.matches(Regex("6[.][12][.][0-9]+")) -> springSixTests
+        patch.matches(Regex("7[.]0[.][0-9]+")) -> springSevenTests
+        else -> error("Unsupported Spring test patch: $patch")
+    }
+    for (name in listOf(graph.compileClasspathConfigurationName, graph.runtimeClasspathConfigurationName)) {
+        configurations.named(name) {
+            resolutionStrategy.eachDependency {
+                if (requested.group == "org.springframework") useVersion(patch)
+            }
+        }
+    }
+    val selected = if (graph == sourceSets.test.get()) setOf("e2eTest", "unitTest") else setOf(graph.name)
+    tasks.withType<Test>().matching { it.name in selected }.configureEach {
+        systemProperty("reclazz.springPatch", patch)
+    }
+}
+
 // Each Jackson 3 compatibility gate resolves and verifies its own runtime.
 for ((line, jacksonVersion) in listOf("3_1" to "3.1.8", "3_2" to "3.2.4", "3_3" to "3.3.0")) {
     val matrix = sourceSets.create("jackson3Matrix_$line") {

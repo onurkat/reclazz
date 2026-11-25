@@ -13,6 +13,11 @@ import java.time.Duration;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SpringXmlDefinitionMetadataReloadTest {
+    @org.junit.jupiter.api.BeforeEach
+    void verifyRequestedSpringPatch() throws Exception {
+        com.onurkat.reclazz.e2e.harness.SpringPatchWitness.verify();
+    }
+
     @TempDir Path tmp;
     @ParameterizedTest @ValueSource(booleans = {false, true})
     void metadataEditsWarnBeforePropertiesAndRepeatedSavesRemainSafe(boolean child) throws Exception {
@@ -20,7 +25,7 @@ class SpringXmlDefinitionMetadataReloadTest {
         Files.writeString(xml, document(false, "before", "before"));
         var builder = WatchedApp.in(tmp).classpath(WatchedApp.springClasspath());
         if (child) builder.childClassLoader();
-        try (var app = builder.jvmArgs("-Ddefs=" + xml, "-Dtest.dir=" + tmp).with("App", APP).start()) {
+        try (var app = builder.jvmArgs("-Ddefs=" + xml, "-Dtest.dir=" + tmp).with("App", com.onurkat.reclazz.e2e.harness.SpringPatchWitness.instrumentMain(APP)).start()) {
             app.awaitOrFail("READY=true", "native initial metadata is missing");
             app.awaitOrFail("] Watching ", "watcher missing");
             save(app, xml, false, "before", "before", 1);

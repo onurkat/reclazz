@@ -23,7 +23,9 @@ public class XmlPrototypeDefinitionReloadTest {
     public static class Injected {Dependency dependency;@org.springframework.beans.factory.annotation.Autowired public void setDependency(@org.springframework.beans.factory.annotation.Qualifier("dependency") Dependency value){dependency=value;}}
     static volatile boolean publicationFailure;
     public static void failPublication(String name){if(publicationFailure&&name.equals("other"))throw new IllegalStateException("synthetic metadata publication failure");}
-    @BeforeEach void before(){ApplicationContextHolder.clear();RestartLedger.clear();Value.created=Closing.closed=Holder.closed=Recipe.initialized=0;publicationFailure=false;System.clearProperty("r30.prototype.initialized");}
+    @BeforeEach void before() throws Exception {
+        com.onurkat.reclazz.e2e.harness.SpringPatchWitness.verify();
+        ApplicationContextHolder.clear();RestartLedger.clear();Value.created=Closing.closed=Holder.closed=Recipe.initialized=0;publicationFailure=false;System.clearProperty("r30.prototype.initialized");}
     @AfterEach void after(){ApplicationContextHolder.clear();RestartLedger.clear();System.clearProperty("r30.prototype.initialized");}
     static String bean(Class<?> type,String value){return "<bean id='value' class='"+type.getName()+"' scope='prototype'><property name='text' value='"+value+"'/></bean>";}
     static String parent(String value){return "<bean id='template' class='"+Value.class.getName()+"' scope='prototype' abstract='true'><property name='text' value='"+value+"'/></bean>";}

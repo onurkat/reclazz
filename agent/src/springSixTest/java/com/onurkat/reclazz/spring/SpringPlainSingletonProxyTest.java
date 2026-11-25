@@ -23,6 +23,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /** Real annotation-only JVM redefine and native Spring creation, shared by the 6/7 test tasks. */
 class SpringPlainSingletonProxyTest {
+    @org.junit.jupiter.api.BeforeEach
+    void verifyRequestedSpringPatch() throws Exception {
+        com.onurkat.reclazz.e2e.harness.SpringPatchWitness.verify();
+    }
+
     @org.springframework.stereotype.Service
     public static class Work {
         int calls;

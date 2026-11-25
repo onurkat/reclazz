@@ -6288,7 +6288,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlDefinitionMetadataReloadTest.java",
           "kind": "watcher",
           "assertions": "Three warnings, raw/mergedidentitytrue, beforelabel while siblingsother2..4; metadatarevert permitscorrected.",
-          "method_sha256": "3ff2495d92f2b16436edb16acdef173a28a82082ca6857312788af4055f1e72e"
+          "method_sha256": "e3c8d6bf8a3aef59280665ec9db5e01f7cc45bd7a6cfaab6a169af34f9e59838"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.ModernSpringXmlDefinitionMetadataReloadTest#metadataEditsWarnBeforePropertiesAndRepeatedSavesRemainSafe",
@@ -6298,9 +6298,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.SpringXmlDefinitionMetadataReloadTest#metadataEditsWarnBeforePropertiesAndRepeatedSavesRemainSafe",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlDefinitionMetadataReloadTest.java",
-            "method_sha256": "3ff2495d92f2b16436edb16acdef173a28a82082ca6857312788af4055f1e72e"
+            "method_sha256": "e3c8d6bf8a3aef59280665ec9db5e01f7cc45bd7a6cfaab6a169af34f9e59838"
           },
-          "method_sha256": "3ff2495d92f2b16436edb16acdef173a28a82082ca6857312788af4055f1e72e"
+          "method_sha256": "e3c8d6bf8a3aef59280665ec9db5e01f7cc45bd7a6cfaab6a169af34f9e59838"
         }
       ],
       "shipped_surfaces": [

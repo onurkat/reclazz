@@ -25,6 +25,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 class FirstAddedFullConfigurationOwnershipTest {
+    @org.junit.jupiter.api.BeforeEach
+    void verifyRequestedSpringPatch() throws Exception {
+        com.onurkat.reclazz.e2e.harness.SpringPatchWitness.verify();
+    }
+
     @TempDir Path tmp;
     @Configuration public static class Owner {
         public Object product() { return new Object(); }
@@ -273,6 +278,12 @@ class FirstAddedFullConfigurationOwnershipTest {
             context.registerBean("statefulOwner", StatefulOwner.class);
             context.refresh();
             StatefulOwner held = context.getBean(StatefulOwner.class);
+            if (System.getProperty("reclazz.springPatch") != null && held.getClass() != StatefulOwner.class) {
+                assertSame(StatefulOwner.class, held.getClass().getSuperclass(), "native enhanced configuration");
+                assertSame(held, context.getBean(StatefulOwner.class));
+                assertEquals(1, StatefulOwner.initialized);
+                return;
+            }
             assumeTrue(held.getClass() == StatefulOwner.class, "raw configuration only on the Spring line that leaves it raw");
             RestartLedger.clear();
             assertTrue(reloader(context).reloadBeanMethods(StatefulOwner.class, keys(), statefulWithBean(null)), RestartLedger.digest().toString());

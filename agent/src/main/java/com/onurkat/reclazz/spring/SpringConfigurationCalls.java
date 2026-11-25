@@ -193,6 +193,8 @@ final class SpringConfigurationCalls {
     }
 
     static boolean rawShape(Class<?> owner, Object definition) throws Exception {
+        if (!definition.getClass().getName().equals("org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition")) return false;
+        SpringMemberLayout.RAW_CONFIGURATION.require(definition.getClass());
         ClassLoader spring = definition.getClass().getClassLoader();
         Class<?> utils = Class.forName("org.springframework.context.annotation.ConfigurationClassUtils", false, spring);
         var attribute = utils.getDeclaredField("CONFIGURATION_CLASS_ATTRIBUTE"); attribute.setAccessible(true);
@@ -201,9 +203,7 @@ final class SpringConfigurationCalls {
         for (var annotation : owner.getDeclaredAnnotations())
             if (annotation.annotationType().getName().equals("org.springframework.context.annotation.Configuration"))
                 full = Boolean.TRUE.equals(annotation.annotationType().getMethod("proxyBeanMethods").invoke(annotation));
-        Class<?> version = Class.forName("org.springframework.core.SpringVersion", false, spring);
-        return full && "7.0.10".equals(version.getMethod("getVersion").invoke(null))
-                && definition.getClass().getName().equals("org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition")
+        return full
                 && "lite".equals(definition.getClass().getMethod("getAttribute", String.class).invoke(definition, key))
                 && Integer.valueOf(0).equals(definition.getClass().getMethod("getRole").invoke(definition))
                 && definition.getClass().getMethod("getBeanClass").invoke(definition) == owner

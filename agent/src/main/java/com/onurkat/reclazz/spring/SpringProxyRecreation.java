@@ -11,7 +11,6 @@ import java.util.function.Supplier;
 
 /** Native creation of a formerly plain singleton, bounded to an inspected callback-free graph. */
 final class SpringProxyRecreation {
-    private static final Set<String> VERSIONS=Set.of("6.1.14","6.2.12","7.0.10");
     private static final Set<String> CREATORS=Set.of(
             "org.springframework.aop.framework.autoproxy.InfrastructureAdvisorAutoProxyCreator",
             "org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator",
@@ -151,9 +150,9 @@ final class SpringProxyRecreation {
     }
     private static Saved snapshot(Bean bean,PreservedSingletons preserved)throws Exception {
         Object factory=bean.factory();active(bean);
-        if(!factory.getClass().getName().equals("org.springframework.beans.factory.support.DefaultListableBeanFactory")
-                ||!VERSIONS.contains(factory.getClass().getPackage().getImplementationVersion()))
-            throw new IllegalStateException("unsupported singleton factory/version for "+bean.name());
+        if(!factory.getClass().getName().equals("org.springframework.beans.factory.support.DefaultListableBeanFactory"))
+            throw new IllegalStateException("unsupported singleton factory for "+bean.name());
+        SpringMemberLayout.PROXY.require(factory.getClass());
         if(preserved.names(bean.context()).contains(bean.name()))throw new IllegalStateException("preserved consumer "+bean.name());
         if(!Boolean.TRUE.equals(call(factory,"containsBeanDefinition",bean.name())))throw new IllegalStateException("manually registered consumer "+bean.name());
         Object raw=call(factory,"getBeanDefinition",bean.name()),merged=call(factory,"getMergedBeanDefinition",bean.name());
@@ -226,6 +225,7 @@ final class SpringProxyRecreation {
     }
     private static boolean matches(Object factory,String name,Class<?> type)throws Exception {
         if(proxy(call(factory,"getSingleton",name),factory))return false;
+        SpringMemberLayout.PROXY.require(factory.getClass());
         ClassLoader loader=factory.getClass().getClassLoader();
         SpringOperationSourceReloader.clearSpringAnnotationCaches(type);
         Class<?> tx=optional("org.springframework.transaction.interceptor.TransactionAttributeSource",loader);

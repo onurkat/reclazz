@@ -15,7 +15,6 @@ import java.util.Set;
 final class SpringConstructorDependencies {
     private static final String FACTORY =
             "org.springframework.beans.factory.support.DefaultListableBeanFactory";
-    private static final Set<String> VERSIONS = Set.of("5.3.39", "6.1.14", "5.3.43", "6.2.12", "7.0.10");
     private static final Set<String> DEFINITIONS = Set.of(
             "org.springframework.beans.factory.support.RootBeanDefinition",
             "org.springframework.beans.factory.support.GenericBeanDefinition",
@@ -58,6 +57,7 @@ final class SpringConstructorDependencies {
             Object merged = call(factory, "getMergedBeanDefinition", name);
             if (!merged.getClass().getName().equals("org.springframework.beans.factory.support.RootBeanDefinition")
                     || !plain(merged)) return null;
+            SpringMemberLayout.CONSTRUCTOR.require(factory.getClass());
             if (!(Reflect.readField(merged, "resolvedConstructorOrFactoryMethod") instanceof Constructor<?> cached)
                     || !cached.equals(constructors[0])
                     || !Arrays.equals(cached.getDeclaredAnnotations(), constructors[0].getDeclaredAnnotations())
@@ -68,14 +68,16 @@ final class SpringConstructorDependencies {
             Method invalidate = Reflect.findMethod(factory.getClass(), "clearMergedBeanDefinition", String.class);
             return invalidate == null ? null : new Prepared(List.copyOf(contexts), context,
                     factory, name, singleton, merged, invalidate);
+        } catch (SpringMemberLayout.Unavailable layout) {
+            com.onurkat.reclazz.ui.RestartLedger.note(name, "constructor refresh requires restart: " + layout.getMessage());
+            throw layout;
         } catch (Exception | LinkageError unavailable) {
             return null;
         }
     }
 
     private static boolean known(Object factory) {
-        return factory != null && factory.getClass().getName().equals(FACTORY)
-                && VERSIONS.contains(factory.getClass().getPackage().getImplementationVersion());
+        return factory != null && factory.getClass().getName().equals(FACTORY);
     }
 
     private record Scope(Object context, Object factory) { }
