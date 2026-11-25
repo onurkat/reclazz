@@ -7,6 +7,7 @@ package com.onurkat.reclazz.watcher;
 import com.onurkat.reclazz.config.AgentConfig;
 import com.onurkat.reclazz.platform.ApplicationContextHolder;
 import com.onurkat.reclazz.platform.PlatformContext;
+import com.onurkat.reclazz.platform.SapProcessResources;
 import com.onurkat.reclazz.ui.StatusReporter;
 import com.onurkat.reclazz.ui.RestartLedger;
 import de.hybris.platform.processengine.definition.ProcessDefinitionResource;
@@ -35,6 +36,48 @@ public class SapProcessResourceRecognitionTest {
         var bean = new ProcessDefinitionResource(); bean.setResource(new FileSystemResource(path));
         context.getBeanFactory().registerSingleton("process", bean);
         context.refresh(); ApplicationContextHolder.register(context); return context;
+    }
+
+    public static class CountingFactory extends org.springframework.beans.factory.support.DefaultListableBeanFactory {
+        int enumerations;
+        @Override public String[] getSingletonNames() {
+            enumerations++;
+            return super.getSingletonNames();
+        }
+    }
+
+    @Test void observedFactoryRescansOnlyAfterMembershipChangesAndReadsMutableResourcesEachPass() throws Exception {
+        var factory = new CountingFactory();
+        var context = new GenericApplicationContext(factory);
+        contexts.add(context);
+        Path first = file("flow-a.xml"), second = file("flow-b.xml");
+        var process = new ProcessDefinitionResource();
+        process.setResource(new FileSystemResource(first));
+        factory.registerSingleton("sameName", new Object());
+        context.refresh();
+        ApplicationContextHolder.register(context);
+        var tracker = new SapProcessResources.Tracker();
+        SapProcessResources.registryChanged(factory);
+        assertTrue(tracker.files().isEmpty());
+        int before = factory.enumerations;
+        assertTrue(tracker.files().isEmpty());
+        assertEquals(before, factory.enumerations);
+
+        factory.destroySingleton("sameName");
+        factory.registerSingleton("sameName", process);
+        SapProcessResources.registryChanged(factory);
+        assertEquals(Set.of(first), tracker.files());
+        assertEquals(before + 1, factory.enumerations);
+        process.setResource(new FileSystemResource(second));
+        assertEquals(Set.of(second), tracker.files());
+        assertEquals(before + 1, factory.enumerations);
+    }
+
+    @Test void registrySignalDoesNotRunApplicationHashCode() {
+        Object registry = new Object() {
+            @Override public int hashCode() { throw new AssertionError("user hashCode ran during singleton registration"); }
+        };
+        SapProcessResources.registryChanged(registry);
     }
 
     @Test void onlyRegisteredExactPathIsRecognized() throws Exception {
@@ -130,6 +173,54 @@ public class SapProcessResourceRecognitionTest {
             pending.clear(); ctx.close(); Files.delete(process); watcher.scanLoadedSpringXml(pending);
             assertTrue(pending.isEmpty());
         } finally { watcher.stopWatching(); }
+    }
+
+    @Test void unchangedPassSkipsModuleResolutionAndMutableOwnershipIsObservedOnTheNextPass() throws Exception {
+        Path first = file("outside/first.xml"), second = file("outside/second.xml");
+        var context = register(first);
+        var bean = context.getBean("process", ProcessDefinitionResource.class);
+        int[] resolutions = {0};
+        var watcher = new FileWatcher(new TestPlatform() {
+            @Override public String resolveModuleName(Path file) {
+                resolutions[0]++;
+                return "app";
+            }
+        }, AgentConfig.parse(null));
+        try {
+            var pending = new LinkedHashMap<Path, FileWatcher.PendingEvent>();
+            watcher.scanLoadedSpringXml(pending);
+            assertTrue(resolutions[0] > 0);
+            resolutions[0] = 0;
+            watcher.scanLoadedSpringXml(pending);
+            assertEquals(0, resolutions[0], "an unchanged scan resolved a module");
+
+            bean.setResource(new FileSystemResource(second));
+            watcher.scanLoadedSpringXml(pending);
+            Files.writeString(first, "old registration");
+            Files.writeString(second, "new registration");
+            watcher.scanLoadedSpringXml(pending);
+            assertEquals(Set.of(second), pending.keySet());
+            pending.clear();
+            context.getDefaultListableBeanFactory().destroySingleton("process");
+            Files.writeString(second, "removed registration");
+            watcher.scanLoadedSpringXml(pending);
+            assertTrue(pending.isEmpty());
+
+            var replacement = new ProcessDefinitionResource();
+            replacement.setResource(new FileSystemResource(first));
+            context.getBeanFactory().registerSingleton("process", replacement);
+            watcher.scanLoadedSpringXml(pending);
+            Files.writeString(first, "new singleton of the same name");
+            watcher.scanLoadedSpringXml(pending);
+            assertEquals(Set.of(first), pending.keySet());
+            pending.clear();
+            context.close();
+            Files.delete(first);
+            watcher.scanLoadedSpringXml(pending);
+            assertTrue(pending.isEmpty());
+        } finally {
+            watcher.stopWatching();
+        }
     }
 
     @Test void fileAndModuleExclusionsStillApply() throws Exception {

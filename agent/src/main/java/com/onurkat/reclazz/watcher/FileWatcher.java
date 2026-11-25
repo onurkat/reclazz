@@ -885,6 +885,7 @@ public class FileWatcher {
     private void registerSingle(Path dir, String moduleName, String sourceRoot, long baselineMillis) throws IOException {
         WatchKey key = dir.register(watchService, ENTRY_CREATE, ENTRY_MODIFY, ENTRY_DELETE);
         watchKeyMap.put(key, new WatchedDirectory(dir, moduleName, sourceRoot, baselineMillis));
+        xmlDirectoriesDirty = true;
     }
 
     /**
@@ -1197,6 +1198,7 @@ public class FileWatcher {
                     // build takes them all and a watcher that stops there is
                     // a watcher that stops for the rest of the day.
                     noteLostDirectory(watchKeyMap.remove(key));
+                    xmlDirectoriesDirty = true;
                 }
             }
 
@@ -1342,7 +1344,8 @@ public class FileWatcher {
     }
     private StagedSubscriptions stageSubscriptions(PlatformContext view,AgentConfig.LiveOptions options,
                                          Collection<WatchedDirectory> target)throws IOException {
-        Map<Path,Long> configTimes=new HashMap<>(),xmlTimes=new HashMap<>();
+        Map<Path,Long> configTimes=new HashMap<>();
+        Map<Path, XmlStamp> xmlTimes = new HashMap<>();
         Map<Path,com.onurkat.reclazz.platform.PropertyFileSnapshots.Candidate> properties=new HashMap<>();
         Set<Path> newProperties=new HashSet<>(),oldProperties=new HashSet<>(configurationMtimes.keySet());
         Map<Path,Path> aliases=new HashMap<>();configurationMtimes.keySet().forEach(file->aliases.put(identity(file),file));
@@ -1363,7 +1366,7 @@ public class FileWatcher {
             }
         }
         Set<Path> directories=new HashSet<>();target.forEach(owner->{directories.add(owner.directory().toAbsolutePath().normalize());directories.add(identity(owner.directory()));});
-        for(Path file:loadedXmlFiles(view,directories))xmlTimes.put(file,loadedXmlMtimes.getOrDefault(file,modifiedAt(file)));
+        for(Path file:loadedXmlFiles(view,directories))xmlTimes.put(file,loadedXmlStamps.getOrDefault(file, XmlStamp.read(file)));
         Set<Path> constants=new HashSet<>();Map<Path,FileState> constantStates=new HashMap<>();
         if(options.autoCompile() && view instanceof HybrisPlatformContext hybris)
             for(var extension:hybris.getHybrisContext().getExtensions().values())if(view.shouldWatch(extension.getName()))extension.constantsSource().ifPresent(file->{
@@ -1377,7 +1380,8 @@ public class FileWatcher {
         };
         return new StagedSubscriptions(prepare,()->{
             configurationMtimes.clear();configurationMtimes.putAll(configTimes);
-            loadedXmlMtimes.clear();loadedXmlMtimes.putAll(xmlTimes);
+            loadedXmlStamps.clear();loadedXmlStamps.putAll(xmlTimes);
+            xmlDirectoriesDirty = true;
             constantsSources.clear();constantsSources.addAll(constants);
             constantStates.forEach((file,state)->{if(regularFile(file))fileStates.put(file,state);});
             if(propertySnapshots!=null) {
@@ -1429,37 +1433,65 @@ public class FileWatcher {
         return found;
     }
 
-    private final Map<Path, Long> loadedXmlMtimes = new HashMap<>();
-
-    /** Poll only captured Spring/registered process XML outside native roots, never neighbours. */
-    int scanLoadedSpringXml(Map<Path, PendingEvent> pending) {
-        int found = 0;
-        Set<Path> live = com.onurkat.reclazz.platform.SpringXmlResources.loadedFiles();
-        Set<Path> processes = com.onurkat.reclazz.platform.SapProcessResources.registeredFiles();
-        live.addAll(processes);
-        loadedXmlMtimes.keySet().removeIf(file->!live.contains(file)||!platformContext.shouldWatch(platformContext.resolveModuleName(file)));
-        Set<Path> watched = new HashSet<>();
-        // A file is recorded by the path its classloader found, which is the
-        // target of a symlinked root the watcher holds under its link.
-        for (WatchedDirectory directory : watchKeyMap.values()) {
-            watched.add(directory.directory().toAbsolutePath().normalize());
-            watched.add(com.onurkat.reclazz.platform.SpringXmlResources.canonical(directory.directory()));
+    private record XmlStamp(long modified, long size) {
+        static XmlStamp read(Path path) {
+            try {
+                var a = Files.readAttributes(path, java.nio.file.attribute.BasicFileAttributes.class);
+                return new XmlStamp(a.lastModifiedTime().toMillis(), a.size());
+            } catch (IOException missing) {
+                return new XmlStamp(0, -1);
+            }
         }
-        Set<String> modules = platformContext.getResourceDirs().keySet();
-        for (Path file : live) {
-            ChangeKind named = ChangeKind.of(file.getFileName().toString());
-            if (named != ChangeKind.UNKNOWN && named != ChangeKind.SPRING_XML) continue;
-            if (watched.contains(file.getParent())) continue;
-            String module = platformContext.resolveModuleName(file);
-            if (!platformContext.shouldWatch(module) || config.isExcluded(file.getFileName().toString())) continue;
-            if (platformContext.getPlatformId() == PlatformContext.Platform.HYBRIS && !modules.contains(module))
-                continue;
-            long modified = modifiedAt(file);
-            Long previous = loadedXmlMtimes.put(file, modified);
-            if (previous == null || previous == modified) continue; // establish baseline
-            ChangeEvent.Type type = modified == 0 ? ChangeEvent.Type.DELETED
-                    : previous == 0 ? ChangeEvent.Type.CREATED : ChangeEvent.Type.MODIFIED;
-            pending.put(file, new PendingEvent(System.currentTimeMillis(), file, type, module,
+    }
+
+    private final Map<Path, XmlStamp> loadedXmlStamps = new HashMap<>();
+    private final com.onurkat.reclazz.platform.SapProcessResources.Tracker processXml =
+            new com.onurkat.reclazz.platform.SapProcessResources.Tracker();
+    private boolean xmlDirectoriesDirty = true;
+    private long xmlScopeRevision = -1;
+    private Set<Path> previousXmlFiles = Set.of();
+    private Map<Path, String> externalXmlModules = Map.of();
+
+    /** Poll captured XML outside native registrations. Reclassify ownership when its inputs change. */
+    int scanLoadedSpringXml(Map<Path, PendingEvent> pending) {
+        Set<Path> live = com.onurkat.reclazz.platform.SpringXmlResources.loadedFiles();
+        Set<Path> processes = processXml.files();
+        live.addAll(processes);
+        long revision = config.runtime().revision();
+        if (xmlDirectoriesDirty || revision != xmlScopeRevision || !live.equals(previousXmlFiles)) {
+            Set<Path> watched = new HashSet<>();
+            for (WatchedDirectory directory : watchKeyMap.values()) {
+                watched.add(directory.directory().toAbsolutePath().normalize());
+                watched.add(com.onurkat.reclazz.platform.SpringXmlResources.canonical(directory.directory()));
+            }
+            Set<String> modules = platformContext.getResourceDirs().keySet();
+            Map<Path, String> external = new HashMap<>();
+            for (Path file : live) {
+                String name = file.getFileName().toString();
+                ChangeKind kind = ChangeKind.of(name);
+                if ((kind != ChangeKind.UNKNOWN && kind != ChangeKind.SPRING_XML)
+                        || watched.contains(file.getParent()) || config.isExcluded(name)) continue;
+                String module = platformContext.resolveModuleName(file);
+                if (!platformContext.shouldWatch(module)) continue;
+                if (platformContext.getPlatformId() == PlatformContext.Platform.HYBRIS && !modules.contains(module)) continue;
+                external.put(file, module);
+            }
+            loadedXmlStamps.keySet().retainAll(external.keySet());
+            externalXmlModules = external;
+            previousXmlFiles = live;
+            xmlScopeRevision = revision;
+            xmlDirectoriesDirty = false;
+        }
+
+        int found = 0;
+        for (var entry : externalXmlModules.entrySet()) {
+            Path file = entry.getKey();
+            XmlStamp current = XmlStamp.read(file);
+            XmlStamp previous = loadedXmlStamps.put(file, current);
+            if (previous == null || current.equals(previous)) continue;
+            ChangeEvent.Type type = current.size() < 0 ? ChangeEvent.Type.DELETED
+                    : previous.size() < 0 ? ChangeEvent.Type.CREATED : ChangeEvent.Type.MODIFIED;
+            pending.put(file, new PendingEvent(System.currentTimeMillis(), file, type, entry.getValue(),
                     processes.contains(file) ? "sap-process-xml" : "spring-xml"));
             found++;
         }

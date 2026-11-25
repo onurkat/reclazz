@@ -157,7 +157,7 @@ public final class SpringXmlResources {
         return null;
     }
 
-    private static Object activeFactory(Object context) {
+    static Object activeFactory(Object context) {
         try {
             if (!Boolean.TRUE.equals(context.getClass().getMethod("isActive").invoke(context))) return null;
             return context.getClass().getMethod("getBeanFactory").invoke(context);
