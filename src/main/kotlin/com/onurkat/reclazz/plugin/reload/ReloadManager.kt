@@ -32,6 +32,9 @@ class ReloadManager(private val project: Project) : Disposable {
     private var reconnectScheduler: ScheduledExecutorService? = null
     private val connecting = AtomicBoolean(false)
 
+    @Volatile var lastReload: AgentEvent? = null
+        private set
+
     private val _reloadCount = AtomicInteger(0)
     val reloadCount: Int get() = _reloadCount.get()
 
@@ -200,6 +203,7 @@ class ReloadManager(private val project: Project) : Disposable {
                 // Both light (method-body) and heavy (structural / companion
                 // class) reloads bump the same counter, the user just wants
                 // to see "something reloaded".
+                lastReload = event
                 _reloadCount.incrementAndGet()
                 lastError = null
             }

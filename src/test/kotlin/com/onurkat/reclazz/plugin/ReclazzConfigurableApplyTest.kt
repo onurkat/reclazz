@@ -24,7 +24,7 @@ class ReclazzConfigurableApplyTest : BasePlatformTestCase() {
         val configurable = ReclazzConfigurable(project)
         try {
             val controls = descendants(configurable.createComponent())
-            val fixed = controls.filterIsInstance<JCheckBox>().single { it.text == "Override adaptive delay" }
+            val fixed = controls.filterIsInstance<JCheckBox>().single { it.text == "Use a fixed delay" }
             expectFalse(fixed.isSelected)
             fixed.isSelected = true
             configurable.apply()
@@ -46,7 +46,7 @@ class ReclazzConfigurableApplyTest : BasePlatformTestCase() {
         try {
             val form = configurable.createComponent()
             val controls = descendants(form)
-            controls.filterIsInstance<JCheckBox>().single { it.text.startsWith("Reload added and removed members") }.isSelected = false
+            controls.filterIsInstance<JCheckBox>().single { it.text.startsWith("Reload added or removed fields and methods") }.isSelected = false
             controls.filterIsInstance<JCheckBox>().single { it.text.startsWith("Re-run changed static") }.isSelected = false
             controls.filterIsInstance<JComboBox<*>>().single().selectedItem = "request"
             val exclusion = controls.filterIsInstance<JLabel>().single { it.text?.startsWith("Exclude classes") == true }.labelFor as JTextField

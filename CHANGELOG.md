@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 - IntelliJ opens the project setup wizard after installation or reinstallation. You can reopen it from Tools and keep following a running SAP Commerce build.
+- IntelliJ Settings groups project setup, SAP Commerce, Spring and JPA, test runs, and troubleshooting options.
 
 ## [1.10.0] - 2026-11-25
 

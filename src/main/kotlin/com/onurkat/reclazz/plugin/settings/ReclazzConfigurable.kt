@@ -7,6 +7,9 @@ package com.onurkat.reclazz.plugin.settings
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.ConfigurationException
+import com.intellij.openapi.ui.DialogWrapper
+import com.intellij.openapi.ui.Messages
+import com.onurkat.reclazz.plugin.setup.SetupWizard
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.popup.JBPopupFactory
@@ -68,12 +71,48 @@ class ReclazzConfigurable internal constructor(
 
     private var liveSettingsManager: ReloadManager? = null
     private var liveSettingsLabel: javax.swing.JLabel? = null
+    private var statusLabel: javax.swing.JLabel? = null
     private val liveSettingsListener: (com.onurkat.reclazz.plugin.reload.AgentEvent) -> Unit = { event ->
-        if (event.level == "LIVE_SETTINGS") {
-            val update = { liveSettingsLabel?.text = liveSettingsMarkup(event.message) }
-            if (javax.swing.SwingUtilities.isEventDispatchThread()) update() else javax.swing.SwingUtilities.invokeLater { update() }
+        if (event.level in setOf("LIVE_SETTINGS", "CONNECTED", "DISCONNECTED", "RELOAD", "STRUCTURAL_RELOAD")) {
+            val update = Runnable {
+                if (event.level == "LIVE_SETTINGS") liveSettingsLabel?.text = liveSettingsMarkup(event.message)
+                updateStatus()
+            }
+            if (javax.swing.SwingUtilities.isEventDispatchThread()) update.run() else javax.swing.SwingUtilities.invokeLater(update)
         }
     }
+
+    private fun updateStatus() {
+        val manager = liveSettingsManager ?: return
+        val enabled = if (ReclazzSettings.getInstance(project).state.enabled) "on" else "off"
+        val connection = if (manager.isConnected) "Agent connected" else "Agent disconnected"
+        val last = manager.lastReload
+        val summary = last?.let { "Last reload: " + it.timestamp.ifBlank { it.message } } ?: "No reloads this session"
+        statusLabel?.text = "Reclazz is $enabled for this project  ·  $connection  ·  $summary"
+    }
+
+    private fun openSetup() {
+        val form = dialogPanel ?: return
+        val dialog = DialogWrapper.findInstance(form)
+        val buttons = dialog?.let { com.intellij.util.ui.UIUtil.findComponentsOfType(it.rootPane, javax.swing.JButton::class.java) }.orEmpty()
+        val otherEdits = buttons.any { it.isShowing && it.isEnabled && it.text == com.intellij.CommonBundle.getApplyButtonText() }
+        if (isModified || otherEdits) {
+            when (Messages.showDialog(project, "Apply changes before setup? This applies to all open Settings pages.",
+                "Set Up Reclazz", arrayOf("Apply", "Discard", "Cancel"), 0, Messages.getQuestionIcon())) {
+                0 -> if (dialog == null) apply() else {
+                    val ok = buttons.firstOrNull { it.isShowing && it.isEnabled && it.text == com.intellij.CommonBundle.getOkButtonText() } ?: return
+                    ok.doClick()
+                }
+                1 -> if (dialog == null) reset() else dialog.doCancelAction()
+                else -> return
+            }
+        } else dialog?.doCancelAction()
+        if (dialog == null || dialog.isDisposed) {
+            ApplicationManager.getApplication().invokeLater({ if (!project.isDisposed) SetupWizard.open(project) },
+                com.intellij.openapi.application.ModalityState.nonModal())
+        }
+    }
+
     private fun liveSettingsMarkup(text: String): String = "<html><body style='width: 480px'>" +
         text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;") + "</body></html>"
 
@@ -106,225 +145,144 @@ class ReclazzConfigurable internal constructor(
         portFilePathField = settings.portFilePath
         agentPortField = settings.agentPort
 
-        val manager = ReloadManager.getInstance(project)
         val version = PluginPresence.enabledDescriptor(AgentJarLocator.RECLAZZ_PLUGIN_ID.idString)
             ?.version ?: "?"
-        val connected = manager.isConnected
-        val reloadCount = manager.reloadCount
-        val statusLine = if (connected) {
-            "Java agent: connected, $reloadCount reload${if (reloadCount == 1) "" else "s"} this session"
-        } else {
-            "Java agent: not connected"
-        }
         val agentInstalled = if (isHybris) HybrisAgentInstaller.isInstalled(project) else false
 
-        // Layout follows the IntelliJ Platform UI guidelines: the switch that
-        // governs everything first, one short label per option, the detail
-        // behind each option's help icon, sentence-case labels and title-case
-        // buttons, and rarely changed options folded into Advanced.
         return panel {
             lateinit var enabledCell: Cell<com.intellij.ui.components.JBCheckBox>
+            row { label("").applyToComponent { statusLabel = this; updateStatus() } }
             row {
-                enabledCell = checkBox("Enable Reclazz in this project")
-                    .bindSelected(::enabledCheckbox)
-                contextHelp("Adds the Java agent to Java run configurations and reloads classes when they compile. " +
-                            "Turn it off to only watch a Java agent attached some other way.")
+                button("Set Up Reclazz") { openSetup() }
+                if (isHybris) button("Check setup") { startSetupCheck(true, null) }
+                button("Connect AI assistant") { ConnectAiAssistantPanel.show(project) }
+                link("Test connection") { applyConnectionSettings(); testConnection() }
             }
-            row {
-                checkBox("Also attach the Java agent to IDE test runs (JUnit, TestNG)")
-                    .bindSelected(::injectIntoTestsCheckbox)
-                    .enabledIf(enabledCell.selected)
-            }
-            row {
-                label(statusLine)
-                link("Test connection") {
-                    applyConnectionSettings()
-                    testConnection()
-                }
-                if (isHybris) link("Check setup") { startSetupCheck(true, null) }
-            }
-
             row {
                 label(liveSettingsMarkup(liveSettingsManager?.liveSettingsStatus.orEmpty())).applyToComponent { liveSettingsLabel = this }
             }
-            row {
-                button("Connect AI assistant") { ConnectAiAssistantPanel.show(project) }
-                contextHelp("Connect Claude Code, Cursor, VS Code or Codex to the bundled Reclazz MCP server. Preview and confirm before changing client settings.")
+            group("General") {
+                row {
+                    enabledCell = checkBox("Enable Reclazz in this project").bindSelected(::enabledCheckbox)
+                        .comment("Adds the Java agent when you run this project from the IDE. Off by default.")
+                }
             }
             if (isHybris) {
                 group("SAP Commerce") {
                     row {
                         if (agentInstalled) {
-                            label("Java agent installed in the server startup properties")
-                            button("Reinstall") {
-                                apply()
-                                installAgentIntoWrapperConf()
-                            }
+                            label("Java agent installed in server startup properties")
+                            button("Reinstall") { apply(); installAgentIntoWrapperConf() }
                             link("Remove") { uninstallAgentFromWrapperConf() }
                         } else {
-                            label("Java agent not installed in the server")
-                            button("Install Java Agent") {
-                                apply()
-                                installAgentIntoWrapperConf()
-                            }
-                            contextHelp("Writes the Java agent to the platform properties the server starts from, so it " +
-                                    "survives ant clean all. Safe to run again; it takes effect at the next server start.")
+                            label("Java agent missing from server startup properties")
+                            button("Install Java Agent") { apply(); installAgentIntoWrapperConf() }
                         }
-                    }
+                    }.rowComment("Writes the agent options to your SAP Commerce configuration. Run ant server and restart to use them.")
                     row {
-                        checkBox("Compile Java in the IDE instead of ant")
-                            .bindSelected(::autoCompileCheckbox)
-                        contextHelp("Faster reloads: changed sources are compiled in-process.")
+                        checkBox("Reclazz compiles saved Java files instead of ant").bindSelected(::autoCompileCheckbox)
+                            .comment("Off by default. Build with ant to reload compiled classes.")
                     }
-                    lateinit var autoImpexCheckboxCell: Cell<com.intellij.ui.components.JBCheckBox>
-                    row {
-                        autoImpexCheckboxCell = checkBox("Import ImpEx files on save")
-                            .bindSelected(::autoImpexCheckbox)
-                    }
-                    indent {
-                        row {
-                            checkBox("Allow REMOVE statements")
-                                .bindSelected(::impexAllowRemoveCheckbox)
-                            contextHelp("Lets a saved ImpEx file delete rows from the database. Development only.")
-                        }.enabledIf(autoImpexCheckboxCell.selected)
-                    }
-                    row {
-                        checkBox("Reset Backoffice configuration on save")
-                            .bindSelected(::backofficeConfigResetCheckbox)
-                        contextHelp("Same as F4 in Backoffice, so configuration changed in the Backoffice UI " +
-                                    "is reset too. Turn it off to reset by hand.")
-                    }
-                    row("Watch extensions:") {
-                        textField()
-                            .bindText(::watchExtensionsField)
-                            .columns(COLUMNS_MEDIUM)
+                    row("Watched extensions:") {
+                        textField().bindText(::watchExtensionsField).columns(COLUMNS_MEDIUM)
                             .also { watchExtensionsTextField = it.component }
-                            .comment("Empty watches every custom extension.")
+                            .comment("Leave empty to watch all custom extensions (default).")
                         link("Choose...") { pickExtensions() }
                     }
-                    row {
-                        label("Changes to the running database, for development systems only:")
-                    }.topGap(TopGap.SMALL)
-                    indent {
+                    group("Data on save (development systems only)") {
+                        row { comment("These actions can change running system data. Use them on a development system.") }
+                        lateinit var impex: Cell<com.intellij.ui.components.JBCheckBox>
                         row {
-                            checkBox("Update the running system after items.xml changes")
-                                .bindSelected(::autoUpdateRunningSystemCheckbox)
-                            contextHelp("Adds new columns and type localizations to the live database. " +
-                                        "Never drops columns.")
+                            impex = checkBox("Import ImpEx files on save").bindSelected(::autoImpexCheckbox)
+                                .comment("Applies saved ImpEx files to the running database. Off by default.")
+                        }
+                        indent {
+                            row {
+                                checkBox("Allow REMOVE statements").bindSelected(::impexAllowRemoveCheckbox)
+                                    .comment("Allows an import to delete matching database rows. Off by default.")
+                            }.enabledIf(impex.selected)
                         }
                         row {
-                            checkBox("Update Solr documents after a provider reloads")
-                                .bindSelected(::autoSolrReindexCheckbox)
-                            contextHelp("Re-indexes the documents that use the reloaded provider through " +
-                                        "SAP's own indexer. Field freshness is not verified.")
+                            checkBox("Update the running system after items.xml changes").bindSelected(::autoUpdateRunningSystemCheckbox)
+                                .comment("Adds columns and type localizations to the database. Off by default.")
+                        }
+                        row {
+                            checkBox("Update Solr documents after a provider reloads").bindSelected(::autoSolrReindexCheckbox)
+                                .comment("Reindexes documents that use the changed provider. Off by default.")
+                        }
+                        row {
+                            checkBox("Reset Backoffice configuration on save").bindSelected(::backofficeConfigResetCheckbox)
+                                .comment("Resets Backoffice customizations just like pressing F4. On by default.")
                         }
                     }
                 }
             }
-
-            group("Reloading") {
+            group("Spring and JPA") {
                 row("Apply reloads:") {
-                    comboBox(listOf("immediate", "request"),
-                        object : SimpleListCellRenderer<String>() {
-                            override fun customize(list: JList<out String>, value: String?, index: Int,
-                                                   selected: Boolean, hasFocus: Boolean) {
-                                text = when (value) {
-                                    null -> ""
-                                    "request" -> "At the next request boundary"
-                                    else -> "Immediately"
-                                }
-                            }
-                        })
-                        .bindItem({ reloadBoundaryField }, { reloadBoundaryField = it ?: "immediate" })
-                    contextHelp("At the next request boundary waits for running MVC requests to finish. It needs " +
-                                "the Java agent at JVM startup; an attached one always applies immediately.")
+                    comboBox(listOf("immediate", "request"), object : SimpleListCellRenderer<String>() {
+                        override fun customize(list: JList<out String>, value: String?, index: Int, selected: Boolean, hasFocus: Boolean) {
+                            text = if (value == "request") "Between web requests" else "Immediately"
+                        }
+                    }).bindItem({ reloadBoundaryField }, { reloadBoundaryField = it ?: "immediate" })
+                        .comment("Immediate by default. Waiting for active MVC requests requires the agent at JVM startup.")
                 }
                 row {
-                    checkBox("Configure the JVM for hot-swap")
-                        .bindSelected(::autoDetectJdkCheckbox)
-                    contextHelp("Recommended. Adds the JVM options class redefinition needs to run configurations.")
-                }.enabledIf(enabledCell.selected)
-                row {
-                    checkBox("Refresh JPA mappings when an entity changes")
-                        .bindSelected(::jpaRefreshCheckbox)
-                    contextHelp("Rebuilds the persistence unit and closes open persistence contexts. Changed " +
-                                "fields of existing entities need enhanced redefinition; new entities work on any JDK " +
-                                "with a prepared schema.")
+                    checkBox("Refresh JPA mappings when an entity changes").bindSelected(::jpaRefreshCheckbox)
+                        .comment("Rebuilds the persistence unit and closes open persistence contexts. Off by default.")
                 }
             }
-
-            collapsibleGroup("Advanced") {
+            group("Tests") {
                 row {
-                    checkBox("Reload added and removed members")
-                        .bindSelected(::structuralReloadCheckbox)
-                    contextHelp("On by default. Off limits reloads to method bodies.")
+                    checkBox("Attach Reclazz to IDE test runs (JUnit, TestNG)").bindSelected(::injectIntoTestsCheckbox)
+                        .enabledIf(enabledCell.selected).comment("Use reloads while running tests from the IDE. Off by default.")
+                }
+            }
+            collapsibleGroup("Advanced (troubleshooting)") {
+                row {
+                    checkBox("Reload added or removed fields and methods").bindSelected(::structuralReloadCheckbox)
+                        .comment("On by default. Turn off to reload method bodies only.")
                 }
                 row {
-                    checkBox("Re-run changed static initializers")
-                        .bindSelected(::resetStaticsCheckbox)
-                    contextHelp("On by default for IDE launches, off for SAP Commerce projects. Applies at the next launch. " +
-                                "Reflection still reports eligible static finals as final; copies taken earlier keep their old value.")
+                    checkBox("Re-run changed static field initializers").bindSelected(::resetStaticsCheckbox)
+                        .comment("Resets affected static fields. On by default for IDE launches, off for SAP Commerce.")
                 }
                 row {
-                    checkBox("Verbose logging")
-                        .bindSelected(::verboseCheckbox)
-                    contextHelp("Useful when reporting a bug.")
+                    checkBox("Set JVM options for hot-swap").bindSelected(::autoDetectJdkCheckbox)
+                        .enabledIf(enabledCell.selected).comment("Adds class-reload options to IDE run configurations. On by default.")
+                }
+                row {
+                    checkBox("Verbose logging").bindSelected(::verboseCheckbox)
+                        .comment("Records additional diagnostic details. Off by default.")
                 }
                 row("Exclude classes:") {
-                    textField()
-                        .bindText(::excludeClassesField)
-                        .columns(COLUMNS_MEDIUM)
-                    contextHelp("Class-name globs the Java agent never instruments, separated by semicolons, " +
-                                "for example com.example.Legacy*.")
+                    textField().bindText(::excludeClassesField).columns(COLUMNS_MEDIUM)
+                        .comment("Skip matching class names, e.g. com.example.Legacy*. Separate patterns with semicolons. Empty by default.")
                 }
                 row("Ignore files:") {
-                    textField()
-                        .bindText(::excludePatternsField)
-                        .columns(COLUMNS_MEDIUM)
-                    contextHelp("Changed files matching these globs are not reloaded, for example *Test.class;*Mock*.")
+                    textField().bindText(::excludePatternsField).columns(COLUMNS_MEDIUM)
+                        .comment("Skip changed files that match these patterns, e.g. *Test.class. Empty by default.")
                 }
-                row("Debounce:") {
-                    val fixed = checkBox("Override adaptive delay").bindSelected(::useFixedDebounce)
-                    spinner(0..60_000, 50)
-                        .bindIntValue(
-                            getter = { debounceMsField.toInt() },
-                            setter = { debounceMsField = it.toLong() }
-                        ).enabledIf(fixed.selected)
+                row("Wait after edits:") {
+                    val fixed = checkBox("Use a fixed delay").bindSelected(::useFixedDebounce)
+                    spinner(0..60_000, 50).bindIntValue({ debounceMsField.toInt() }, { debounceMsField = it.toLong() })
+                        .enabledIf(fixed.selected)
                     label("ms")
-                    contextHelp("The default adapts to the change: 30 ms for Java sources compiled by the agent and " +
-                                "500 ms for class files and mixed output. A fixed delay applies to every batch.")
-                }
+                }.rowComment("By default, waits 30 ms for Java compiled by Reclazz and 500 ms for class files or mixed changes.")
                 row("Startup delay:") {
-                    spinner(0..300, 5)
-                        .bindIntValue(
-                            getter = { startupDelayField },
-                            setter = { startupDelayField = it }
-                        )
+                    spinner(0..300, 5).bindIntValue({ startupDelayField }, { startupDelayField = it })
                     label("s")
-                    contextHelp("Wait before watching files, so a starting server does not run out of file handles.")
-                }
+                }.rowComment("Wait before watching files while the server starts. Default 30 s.")
                 row("Java agent port:") {
-                    spinner(0..65535, 1)
-                        .bindIntValue(
-                            getter = { agentPortField },
-                            setter = { agentPortField = it }
-                        )
-                    contextHelp("0 reads the port from the port file. Set it when the Java agent port is fixed.")
+                    spinner(0..65535, 1).bindIntValue({ agentPortField }, { agentPortField = it })
+                        .comment("Set a fixed port or use 0 to read the port file (default).")
                 }
                 row("Port file:") {
-                    textField()
-                        .bindText(::portFilePathField)
-                        .columns(COLUMNS_MEDIUM)
-                        .comment("Default: .idea/reclazz/agent.port")
+                    textField().bindText(::portFilePathField).columns(COLUMNS_MEDIUM)
+                        .comment("Leave empty to read .idea/reclazz/agent.port (default).")
                 }
                 row {
-                    button("Attach to Running Server...") {
-                        apply()
-                        // Calls the shared flow directly. Invoking the
-                        // action's actionPerformed from here would violate
-                        // the platform's @ApiStatus.OverrideOnly contract.
-                        AttachAction.attachInteractively(project)
-                    }
+                    button("Attach to Running Server...") { apply(); AttachAction.attachInteractively(project) }
+                        .comment("Connect the agent to a Java process that is already running.")
                 }
             }.apply { expanded = false }
 
@@ -519,6 +477,7 @@ class ReclazzConfigurable internal constructor(
         // The tool window and the status bar item both exist only where
         // Reclazz is on, and the platform re-reads that only when asked.
         ReclazzSurfaces.refresh(project)
+        updateStatus()
         ReloadManager.getInstance(project).applyLiveSettings()
     }
 
@@ -552,6 +511,7 @@ class ReclazzConfigurable internal constructor(
     override fun disposeUIResources() {
         liveSettingsManager?.removeEventListener(liveSettingsListener)
         liveSettingsManager = null
+        statusLabel = null
         liveSettingsLabel = null
         dialogPanel = null
         watchExtensionsTextField = null

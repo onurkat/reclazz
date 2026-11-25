@@ -3,7 +3,6 @@ package com.onurkat.reclazz.plugin
 
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.testFramework.PlatformTestUtil
-import com.intellij.ui.components.ActionLink
 import com.onurkat.reclazz.plugin.hybris.SetupCheck
 import com.onurkat.reclazz.plugin.settings.ReclazzConfigurable
 import com.onurkat.reclazz.plugin.settings.SetupCheckUi
@@ -12,6 +11,7 @@ import java.awt.Component
 import java.awt.Container
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.atomic.AtomicBoolean
+import javax.swing.JButton
 import javax.swing.JTextArea
 import javax.swing.SwingUtilities
 import kotlin.test.assertContains
@@ -27,7 +27,7 @@ class SetupCheckUiTest : BasePlatformTestCase() {
         while(!done.isDone && System.nanoTime()<end){PlatformTestUtil.dispatchAllInvocationEventsInIdeEventQueue();Thread.sleep(10)}
         expectTrue(done.isDone,"setup check did not finish");done.join()
     }
-    fun testSettingsLinkRunsOffEdtAndRendersFindingsWithFixes() {
+    fun testSettingsButtonRunsOffEdtAndRendersFindingsWithFixes() {
         SyntheticProject(project,true).use { fixture ->
             val configurable=ReclazzConfigurable(fixture.project);var done:CompletableFuture<*>?=null;val rendered=AtomicBoolean()
             configurable.startSetupCheck={show,message ->
@@ -38,8 +38,8 @@ class SetupCheckUiTest : BasePlatformTestCase() {
                 },notify={error("Unexpected notification: $it")})
             }
             try {
-                val link=descendants(configurable.createComponent()).filterIsInstance<ActionLink>().single { it.text=="Check setup" }
-                link.doClick();await(checkNotNull(done));expectTrue(rendered.get())
+                val button=descendants(configurable.createComponent()).filterIsInstance<JButton>().single { it.text=="Check setup" }
+                button.doClick();await(checkNotNull(done));expectTrue(rendered.get())
             } finally { configurable.disposeUIResources() }
         }
     }
@@ -52,14 +52,14 @@ class SetupCheckUiTest : BasePlatformTestCase() {
                 done=SetupCheckUi.run(fixture.project,show,message,collect={expectFalse(SwingUtilities.isEventDispatchThread());findings},present={error("Automatic check opened a dialog")},notify={notices.add(it)})
             }
             try {
-                descendants(configurable.createComponent()).filterIsInstance<javax.swing.JButton>().single { it.text=="Install Java Agent" }.doClick()
+                descendants(configurable.createComponent()).filterIsInstance<JButton>().single { it.text=="Install Java Agent" }.doClick()
                 await(checkNotNull(done));expectEquals("Synthetic install succeeded",notices.first());assertContains(notices.last(),"1 failed");assertContains(notices.last(),"1 warning")
             } finally { configurable.disposeUIResources() }
         }
     }
     fun testNonSapSettingsDoNotOfferSapSetupCheck() {
         val configurable=ReclazzConfigurable(project)
-        try { expectFalse(descendants(configurable.createComponent()).filterIsInstance<ActionLink>().any { it.text=="Check setup" }) }
+        try { expectFalse(descendants(configurable.createComponent()).filterIsInstance<JButton>().any { it.text=="Check setup" }) }
         finally { configurable.disposeUIResources() }
     }
     fun testOpeningSettingsAndCheckingDoesNotCreateOptionalConfigDirectory() {
@@ -72,7 +72,7 @@ class SetupCheckUiTest : BasePlatformTestCase() {
                 configurable.startSetupCheck={show,message -> done=SetupCheckUi.run(fixture.project,show,message,present={}) }
                 val component=configurable.createComponent()
                 expectFalse(java.nio.file.Files.exists(missing),"opening the Check setup surface must remain read-only")
-                descendants(component).filterIsInstance<ActionLink>().single{it.text=="Check setup"}.doClick();await(checkNotNull(done))
+                descendants(component).filterIsInstance<JButton>().single{it.text=="Check setup"}.doClick();await(checkNotNull(done))
                 expectFalse(java.nio.file.Files.exists(missing),"real Settings path and collect must remain read-only")
             } finally { configurable.disposeUIResources() }
         }
@@ -88,7 +88,7 @@ class SetupCheckUiTest : BasePlatformTestCase() {
                 done=SetupCheckUi.run(fixture.project,show,message,collect={findings},present={error("Automatic dialog")},notify={notices.add(it)})
             }
             try {
-                descendants(configurable.createComponent()).filterIsInstance<javax.swing.JButton>().single { it.text=="Reinstall" }.doClick()
+                descendants(configurable.createComponent()).filterIsInstance<JButton>().single { it.text=="Reinstall" }.doClick()
                 await(checkNotNull(done));expectEquals("Synthetic reinstall succeeded",notices.first());assertContains(notices.last(),"1 failed")
             } finally { configurable.disposeUIResources() }
         }
@@ -156,7 +156,7 @@ class SetupCheckUiTest : BasePlatformTestCase() {
                 val configurable=ReclazzConfigurable(fixture.project);var done:CompletableFuture<*>?=null;var rows=listOf<SetupCheck.Finding>()
                 configurable.startSetupCheck={show,message -> done=SetupCheckUi.run(fixture.project,show,message,collect={SetupCheckUi.collect(fixture.project,bundledAgent={bundled.toFile()})},present={rows=it}) }
                 try{
-                    descendants(configurable.createComponent()).filterIsInstance<ActionLink>().single{it.text=="Check setup"}.doClick();await(checkNotNull(done))
+                    descendants(configurable.createComponent()).filterIsInstance<JButton>().single{it.text=="Check setup"}.doClick();await(checkNotNull(done))
                     expectEquals(SetupCheck.Level.WARN,rows.single{it.id=="agent-jar"}.level);assertContains(rows.single{it.id=="agent-jar"}.message,"plugin $version")
                     expectEquals(SetupCheck.Level.OK,rows.single{it.id=="server"}.level);assertContains(rows.single{it.id=="server"}.message,"DOCTOR")
                     expectTrue(seen.get(3,java.util.concurrent.TimeUnit.SECONDS).startsWith("DOCTOR "));worker.join(3000);expectFalse(worker.isAlive)

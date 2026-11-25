@@ -50,8 +50,12 @@ public class UiClient {
             await("wizardStartup", "started"::equals);
             if (act("wizardCount").equals("1")) await("wizardClick:Close", "clicked"::equals);
             act("setup");
-            if (!args[0].equals("settings")) reloadFlow();
-            if (!args[0].equals("reload")) settingsFlow();
+            if (args[0].equals("settings-setup")) {
+                settingsSetup();
+                return;
+            }
+            if (!args[0].startsWith("settings")) reloadFlow();
+            if (!args[0].equals("reload")) settingsFlow(args[0]);
         } catch (Throwable failure) {
             System.err.println("FAIL " + step + ": " + failure);
             if (frame != null) {
@@ -145,9 +149,53 @@ public class UiClient {
                 "png", output.resolve(name + ".png").toFile());
     }
 
-    static void settingsFlow() throws Exception {
+    static void settingsSetup() throws Exception {
+        step = "pending edits from Settings to the setup wizard";
+        for (String choice : new String[]{"Discard", "Apply"}) {
+            openSettings();
+            check(act("formChange").equals("changed"), "could not modify verbose logging");
+            check(act("formWizard").equals("opening"), "Set Up Reclazz button missing");
+            if (choice.equals("Discard")) {
+                await("formDecisionCancel", "chosen"::equals);
+                check(act("formLabels").contains("Verbose logging"), "Cancel closed Settings");
+                check(act("formSavedVerbose").equals("false"), "Cancel committed an edit");
+                check(act("formWizard").equals("opening"), "could not retry setup");
+            }
+            await("formDecision" + choice, "chosen"::equals);
+            await("formNewWizard", "visible"::equals);
+            capture("settings-to-wizard-" + choice.toLowerCase(java.util.Locale.ROOT));
+            check(act("formLabels").equals("waiting"), "Settings stayed open");
+            check(act("formSavedVerbose").equals(String.valueOf(choice.equals("Apply"))), "wrong persisted value after " + choice);
+            check(act("formCloseWizard").equals("closed"), "could not close wizard");
+        }
+        System.out.println("PASS Settings to real wizard, Cancel / Discard / Apply and persisted changes");
+    }
+
+    static void settingsFlow(String scenario) throws Exception {
         step = "adaptive delay setting";
-        openSettings();
+        act("settings");
+        String labels = await("formLabels", value -> value.contains("Connect AI assistant"));
+        for (String expected : new String[]{"General", "Spring and JPA", "Tests", "Advanced (troubleshooting)",
+                "Set Up Reclazz", "Test connection", "Enable Reclazz in this project", "Apply reloads",
+                "Refresh JPA mappings", "Attach Reclazz to IDE test runs"}) check(labels.contains(expected), "Missing: " + expected);
+        check(!labels.contains("Use a fixed delay"), "Advanced was expanded");
+        boolean sap = scenario.startsWith("settings-sap");
+        for (String field : new String[]{"SAP Commerce", "Data on save", "Check setup", "Watched extensions", "Choose...",
+                "Reclazz compiles saved Java files", "Import ImpEx", "Allow REMOVE", "Update Solr documents",
+                "Update the running system", "Reset Backoffice configuration"}) {
+            check(labels.contains(field) == sap, "Wrong project visibility: " + field);
+        }
+        boolean installed = scenario.equals("settings-sap-installed");
+        check(labels.contains("Install Java Agent") == (sap && !installed), "Install visibility");
+        check(labels.contains("Reinstall") == installed, "Reinstall visibility");
+        check(java.util.Arrays.asList(labels.split("\\|")).contains("Remove") == installed, "Remove visibility");
+        ImageIO.write(new Robot().createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize())),
+                "png", output.resolve(scenario + ".png").toFile());
+        expandAdvanced();
+        String advanced = await("formLabels", value -> value.contains("Use a fixed delay"));
+        for (String expected : new String[]{"Reload added or removed", "Re-run changed static", "Set JVM options",
+                "Verbose logging", "Exclude classes", "Ignore files", "Startup delay", "Java agent port", "Port file",
+                "Attach to Running Server"}) check(advanced.contains(expected), "Advanced missing: " + expected);
         await("setting", s -> s.startsWith("false|false|"));
         check("applied".equals(act("override")), "settings did not apply");
         openSettings();
@@ -157,8 +205,12 @@ public class UiClient {
 
     static void openSettings() throws Exception {
         act("settings");
+        expandAdvanced();
+    }
+
+    static void expandAdvanced() throws Exception {
         var advanced = robot.find(ComponentFixture.class,
-                byXpath("//div[@class='CollapsibleTitledSeparatorImpl' and @accessiblename='Advanced']"), timeout);
+                byXpath("//div[@class='CollapsibleTitledSeparatorImpl' and @accessiblename='Advanced (troubleshooting)']"), timeout);
         if (act("setting").equals("opening")) advanced.click();
     }
 

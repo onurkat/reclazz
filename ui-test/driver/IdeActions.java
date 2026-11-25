@@ -44,7 +44,7 @@ public final class IdeActions {
 
     public static String perform(String command) {
         var result = new AtomicReference<String>();
-        boolean inDialog = command.equals("setting") || command.equals("override") || command.equals("log");
+        boolean inDialog = command.startsWith("form") || command.equals("setting") || command.equals("override") || command.equals("log");
         ApplicationManager.getApplication().invokeAndWait(
                 () -> result.set(performOnEdt(command)), inDialog ? ModalityState.any() : ModalityState.nonModal());
         return result.get();
@@ -166,6 +166,61 @@ public final class IdeActions {
             }
             throw new IllegalStateException("Reload Log console missing");
         }
+        if (command.equals("formSavedVerbose")) return String.valueOf(com.onurkat.reclazz.plugin.settings.ReclazzSettings.Companion.getInstance(project).getState().getVerbose());
+        if (command.startsWith("formDecision") || command.equals("formNewWizard") || command.equals("formCloseWizard")) {
+            for (var window : Window.getWindows()) {
+                if (!window.isShowing()) continue;
+                var parts = new ArrayList<Component>();
+                collect(window, parts);
+                if (command.startsWith("formDecision")) {
+                    if (parts.stream().noneMatch(c -> c instanceof AbstractButton b && "Discard".equals(b.getText()))) continue;
+                    String choice = command.substring("formDecision".length());
+                    for (var c : parts) if (c instanceof AbstractButton b && choice.equals(b.getText()) && b.isShowing()) {
+                        b.doClick(); return "chosen";
+                    }
+                } else if (window instanceof JDialog dialog && "Set Up Reclazz".equals(dialog.getTitle()) &&
+                        parts.stream().anyMatch(c -> c instanceof JLabel l && l.getText() != null && l.getText().startsWith("Step "))) {
+                    if (command.equals("formNewWizard")) return "visible";
+                    for (var c : parts) if (c instanceof JButton b && "Close".equals(b.getText())) {
+                        b.doClick(); return "closed";
+                    }
+                }
+            }
+            return "waiting";
+        }
+        if (command.startsWith("form")) {
+            for (Window window : Window.getWindows()) {
+                if (!window.isShowing()) continue;
+                List<Component> parts = new ArrayList<>();
+                collect(window, parts);
+                if (parts.stream().noneMatch(c -> c instanceof JCheckBox box && box.isShowing() &&
+                        "Enable Reclazz in this project".equals(box.getText()))) continue;
+                if (command.equals("formLabels")) {
+                    var labels = new java.util.LinkedHashSet<String>();
+                    for (var c : parts) {
+                        if (!c.isShowing()) continue;
+                        var a = c.getAccessibleContext();
+                        if (a != null && a.getAccessibleName() != null) labels.add(a.getAccessibleName());
+                        if (c instanceof JLabel l && l.getText() != null) labels.add(l.getText());
+                        if (c instanceof AbstractButton b && b.getText() != null) labels.add(b.getText());
+                    }
+                    return String.join("|", labels);
+                }
+                if (command.equals("formChange")) {
+                    for (var c : parts) if (c instanceof JCheckBox b && "Verbose logging".equals(b.getText())) {
+                        b.doClick();
+                        return "changed";
+                    }
+                }
+                if (command.equals("formWizard")) {
+                    for (var c : parts) if (c instanceof JButton b && "Set Up Reclazz".equals(b.getText())) {
+                        SwingUtilities.invokeLater(b::doClick);
+                        return "opening";
+                    }
+                }
+            }
+            return "waiting";
+        }
         if (command.equals("settings")) {
             SwingUtilities.invokeLater(() -> ShowSettingsUtil.getInstance().editConfigurable(project, new ReclazzConfigurable(project)));
             return "opening";
@@ -176,7 +231,7 @@ public final class IdeActions {
             collect(window, components);
             for (Component c : components) {
                 if (!(c instanceof JCheckBox fixed) || !fixed.isShowing()
-                        || !"Override adaptive delay".equals(fixed.getText())) continue;
+                        || !"Use a fixed delay".equals(fixed.getText())) continue;
                 if (command.equals("override") && !fixed.isSelected()) fixed.doClick();
                 for (Component candidate : components) {
                     if (!(candidate instanceof JSpinner spinner) || !spinner.isShowing()
