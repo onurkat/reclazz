@@ -60,6 +60,21 @@ public final class AddedBeanAdapter {
     }
     record Plan(List<Factory> factories, List<String> refused, boolean full) { }
 
+    /** A Boot application is a meta-configuration, outside the direct factory registration contract. */
+    static List<String> addedBootApplicationFactories(byte[] bytes, Set<String> added) {
+        if (bytes == null || added.isEmpty()) return List.of();
+        ClassNode source = new ClassNode();
+        new ClassReader(bytes).accept(source, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+        if (annotation(source.visibleAnnotations, "Lorg/springframework/boot/autoconfigure/SpringBootApplication;") == null)
+            return List.of();
+        List<String> factories = new ArrayList<>();
+        for (MethodNode method : source.methods) {
+            if (added.contains(method.name + ":" + method.desc) && annotation(method.visibleAnnotations, BEAN) != null)
+                factories.add(method.name + method.desc);
+        }
+        return factories;
+    }
+
     static Plan inspect(byte[] bytes, Set<String> added) {
         return inspect(bytes, added, false);
     }

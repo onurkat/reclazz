@@ -166,6 +166,7 @@ public class SpringReloadOrchestrator {
                                  boolean addedMethods, java.util.Set<String> addedMethodSigs,
                                  byte[] newBytecode) {
         if (type == null) return;
+        if (addedMethods) SpringAddedBeanReloader.reportBootApplicationFactories(type, addedMethodSigs, newBytecode);
         addedBeanReloader.hierarchyHelper(type, newBytecode);
         operationSourceReloader.beginReload(type,isStructural||annotationsChanged);
         if((isStructural||annotationsChanged)&&SpringProxyRecreation.annotated(type))injectionMetadataReloader.reload();

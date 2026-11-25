@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- Spring Boot applications report an active DevTools restart watcher and name added application-class bean factories that need a restart.
+
 - When SAP Commerce regenerates DTOs or models, Java callers saved alongside the XML compile after generation finishes. A failed generation still surfaces genuine Java compilation errors.
 
 - On Spring Framework 7.0.10, editing a watched `@Bean` factory in a lite configuration hierarchy reports the configuration that needs a restart and preserves its running singleton.

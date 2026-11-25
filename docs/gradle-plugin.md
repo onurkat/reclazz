@@ -39,6 +39,8 @@ Then run your app the way you already do:
 The plugin resolves `com.onurkat.reclazz:reclazz-agent` at the version you
 applied and attaches it. No `reclazz` block is needed for the common case.
 
+When Spring Boot DevTools restart is enabled, it can restart the application after a class edit that Reclazz has applied. To keep the running context, pass `-Dspring.devtools.restart.enabled=false` to the application JVM. For a Gradle Groovy build, use `tasks.named('bootRun') { jvmArgs '-Dspring.devtools.restart.enabled=false' }`.
+
 ### Plain Java application run (opt-in)
 
 This option is new in the current source tree; use a plugin build containing it.

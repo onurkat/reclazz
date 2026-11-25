@@ -37,6 +37,12 @@ public final class SpringAddedBeanReloader {
 
     public SpringAddedBeanReloader(PlatformContext platform) { this.platform = platform; }
 
+    static void reportBootApplicationFactories(Class<?> type, Set<String> added, byte[] bytes) {
+        for (String method : AddedBeanAdapter.addedBootApplicationFactories(bytes, added))
+            refuse(type, method + " was not registered on @SpringBootApplication. "
+                    + "Restart to register it, or declare the factory on a direct @Configuration class.");
+    }
+
     public synchronized boolean reloadBeanMethods(Class<?> type, Set<String> added, byte[] bytes) {
         if (bytes == null) return !hierarchyEdits.containsKey(type) || batchDepth > 0 || finishHierarchy();
         var plan = AddedBeanAdapter.inspect(bytes, added);

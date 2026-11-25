@@ -37,6 +37,18 @@ class SpringAddedBeanTest {
         public String lazySample() { throw new AssertionError("must not initialize to discover the method"); }
     }
 
+    @Test void aBootApplicationReportsOnlyNewDirectFactoryMethods() throws Exception {
+        ClassNode source = read(annotated("first"));
+        method(source, "second").visibleAnnotations = List.of(bean());
+        MethodNode factory = method(source, "first");
+        MethodNode ordinary = method(source, "nothing");
+        Set<String> added = Set.of(factory.name + ":" + factory.desc, ordinary.name + ":" + ordinary.desc);
+        assertEquals(List.of(), AddedBeanAdapter.addedBootApplicationFactories(write(source), added));
+        source.visibleAnnotations = List.of(new AnnotationNode("Lorg/springframework/boot/autoconfigure/SpringBootApplication;"));
+        assertEquals(List.of(factory.name + factory.desc),
+                AddedBeanAdapter.addedBootApplicationFactories(write(source), added));
+    }
+
     @Test void anUnresolvedNativeLazyDefinitionExposesTheStartupMethodBeforeInstantiation() throws Exception {
         try (var context = new AnnotationConfigApplicationContext()) {
             var reader = new org.springframework.core.type.classreading.SimpleMetadataReaderFactory(
