@@ -11,41 +11,107 @@ import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.wm.ToolWindow
-import com.intellij.openapi.wm.ToolWindowManager
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.project.DumbService
+import com.intellij.openapi.ui.DialogWrapper
+import com.onurkat.reclazz.plugin.settings.ReclazzAppState
+import com.onurkat.reclazz.plugin.settings.ReclazzSettings
+import java.awt.BorderLayout
+import java.awt.Dimension
+import java.awt.event.ActionEvent
+import javax.swing.*
 import com.intellij.ui.content.ContentFactory
 import com.intellij.openapi.util.Disposer
-import com.onurkat.reclazz.plugin.ui.ReclazzSurfaces
 
-/** Opens the setup wizard: the "Setup" tab of the Reclazz tool window, available even while Reclazz is off. */
+/** All setup entry points share one project session, including any running ant process. */
 object SetupWizard {
     const val TAB = "Setup"
-    private val OPEN = Key.create<Boolean>("reclazz.setup.open")
+    private val SESSION = Key.create<Session>("reclazz.setup.session")
 
-    fun isOpen(project: Project) = project.getUserData(OPEN) == true
+    private class Session(val project: Project) : com.intellij.openapi.Disposable {
+        val panel by lazy { SetupPanel(project, wizard = true).also { Disposer.register(this, it) } }
+        var dialog: WizardDialog? = null
+        var pending = false
+        override fun dispose() { dialog?.close(DialogWrapper.CANCEL_EXIT_CODE) }
+    }
+
+    fun isOpen(project: Project) = project.getUserData(SESSION)?.dialog != null
 
     fun open(project: Project) {
-        if (project.isDisposed) return
-        project.putUserData(OPEN, true)
-        val window = ToolWindowManager.getInstance(project).getToolWindow(ReclazzSurfaces.TOOL_WINDOW_ID) ?: return
-        window.setAvailable(true)
-        window.show { select(project, window) }
-        select(project, window)
+        val app = ApplicationManager.getApplication()
+        if (project.isDisposed || app.isHeadlessEnvironment) return
+        app.invokeLater({
+            if (project.isDisposed) return@invokeLater
+            val session = project.getUserData(SESSION) ?: Session(project).also {
+                project.putUserData(SESSION, it)
+                Disposer.register(project, it)
+            }
+            val current = session.dialog
+            if (current != null) {
+                current.window?.toFront()
+                current.window?.requestFocus()
+            } else if (!session.pending) {
+                session.pending = true
+                DumbService.getInstance(project).smartInvokeLater({
+                    session.pending = false
+                    if (!project.isDisposed) {
+                        val dialog = WizardDialog(session)
+                        session.dialog = dialog
+                        dialog.show()
+                    }
+                }, ModalityState.nonModal())
+            }
+        }, ModalityState.any())
     }
 
-    private fun select(project: Project, window: ToolWindow) {
-        val manager = window.contentManager
-        val existing = manager.findContent(TAB) ?: addTab(project, window)
-        manager.setSelectedContent(existing, true)
-    }
-
-    /** Adds the Setup tab first in the tool window and returns it. */
     fun addTab(project: Project, window: ToolWindow): com.intellij.ui.content.Content {
-        val content = ContentFactory.getInstance().createContent(null, TAB, false)
-        val panel = SetupPanel(project)
-        content.component = panel.component
-        Disposer.register(content, panel)
+        val button = JButton("Set Up Reclazz").apply { addActionListener { open(project) } }
+        val page = JPanel().apply { add(button) }
+        val content = ContentFactory.getInstance().createContent(page, TAB, false)
         window.contentManager.addContent(content, 0)
         return content
+    }
+
+    private class WizardDialog(private val session: Session) : DialogWrapper(session.project, false) {
+        private val view = session.panel
+        private val dismiss = JCheckBox("Don't show again for this project")
+        private fun action(name: String, run: () -> Unit) = object : AbstractAction(name) {
+            override fun actionPerformed(event: ActionEvent) = run()
+        }
+        private val back = action("Back") { view.move(-1) }
+        private val next = action("Next") { view.move(1) }
+        private val skip = action("Skip") { view.skipOptional() }
+
+        init {
+            title = "Set Up Reclazz"
+            isModal = false
+            setCancelButtonText("Close")
+            listOf(back, next, skip).forEach { it.isEnabled = false }
+            view.onNavigation = { canGoBack, forward, canSkip ->
+                back.isEnabled = canGoBack
+                next.putValue(Action.NAME, forward ?: "Next")
+                next.isEnabled = forward != null
+                skip.isEnabled = canSkip
+            }
+            init()
+            view.refresh()
+        }
+
+        override fun createCenterPanel(): JComponent = JPanel(BorderLayout()).apply {
+            preferredSize = Dimension(680, 480)
+            add(view.component, BorderLayout.CENTER)
+            add(dismiss, BorderLayout.SOUTH)
+        }
+        override fun createActions(): Array<Action> = arrayOf(back, next, skip, cancelAction)
+        override fun dispose() {
+            if (dismiss.isSelected && !session.project.isDisposed) {
+                ReclazzSettings.getInstance(session.project).state.dismissedSetupGeneration = ReclazzAppState.getInstance().state.setupGeneration
+            }
+            session.dialog = null
+            view.onNavigation = null
+            super.dispose()
+        }
     }
 }
 

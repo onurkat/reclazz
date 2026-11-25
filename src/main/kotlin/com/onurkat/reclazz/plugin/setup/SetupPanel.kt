@@ -52,7 +52,7 @@ import javax.swing.Timer
  * Non-modal on purpose: the user can keep working while it is open. The state is recomputed from the project on every
  * refresh ([SetupFactsCollector]); while ant server runs, its output streams into the open card.
  */
-internal class SetupPanel(private val project: Project) : Disposable {
+internal class SetupPanel(private val project: Project, private val wizard: Boolean = false) : Disposable {
 
     private val content = JPanel(VerticalLayout(JBUI.scale(12))).apply { isOpaque = false }
     private val antLog = JBTextArea(10, 80).apply { isEditable = false; lineWrap = false }
@@ -129,6 +129,19 @@ internal class SetupPanel(private val project: Project) : Disposable {
         render()
     }
 
+    private var pageIndex = 0
+    var onNavigation: ((Boolean, String?, Boolean) -> Unit)? = null
+
+    fun move(delta: Int) {
+        if (evaluated.isEmpty()) return
+        pageIndex = (pageIndex + delta).coerceIn(0..evaluated.size)
+        render()
+    }
+
+    fun skipOptional() {
+        if (evaluated.getOrNull(pageIndex)?.step?.id == "assistant") perform(SetupAction.SkipAssistant)
+    }
+
     private fun render() {
         val f = facts ?: return
         if (evaluated.isEmpty()) return
@@ -136,11 +149,30 @@ internal class SetupPanel(private val project: Project) : Disposable {
         content.add(header(f))
         val current = SetupFlow.current(evaluated)
         val complete = SetupFlow.complete(evaluated)
-        evaluated.forEachIndexed { index, step ->
+        if (wizard) {
+            val count = if (f.sapCommerce) evaluated.size else evaluated.size + 1
+            if (pageIndex >= evaluated.size && !complete) pageIndex = evaluated.indexOf(current)
+            val step = evaluated.getOrNull(pageIndex)
+            if (step != null || !f.sapCommerce) content.add(JBLabel("Step ${pageIndex + 1} of $count"))
+            if (step != null) content.add(StepCard(pageIndex + 1, step, true, f))
+            else {
+                content.add(JBLabel("All set", AllIcons.General.InspectionsOK, SwingConstants.LEFT).apply { font = JBFont.h3().asBold() })
+                content.add(finished(f))
+            }
+            if (evaluated.first().status.finished) {
+                com.onurkat.reclazz.plugin.settings.ReclazzSettings.getInstance(project).state.dismissedSetupGeneration = null
+            }
+            val forward = when {
+                step?.status?.finished != true -> null
+                f.sapCommerce && pageIndex == evaluated.lastIndex -> "Finish"
+                else -> "Next"
+            }
+            onNavigation?.invoke(pageIndex > 0, forward, step?.step?.optional == true && !step.status.finished)
+        } else evaluated.forEachIndexed { index, step ->
             val open = !complete && step === current
             content.add(StepCard(index + 1, step, open, f))
         }
-        if (complete) content.add(finished(f))
+        if (!wizard && complete) content.add(finished(f))
         content.revalidate(); content.repaint()
         component.revalidate(); component.repaint()
     }
@@ -153,8 +185,8 @@ internal class SetupPanel(private val project: Project) : Disposable {
         add(JBLabel("Set up Reclazz").apply { font = JBFont.h1().asBold() })
         val done = evaluated.count { it.status.finished }
         val kind = if (f.sapCommerce) "SAP Commerce project" else "Java project"
-        add(JBLabel("$kind  ·  $done of ${evaluated.size} done").apply { foreground = Colors.MUTED })
-        add(Progress(done, evaluated.size).apply { border = JBUI.Borders.emptyTop(8) })
+        add(JBLabel(if (wizard) kind else "$kind  ·  $done of ${evaluated.size} done").apply { foreground = Colors.MUTED })
+        if (!wizard) add(Progress(done, evaluated.size).apply { border = JBUI.Borders.emptyTop(8) })
     }
 
     private fun finished(f: SetupFacts): JComponent = Banner(Tone.SUCCESS, AllIcons.General.InspectionsOK,
@@ -211,7 +243,9 @@ internal class SetupPanel(private val project: Project) : Disposable {
                     body.add(Banner(Tone.INFO, AnimatedIcon.Default(), s.what))
                     actions(body, s.actions)
                 }
-                else -> {}
+                is StepStatus.Done -> body.add(Banner(Tone.SUCCESS, AllIcons.General.InspectionsOK,
+                    s.summary))
+                is StepStatus.Skipped -> body.add(Banner(Tone.NEUTRAL, AllIcons.General.InspectionsOK, s.why))
             }
             if (step.step.id == "ant" && antLog.text.isNotEmpty()) body.add(code(null, antLog, JBUI.scale(200)))
             busy?.let { body.add(Banner(Tone.INFO, AnimatedIcon.Default(), it)) }
@@ -251,7 +285,7 @@ internal class SetupPanel(private val project: Project) : Disposable {
                 grid.add(AssistantTile(a, fact.detected))
             }
             body.add(grid)
-            body.add(ActionLink("Skip this step") { perform(SetupAction.SkipAssistant) })
+            if (!wizard) body.add(ActionLink("Skip this step") { perform(SetupAction.SkipAssistant) })
             message?.takeIf { busy == null }?.let { (text, ok) -> body.add(Banner(if (ok) Tone.SUCCESS else Tone.ERROR,
                 if (ok) AllIcons.General.InspectionsOK else AllIcons.General.Error, text)) }
             busy?.let { body.add(Banner(Tone.INFO, AnimatedIcon.Default(), it)) }

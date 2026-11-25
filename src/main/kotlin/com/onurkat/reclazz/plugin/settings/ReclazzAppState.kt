@@ -25,7 +25,10 @@ class ReclazzAppState : PersistentStateComponent<ReclazzAppState.State> {
 
     data class State(
         /** Set once the welcome dialog has been shown, whatever the answer. */
-        var welcomeShown: Boolean = false
+        var welcomeShown: Boolean = false,
+        var setupVersion: String? = null,
+        var setupArtifact: String? = null,
+        var setupGeneration: Long = 0
     )
 
     private var state = State()

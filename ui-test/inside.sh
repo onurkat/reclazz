@@ -27,6 +27,34 @@ XML
 cat > /tmp/fixture/.idea/reclazz.xml <<'XML'
 <project version="4"><component name="ReclazzSettings"><option name="enabled" value="true"/><option name="startupDelaySeconds" value="0"/></component></project>
 XML
+if [[ "${1:-}" == wizard-java-off ]]; then
+    sed -i 's/name="enabled" value="true"/name="enabled" value="false"/' /tmp/fixture/.idea/reclazz.xml
+fi
+if [[ "${1:-}" == wizard-sap ]]; then
+    platform=/tmp/fixture/hybris/bin/platform
+    mkdir -p "$platform" /tmp/fixture/hybris/config
+    touch "$platform/build.xml" /tmp/fixture/hybris/config/local.properties
+    cat > "$platform/setantenv.sh" <<'FIXTURE'
+ant() {
+    [[ "$1" == server ]] || return 1
+    echo 'Generating the fixture server configuration'
+    for ((n=0; n<120; n++)); do
+        [[ -f /tmp/continue-fixture-ant ]] && break
+        sleep 1
+    done
+    [[ -f /tmp/continue-fixture-ant ]] || return 2
+    mkdir -p tomcat/conf
+    for mode in normal debug; do
+        key=tomcat.javaoptions; file=wrapper.conf
+        if [[ $mode == debug ]]; then key=tomcat.debugjavaoptions; file=wrapper-debug.conf; fi
+        value=$(sed -n "s/^$key=//p" ../../config/local.properties | tail -1)
+        [[ -n "$value" ]] || return 3
+        echo "wrapper.java.additional.1=$value" > "tomcat/conf/$file"
+    done
+    echo 'Fixture server configuration ready'
+}
+FIXTURE
+fi
 cat > /tmp/fixture/.idea/runConfigurations/Fixture.xml <<'XML'
 <component name="ProjectRunConfigurationManager"><configuration default="false" name="Fixture" type="Application" factoryName="Application">
 <option name="MAIN_CLASS_NAME" value="com.example.ui.UiApp"/><option name="VM_PARAMETERS" value="-Xmx256m -Dserver.port=18882 -Dserver.address=127.0.0.1"/>
@@ -58,15 +86,31 @@ cat >> /tmp/profile.vmoptions <<'OPTIONS'
 OPTIONS
 export IDEA_VM_OPTIONS=/tmp/profile.vmoptions DISPLAY=:73
 Xvfb "$DISPLAY" -screen 0 1280x900x24 -nolisten tcp > /out/xvfb.log 2>&1 &
+run_ide() {
+    local scenario=$1
 /tmp/ide/bin/idea.sh /tmp/fixture >/out/launcher.log 2>&1 &
 ide=$!
 for ((n=0; n<100; n++)); do
     kill -0 "$ide" || { echo 'IDE exited before Robot startup'; exit 1; }
     if (echo >/dev/tcp/127.0.0.1/8580) 2>/dev/null; then
-        timeout 12m java --add-opens=java.base/java.lang=ALL-UNNAMED -cp '/tmp/client:/input/client-libs/*' UiClient "${1:-all}" 2>&1 | tee /out/scenarios.log
-        exit 0
+        timeout 12m java --add-opens=java.base/java.lang=ALL-UNNAMED -cp '/tmp/client:/input/client-libs/*' UiClient "$scenario" 2>&1 | tee -a /out/scenarios.log
+        return 0
     fi
     sleep 1
 done
 echo 'Robot endpoint startup timed out' >&2
 exit 1
+}
+if [[ "${1:-all}" == wizard ]]; then
+    echo '<application><component name="ReclazzAppState"><option name="welcomeShown" value="true"/></component></application>' > /tmp/config/options/reclazz-global.xml
+    run_ide wizard
+    wait "$ide"
+    run_ide wizard-restart
+    wait "$ide"
+    mv /tmp/plugins/reclazz /tmp/previous-install
+    unzip -q /input/plugin.zip -d /tmp/plugins
+    run_ide wizard-reinstall
+    wait "$ide"
+else
+    run_ide "${1:-all}"
+fi

@@ -39,6 +39,9 @@ public final class IdeActions {
     private static String lastValue = "baseline";
     private static final String SOURCE = "/tmp/fixture/src/main/java/com/example/ui/UiApp.java";
 
+    private static JDialog firstWizard;
+    private static boolean startupBarrier;
+
     public static String perform(String command) {
         var result = new AtomicReference<String>();
         boolean inDialog = command.equals("setting") || command.equals("override") || command.equals("log");
@@ -51,6 +54,59 @@ public final class IdeActions {
         Project[] projects = ProjectManager.getInstance().getOpenProjects();
         if (projects.length != 1) return "waiting for fixture";
         Project project = projects[0];
+        if (command.startsWith("wizard")) {
+            var dialogs = java.util.Arrays.stream(Window.getWindows())
+                    .filter(w -> w instanceof JDialog d && w.isShowing() && d.getTitle().equals("Set Up Reclazz"))
+                    .map(w -> (JDialog) w).toList();
+            if (command.equals("wizardCount")) return String.valueOf(dialogs.size());
+            if (command.equals("wizardStartup")) {
+                if (!com.intellij.openapi.startup.StartupManager.getInstance(project).postStartupActivityPassed()
+                        || DumbService.isDumb(project)) return "starting";
+                if (!startupBarrier) {
+                    DumbService.getInstance(project).smartInvokeLater(() -> SwingUtilities.invokeLater(() -> startupBarrier = true));
+                    return "starting";
+                }
+                return "started";
+            }
+            if (command.equals("wizardExit")) {
+                project.save();
+                ApplicationManager.getApplication().saveSettings();
+                SwingUtilities.invokeLater(() -> com.intellij.openapi.application.ex.ApplicationManagerEx.getApplicationEx().exit(true, true));
+                return "exiting";
+            }
+            if (dialogs.size() != 1) return "count=" + dialogs.size();
+            var dialog = dialogs.get(0);
+            var parts = new ArrayList<Component>();
+            collect(dialog, parts);
+            if (command.equals("wizardControls")) {
+                var entries = new java.util.ArrayList<String>();
+                for (var part : parts) {
+                    if (!part.isShowing()) continue;
+                    if (part instanceof JLabel l) entries.add("label=" + l.getText());
+                    if (part instanceof AbstractButton b && b.isEnabled()) entries.add("action=" + b.getText());
+                    if (part instanceof javax.swing.text.JTextComponent c) entries.add(c.getText());
+                }
+                return String.join("|", entries);
+            }
+            if (command.equals("wizardManual")) {
+                firstWizard = dialog;
+                var action = ActionManager.getInstance().getAction("Reclazz.SetupWizard");
+                var data = com.intellij.openapi.actionSystem.impl.SimpleDataContext.getProjectContext(project);
+                action.actionPerformed(com.intellij.openapi.actionSystem.AnActionEvent.createFromAnAction(action, null, "MainMenu", data));
+                return "invoked";
+            }
+            if (command.equals("wizardSame")) return String.valueOf(dialog == firstWizard && dialog.isActive());
+            if (command.equals("wizardStep")) return parts.stream().filter(c -> c instanceof JLabel && c.isShowing())
+                    .map(c -> ((JLabel)c).getText()).filter(t -> t != null && t.startsWith("Step ")).findFirst().orElse("loading");
+            String label = command.equals("wizardDismiss") ? "Don't show again for this project" : command.substring("wizardClick:".length());
+            for (var part : parts) {
+                if (part instanceof AbstractButton btn && btn.isShowing() && btn.isEnabled() && label.equals(btn.getText())) {
+                    btn.doClick();
+                    return "clicked";
+                }
+            }
+            return "unavailable";
+        }
         if (command.equals("ready")) return DumbService.isDumb(project) ? "indexing" : project.getName();
         if (command.equals("setup")) {
             var sdk = JavaSdk.getInstance().createJdk("Fixture JDK", System.getenv("JAVA_HOME"), false);

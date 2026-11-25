@@ -36,6 +36,21 @@ class SetupCheckTest {
         wrappers()
         Files.writeString(config.resolve("localextensions.xml"), "<hybrisconfig><extensions><extension name=\"example\"/></extensions></hybrisconfig>")
     }
+    @Test fun removedManagedAgentMakesSetupDueAgain() {
+        layout()
+        val app = com.onurkat.reclazz.plugin.settings.ReclazzAppState.State()
+        val project = com.onurkat.reclazz.plugin.settings.ReclazzSettings.State(enabled = true)
+        fun offer(): Boolean {
+            val facts = com.onurkat.reclazz.plugin.setup.SetupFacts(true, version, root, check())
+            val installed = com.onurkat.reclazz.plugin.setup.SetupFlow.evaluate(facts).first().status.finished
+            return com.onurkat.reclazz.plugin.setup.SetupOffer.decide(app, project, version, "install", installed).dialog
+        }
+        assertTrue(offer())
+        assertFalse(offer())
+        val properties = HybrisPropertyFiles.targetFile(config)
+        Files.writeString(properties, "# removed managed agent")
+        assertTrue(offer())
+    }
     private fun agent() = HybrisAgentInstaller.agentArgument("$jar=autoCompile=false")
     private fun writeJar(value: String?) {
         Files.createDirectories(jar.parent)

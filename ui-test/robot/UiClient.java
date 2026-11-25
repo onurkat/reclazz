@@ -28,6 +28,27 @@ public class UiClient {
             check(proof.equals("IC-233.11799.241|true|true"), proof);
             System.out.println("Real plugin frame " + proof);
             await("ready", "fixture"::equals);
+            if (args[0].startsWith("wizard")) {
+                await("wizardStartup", "started"::equals);
+                if (args[0].equals("wizard-restart")) {
+                    check(act("wizardCount").equals("0"), "wizard reopened on unchanged restart");
+                    System.out.println("PASS restart with persisted settings and same installation");
+                } else {
+                    await("wizardCount", "1"::equals);
+                    await("wizardStep", "Step 1 of 3"::equals);
+                    check(act("wizardManual").equals("invoked"), "Tools action failed");
+                    await("wizardSame", "true"::equals);
+                    wizardPages(args[0]);
+                    await("wizardDismiss", "clicked"::equals);
+                    await("wizardClick:Close", "clicked"::equals);
+                    await("wizardCount", "0"::equals);
+                    System.out.println("PASS " + args[0] + " automatic single dialog, startup complete, Tools focus, navigation and dismissal");
+                }
+                act("wizardExit");
+                return;
+            }
+            await("wizardStartup", "started"::equals);
+            if (act("wizardCount").equals("1")) await("wizardClick:Close", "clicked"::equals);
             act("setup");
             if (!args[0].equals("settings")) reloadFlow();
             if (!args[0].equals("reload")) settingsFlow();
@@ -72,6 +93,56 @@ public class UiClient {
         check(reconnected.contains("[DISCONNECTED]") && reconnected.lines()
                 .filter(line -> line.contains("[CONNECTED]")).count() > connections,
                 "the Reload Log did not record a new connection");
+    }
+
+    static void wizardPages(String scenario) throws Exception {
+        boolean sap = scenario.equals("wizard-sap");
+        boolean disabled = scenario.equals("wizard-java-off");
+        String kind = sap ? "sap" : "java";
+        step = kind + " agent setup";
+        if (sap) {
+            await("wizardControls", s -> s.contains("action=Install Reclazz") && s.contains("tomcat.javaoptions=") && s.contains("tomcat.debugjavaoptions="));
+            capture("sap-1-install");
+            await("wizardClick:Install Reclazz", "clicked"::equals);
+        } else if (disabled) {
+            await("wizardControls", s -> s.contains("action=Turn on Reclazz"));
+            capture("java-1-off");
+            await("wizardClick:Turn on Reclazz", "clicked"::equals);
+        }
+        await("wizardControls", s -> s.contains("action=Next") && s.contains("label=Done") && !s.contains(" of 2 done"));
+        if (!sap) {
+            await("wizardControls", s -> s.contains("Reclazz is on for this project"));
+            capture("java-1-enabled");
+        }
+        await("wizardClick:Next", "clicked"::equals);
+        await("wizardStep", "Step 2 of 3"::equals);
+        if (sap) {
+            step = "SAP ant server output";
+            await("wizardControls", s -> s.contains("action=Run ant server"));
+            capture("sap-2-run");
+            await("wizardClick:Run ant server", "clicked"::equals);
+            await("wizardControls", s -> s.contains("action=Stop ant server") && s.contains("Generating the fixture server configuration"));
+            capture("sap-2-live-output");
+            Files.createFile(Path.of("/tmp/continue-fixture-ant"));
+            await("wizardClick:Next", "clicked"::equals);
+            await("wizardStep", "Step 3 of 3"::equals);
+        }
+        step = kind + " assistant";
+        if (!scenario.equals("wizard-reinstall")) {
+            await("wizardControls", s -> s.contains("action=Connect ") && s.contains("action=Skip"));
+            capture(kind + "-assistant");
+            await("wizardClick:Skip", "clicked"::equals);
+        }
+        await("wizardControls", s -> s.contains("label=Skipped"));
+        await("wizardClick:" + (sap ? "Finish" : "Next"), "clicked"::equals);
+        await("wizardControls", s -> s.contains("label=All set") && s.contains("action=Close"));
+        capture(kind + "-all-set");
+        await("wizardClick:Back", "clicked"::equals);
+    }
+
+    static void capture(String name) throws Exception {
+        ImageIO.write(new Robot().createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize())),
+                "png", output.resolve(name + ".png").toFile());
     }
 
     static void settingsFlow() throws Exception {

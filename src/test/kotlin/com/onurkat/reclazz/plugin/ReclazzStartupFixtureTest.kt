@@ -35,7 +35,7 @@ class ReclazzStartupFixtureTest : BasePlatformTestCase() {
         // Application-level state outlives a single test method inside the
         // same Application, so a test that ran earlier would otherwise decide
         // whether this one sees a first run.
-        ReclazzAppState.getInstance().state.welcomeShown = false
+        ReclazzAppState.getInstance().loadState(ReclazzAppState.State())
         ReclazzStartup.resetSessionStateForTests()
 
         received.clear()

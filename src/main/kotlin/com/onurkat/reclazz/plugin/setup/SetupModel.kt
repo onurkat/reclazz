@@ -108,7 +108,7 @@ internal object SetupFlow {
             "Reclazz adds its Java agent to the Java run configurations you start from IntelliJ. Run or debug your " +
                 "application as usual and save a change to reload it.",
             appliesTo = { !it.sapCommerce }) { f ->
-            if (f.enabled) StepStatus.Done("On. Run or debug your application as usual.")
+            if (f.enabled) StepStatus.Done("Reclazz is on for this project. Run or debug your application as usual.")
             else StepStatus.NeedsAction("Reclazz is off in this project.", listOf(SetupAction.TurnOn))
         },
         SetupStep("assistant", "Connect your AI assistant",

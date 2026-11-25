@@ -58,7 +58,8 @@ class ReclazzSettings : PersistentStateComponent<ReclazzSettings.State> {
          */
         var supportLineDismissed: Boolean = false,
         /** Setup wizard: optional steps the user skipped (";"-separated step ids). */
-        var setupSkips: String = ""
+        var setupSkips: String = "",
+        var dismissedSetupGeneration: Long? = null
     )
 
     private var state = State()

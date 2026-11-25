@@ -41,8 +41,8 @@ def checksum(path):
 
 def main():
     scenario = sys.argv[2]
-    if scenario not in ("all", "settings", "reload"):
-        raise ValueError("Expected all, settings or reload")
+    if scenario not in ("all", "settings", "reload", "wizard", "wizard-sap", "wizard-java-off"):
+        raise ValueError("Expected all, settings, reload or wizard")
     plugin = Path(sys.argv[1]).resolve(strict=True)
     arch = subprocess.check_output(["docker", "info", "--format", "{{.Architecture}}"], text=True).strip()
     if arch in ("aarch64", "arm64"):

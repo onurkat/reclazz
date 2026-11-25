@@ -174,13 +174,9 @@ object ReloadNotifications {
                     "Java agent into the JVM that runs your code, so it asks first. " + next,
                 NotificationType.INFORMATION
             )
-            .apply {
-                if (!alreadyEnabled) {
-                    addAction(NotificationAction.createSimpleExpiring("Set Up Reclazz") {
-                        com.onurkat.reclazz.plugin.setup.SetupWizard.open(project)
-                    })
-                }
-            }
+            .addAction(NotificationAction.createSimpleExpiring("Set Up Reclazz") {
+                com.onurkat.reclazz.plugin.setup.SetupWizard.open(project)
+            })
             .addAction(NotificationAction.createSimpleExpiring("What it does") {
                 WelcomeDialog.showOnDemand(project)
             })

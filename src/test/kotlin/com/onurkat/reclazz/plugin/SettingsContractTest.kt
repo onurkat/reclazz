@@ -43,6 +43,7 @@ class SettingsContractTest {
         "agentPort" to 0,
         "supportLineDismissed" to false,
         "setupSkips" to "",
+        "dismissedSetupGeneration" to null,
     )
 
     @Test
