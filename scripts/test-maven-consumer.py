@@ -46,9 +46,19 @@ def check_doctor(doctor, baseline, project, version, watch=True):
     require(doctor.get('agentVersion') == version, 'wrong agent version')
     require(bool(doctor.get('sessionId')) and doctor.get('verifySupported') is True, 'missing receipt capability')
     require(doctor.get('watcherState') == 'watching' and doctor.get('buildHold') == 'none', 'watcher not ready')
+    paths = doctor.get('watchedDirectories')
+    kinds = doctor.get('watchedDirectoryKinds')
+    require(isinstance(paths, list) and isinstance(kinds, list) and len(paths) == len(kinds)
+            and all(isinstance(item, str) for items in (paths, kinds) for item in items), 'invalid watch evidence')
+    roots = {(Path(path).resolve(), kind) for path, kind in zip(paths, kinds)}
+    classes = (project / 'target/classes').resolve()
     if watch:
-        require(any(Path(p).resolve() == (project / 'target/classes').resolve()
-                    for p in doctor.get('watchedDirectories', [])), 'wrong watched output')
+        source = (project / 'src/main/java').resolve()
+        require((classes, 'classes') in roots or (source, 'src') in roots, 'wrong watched output')
+    else:
+        require(((project / 'unused output').resolve(), 'classes') in roots, 'wrong control output')
+        require((classes, 'classes') not in roots and ((classes, 'resources') in roots
+                or doctor.get('watchSampleTruncated') is False), 'unproven control output')
     require(baseline.get('message') == BEFORE and baseline.get('marker') == 'kept', 'invalid baseline or lost JVM argument')
 
 
@@ -296,7 +306,21 @@ class OracleTest(unittest.TestCase):
         first = dict(pid=42, message=BEFORE, marker='kept')
         good = dict(status='observed', pid='42', workingDirectory=str(project), agentVersion='1.2.3',
                     sessionId='session', verifySupported=True, watcherState='watching', buildHold='none',
-                    watchedDirectories=[str(project/'target/classes')])
+                    watchedDirectories=[str(project/'target/classes')], watchedDirectoryKinds=['classes'])
+        source = str(project/'src/main/java')
+        output = str(project/'target/classes')
+        check_doctor({**good, 'watchedDirectories': [source, output], 'watchedDirectoryKinds': ['src', 'resources']},
+                     first, project, '1.2.3')
+        control = {**good, 'watchedDirectories': [str(project/'unused output'), output],
+                   'watchedDirectoryKinds': ['classes', 'resources']}
+        check_doctor(control, first, project, '1.2.3', watch=False)
+        with self.assertRaisesRegex(Rejected, 'wrong watched output'):
+            check_doctor(control, first, project, '1.2.3')
+        with self.assertRaisesRegex(Rejected, 'unproven control output'):
+            check_doctor({**control, 'watchedDirectoryKinds': ['classes', 'classes']}, first, project, '1.2.3', watch=False)
+        with self.assertRaisesRegex(Rejected, 'unproven control output'):
+            check_doctor({**control, 'watchedDirectories': control['watchedDirectories'][:1],
+                          'watchedDirectoryKinds': ['classes'], 'watchSampleTruncated': True}, first, project, '1.2.3', watch=False)
         check_doctor(good, first, project, '1.2.3')
         for key, value in [('status','unavailable'), ('pid','43'), ('workingDirectory','/other'),
                            ('agentVersion','0.0.0'), ('sessionId',''), ('verifySupported',False),

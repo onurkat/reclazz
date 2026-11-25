@@ -36,7 +36,7 @@ class ReloadPauseResumeTest {
                     }
                     """).start()) {
             app.awaitOrFail("VALUE=1 PID=", "initial value");
-            app.awaitOrFail("] Watching 1 director", "watcher ready");
+            app.awaitWatcherReady();
             String pid = app.latest("VALUE=1 PID=").split("PID=")[1];
             try (Socket socket = new Socket("127.0.0.1", Integer.parseInt(Files.readString(portFile).trim()))) {
                 socket.setSoTimeout(5000);
@@ -94,7 +94,7 @@ class ReloadPauseResumeTest {
                         }
                     }
                     """).start()) {
-            app.awaitOrFail("VALUE=1", "initial value"); app.awaitOrFail("] Watching ", "source watcher");
+            app.awaitOrFail("VALUE=1", "initial value"); app.awaitWatcherReady();
             try (Socket socket = new Socket("127.0.0.1", Integer.parseInt(Files.readString(portFile).trim()))) {
                 socket.setSoTimeout(5000);
                 var in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
@@ -133,7 +133,7 @@ class ReloadPauseResumeTest {
                         }
                     }
                     """).start()) {
-            app.awaitOrFail("PROPERTY=old", "property baseline"); app.awaitOrFail("] Watching ", "property watcher");
+            app.awaitOrFail("PROPERTY=old", "property baseline"); app.awaitWatcherReady();
             try (Socket socket = new Socket("127.0.0.1", Integer.parseInt(Files.readString(portFile).trim()))) {
                 socket.setSoTimeout(5000);
                 var in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));

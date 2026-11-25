@@ -54,7 +54,7 @@ class BatchedConstructorReloadTest {
                 .with("Controller","package app; public class Controller {@org.springframework.beans.factory.annotation.Autowired public Service service;}")
                 .with("App",APP).start()) {
             try {
-                app.awaitOrFail("BEFORE=hello:1","initial static value");app.awaitOrFail("] Watching 1 director","watcher ready");scan(port);
+                app.awaitOrFail("BEFORE=hello:1","initial static value");app.awaitWatcherReady();scan(port);
                 control(port,"pause");save(app,false,Map.of("Service",staticService(2,true),"Noise",noise("noise-two",false)));scan(port);control(port,"resume");
                 awaitReceipt(port,app,"Service","unverified");awaitReceipt(port,app,"Noise","unverified");
                 String observation=observe(app,1);assertTrue(observation.contains("current:hello:1,direct:hello:1"),observation);
@@ -85,7 +85,7 @@ class BatchedConstructorReloadTest {
                 .with("Controller","package app; public class Controller {@org.springframework.beans.factory.annotation.Autowired public Service service;}")
                 .with("App",APP).start()) {
             try {
-                app.awaitOrFail("BEFORE=hello:1","initial scalar value");app.awaitOrFail("] Watching 1 director","watcher ready");scan(port);
+                app.awaitOrFail("BEFORE=hello:1","initial scalar value");app.awaitWatcherReady();scan(port);
                 save(app,false,Map.of("Service",scalarStaticService(2,false)));awaitReceipt(port,app,"Service","applied");
                 assertTrue(observe(app,1).contains("current:hello:2,direct:hello:2"),app.tail());
                 assertTrue(app.output().stream().anyMatch(line->line.contains("Reset static app.Service.RATE")),app.tail());
@@ -116,7 +116,7 @@ class BatchedConstructorReloadTest {
                 .with("BaseB","package app; public class BaseB {public int onlyB(){return 2;}}")
                 .with("Service",pinnedService("BaseA","hello",false)).with("App",PINNED_APP).start()) {
             try {
-                app.awaitOrFail("BEFORE=hello","raw definition ready");app.awaitOrFail("] Watching 1 director","watcher ready");scan(port);
+                app.awaitOrFail("BEFORE=hello","raw definition ready");app.awaitWatcherReady();scan(port);
                 save(app,false,Map.of("Service",pinnedService("BaseB","constructed",false)));awaitReceipt(port,app,"Service","unverified");
                 Files.writeString(dir.resolve("observe1"),"");app.awaitOrFail("DIRECT1=constructed","pinned transformed fallback admitted the constructor");
                 app.awaitOrFail("PIN1=1","the entangled body actually retained its previous superclass call");
@@ -147,7 +147,7 @@ class BatchedConstructorReloadTest {
         try (var app = builder.start()) {
             try {
             app.awaitOrFail("BEFORE=hello", "baseline singleton");
-            app.awaitOrFail(auto ? "] Watching 2 directories" : "] Watching 1 directory", "watcher ready");
+            app.awaitWatcherReady();
             scan(port);
             int start = app.output().size();
             if (batch) control(port, "pause");

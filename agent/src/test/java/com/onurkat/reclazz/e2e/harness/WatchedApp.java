@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -345,12 +347,16 @@ public final class WatchedApp implements AutoCloseable {
 
     /** Waits for a line containing this, and says whether it arrived. */
     public boolean awaits(String needle, long timeoutSec) {
+        return awaits(line -> line.contains(needle), timeoutSec);
+    }
+
+    private boolean awaits(Predicate<String> matches, long timeoutSec) {
         // Elapsed time, not the wall clock: when the host sleeps, the clock
         // jumps ahead on wake while this JVM and the app did not run, and a
         // wall-clock deadline then expires before either side had a chance.
         long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(timeoutSec);
         while (System.nanoTime() - deadline < 0) {
-            if (output.stream().anyMatch(line -> line.contains(needle))) return true;
+            if (output.stream().anyMatch(matches)) return true;
             try {
                 Thread.sleep(100);
             } catch (InterruptedException interrupted) {
@@ -368,6 +374,14 @@ public final class WatchedApp implements AutoCloseable {
     /** Waits, and fails with the tail of the output rather than a bare false. */
     public void awaitOrFail(String needle, String whatItMeans) {
         assertTrue(awaits(needle), () -> whatItMeans + ":\n" + tail());
+    }
+
+    // Spring Boot can also log "Watching N class output directories" before registration.
+    private static final Pattern WATCHER_READY = Pattern.compile("\\] Watching [1-9][0-9]* director(?:y|ies)\\b");
+
+    public void awaitWatcherReady() {
+        assertTrue(awaits(WATCHER_READY.asPredicate(), DEFAULT_TIMEOUT_SEC),
+                () -> "watcher did not finish registering directories:\n" + tail());
     }
 
     /** The most recent line containing this, or null. */

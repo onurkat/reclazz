@@ -37,7 +37,7 @@ class BuildSignalHoldsClassFilesTest {
                         }
                         """).start()) {
             app.awaitOrFail("VALUES=1:1", "initial values");
-            app.awaitOrFail("] Watching 1 director", "watcher ready");
+            app.awaitWatcherReady();
             try (Socket socket = new Socket("127.0.0.1", Integer.parseInt(Files.readString(portFile).trim()))) {
                 send(socket, "BUILD started");
                 app.rewrite("A", unit("A", 2));
@@ -71,7 +71,7 @@ class BuildSignalHoldsClassFilesTest {
                         }
                         """).start()) {
             app.awaitOrFail("VALUE=1", "initial value");
-            app.awaitOrFail("] Watching 1 director", "watcher ready");
+            app.awaitWatcherReady();
             int port = Integer.parseInt(Files.readString(portFile).trim());
             try (Socket first = new Socket("127.0.0.1", port)) {
                 first.setSoTimeout(5000);
@@ -127,7 +127,7 @@ class BuildSignalHoldsClassFilesTest {
                         }
                         """).start()) {
             app.awaitOrFail("VALUE=1", "initial value");
-            app.awaitOrFail("] Watching ", "source watcher ready");
+            app.awaitWatcherReady();
             try (Socket socket = new Socket("127.0.0.1", Integer.parseInt(Files.readString(portFile).trim()))) {
                 socket.setSoTimeout(5000);
                 var in = new java.io.BufferedReader(new java.io.InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));

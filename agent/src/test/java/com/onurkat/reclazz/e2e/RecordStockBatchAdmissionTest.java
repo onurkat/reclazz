@@ -35,7 +35,7 @@ class RecordStockBatchAdmissionTest {
         if(auto)builder.mavenLayout();
         WatchedApp child=builder.start();
         try(child){
-            child.awaitOrFail(auto ? "] Watching 2 directories" : "] Watching 1 directory", "watch installed before application loading");
+            child.awaitWatcherReady();
             if (auto) {
                 var doctor = json.readTree(request("DOCTOR roots", "DOCTOR_RESULT roots "));
                 Set<Path> watched = new HashSet<>();

@@ -869,17 +869,26 @@ public class FileWatcher {
     }
 
     /** Observational sample of live registrations, not configured or inferred output roots. */
-    public record WatchEvidence(String state, int count, int refused, List<String> directories, boolean truncated) { }
+    public record WatchEvidence(String state, int count, int refused, List<String> directories, boolean truncated,
+                                List<String> directoryKinds) {
+        public WatchEvidence(String state, int count, int refused, List<String> directories, boolean truncated) {
+            this(state, count, refused, directories, truncated, java.util.Collections.nCopies(directories.size(), "unknown"));
+        }
+    }
 
     public WatchEvidence doctorEvidence() {
-        java.util.Set<String> paths = new java.util.TreeSet<>();
+        var registrations = new java.util.TreeMap<String, String>();
         for (var entry : watchKeyMap.entrySet()) {
-            Path directory = entry.getValue().directory();
-            if (entry.getKey().isValid() && Files.isDirectory(directory))
-                paths.add(directory.toAbsolutePath().normalize().toString());
+            WatchedDirectory watched = entry.getValue();
+            if (entry.getKey().isValid() && Files.isDirectory(watched.directory())) {
+                String path = watched.directory().toAbsolutePath().normalize().toString();
+                registrations.put(path, java.util.Objects.toString(watched.sourceRoot(), "unknown"));
+            }
         }
-        List<String> sample = paths.stream().filter(path -> path.length() <= 256).limit(8).toList();
-        return new WatchEvidence(health().state(), paths.size(), unwatchableCount(), sample, sample.size() < paths.size());
+        List<String> paths = registrations.keySet().stream().filter(path -> path.length() <= 256).limit(8).toList();
+        List<String> kinds = paths.stream().map(registrations::get).toList();
+        return new WatchEvidence(health().state(), registrations.size(), unwatchableCount(), paths,
+                paths.size() < registrations.size(), kinds);
     }
 
     private void registerSingle(Path dir, String moduleName, String sourceRoot, long baselineMillis) throws IOException {

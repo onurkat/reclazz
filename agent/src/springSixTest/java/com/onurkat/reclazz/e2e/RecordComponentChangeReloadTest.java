@@ -29,7 +29,7 @@ class RecordComponentChangeReloadTest {
                 .jvmArgs("-Dr20.signal="+signal)
                 .with("Greeting",record(before)).with("Caller",caller(0,oldArgs)).with("App",APP).start();
         try(app) {
-            app.awaitOrFail("READY","record held before save");app.awaitOrFail("] Watching 1 directory","watcher ready");
+            app.awaitOrFail("READY","record held before save");app.awaitWatcherReady();
             app.rewriteAll(Map.of("Greeting",record(after),"Caller",caller(1,newArgs)));
             assertTrue(app.awaits("record components of app.Greeting changed",15),"record shape must be refused before publication; see owned child log");
             fallbackReached(app);
@@ -51,7 +51,7 @@ class RecordComponentChangeReloadTest {
     WatchedApp fixture(boolean auto,boolean otherLoader)throws Exception {
         var b=WatchedApp.in(dir).classpath(jacksonClasspath()).agentArgs("startupDelaySec=1,debounceMs=200,verbose=true,autoCompile="+auto)
                 .jvmArgs("-Dr20.signal="+dir.resolve("signal"),"-Dr20.other="+otherLoader).with("Greeting",ORIGINAL).with("Factory",FACTORY).with("Caller",factoryCaller(0)).with("App",APP);
-        if(auto)b.mavenLayout();WatchedApp app=b.start();app.awaitOrFail("READY","baseline loaded");app.awaitOrFail("] Watching 1 directory","watcher ready");return app;
+        if(auto)b.mavenLayout();WatchedApp app=b.start();app.awaitOrFail("READY","baseline loaded");app.awaitWatcherReady();return app;
     }
     static void fresh(WatchedApp app,int start,String needle)throws Exception {
         long end=System.nanoTime()+20_000_000_000L;
@@ -128,7 +128,7 @@ class RecordComponentChangeReloadTest {
     @Test void bodyOnlyRecordEditReloads()throws Exception {
         String record="package app;public record Greeting(String text){public static String body(){return \"one\";}}";
         var app=WatchedApp.in(dir).agentArgs("startupDelaySec=1,debounceMs=100").with("Greeting",record).with("App","package app;public class App {public static void main(String[]args)throws Exception{new Greeting(\"before\");System.out.println(\"READY\");while(true){if(Greeting.body().equals(\"two\"))System.out.println(\"BODY_TWO\");Thread.sleep(50);}}}").start();
-        try(app){app.awaitOrFail("READY","record loaded");app.awaitOrFail("] Watching 1 directory","watcher ready");app.rewrite("Greeting",record.replace("one","two"));app.awaitOrFail("BODY_TWO","unchanged component shape body reloads");}finally{remember(app,"body-only");}
+        try(app){app.awaitOrFail("READY","record loaded");app.awaitWatcherReady();app.rewrite("Greeting",record.replace("one","two"));app.awaitOrFail("BODY_TWO","unchanged component shape body reloads");}finally{remember(app,"body-only");}
     }
     static String record(String components){return "package app;public record Greeting("+components+"){}";}
     static String caller(int version,String args){return "package app;public class Caller {public static int version(){return "+version+";}public static Object make(){return new Greeting("+args+");}}";}

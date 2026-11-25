@@ -17,7 +17,7 @@ class AutoCompileToggleReloadTest {
     void exercise(boolean disable)throws Exception {
         Path port=dir.resolve("port");var app=WatchedApp.in(dir).mavenLayout().agentArgs("startupDelaySec=1,debounceMs=100,verbose=true,autoCompile=false,portFile="+port)
                 .with("Service",service("one")).with("App","package app;public class App{public static void main(String[]args)throws Exception{String old=\"\";while(true){String current=Service.value();if(!current.equals(old)){old=current;System.out.println(\"VALUE=\"+current);}Thread.sleep(30);}}}").start();
-        try(app){app.awaitOrFail("VALUE=one","baseline");app.awaitOrFail("] Watching 1 directory","watcher ready");
+        try(app){app.awaitOrFail("VALUE=one","baseline");app.awaitWatcherReady();
             assertTrue(command(port,"CONFIG SET on base=0 autoCompile=true","CONFIG on ").startsWith("CONFIG on OK rev=1 "));
             Files.writeString(dir.resolve("src/main/java/app/Service.java"),service("two"));app.awaitOrFail("VALUE=two","enabling must compile and reload the source save");
             if(disable){assertTrue(command(port,"CONFIG SET off base=1 autoCompile=false","CONFIG off ").startsWith("CONFIG off OK rev=2 "));

@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- DOCTOR reports the registration kind for each sampled directory so a resource watch can be distinguished from a compiled class watch.
+
 - A Spring aspect that excludes an added service method lets that method keep serving requests after a transaction edit. A matching or unresolved unsupported advisor reports its restart requirement once per method and cause.
 - Java source edits compiled by the agent use a shorter collection window. IDE class output and explicit debounce settings keep their existing batching.
 - Maven Spring Boot launches apply supported unfiltered resource edits on save and identify edits that still need `mvn resources:resources`.

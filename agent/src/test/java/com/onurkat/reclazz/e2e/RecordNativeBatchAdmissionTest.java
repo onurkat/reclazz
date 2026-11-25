@@ -49,7 +49,7 @@ class RecordNativeBatchAdmissionTest {
         if(mode.startsWith("poison"))writeCallerObserverClass();
         if(auto)builder.mavenLayout();
         WatchedApp app=builder.start();
-        app.awaitOrFail(auto ? "] Watching 2 directories" : "] Watching 1 directory", "watch installed before record is first loaded");
+        app.awaitWatcherReady();
         Files.writeString(dir.resolve("load"),"go"); app.awaitOrFail("READY|0|1", "witnessed record and caller baseline");
         scan(); return app;
     }

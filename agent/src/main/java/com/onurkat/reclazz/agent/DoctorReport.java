@@ -25,7 +25,7 @@ final class DoctorReport {
                            String hold, boolean build, boolean scan, boolean scanCompletion, String options) {
         FileWatcher.WatchEvidence watch = watcher == null
                 ? new FileWatcher.WatchEvidence("unavailable", 0, 0, List.of(), false) : watcher.doctorEvidence();
-        String json = "{" + field("requestId", token) + "," + field("status", "observed")
+        String prefix = "{" + field("requestId", token) + "," + field("status", "observed")
                 + "," + field("detail", "Point-in-time evidence; compare JVM, directory and session before acting. Not reload proof.")
                 + "," + field("sessionId", verification == null ? "" : verification.sessionId())
                 + "," + field("agentVersion", AgentVersion.get())
@@ -36,17 +36,24 @@ final class DoctorReport {
                 + "," + field("watcherState", watch.state())
                 + "," + field("buildHold", hold)
                 + ",\"watchedDirectoryCount\":" + watch.count()
-                + ",\"unwatchableDirectoryCount\":" + watch.refused()
-                + ",\"watchSampleTruncated\":" + watch.truncated()
-                + ",\"watchedDirectories\":[" + watch.directories().stream().map(DoctorReport::quote).collect(Collectors.joining(",")) + "]"
-                + ",\"buildOwnershipSupported\":" + build
+                + ",\"unwatchableDirectoryCount\":" + watch.refused();
+        String suffix = ",\"buildOwnershipSupported\":" + build
                 + ",\"verifySupported\":" + (verification != null)
                 + ",\"scanSupported\":" + scan + ",\"scanCompletionSupported\":" + scanCompletion
                 + (options == null ? "" : ",\"options\":" + options)
                 + ",\"reloadConfirmed\":false}";
         // StatusServer's outer message escaping must never truncate a JSON receipt.
-        if (json.length() > 3900) throw new IllegalStateException("Doctor report exceeds bounded message size");
-        return json;
+        for (int size = watch.directories().size(); size >= 0; size--) {
+            String json = prefix + ",\"watchSampleTruncated\":" + (watch.truncated() || size < watch.count())
+                    + ",\"watchedDirectories\":" + sample(watch.directories(), size)
+                    + ",\"watchedDirectoryKinds\":" + sample(watch.directoryKinds(), size) + suffix;
+            if (json.length() <= 3900) return json;
+        }
+        throw new IllegalStateException("Doctor report exceeds bounded message size");
+    }
+
+    private static String sample(List<String> values, int size) {
+        return values.subList(0, size).stream().map(DoctorReport::quote).collect(Collectors.joining(",", "[", "]"));
     }
 
     static String scanResult(String token, String session, String status, String detail, int count) {

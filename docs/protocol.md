@@ -342,8 +342,11 @@ can be false and the verification session empty.
 
 `watchedDirectoryCount` counts currently valid registrations whose directories
 still exist. `watchedDirectories` samples at most eight normalized absolute paths,
-each at most 256 characters; longer paths are omitted. `watchSampleTruncated`
-explicitly marks omitted entries. `unwatchableDirectoryCount` reports refused
+each at most 256 characters. The corresponding entry at the same index in
+`watchedDirectoryKinds` gives the active registration kind, such as `classes`,
+`src`, `resources` or `webroot`. An unclassified registration uses `unknown`.
+Both arrays omit the same entries when a path is too long or the response
+budget is reached. `watchSampleTruncated` marks an incomplete sample. `unwatchableDirectoryCount` reports refused
 registrations. Registrations can include class, source and resource directories;
 this sample does not prove coverage of a particular compiled output. The snapshot
 is observational, not atomic with watcher or build changes.

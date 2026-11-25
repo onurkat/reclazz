@@ -29,13 +29,19 @@ class DoctorWatchTest {
             Path small=Files.createDirectory(dir.resolve("small"));
             watcher.registerRecursive(small,"app",null);
             assertEquals(java.util.List.of(small.toAbsolutePath().normalize().toString()),watcher.doctorEvidence().directories());
+            assertEquals(java.util.List.of("unknown"), watcher.doctorEvidence().directoryKinds());
             assertFalse(watcher.doctorEvidence().truncated());
             Files.delete(small);
             assertEquals(0,watcher.doctorEvidence().count(),"deleted output is not a live watch");
-            for(int i=0;i<12;i++) watcher.registerRecursive(Files.createDirectory(dir.resolve("d"+i)),"app",null);
+            for(int i=0;i<12;i++) watcher.registerRecursive(Files.createDirectory(dir.resolve("d"+i)),"app",i % 2 == 0 ? "classes" : "resources");
             watcher.noteUnwatchable(dir.resolve("denied"),new java.io.IOException("denied"));
             var evidence=watcher.doctorEvidence();
             assertEquals(12,evidence.count());assertEquals(8,evidence.directories().size());
+            for (int i = 0; i < evidence.directories().size(); i++) {
+                String name = Path.of(evidence.directories().get(i)).getFileName().toString();
+                assertEquals(Integer.parseInt(name.substring(1)) % 2 == 0 ? "classes" : "resources",
+                        evidence.directoryKinds().get(i));
+            }
             assertTrue(evidence.truncated());assertEquals(1,evidence.refused());
         } finally {watcher.stopWatching();}
         assertEquals("stopped",watcher.doctorEvidence().state());
