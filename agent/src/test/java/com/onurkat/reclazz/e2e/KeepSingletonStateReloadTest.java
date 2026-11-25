@@ -142,7 +142,8 @@ public class KeepSingletonStateReloadTest {
                 .agentArgs("startupDelaySec=1,debounceMs=100,verbose=true" + (mode.equals("native") ? ",structuralReload=false" : ""))
                 .jvmArgs("-Dprobe.dir=" + tmp).with("App", appSource)
                 .with("Stateful", variantSource(mode, false)).with("Endpoint", endpoint(false)).start()) {
-            app.awaitOrFail("PORT=", "servlet missing"); app.awaitOrFail("] Watching ", "watcher missing");
+            app.awaitOrFail("PORT=", "servlet missing");
+            app.awaitWatcherReady();
             int port = Integer.parseInt(app.latest("PORT=").substring(5));
             String[] first = request(client, port).split(":");
             long before = reloads(app);
