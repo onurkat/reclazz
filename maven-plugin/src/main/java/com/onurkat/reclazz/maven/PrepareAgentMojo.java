@@ -38,6 +38,7 @@ import org.eclipse.aether.RepositorySystem;
         threadSafe = true)
 public class PrepareAgentMojo extends AbstractMojo {
 
+    private static final String MAVEN_MARKER = "-Dreclazz.maven.prepareAgent=true";
     private static final String AGENT_ARTIFACT_ID = "reclazz-agent";
 
     @Parameter(defaultValue = "${project}", readonly = true, required = true)
@@ -111,8 +112,10 @@ public class PrepareAgentMojo extends AbstractMojo {
 
         String existing = project.getProperties().getProperty(propertyName);
         String expected = parseArguments(arg)[0];
-        List<String> configured = java.util.Arrays.stream(parseArguments(existing))
+        List<String> arguments = List.of(parseArguments(existing));
+        List<String> configured = arguments.stream()
                 .filter(value -> isReclazzAgent(value, agentJar)).toList();
+        String value = existing;
         if (!configured.isEmpty()) {
             if (configured.size() != 1 || !configured.get(0).equals(expected)) {
                 throw new MojoExecutionException("Conflicting Reclazz -javaagent arguments in property '"
@@ -120,11 +123,15 @@ public class PrepareAgentMojo extends AbstractMojo {
                         + "prepare-agent, or remove the manual Reclazz argument and let the goal supply it.");
             }
             getLog().info("Reusing the existing Reclazz Java agent on property '" + propertyName + "'.");
-            return;
+        } else {
+            value = (existing == null || existing.isBlank()) ? arg : arg + " " + existing;
+            getLog().info("Reclazz Java agent set on property '" + propertyName + "': " + arg);
         }
-        String value = (existing == null || existing.isBlank()) ? arg : arg + " " + existing;
+        String lastMarker = arguments.stream()
+                .filter(option -> option.equals("-Dreclazz.maven.prepareAgent") || option.startsWith("-Dreclazz.maven.prepareAgent="))
+                .reduce((first, last) -> last).orElse("");
+        if (!MAVEN_MARKER.equals(lastMarker)) value += " " + MAVEN_MARKER;
         project.getProperties().setProperty(propertyName, value);
-        getLog().info("Reclazz Java agent set on property '" + propertyName + "': " + arg);
     }
 
     /**

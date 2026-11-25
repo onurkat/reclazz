@@ -60,6 +60,18 @@ class PrepareAgentMojoTest {
     }
 
     @Test
+    void resourceLaunchMarkerSurvivesAnExplicitCompilerOptOut() throws Exception {
+        var project = new MavenProject();
+        var mojo = mojo(project, jar, "argLine");
+        set(mojo, "agentArgs", Map.of("autoCompile", "false"));
+        mojo.execute();
+        mojo.execute();
+        List<String> args = java.util.Arrays.asList(parsed(project.getProperties().getProperty("argLine")));
+        assertEquals(1L, args.stream().filter("-Dreclazz.maven.prepareAgent=true"::equals).count());
+        assertTrue(args.stream().anyMatch(arg -> arg.contains("autoCompile=false")));
+    }
+
+    @Test
     void repeatedExecutionPreservesOtherAgentsAndJvmArguments() throws Exception {
         var project = new MavenProject();
         String original = "-Xmx512m  \"-javaagent:/coverage tools/jacoco.jar=destfile=a b\" "
@@ -68,10 +80,10 @@ class PrepareAgentMojoTest {
         var mojo = mojo(project, jar, "argLine");
         mojo.execute();
         String once = project.getProperties().getProperty("argLine");
-        assertEquals(PrepareAgentMojo.buildAgentArg(jar, "spring", "/classes", null) + " " + original, once);
+        assertEquals(PrepareAgentMojo.buildAgentArg(jar, "spring", "/classes", null) + " " + original + " -Dreclazz.maven.prepareAgent=true", once);
         mojo.execute();
         assertEquals(once, project.getProperties().getProperty("argLine"));
-        assertEquals(5, parsed(once).length);
+        assertEquals(6, parsed(once).length);
     }
 
     @Test
@@ -86,10 +98,11 @@ class PrepareAgentMojoTest {
             project.getProperties().setProperty("argLine", "untouched");
             mojo.execute();
             mojo.execute();
-            assertEquals(existing, project.getProperties().getProperty("reclazz.agentArgs"));
+            String result = project.getProperties().getProperty("reclazz.agentArgs");
+            assertEquals(existing + " -Dreclazz.maven.prepareAgent=true", result);
             assertEquals("untouched", project.getProperties().getProperty("argLine"));
             assertArrayEquals(new String[] {"-Xmx512m", "-javaagent:" + selected.getAbsolutePath()
-                    + "=platform=spring,watchDirs=/classes", "-Dkeep=yes"}, parsed(existing));
+                    + "=platform=spring,watchDirs=/classes", "-Dkeep=yes", "-Dreclazz.maven.prepareAgent=true"}, parsed(result));
         }
     }
 
@@ -133,7 +146,7 @@ class PrepareAgentMojoTest {
                 + "-javaagent:/other.jar=path=/reclazz-agent.jar -Dagent=-javaagent:/reclazz-agent.jar";
         project.getProperties().setProperty("argLine", original);
         mojo(project, jar, "argLine").execute();
-        assertEquals(PrepareAgentMojo.buildAgentArg(jar, "spring", "/classes", null) + " " + original,
+        assertEquals(PrepareAgentMojo.buildAgentArg(jar, "spring", "/classes", null) + " " + original + " -Dreclazz.maven.prepareAgent=true",
                 project.getProperties().getProperty("argLine"));
     }
 

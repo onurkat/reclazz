@@ -257,8 +257,12 @@ public class SpringBootContext implements PlatformContext {
     }
 
     public void sourceResourceSaved(Path file) {
-        if (!Boolean.getBoolean("reclazz.gradle.processResources") && advised.add(file))
-            StatusReporter.info(file.getFileName() + ": Build or run processResources to apply this resource; Reclazz applies the output when it changes.");
+        if (Boolean.getBoolean("reclazz.gradle.processResources") || !advised.add(file)) return;
+        String action = Boolean.getBoolean("reclazz.maven.prepareAgent")
+                ? "Run mvn resources:resources (or Build in the IDE)"
+                : "Build or run processResources";
+        StatusReporter.info(file.getFileName() + ": " + action
+                + " to apply this resource; Reclazz applies the output when it changes.");
     }
 
     @Override
