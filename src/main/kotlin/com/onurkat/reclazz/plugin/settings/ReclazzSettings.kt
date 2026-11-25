@@ -42,7 +42,9 @@ class ReclazzSettings : PersistentStateComponent<ReclazzSettings.State> {
         var excludeClasses: String = "",
         var watchExtensions: String = "",
         var excludePatterns: String = "",
-        var debounceMs: Long = 500,
+        /** Older IDE versions always supplied 500. Retained to read their project files. */
+        var debounceMs: Long? = null,
+        var fixedDebounceMs: Long? = null,
         var startupDelaySeconds: Int = 30,
         var verbose: Boolean = false,
         var jpaRefresh: Boolean = false,
@@ -64,7 +66,11 @@ class ReclazzSettings : PersistentStateComponent<ReclazzSettings.State> {
     override fun getState(): State = state
 
     override fun loadState(state: State) {
-        XmlSerializerUtil.copyBean(state, this.state)
+        val restored = state.copy(
+            fixedDebounceMs = state.fixedDebounceMs ?: state.debounceMs?.takeUnless { it == 500L },
+            debounceMs = null
+        )
+        XmlSerializerUtil.copyBean(restored, this.state)
     }
 
     companion object {

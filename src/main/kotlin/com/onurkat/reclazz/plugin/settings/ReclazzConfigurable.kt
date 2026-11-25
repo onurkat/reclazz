@@ -52,6 +52,7 @@ class ReclazzConfigurable internal constructor(
     private var excludeClassesField = ""
     private var watchExtensionsField = ""
     private var excludePatternsField = ""
+    private var useFixedDebounce = false
     private var debounceMsField = 500L
     private var startupDelayField = 30
     private var verboseCheckbox = false
@@ -96,7 +97,8 @@ class ReclazzConfigurable internal constructor(
         excludeClassesField = settings.excludeClasses
         watchExtensionsField = settings.watchExtensions
         excludePatternsField = settings.excludePatterns
-        debounceMsField = settings.debounceMs
+        useFixedDebounce = settings.fixedDebounceMs != null
+        debounceMsField = settings.fixedDebounceMs ?: 500L
         startupDelayField = settings.startupDelaySeconds
         verboseCheckbox = settings.verbose
         jpaRefreshCheckbox = settings.jpaRefresh
@@ -282,13 +284,15 @@ class ReclazzConfigurable internal constructor(
                     contextHelp("Changed files matching these globs are not reloaded, for example *Test.class;*Mock*.")
                 }
                 row("Debounce:") {
-                    spinner(100..5000, 50)
+                    val fixed = checkBox("Override adaptive delay").bindSelected(::useFixedDebounce)
+                    spinner(0..60_000, 50)
                         .bindIntValue(
                             getter = { debounceMsField.toInt() },
                             setter = { debounceMsField = it.toLong() }
-                        )
+                        ).enabledIf(fixed.selected)
                     label("ms")
-                    contextHelp("How long to wait for more file changes before reloading.")
+                    contextHelp("The default adapts to the change: 30 ms for Java sources compiled by the agent and " +
+                                "500 ms for class files and mixed output. A fixed delay applies to every batch.")
                 }
                 row("Startup delay:") {
                     spinner(0..300, 5)
@@ -463,7 +467,7 @@ class ReclazzConfigurable internal constructor(
                 excludeClassesField != settings.excludeClasses ||
                 watchExtensionsField != settings.watchExtensions ||
                 excludePatternsField != settings.excludePatterns ||
-                debounceMsField != settings.debounceMs ||
+                selectedDebounce() != settings.fixedDebounceMs ||
                 startupDelayField != settings.startupDelaySeconds ||
                 verboseCheckbox != settings.verbose ||
                 jpaRefreshCheckbox != settings.jpaRefresh ||
@@ -471,6 +475,8 @@ class ReclazzConfigurable internal constructor(
                 portFilePathField != settings.portFilePath ||
                 agentPortField != settings.agentPort
     }
+
+    private fun selectedDebounce(): Long? = if (useFixedDebounce) debounceMsField else null
 
     private fun readForm() {
         dialogPanel?.validateAll()?.firstOrNull()?.let { throw ConfigurationException(it.message) }
@@ -501,7 +507,7 @@ class ReclazzConfigurable internal constructor(
                 excludeClasses = excludeClassesField,
                 watchExtensions = watchExtensionsField,
                 excludePatterns = excludePatternsField,
-                debounceMs = debounceMsField,
+                fixedDebounceMs = selectedDebounce(),
                 startupDelaySeconds = startupDelayField,
                 verbose = verboseCheckbox,
                 jpaRefresh = jpaRefreshCheckbox,
@@ -532,7 +538,8 @@ class ReclazzConfigurable internal constructor(
         excludeClassesField = settings.excludeClasses
         watchExtensionsField = settings.watchExtensions
         excludePatternsField = settings.excludePatterns
-        debounceMsField = settings.debounceMs
+        useFixedDebounce = settings.fixedDebounceMs != null
+        debounceMsField = settings.fixedDebounceMs ?: 500L
         startupDelayField = settings.startupDelaySeconds
         verboseCheckbox = settings.verbose
         jpaRefreshCheckbox = settings.jpaRefresh

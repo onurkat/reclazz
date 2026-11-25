@@ -201,7 +201,7 @@ object AgentJarLocator {
         if (ReclazzSettings.effectiveResetStatics(settings, hybrisHome != null)) args.add("resetStatics=true")
         if (settings.reloadBoundary == "request") args.add("reloadBoundary=request")
         if (settings.excludeClasses.isNotBlank()) args.add("excludeClasses=${settings.excludeClasses}")
-        args.add("debounceMs=${settings.debounceMs}")
+        settings.fixedDebounceMs?.let { args.add("debounceMs=$it") }
         args.add("startupDelaySec=${settings.startupDelaySeconds}")
 
         if (settings.excludePatterns.isNotBlank()) {

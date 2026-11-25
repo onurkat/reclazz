@@ -131,6 +131,7 @@ public class AgentConfig {
     }
 
     private long debounceMs = 500;
+    private boolean fixedDebounce;
     private boolean verbose = false;
 
     /**
@@ -263,6 +264,7 @@ public class AgentConfig {
         }
 
         if (params.containsKey("debounceMs")) {
+            config.fixedDebounce = true;
             try {
                 long val = Long.parseLong(params.get("debounceMs"));
                 config.debounceMs = Math.max(0, Math.min(val, 60_000));
@@ -472,6 +474,7 @@ public class AgentConfig {
     public boolean isAutoSolrReindex() { return liveOptions().autoSolrReindex(); }
     public boolean isAutoCompile() { return liveOptions().autoCompile(); }
     public long getDebounceMs() { return debounceMs; }
+    public boolean hasFixedDebounce() { return fixedDebounce; }
     public boolean isVerbose() { return verbose; }
 
     public String getWrapOutput() { return wrapOutput; }

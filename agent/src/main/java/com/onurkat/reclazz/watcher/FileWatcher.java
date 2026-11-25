@@ -1128,7 +1128,7 @@ public class FileWatcher {
             // Idle, this is a poll of an in-memory queue, so a short wait costs
             // nothing and is what lets a requested scan be picked up promptly.
             long idleWait = (jdkPolls && !hotFiles.isEmpty()) ? HOT_SCAN_MS : IDLE_WAIT_MS;
-            long waitMs = pendingEvents.isEmpty() ? idleWait : Math.min(debounceMs, 100);
+            long waitMs = pendingEvents.isEmpty() ? idleWait : Math.min(quietWindow(config, pendingEvents.values()), 100);
             WatchKey key = watchService.poll(waitMs, TimeUnit.MILLISECONDS);
 
             if (scanRequested) {
@@ -1221,7 +1221,7 @@ public class FileWatcher {
             if (!pendingEvents.isEmpty()) {
                 long now = System.currentTimeMillis();
                 List<ChangeEvent> due = new ArrayList<>();
-                for (PendingEvent pending : barriers.isEmpty() ? dueNow(pendingEvents.values(), now, debounceMs)
+                for (PendingEvent pending : barriers.isEmpty() ? dueNow(pendingEvents.values(), now, quietWindow(config, pendingEvents.values()))
                         : new ArrayList<>(pendingEvents.values())) {
                     pendingEvents.remove(pending.path());
                     if (!"spring-xml".equals(pending.sourceRoot()))
@@ -1464,6 +1464,18 @@ public class FileWatcher {
             found++;
         }
         return found;
+    }
+
+    private static final long JAVA_SOURCE_QUIET_MS = 30;
+
+    static long quietWindow(AgentConfig config, Collection<PendingEvent> pending) {
+        if (config.hasFixedDebounce() || !config.isAutoCompile() || pending.isEmpty()) return config.getDebounceMs();
+        for (PendingEvent event : pending) {
+            if (!"src".equals(event.sourceRoot()) || event.type() == ChangeEvent.Type.DELETED
+                    || ChangeKind.of(event.path().getFileName().toString()) != ChangeKind.JAVA_SOURCE)
+                return config.getDebounceMs();
+        }
+        return Math.min(JAVA_SOURCE_QUIET_MS, config.getDebounceMs());
     }
 
     /**

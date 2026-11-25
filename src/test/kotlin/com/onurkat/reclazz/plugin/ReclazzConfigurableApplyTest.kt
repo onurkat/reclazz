@@ -18,6 +18,27 @@ import kotlin.test.assertTrue as expectTrue
 import kotlin.test.assertFalse as expectFalse
 
 class ReclazzConfigurableApplyTest : BasePlatformTestCase() {
+    fun testFixedDebounceCanBeSetTo500AndClearedInTheForm() {
+        val settings = ReclazzSettings.getInstance(project)
+        settings.loadState(ReclazzSettings.State())
+        val configurable = ReclazzConfigurable(project)
+        try {
+            val controls = descendants(configurable.createComponent())
+            val fixed = controls.filterIsInstance<JCheckBox>().single { it.text == "Override adaptive delay" }
+            expectFalse(fixed.isSelected)
+            fixed.isSelected = true
+            configurable.apply()
+            expectEquals(500L, settings.state.fixedDebounceMs)
+            fixed.isSelected = false
+            configurable.reset()
+            expectTrue(fixed.isSelected)
+            fixed.isSelected = false
+            configurable.apply()
+            expectEquals(null, settings.state.fixedDebounceMs)
+            expectFalse(configurable.isModified)
+        } finally { configurable.disposeUIResources() }
+    }
+
     fun testApplyPreservesSupportLineDismissedAndCommitsActualFormBindings() {
         val settings = ReclazzSettings.getInstance(project)
         settings.loadState(ReclazzSettings.State(supportLineDismissed = true))

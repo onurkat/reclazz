@@ -28,6 +28,34 @@ class NewAgentSettingsRoundTripTest : BasePlatformTestCase() {
         autoImpex = true, autoSolrReindex = true, autoUpdateRunningSystem = true, impexAllowRemove = true, backofficeConfigReset = false,
         reloadBoundary = "request", structuralReload = false, resetStatics = true, excludeClasses = "com.example.Legacy*;com.example.Old")
 
+    fun testDefaultLaunchLeavesDebounceAdaptive() {
+        SyntheticProject(project, sap = true).use { layout ->
+            val args = AgentJarLocator.buildAgentArgs(layout.project, ReclazzSettings.State(autoCompile = true))
+            expectFalse(args.split(',').any { it.startsWith("debounceMs=") }, args)
+        }
+    }
+
+    fun testDebounceMigrationPreservesOverridesIncludingNewExplicit500() {
+        val component = ReclazzSettings()
+        fun restore(state: ReclazzSettings.State) {
+            component.loadState(XmlSerializer.deserialize(XmlSerializer.serialize(state), ReclazzSettings.State::class.java))
+        }
+        fun option(): String? = AgentJarLocator.buildAgentArgs(project, component.state)
+            .split(',').singleOrNull { it.startsWith("debounceMs=") }
+
+        restore(ReclazzSettings.State(debounceMs = 500))
+        expectEquals(null, option())
+        restore(ReclazzSettings.State(debounceMs = 250))
+        expectEquals("debounceMs=250", option())
+        expectEquals(null, component.state.debounceMs)
+        restore(component.state)
+        expectEquals("debounceMs=250", option())
+        restore(ReclazzSettings.State(fixedDebounceMs = 500))
+        expectEquals("debounceMs=500", option())
+        restore(ReclazzSettings.State())
+        expectEquals(null, option())
+    }
+
     fun testNewSettingsRoundTripAndReachAllThreeLaunchPaths() {
         SyntheticProject(project, sap = true).use { layout ->
             val state = nonDefaults()

@@ -308,7 +308,7 @@ Arguments are passed as a comma-separated string after the `=` sign:
 | `excludePatterns` | (none) | Semicolon-separated glob patterns to exclude (e.g., `*Test.class;*Mock*`) |
 | `autoCompile` | `false` | Compile `.java` files internally instead of watching `.class` files |
 | `autoImpex` | `false` | Auto-import changed `.impex` files |
-| `debounceMs` | `500` | Milliseconds to wait before processing changes (batches rapid file writes) |
+| `debounceMs` | `500` | Collection window for rapid file writes. The default uses a 30 ms quiet window for Java source edits compiled by the agent. Source saves farther apart than that window may compile separately. Class files and mixed outputs retain the normal window. Setting this option explicitly uses that fixed window for every batch. In IntelliJ, select **Override adaptive delay** to override the adaptive default. Reinstall the managed SAP agent line and rebuild the wrapper configuration to update an existing installation. |
 | `startupDelaySec` | `30` | Seconds to wait after Java agent startup before watching files |
 | `verbose` | `false` | Enable verbose logging in the console, including each framework step's own line after a reload (the reload line carries the summary either way) |
 | `statusPort` | `0` | TCP port for plugin communication (0 = auto-assign) |

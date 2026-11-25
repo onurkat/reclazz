@@ -73,7 +73,21 @@ this profile is deliberately for the development app, not test-JVM attachment.
 Do not also add a manual Reclazz `-javaagent` to `app.jvmArgs` or a second
 `prepare-agent` execution.
 
-In another terminal, edit a method body and run `mvn compile`; then check the
+For frequent Java body edits with `spring-boot:run`, enable the agent compiler in
+the development profile. Add this inside the Reclazz Maven plugin's existing
+`<configuration>` (merge the entry if `agentArgs` already exists):
+
+```xml
+<agentArgs>
+  <autoCompile>true</autoCompile>
+</agentArgs>
+```
+
+Start with the same two goals above, then save the Java source and check the
+running response. The agent compiles watched sources inside the running JVM.
+Use Maven for resource processing, generated sources and changes to dependencies.
+
+With the default compiler setting, edit a method body in another terminal and run `mvn compile`; then check the
 running behavior without restarting. Wait for the watcher's default 30-second
 startup delay before the first edit. The [complete runnable example](../examples/maven-spring-boot/README.md)
 shows the response and JVM-identity check. Plain compilation is not the optional

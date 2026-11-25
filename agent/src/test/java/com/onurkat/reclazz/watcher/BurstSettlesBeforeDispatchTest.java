@@ -27,6 +27,39 @@ class BurstSettlesBeforeDispatchTest {
                 ChangeEvent.Type.MODIFIED, "m", null);
     }
 
+    private static FileWatcher.PendingEvent edit(long at, String file, String root) {
+        return new FileWatcher.PendingEvent(at, Path.of(file), ChangeEvent.Type.MODIFIED, "app", root);
+    }
+
+    @Test void onlyAgentCompiledSourcesGetAShortWindow() {
+        var sources = List.of(edit(1000, "A.java", "src"), edit(1010, "B.java", "src"));
+        var defaults = com.onurkat.reclazz.config.AgentConfig.parse("autoCompile=true");
+        long window = FileWatcher.quietWindow(defaults, sources);
+        assertEquals(30, window);
+        assertTrue(FileWatcher.dueNow(sources, 1010 + window - 1, window).isEmpty());
+        assertEquals(2, FileWatcher.dueNow(sources, 1010 + window, window).size());
+        for (String args : List.of("autoCompile=false", "autoCompile=true,debounceMs=500", "autoCompile=true,debounceMs=bad")) {
+            assertEquals(500, FileWatcher.quietWindow(com.onurkat.reclazz.config.AgentConfig.parse(args), sources), args);
+        }
+        assertEquals(7, FileWatcher.quietWindow(com.onurkat.reclazz.config.AgentConfig.parse("autoCompile=true,debounceMs=7"), sources));
+        assertEquals(500, FileWatcher.quietWindow(defaults, List.of(edit(1000, "A.java", "resources"))));
+    }
+
+    @Test void separatedIdeOutputsStayTogetherThroughTheCopyStep() {
+        var config = com.onurkat.reclazz.config.AgentConfig.parse("autoCompile=true");
+        var first = edit(1000, "A.class", "classes");
+        var second = edit(1120, "B.class", "classes");
+        var copied = edit(1240, "page.html", "resources");
+        assertTrue(FileWatcher.dueNow(List.of(first), 1119, FileWatcher.quietWindow(config, List.of(first))).isEmpty());
+        var classes = List.of(first, second);
+        assertTrue(FileWatcher.dueNow(classes, 1239, FileWatcher.quietWindow(config, classes)).isEmpty());
+        var batch = List.of(first, second, copied);
+        long window = FileWatcher.quietWindow(config, batch);
+        assertTrue(FileWatcher.dueNow(batch, 1739, window).isEmpty());
+        assertEquals(batch, FileWatcher.dueNow(batch, 1740, window));
+        assertEquals(500, FileWatcher.quietWindow(config, List.of(first, edit(1100, "A.java", "src"))));
+    }
+
     @Test
     void aSingleSaveIsDispatchedAfterItsOwnDebounceAndNotBefore() {
         var one = List.of(at(1000, "A"));
