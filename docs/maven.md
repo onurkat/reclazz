@@ -75,10 +75,9 @@ Do not also add a manual Reclazz `-javaagent` to `app.jvmArgs` or a second
 
 Save a Java method body and check the running application. The plugin enables the agent compiler when it can reproduce the project's javac settings. It uses the compile classpath, source/target or release, encoding, debug and parameter metadata, supported lint flags and Lombok processing. With MapStruct or another processor that can generate dependent classes, or an unsupported compiler configuration, the goal prints the reason and uses external compilation. In that case run `mvn compile` after saving.
 
-Set `<autoCompile>false</autoCompile>` inside the plugin's `<agentArgs>` to keep external compilation. An explicit `true` opts into source compilation. For MapStruct the agent also compiles the module's mapper sources, including after DTO-only changes, and stages generated output until javac succeeds. An unverified processor requires Maven. Resource processing and dependency changes still use Maven.
+Set `<autoCompile>false</autoCompile>` inside the plugin's `<agentArgs>` to keep external compilation. An explicit `true` opts into source compilation. For MapStruct the agent also compiles the module's mapper sources, including after DTO-only changes, and stages generated output until javac succeeds. An unverified processor requires Maven. Dependency changes still use Maven. See [resource processing](#with-the-reclazz-maven-plugin) for automatic copies and edits that need a Maven goal.
 
-Wait for the watcher's default 30-second
-startup delay before the first edit. The [complete runnable example](../examples/maven-spring-boot/README.md)
+Wait for the `Watching … directories` message before the first edit. The watcher starts when the application reports ready, with a 30-second fallback. The [complete runnable example](../examples/maven-spring-boot/README.md)
 shows the response and JVM-identity check. Plain compilation is not the optional
 [whole-build safety wrapper](#opt-in-whole-reactor-safety).
 

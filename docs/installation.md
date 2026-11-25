@@ -52,10 +52,7 @@ Finish with [your first reload](#your-first-reload).
 - Stock JDKs support Reclazz's documented structural reload paths; a special JBR
   installation is not required to begin. Supported changes and native type limits
   are in [usage](usage.md) and [superclass feasibility](superclass-feasibility.md).
-- Examples use source version **1.9.0**. A source version is not proof that every
-  registry has published it. Choose a version present in your chosen channel or
-  [build from source](#building-from-source). Match the Java agent and its integration artifacts;
-  newer BUILD/VERIFY/MCP features may require local builds.
+- These examples use source version **1.9.0**. For Gradle, choose a version available in both the Gradle Plugin Portal (plugin) and Maven Central (Java agent), or use matching local builds. For other integrations, match the agent version to an artifact in your chosen channel. See [building from source](#building-from-source) for features that require a local build.
 
 ## IntelliJ IDEA
 

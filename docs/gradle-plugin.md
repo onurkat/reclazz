@@ -19,8 +19,9 @@ The plugin id is `com.onurkat.reclazz`.
 
 ## Apply it
 
-The Java agent is on Maven Central, so applying the plugin is enough for a standard
-Spring Boot project:
+These examples use source version **1.9.0**. For Gradle, choose a version available in both the Gradle Plugin Portal (plugin) and Maven Central (Java agent), or use matching local builds.
+
+Apply the plugin to your existing Spring Boot project:
 
 ```kotlin
 plugins {
@@ -134,8 +135,6 @@ state. Options: `--port-file`, `--port`, `--hybris-home`, `--timeout-ms`.
 
 - The Java agent only reloads classes it transformed at load time, so the flag must
   be present at JVM startup. The plugin adds it to task startup for you.
-- The Java agent is published at `com.onurkat.reclazz:reclazz-agent` on Maven
-  Central, which is what the version-only form resolves.
 - `reclazzStatus` lives in the plugin, not the Java agent jar, because that jar's
   tests forbid it from opening a client socket; the status
   client that must open one to loopback belongs beside the build.
