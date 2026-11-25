@@ -94,6 +94,8 @@ final class SpringHierarchyBeans {
 
     static List<Selection> select(Scope scope, Map<Class<?>,byte[]> edits) throws Exception {
         Class<?> owner = scope.receiver().getClass();
+        if (scope.inventory().refusalOnly)
+            throw refusal("Spring 7.0.10 configuration hierarchy requires restart for " + scope.name(), owner);
         List<Class<?>> types = hierarchy(owner);
         var selected = new LinkedHashMap<String,Selection>();
         var firstOwner = scope.inventory().baseline.get(owner.getName());

@@ -16,6 +16,7 @@ public final class SpringConfigurationOwners {
 
     static final class Inventory {
         boolean refreshed;
+        boolean refusalOnly;
         final Map<String,String> configurations = new LinkedHashMap<>();
         final Map<String,String> superclasses = new HashMap<>();
         // Only edited hierarchy classes need retained bytes. Startup classes use their witnessed baseline.
@@ -28,19 +29,25 @@ public final class SpringConfigurationOwners {
 
     // The parser is a local variable of processConfigBeanDefinitions. Capture its final
     // choices while it is still reachable, without keeping Spring objects in the values.
-    public static void parsed(Object parser) {
+    public static void parsed(Object parser) { parsed(parser, false); }
+    public static void parsedForRefusal(Object parser) { parsed(parser, true); }
+
+    private static void parsed(Object parser, boolean refusalOnly) {
         try {
             Object registry = Reflect.readField(parser, "registry");
             if (registry == null) return;
             var owners = new Inventory();
+            owners.refusalOnly = refusalOnly;
             Map<?,?> configurations = (Map<?,?>) Reflect.readField(parser, "configurationClasses");
             for (Object configuration : configurations.values()) {
                 String bean = (String) invoke(configuration, "getBeanName");
                 if (bean != null) owners.configurations.put(bean, className(configuration));
             }
-            Map<?,?> supers = (Map<?,?>) Reflect.readField(parser, "knownSuperclasses");
-            for (var entry : supers.entrySet())
-                owners.superclasses.put((String) entry.getKey(), className(entry.getValue()));
+            if (!refusalOnly) {
+                Map<?,?> supers = (Map<?,?>) Reflect.readField(parser, "knownSuperclasses");
+                for (var entry : supers.entrySet())
+                    owners.superclasses.put((String) entry.getKey(), className(entry.getValue()));
+            }
             synchronized (SpringConfigurationOwners.class) { registries.put(registry, owners); }
         } catch (ReflectiveOperationException | RuntimeException | LinkageError unavailable) {
             // Spring startup must not depend on agent bookkeeping.
@@ -76,6 +83,7 @@ public final class SpringConfigurationOwners {
             var parsed = inventory(factory);
             if (parsed == null || parsed.refreshed) return;
             var inventory = new Inventory();
+            inventory.refusalOnly = parsed.refusalOnly;
             inventory.configurations.putAll(parsed.configurations);
             inventory.superclasses.putAll(parsed.superclasses);
             var singleton = factory.getClass().getMethod("getSingleton", String.class);

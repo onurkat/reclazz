@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- On Spring Framework 7.0.10, editing a watched `@Bean` factory in a lite configuration hierarchy reports the configuration that needs a restart and preserves its running singleton.
+
 - Added Spring bean factory methods can use registered web and custom scopes
   with class or interface proxies. Existing HTTP sessions retain their targets
   across a factory edit and run their destruction callbacks at session end.

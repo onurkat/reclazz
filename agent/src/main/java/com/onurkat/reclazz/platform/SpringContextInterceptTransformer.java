@@ -61,6 +61,7 @@ public class SpringContextInterceptTransformer implements ClassFileTransformer {
     }
 
     private static byte[] instrumentConfiguration(byte[] bytes, boolean readerHook) {
+        boolean refusalOnly;
         try {
             String sha = java.util.HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(bytes));
             var supported = readerHook
@@ -68,7 +69,12 @@ public class SpringContextInterceptTransformer implements ClassFileTransformer {
                                       "68035e8d2d66267559421f6323e6bce4f0308dac12f413a6c1a1d5e470fdd3d4")
                     : java.util.Set.of("f8473bcddf6600bce163ad716f59d556068d1a9b411e14082833c67609065435",
                                       "79784d67eb1010714d05c9e6eb0dd3678dcffe435490c677cceefa127bdda2c7");
-            if (!supported.contains(sha)) return null;
+            // Observe this parser's configurations to reject hierarchy changes without
+            // replacing a running singleton. Its native factory selection differs.
+            refusalOnly = sha.equals(readerHook
+                    ? "5ea3ed0fbad1cfafefe2e7caa8b8a1d2c0cfaa7f6396b1bced720ae97f4213d7"
+                    : "a9a7c1cf3bbfd8b8e72827b327e9bcc8c532f81214aea281073053067ec4adba");
+            if (!supported.contains(sha) && !refusalOnly) return null;
         } catch (java.security.NoSuchAlgorithmException unavailable) { return null; }
         ClassReader reader = new ClassReader(bytes);
         ClassWriter writer = new ClassWriter(reader, ClassWriter.COMPUTE_MAXS);
@@ -82,7 +88,7 @@ public class SpringContextInterceptTransformer implements ClassFileTransformer {
                             super.visitVarInsn(Opcodes.ALOAD, 0);
                             if (readerHook) super.visitVarInsn(Opcodes.ALOAD, 1);
                             super.visitMethodInsn(Opcodes.INVOKESTATIC, "com/onurkat/reclazz/spring/SpringConfigurationOwners",
-                                    readerHook ? "definitionsLoaded" : "parsed",
+                                    readerHook ? "definitionsLoaded" : refusalOnly ? "parsedForRefusal" : "parsed",
                                     readerHook ? "(Ljava/lang/Object;Ljava/util/Set;)V" : "(Ljava/lang/Object;)V", false);
                         }
                         super.visitInsn(opcode);
