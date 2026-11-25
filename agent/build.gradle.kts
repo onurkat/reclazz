@@ -322,7 +322,7 @@ val hibernateTests = sourceSets.create("hibernateTest") {
 configurations[hibernateTests.implementationConfigurationName].extendsFrom(configurations.testImplementation.get())
 configurations[hibernateTests.runtimeOnlyConfigurationName].extendsFrom(configurations.testRuntimeOnly.get())
 dependencies {
-    add(hibernateTests.implementationConfigurationName, "org.hibernate.orm:hibernate-core:6.5.3.Final")
+    add(hibernateTests.implementationConfigurationName, "org.hibernate.orm:hibernate-core:7.4.17.Final")
     add(hibernateTests.implementationConfigurationName, "org.springframework:spring-context:6.1.14")
     add(hibernateTests.implementationConfigurationName, "org.springframework:spring-orm:6.1.14")
     add(hibernateTests.implementationConfigurationName, "org.hibernate.orm:hibernate-jcache:6.5.3.Final")
@@ -380,7 +380,7 @@ dependencies {
     add(springSixTests.implementationConfigurationName, "org.springframework.security:spring-security-web:6.3.4")
     // Owner-approved real JPA/schema validation tests; isolated and never packaged.
     add(springSixTests.implementationConfigurationName, "org.springframework:spring-orm:6.1.14")
-    add(springSixTests.implementationConfigurationName, "org.hibernate.orm:hibernate-core:6.5.3.Final")
+    add(springSixTests.implementationConfigurationName, "org.hibernate.orm:hibernate-core:7.4.17.Final")
     add(springSixTests.implementationConfigurationName, "com.h2database:h2:2.5.252")
     // Native repository refresh regressions only; never shipped with the agent.
     add(springSixTests.implementationConfigurationName, "org.springframework.data:spring-data-jpa:3.3.4")
@@ -442,7 +442,7 @@ dependencies {
     add(springSevenTests.implementationConfigurationName, "org.springframework.security:spring-security-web:7.1.2")
     // Owner-approved real JPA/schema validation tests; isolated and never packaged.
     add(springSevenTests.implementationConfigurationName, "org.springframework:spring-orm:7.0.10")
-    add(springSevenTests.implementationConfigurationName, "org.hibernate.orm:hibernate-core:7.4.13.Final")
+    add(springSevenTests.implementationConfigurationName, "org.hibernate.orm:hibernate-core:7.4.17.Final")
     add(springSevenTests.implementationConfigurationName, "com.h2database:h2:2.5.252")
     // Native repository refresh regressions only; never shipped with the agent.
     add(springSevenTests.implementationConfigurationName, "org.springframework.data:spring-data-jpa:4.1.2")
