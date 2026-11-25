@@ -44,7 +44,7 @@ class AgentArgumentContractTest {
         val derived = setOf("hybrisHome", "statusPort", "portFile", "watchDirs")
         // Detector override, server-console formatting, bytecode diagnostics, server-log lifecycle,
         // and structured helper/owner recreation map remain expert/manual configuration.
-        val expert = setOf("platform", "wrapOutput", "transformDumpDir", "verifyTransform", "sessionLog", "refreshOwnersOnHelper")
+        val expert = setOf("platform", "wrapOutput", "transformDumpDir", "verifyTransform", "sessionLog", "refreshOwnersOnHelper", "mavenCompiler")
         assertTrue((exposed intersect derived).isEmpty())
         assertTrue((exposed intersect expert).isEmpty())
         assertTrue((derived intersect expert).isEmpty())

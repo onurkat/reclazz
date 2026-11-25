@@ -30,7 +30,7 @@ public class AgentConfig {
             "debounceMs", "verbose", "statusPort", "portFile", "wrapOutput",
             "excludePatterns", "excludeClasses", "startupDelaySec",
             "structuralReload", "transformDumpDir", "verifyTransform",
-            "platform", "watchDirs", "jpaRefresh", "sessionLog", "reloadBoundary",
+            "platform", "watchDirs", "mavenCompiler", "jpaRefresh", "sessionLog", "reloadBoundary",
             "refreshOwnersOnHelper", "resetStatics", "backofficeConfigReset"
     );
 
@@ -262,6 +262,15 @@ public class AgentConfig {
         if (params.containsKey("autoCompile")) {
             config.autoCompile = Boolean.parseBoolean(params.get("autoCompile"));
         }
+        if (params.containsKey("mavenCompiler")) {
+            try {
+                config.mavenCompiler = MavenCompilerSnapshot.read(params.get("mavenCompiler"));
+            } catch (java.io.IOException | RuntimeException | LinkageError unavailable) {
+                config.mavenCompilerError = "Maven compiler settings unavailable: " + unavailable.getMessage();
+                config.autoCompile = false;
+                StatusReporter.info(config.mavenCompilerError + "; use Maven to compile this project.");
+            }
+        }
 
         if (params.containsKey("debounceMs")) {
             config.fixedDebounce = true;
@@ -472,6 +481,11 @@ public class AgentConfig {
     public boolean isAutoUpdateRunningSystem() { return liveOptions().autoUpdateRunningSystem(); }
     public boolean isBackofficeConfigReset() { return liveOptions().backofficeConfigReset(); }
     public boolean isAutoSolrReindex() { return liveOptions().autoSolrReindex(); }
+    private MavenCompilerSnapshot mavenCompiler;
+    private String mavenCompilerError;
+    public MavenCompilerSnapshot getMavenCompiler() { return mavenCompiler; }
+    public String getMavenCompilerError() { return mavenCompilerError; }
+
     public boolean isAutoCompile() { return liveOptions().autoCompile(); }
     public long getDebounceMs() { return debounceMs; }
     public boolean hasFixedDebounce() { return fixedDebounce; }

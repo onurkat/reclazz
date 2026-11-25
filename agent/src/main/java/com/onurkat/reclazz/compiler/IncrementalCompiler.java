@@ -4,6 +4,8 @@
  */
 package com.onurkat.reclazz.compiler;
 
+import com.onurkat.reclazz.config.MavenCompilerSnapshot;
+
 import com.onurkat.reclazz.platform.ExtensionInfo;
 import com.onurkat.reclazz.platform.HybrisContext;
 import com.onurkat.reclazz.platform.PlatformContext;
@@ -24,6 +26,16 @@ public class IncrementalCompiler {
     private final HybrisContext context; // null for non-Hybris platforms
     private final PlatformContext platformContext; // used for non-Hybris platforms
     private final JavaCompiler compiler;
+    private MavenCompilerSnapshot maven;
+    private String mavenError;
+
+    public void configureMaven(com.onurkat.reclazz.config.AgentConfig config) {
+        maven = config.getMavenCompiler();
+        mavenError = config.getMavenCompilerError();
+    }
+
+    Path generatedDirectory() { return maven == null ? null : maven.generated(); }
+
     private java.util.function.Function<Set<String>, java.util.function.BiPredicate<String, byte[]>> byproductProof =
             names -> (name, bytes) -> false;
 
@@ -132,11 +144,15 @@ public class IncrementalCompiler {
 
     /** Only writes to staging. The attempt owns publication of every module. */
     List<String> compileStaged(String module, List<Path> files, Path staging, List<Path> preceding) throws IOException {
+        if (mavenError != null) return List.of(mavenError);
         Files.createDirectories(staging);
         List<String> options;
         if (context != null) {
             ExtensionInfo extension = context.getExtensions().get(module);
             options = buildCompilerOptions(extension, staging, isBackofficeSource(files.get(0), extension));
+        } else if (maven != null) {
+            options = MavenJavac.options(maven, staging);
+            files = MavenJavac.sources(maven, compiler, files);
         } else {
             options = new ArrayList<>(List.of("-d", staging.toString(), "-classpath", classpath,
                     "--release", System.getProperty("java.specification.version", "17"),
@@ -155,7 +171,7 @@ public class IncrementalCompiler {
         options.set(cpIndex, String.join(File.pathSeparator, cp));
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
         boolean success;
-        try (StandardJavaFileManager manager = compiler.getStandardFileManager(diagnostics, Locale.getDefault(), null)) {
+        try (StandardJavaFileManager manager = compiler.getStandardFileManager(diagnostics, Locale.getDefault(), maven == null ? null : maven.encoding())) {
             success = compiler.getTask(null, manager, diagnostics, options, null,
                     manager.getJavaFileObjectsFromPaths(files)).call();
         }

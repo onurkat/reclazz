@@ -769,7 +769,7 @@ public class ReclazzAgent {
 
             var compilerHolder = new java.util.concurrent.atomic.AtomicReference<IncrementalCompiler>();
             if (config.isAutoCompile()) {
-                prepareCompiler(platformContext); compilerHolder.set(createCompiler(platformContext));
+                prepareCompiler(platformContext); compilerHolder.set(createCompiler(platformContext, config));
                 StatusReporter.info("AutoCompile enabled: watching source files, compiling internally");
             } else StatusReporter.info("Default mode: watching compiled class files");
 
@@ -875,7 +875,7 @@ public class ReclazzAgent {
             resumeJavaSources = () -> sourceQueue.submitAutomatic("java-source-batch", "Compiling saved Java sources", compileSources);
             heldSourceRetry = () -> retryHeldSourcesAfterCodegen(sourceQueue, compileSources);
             var compilerLifecycle = new CompilerLifecycle(reloadQueue, watcher, compilerHolder,config,platformContext,
-                    transformContext,instrumentation::getAllLoadedClasses,ReclazzAgent::createCompiler,ReclazzAgent::prepareCompiler,
+                    transformContext,instrumentation::getAllLoadedClasses,p -> createCompiler(p, config),ReclazzAgent::prepareCompiler,
                     () -> { var retry=heldSourceRetry; if(retry!=null)retry.run(); }, scopeFence);
             if (statusServer != null) statusServer.setLiveConfig(new LiveConfigController(config,platformContext,compilerLifecycle::transitionRuntime));
             final ReloadQueue repairQueue=reloadQueue;
@@ -1167,7 +1167,7 @@ public class ReclazzAgent {
                     hybris.getExtensions().values().stream().filter(ext -> platform.shouldWatch(ext.getName())).toList());
         }
     }
-    private static IncrementalCompiler createCompiler(PlatformContext platform) {
+    private static IncrementalCompiler createCompiler(PlatformContext platform, AgentConfig config) {
         boolean isHybris = platform.getPlatformId() == PlatformContext.Platform.HYBRIS;
         IncrementalCompiler compiler;
                 String classpath = platform.resolveClasspath();
@@ -1177,6 +1177,7 @@ public class ReclazzAgent {
                             ((HybrisPlatformContext) platform).getBackofficeClassDirs().keySet());
                 } else {
                     compiler = new IncrementalCompiler(classpath, platform);
+                    compiler.configureMaven(config);
                 }
                 compiler.setByproductProof(names -> {
                     Map<String, List<Class<?>>> byName = new java.util.HashMap<>();

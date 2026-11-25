@@ -33,7 +33,7 @@ below are the shorter, behavior-only check.
 1. Record the original `message` (`Hello before reload`), `pid` and `startedAt`.
 2. In `src/main/java/com/example/demo/HelloController.java`, change only
    `Hello before reload` to `Hello after reload`.
-3. With the app still running, compile in another terminal in this directory:
+3. Leave the app running and save the file. If preparation reported that the project uses external compilation, run in another terminal:
 
    ```sh
    mvn compile

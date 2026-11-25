@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 - A Spring aspect that excludes an added service method lets that method keep serving requests after a transaction edit. A matching or unresolved unsupported advisor reports its restart requirement once per method and cause.
 - Java source edits compiled by the agent use a shorter collection window. IDE class output and explicit debounce settings keep their existing batching.
+- Maven development launches compile Java saves with the project's javac settings when supported. Projects using code-generating processors or unsupported compiler setups use Maven compilation by default.
 
 - Spring Boot applications report an active DevTools restart watcher and name added application-class bean factories that need a restart.
 - Spring Boot resource edits in Gradle runs use the project's resource processing. Runtime output changes refresh loaded properties and invalidate template caches.

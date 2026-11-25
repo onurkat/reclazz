@@ -73,6 +73,16 @@ public final class CompileAttempt {
                 if (output.publish) files.put(output.path, output.bytes);
                 classes.put(output.name, output.bytes);
             }
+            Path generated = compiler.generatedDirectory();
+            if (generated != null) {
+                for (Path staging : outputs.values()) {
+                    Path sourceStage = MavenJavac.generatedStage(staging);
+                    try (var walk = Files.walk(sourceStage)) {
+                        for (Path source : walk.filter(Files::isRegularFile).toList())
+                            files.put(generated.resolve(sourceStage.relativize(source)), Files.readAllBytes(source));
+                    }
+                }
+            }
             for (var file : files.entrySet()) {
                 try {
                     AtomicWrite.bytes(file.getKey(), file.getValue());

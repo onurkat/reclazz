@@ -306,6 +306,7 @@ Arguments are passed as a comma-separated string after the `=` sign:
 | `hybrisHome` | auto-detect | Optional explicit installation override; SAP Commerce startup supplies `HYBRIS_BIN_DIR`; conflicting explicit override wins with a warning |
 | `watchExtensions` | all custom | Semicolon-separated extension names to watch; named lists apply live on SAP Commerce, watch-all transitions require restart (empty = all at startup) |
 | `excludePatterns` | (none) | Semicolon-separated glob patterns to exclude (e.g., `*Test.class;*Mock*`) |
+| `mavenCompiler` | unset | Compiler settings snapshot supplied by the Maven plugin for Java source edits. |
 | `autoCompile` | `false` | Compile `.java` files internally instead of watching `.class` files |
 | `autoImpex` | `false` | Auto-import changed `.impex` files |
 | `debounceMs` | `500` | Collection window for rapid file writes. The default uses a 30 ms quiet window for Java source edits compiled by the agent. Source saves farther apart than that window may compile separately. Class files and mixed outputs retain the normal window. Setting this option explicitly uses that fixed window for every batch. In IntelliJ, select **Override adaptive delay** to override the adaptive default. Reinstall the managed SAP agent line and rebuild the wrapper configuration to update an existing installation. |

@@ -18,6 +18,9 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.execution.MavenSession;
+import org.apache.maven.plugins.annotations.Component;
+import org.eclipse.aether.RepositorySystem;
 
 /**
  * Prepares the Reclazz agent for the build, the way {@code jacoco:prepare-agent}
@@ -31,7 +34,7 @@ import org.apache.maven.project.MavenProject;
  */
 @Mojo(name = "prepare-agent",
         defaultPhase = LifecyclePhase.INITIALIZE,
-        requiresDependencyResolution = ResolutionScope.RUNTIME,
+        requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
         threadSafe = true)
 public class PrepareAgentMojo extends AbstractMojo {
 
@@ -42,6 +45,12 @@ public class PrepareAgentMojo extends AbstractMojo {
 
     @Parameter(defaultValue = "${plugin.artifacts}", readonly = true, required = true)
     private List<Artifact> pluginArtifacts;
+
+    @Parameter(defaultValue = "${session}", readonly = true)
+    private MavenSession session;
+
+    @Component
+    private RepositorySystem resolver;
 
     /** The property to write. Surefire reads {@code argLine} on its own. */
     @Parameter(property = "reclazz.propertyName", defaultValue = "argLine")
@@ -63,6 +72,34 @@ public class PrepareAgentMojo extends AbstractMojo {
     @Parameter
     private Map<String, String> agentArgs;
 
+    private Map<String, String> compilerArguments() {
+        Map<String, String> args = new LinkedHashMap<>();
+        if (agentArgs != null) args.putAll(agentArgs);
+        if (project.getBasedir() == null || "pom".equals(project.getPackaging()) ||
+                "false".equalsIgnoreCase(args.get("autoCompile"))) return args;
+        boolean forced = "true".equalsIgnoreCase(args.get("autoCompile"));
+        MavenCompilerSettings settings = null;
+        try {
+            if ("hybris".equalsIgnoreCase(platform)) throw new java.io.IOException("SAP Commerce compiler");
+            if (!project.getBuild().getOutputDirectory().equals(watchDirs))
+                throw new java.io.IOException("custom class output watch path");
+            settings = new MavenCompilerSettings(project, session, resolver);
+            String snapshot = settings.prepare(forced);
+            args.put("mavenCompiler", snapshot);
+            args.put("autoCompile", "true");
+        } catch (Exception unsupported) {
+            String reason = java.util.Objects.toString(unsupported.getMessage(), "compiler configuration unavailable");
+            if (forced && settings != null && settings.canHonorUnmodeledOverride()) {
+                getLog().info(reason + "; keeping explicit autoCompile=true without Maven compiler settings.");
+            } else {
+                args.remove("autoCompile");
+                getLog().info(reason + "; Reclazz uses Maven's compile for this project" +
+                        (forced ? "." : " (set autoCompile=true to override)."));
+            }
+        }
+        return args;
+    }
+
     @Override
     public void execute() throws MojoExecutionException {
         if (skip) {
@@ -70,7 +107,7 @@ public class PrepareAgentMojo extends AbstractMojo {
             return;
         }
         File agentJar = findAgentJar();
-        String arg = buildAgentArg(agentJar, platform, watchDirs, agentArgs);
+        String arg = buildAgentArg(agentJar, platform, watchDirs, compilerArguments());
 
         String existing = project.getProperties().getProperty(propertyName);
         String expected = parseArguments(arg)[0];
