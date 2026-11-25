@@ -109,7 +109,7 @@ public class ReclazzAgent {
     private static volatile boolean running = false;
 
     /**
-     * Java changes waiting to be compiled. Populated on the watcher thread,
+     * Java changes waiting to be compiled. Registered after their codegen inputs,
      * drained on the single-threaded reload executor, every drain compiles
      * everything that accumulated while the previous batch was running.
      */
@@ -126,6 +126,8 @@ public class ReclazzAgent {
     private static volatile ReloadQueue reloadQueue;
     private static volatile Runnable generatedClassScan;
     private static volatile Runnable heldSourceRetry;
+    private static volatile CodegenSourceGate codegenSourceGate = new CodegenSourceGate();
+    private static volatile Runnable resumeJavaSources;
     private static volatile StatusServer statusServer;
 
     /**
@@ -799,6 +801,7 @@ public class ReclazzAgent {
             }, modules::beforeXmlBean);
 
             // The registry owns optional automation; discovery and the reload engine do not.
+            codegenSourceGate = new CodegenSourceGate();
             if (suppliedModules == null) registerPremiumAutomation(modules, config, platformContext);
 
             // Set up file watcher
@@ -859,11 +862,14 @@ public class ReclazzAgent {
             reloadQueue.setVerification(verification);
             watcher.onGeneratedOutputHold(reloadQueue::generatedOutputHeld);
             generatedClassScan=watcher::scanNow;
-            heldSourceRetry=() -> retryHeldSourcesAfterCodegen(reloadQueue, () -> {
+            final ReloadQueue sourceQueue = reloadQueue;
+            Runnable compileSources = () -> {
                 var compiler = compilerHolder.get();
                 if (config.liveOptions().autoCompile() && compiler != null)
                     handleJavaBatch(compiler, reloader, springOrchestrator, modules);
-            });
+            };
+            resumeJavaSources = () -> sourceQueue.submitAutomatic("java-source-batch", "Compiling saved Java sources", compileSources);
+            heldSourceRetry = () -> retryHeldSourcesAfterCodegen(sourceQueue, compileSources);
             var compilerLifecycle = new CompilerLifecycle(reloadQueue, watcher, compilerHolder,config,platformContext,
                     transformContext,instrumentation::getAllLoadedClasses,ReclazzAgent::createCompiler,ReclazzAgent::prepareCompiler,
                     () -> { var retry=heldSourceRetry; if(retry!=null)retry.run(); }, scopeFence);
@@ -880,25 +886,24 @@ public class ReclazzAgent {
                 statusServer.setReloadControl(action -> reloadQueue.control(action, watcher::scanNow).fields());
             }
 
-            // Register the reload pipeline. Java changes are queued BEFORE
-            // the executor task is submitted: while one batch compiles, new
-            // events accumulate in the queue and the next drain compiles
-            // them together in a single javac invocation (save-all in the
-            // IDE used to pay full javac startup per file, serially).
-            // Class files that became due in the same pass are queued together
-            // and drained by one task, so a build's worth of classes is one
-            // batch on the reload thread rather than a batch and a straggler.
+            // Register Java saves on the reload queue, after this pass's codegen inputs.
+            // An older drain cannot see these callers before the XML handler admits the run.
             watcher.onFileChanges(events -> {
                 int classFiles = 0;
-                for (ChangeEvent event : events) {
+                for (ChangeEvent event : codegenFirst(events)) {
                     String fn = event.getPath().getFileName().toString();
                     if (fn.endsWith(".java") && config.isAutoCompile() && compilerHolder.get() != null) {
-                        synchronized (pendingJavaChanges) {
-                            javaChangeGeneration++;
-                            speculativeJava.remove(event.getPath());
-                            if (event.getType() == ChangeEvent.Type.DELETED) pendingJavaChanges.remove(event.getPath());
-                            else pendingJavaChanges.put(event.getPath(), event);
-                        }
+                        sourceQueue.submitAutomatic(event.getPath().toString(), "Handling " + fn, () -> {
+                            if (!platformContext.shouldWatch(event.getModuleName())) return;
+                            synchronized (pendingJavaChanges) {
+                                javaChangeGeneration++;
+                                speculativeJava.remove(event.getPath());
+                                if (event.getType() == ChangeEvent.Type.DELETED) pendingJavaChanges.remove(event.getPath());
+                                else pendingJavaChanges.put(event.getPath(), event);
+                            }
+                            sourceQueue.submitAutomatic("java-source-batch", "Compiling saved Java sources", compileSources);
+                        });
+                        continue;
                     }
                     if (fn.endsWith(".class") && event.getType() != ChangeEvent.Type.DELETED) {
                         reloadQueue.enqueueClassFile(event);
@@ -969,6 +974,7 @@ public class ReclazzAgent {
                 if (reloadQueue != null) {
                     generatedClassScan=null;
                     heldSourceRetry=null;
+                    resumeJavaSources=null;
                     com.onurkat.reclazz.transform.KeepBaseline.setWatchedPredicate(null);
                     reloadQueue.shutdown();
                 }
@@ -1001,6 +1007,7 @@ public class ReclazzAgent {
             if (reloadQueue != null) {
                 generatedClassScan=null;
                 heldSourceRetry=null;
+                resumeJavaSources=null;
                 com.onurkat.reclazz.transform.KeepBaseline.setWatchedPredicate(null);
                 reloadQueue.shutdown();
                 reloadQueue = null;
@@ -1101,6 +1108,7 @@ public class ReclazzAgent {
     private static final com.onurkat.reclazz.config.ScopeFence scopeFence = new com.onurkat.reclazz.config.ScopeFence();
 
     private static void registerPremiumAutomation(PremiumModules modules, AgentConfig config, PlatformContext platform) {
+        final CodegenSourceGate sourceGate = codegenSourceGate;
         modules.register(() -> {
             try {
                 var factory = (PremiumModuleFactory) Class.forName(
@@ -1123,9 +1131,10 @@ public class ReclazzAgent {
                         if (queue == null || scan == null) throw new IllegalStateException("Generated class admission is not ready");
                         return queue.holdGeneratedClasses(roots,scan);
                     }
+                    @Override public Runnable beginCodegenSourceHold() { return sourceGate.begin(); }
                     @Override public void generatedOutputAccepted() {
-                        Runnable retry=heldSourceRetry;
-                        if (retry != null) retry.run();
+                        Runnable retry = heldSourceRetry;
+                        if (retry != null) sourceGate.accepted(retry);
                     }
                     @Override public boolean requestRunningSystemUpdate() {
                         return modules.request(Capability.RUNNING_SYSTEM_UPDATE).granted();
@@ -1817,14 +1826,23 @@ public class ReclazzAgent {
         return withIt;
     }
 
+    static List<ChangeEvent> codegenFirst(List<ChangeEvent> events) {
+        if (events.size() < 2 || events.stream().noneMatch(e -> ChangeKind.of(e.getPath()) == ChangeKind.CODEGEN_XML))
+            return events;
+        return events.stream().sorted(java.util.Comparator.comparing(e -> ChangeKind.of(e.getPath()) != ChangeKind.CODEGEN_XML)).toList();
+    }
+
     /** Decide after any in-flight compile has retained its failed sources on the same queue. */
     static void retryHeldSourcesAfterCodegen(ReloadQueue queue, Runnable compile) {
         if (queue == null) return;
+        final long retryGeneration;
+        synchronized (pendingJavaChanges) { retryGeneration = lastJavaAttemptGeneration; }
         queue.submitAutomatic("codegen-held-retry", "Compiling held sources after codegen", () -> {
             synchronized (pendingJavaChanges) {
                 pendingJavaChanges.keySet().removeIf(path -> !Files.isRegularFile(path));
                 if (pendingJavaChanges.isEmpty()) return;
-                javaChangeGeneration++;
+                if (javaChangeGeneration == retryGeneration) javaChangeGeneration++;
+                else if (javaChangeGeneration == lastJavaAttemptGeneration) return;
                 StatusReporter.info("Codegen finished; compiling " + pendingJavaChanges.size()
                         + " held source files again");
             }
@@ -1839,9 +1857,10 @@ public class ReclazzAgent {
         java.util.List<ChangeEvent> batch;
         synchronized (pendingJavaChanges) {
             if (lastJavaAttemptGeneration == javaChangeGeneration) return;
-            lastJavaAttemptGeneration = javaChangeGeneration;
             pendingJavaChanges.keySet().removeIf(path -> !Files.isRegularFile(path));
-            if (pendingJavaChanges.isEmpty()) return; // drained by an earlier task
+            if (pendingJavaChanges.isEmpty()) return;
+            if (codegenSourceGate.defer(resumeJavaSources, pendingJavaChanges.size())) return;
+            lastJavaAttemptGeneration = javaChangeGeneration;
             batch = new java.util.ArrayList<>(pendingJavaChanges.values());
             pendingJavaChanges.clear();
         }

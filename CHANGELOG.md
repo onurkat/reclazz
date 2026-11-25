@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- When SAP Commerce regenerates DTOs or models, Java callers saved alongside the XML compile after generation finishes. A failed generation still surfaces genuine Java compilation errors.
+
 - On Spring Framework 7.0.10, editing a watched `@Bean` factory in a lite configuration hierarchy reports the configuration that needs a restart and preserves its running singleton.
 - Saving a resource in a watched SAP Commerce webroot invalidates its Tomcat cache entry so JSPs, tags and includes can pick up edits on the next Jasper check. Each extension watches up to 384 webroot directories, giving priority to directories containing JSPs or tag files.
 

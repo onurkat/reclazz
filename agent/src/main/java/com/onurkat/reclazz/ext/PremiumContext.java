@@ -20,6 +20,8 @@ public interface PremiumContext {
     default GeneratedOutput holdGeneratedClasses(Collection<java.nio.file.Path> roots) {
         throw new IllegalStateException("Generated class admission is not ready");
     }
+    /** Release once the admitted generation and all of its coalesced runs terminate. */
+    default Runnable beginCodegenSourceHold() { return () -> { }; }
     /** A final codegen run has admitted bytecode and completed its persistence step. */
     default void generatedOutputAccepted() { }
     default com.onurkat.reclazz.config.ScopeFence scopeFence() { return null; }

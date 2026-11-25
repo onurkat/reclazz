@@ -67,6 +67,7 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
                         () -> context.holdGeneratedClasses(hybris.getGeneratedClassDirs().values().stream()
                                 .flatMap(List::stream).toList()), context::generatedOutputAccepted);
                 if (context.scopeFence() != null) codegen.setScopeFence(context.scopeFence());
+                codegen.setSourceHold(context::beginCodegenSourceHold);
                 codegen.setWatchedExtensions(platform::shouldWatch);
                 codegen.setHacConfigLoader(loader);
                 codegen.setLiveOptions(config::liveOptions);

@@ -107,6 +107,11 @@ public class CodegenReloader {
     private final RunningSystemUpdater runningSystemUpdater;
     private final Runnable generatedClassesReady;
     private final Runnable generatedOutputAccepted;
+    private java.util.function.Supplier<Runnable> sourceHold = () -> () -> { };
+
+    public void setSourceHold(java.util.function.Supplier<Runnable> hold) {
+        sourceHold = java.util.Objects.requireNonNull(hold);
+    }
     private final java.util.function.Supplier<com.onurkat.reclazz.ext.PremiumContext.GeneratedOutput> outputAdmission;
     private com.onurkat.reclazz.ext.PremiumContext.GeneratedOutput currentOutput;
     private final ScheduledExecutorService executor;
@@ -207,6 +212,7 @@ public class CodegenReloader {
 
         if (!watchedExtensions.test(ext.getName())) return;
         com.onurkat.reclazz.config.ScopeFence.Permit permit = null;
+        final Runnable releaseSources;
         synchronized (lock) {
             // Matched by content, not by time: a polling watcher under ant's CPU load
             // reported our touch 4-6 seconds late, past the old 3-second window, and
@@ -230,6 +236,7 @@ public class CodegenReloader {
                         + " [" + ext.getName() + "], ant still running, will retry after it finishes");
                 return;
             }
+            releaseSources = sourceHold.get();
             running = true;
         }
 
@@ -239,10 +246,16 @@ public class CodegenReloader {
 
         final Path targetFile = file;
         final var admitted = java.util.Objects.requireNonNull(permit);
-        try { executor.submit(() -> runLoop(ext, targetFile, admitted)); }
+        try {
+            executor.submit(() -> {
+                try { runLoop(ext, targetFile, admitted); }
+                finally { releaseSources.run(); }
+            });
+        }
         catch (java.util.concurrent.RejectedExecutionException stopped) {
             synchronized (lock) { running = false; }
             admitted.close();
+            releaseSources.run();
             throw stopped;
         }
     }
