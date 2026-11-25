@@ -125,6 +125,21 @@ class SpringPropertyFilesTest {
         }
     }
 
+    @Test void buildInputWaitsForOutputUnlessBootLoadedThatExactFile() throws Exception {
+        Path output = file("runtime.properties", "svc.timeout=10\n");
+        Path source = file("source.properties", "svc.timeout=20\n");
+        try (var context = context(output, "dev")) {
+            var reload = new SpringPropertyFiles();
+            var held = reload.apply(source, () -> List.of(context), action -> fail("unowned input applied"), true);
+            assertEquals(PropertyChangeOutcome.State.NOT_RUN, held.outcome().state());
+            assertValues(context, 10);
+            Files.writeString(output, "svc.timeout=20\n");
+            var applied = reload.apply(output, () -> List.of(context), Runnable::run, true);
+            assertEquals(PropertyChangeOutcome.State.APPLIED, applied.outcome().state());
+            assertValues(context, 20);
+        }
+    }
+
     @Test void unownedSourceMessageNamesLoadedCopy() throws Exception {
         Path output = Files.createDirectories(tmp.resolve("build/resources/main")).resolve("application.properties");
         Path source = Files.createDirectories(tmp.resolve("src/main/resources")).resolve("application.properties");

@@ -41,6 +41,8 @@ applied and attaches it. No `reclazz` block is needed for the common case.
 
 When Spring Boot DevTools restart is enabled, it can restart the application after a class edit that Reclazz has applied. To keep the running context, pass `-Dspring.devtools.restart.enabled=false` to the application JVM. For a Gradle Groovy build, use `tasks.named('bootRun') { jvmArgs '-Dspring.devtools.restart.enabled=false' }`.
 
+While an attached Gradle application runs, the plugin runs the project's own `processResources` task in continuous mode. Source edits use the project's filters and renames. Reclazz reloads the resulting runtime properties and templates when their output files change. For an IDE or Maven launch, build the resources to update the running application.
+
 ### Plain Java application run (opt-in)
 
 This option is new in the current source tree; use a plugin build containing it.

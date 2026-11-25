@@ -61,6 +61,11 @@ public final class SpringPropertyFiles {
     }
 
     public synchronized Result apply(Path path, Supplier<List<Object>> contexts, Consumer<Runnable> boundary) {
+        return apply(path, contexts, boundary, false);
+    }
+
+    public synchronized Result apply(Path path, Supplier<List<Object>> contexts, Consumer<Runnable> boundary,
+                                     boolean awaitingOutput) {
         List<Prepared> plans = new ArrayList<>();
         Set<String> changed = new LinkedHashSet<>();
         Set<Path> loaded = new TreeSet<>();
@@ -84,9 +89,11 @@ public final class SpringPropertyFiles {
             }
             if (plans.isEmpty()) {
                 if (!bootSources && path.toString().endsWith(".properties")) return null;
+                if (awaitingOutput) return new Result(PropertyChangeOutcome.held(
+                        PropertyChangeOutcome.State.NOT_RUN, List.of()), Map.of(), Set.of());
                 String reason = file.toString().endsWith(".properties")
                         ? file + " is not the file this application loaded (loaded files with this name: " + loaded
-                                + "). Changes reach the application when the build copies them; nothing was applied from this file."
+                                + "), nothing was applied from this file."
                         : "No verified Boot source owns " + path.getFileName();
                 return held(PropertyChangeOutcome.State.UNCHECKABLE, reason);
             }

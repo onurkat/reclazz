@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - A Spring aspect that excludes an added service method lets that method keep serving requests after a transaction edit. A matching or unresolved unsupported advisor reports its restart requirement once per method and cause.
 
 - Spring Boot applications report an active DevTools restart watcher and name added application-class bean factories that need a restart.
+- Spring Boot resource edits in Gradle runs use the project's resource processing. Runtime output changes refresh loaded properties and invalidate template caches.
 
 - When SAP Commerce regenerates DTOs or models, Java callers saved alongside the XML compile after generation finishes. A failed generation still surfaces genuine Java compilation errors.
 

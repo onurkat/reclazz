@@ -92,6 +92,7 @@ public class ReclazzPlugin implements Plugin<Project> {
         project.getTasks().withType(JavaExec.class).configureEach(task -> {
             if (BOOT_RUN_TASK.equals(task.getName()) && ext.getApplyToBootRun().get()) {
                 task.getJvmArgumentProviders().add(newProvider(project, ext, agentJar, argumentString));
+                project.getPluginManager().withPlugin("java", applied -> resourceBuild(project, task, ext.getEnabled()));
             }
         });
 
@@ -104,12 +105,53 @@ public class ReclazzPlugin implements Plugin<Project> {
                     provider.getEnabled().set(project.provider(() ->
                             ext.getEnabled().get() && ext.getApplyToRun().get()));
                     task.getJvmArgumentProviders().add(provider);
+                    resourceBuild(project, task, provider.getEnabled());
                 }));
 
         project.getTasks().register("reclazzStatus", ReclazzStatusTask.class, task -> {
             task.setGroup("reclazz");
             task.setDescription("Print, as JSON, whether the Reclazz Java agent is attached and how it is doing.");
         });
+    }
+
+    private void resourceBuild(Project project, JavaExec run, Provider<Boolean> enabled) {
+        SourceSetContainer sets = project.getExtensions().getByType(SourceSetContainer.class);
+        Provider<SourceSet> main = project.provider(() -> sets.findByName(SourceSet.MAIN_SOURCE_SET_NAME));
+        String taskPrefix = project.getPath().equals(":") ? ":" : project.getPath() + ":";
+        var gradle = project.getGradle();
+        var options = gradle.getStartParameter();
+        File root = project.getRootDir();
+        File installation = gradle.getGradleHomeDir();
+        File userHome = gradle.getGradleUserHomeDir();
+        List<String> args = new java.util.ArrayList<>(List.of("--continuous"));
+        if (options.isOffline()) args.add("--offline");
+        options.getExcludedTaskNames().forEach(name -> {
+            args.add("--exclude-task");
+            args.add(name);
+        });
+        options.getProjectProperties().forEach((key, value) -> args.add("-P" + key + "=" + value));
+        options.getSystemPropertiesArgs().forEach((key, value) -> args.add("-D" + key + "=" + value));
+        for (File script : options.getInitScripts()) {
+            args.add("--init-script");
+            args.add(script.getAbsolutePath());
+        }
+        var service = gradle.getSharedServices().registerIfAbsent("reclazz resources " + run.getPath(), ResourceBuild.class, ignored -> {});
+        run.usesService(service);
+        run.doFirst(taskBeingRun -> {
+            if (!enabled.get()) return;
+            SourceSet sourceSet = main.getOrNull();
+            if (sourceSet == null) return;
+            var sources = sourceSet.getResources().getSourceDirectories().getFiles();
+            File output = sourceSet.getOutput().getResourcesDir();
+            if (output == null || sources.stream().noneMatch(File::isDirectory)) return;
+            JavaExec launch = (JavaExec) taskBeingRun;
+            launch.systemProperty("reclazz.gradle.resourceSources", sources.stream()
+                    .map(File::getAbsolutePath).collect(Collectors.joining(File.pathSeparator)));
+            launch.systemProperty("reclazz.gradle.resourceOutput", output.getAbsolutePath());
+            service.get().start(installation, root, userHome, taskPrefix + sourceSet.getProcessResourcesTaskName(), args);
+            launch.systemProperty("reclazz.gradle.processResources", "true");
+        });
+        run.doLast(ignored -> service.get().close());
     }
 
     private AgentArgumentProvider newProvider(Project project, ReclazzExtension ext,

@@ -473,8 +473,11 @@ public class FileWatcher {
         if (options.autoCompile()) {
             inventoryRoots(view,target, view.getSourceDirs(), "src", baseline);
             inventoryRoots(view,target, view.getGeneratedClassDirs(), "classes", baseline);
-        } else inventoryRoots(view,target, view.getClassOutputDirs(), "classes", baseline);
+        } else if (!(view instanceof com.onurkat.reclazz.platform.SpringBootContext))
+            inventoryRoots(view,target, view.getClassOutputDirs(), "classes", baseline);
         inventoryRoots(view,target, view.getResourceDirs(), "resources", baseline);
+        if (view instanceof com.onurkat.reclazz.platform.SpringBootContext && !options.autoCompile())
+            inventoryRoots(view,target, view.getClassOutputDirs(), "classes", baseline);
         return target;
     }
     /** Kept separate so the failure/alias tests use actual WatchKeys without replacing the watch service. */
@@ -688,6 +691,8 @@ public class FileWatcher {
             if (!platformContext.shouldWatch(moduleName)) continue;
 
             for (Path resDir : entry.getValue()) {
+                if (platformContext instanceof com.onurkat.reclazz.platform.SpringBootContext && !config.isAutoCompile()
+                        && platformContext.getClassOutputDirs().getOrDefault(moduleName, List.of()).contains(resDir)) continue;
                 if (Files.isDirectory(resDir)) {
                     // Recursive: .impex/.xml/.properties live in subfolders
                     // (e.g. resources/impex/test-data.impex), a single-level
@@ -779,6 +784,10 @@ public class FileWatcher {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                 watchedFiles.incrementAndGet();
+                if ("starting".equals(watchState) && attrs.lastModifiedTime().toMillis() <= JVM_START_MILLIS
+                        && isRuntimeTemplate(file)) {
+                    stateOf(file).contentHash = computeContentHash(file);
+                }
                 return FileVisitResult.CONTINUE;
             }
         });
@@ -1593,6 +1602,14 @@ public class FileWatcher {
             }
         }
 
+        // Gradle can rewrite every template on a save. Evict only changed output bytes.
+        if (kind == ChangeKind.TEMPLATE && isRuntimeTemplate(pending.path)) {
+            FileState state = stateOf(pending.path);
+            long current = computeContentHash(pending.path);
+            if (current != -1L && state.contentHash == current) return null;
+            state.contentHash = current;
+        }
+
         // Content-hash dedupe for .class files. A no-op build
         // (Hybris's ant build that rewrites identical bytecode from
         // templates) fires hundreds of ENTRY_MODIFY events for
@@ -1821,8 +1838,17 @@ public class FileWatcher {
         return directories;
     }
 
+    private boolean isRuntimeTemplate(Path path) {
+        return platformContext instanceof com.onurkat.reclazz.platform.SpringBootContext boot
+                && ChangeKind.of(path) == ChangeKind.TEMPLATE && boot.runtimeResourceName(path) != null;
+    }
+
     private boolean isInterestingFile(Path file, String sourceRoot) {
-        return "webroot".equals(sourceRoot) || ChangeKind.of(file) != ChangeKind.UNKNOWN;
+        if ("resources".equals(sourceRoot) && platformContext instanceof com.onurkat.reclazz.platform.SpringBootContext
+                && (file.toString().endsWith(".class") || file.toString().endsWith(".java"))) return false;
+        return "webroot".equals(sourceRoot) || ChangeKind.of(file) != ChangeKind.UNKNOWN
+                || ("resources".equals(sourceRoot) && platformContext instanceof com.onurkat.reclazz.platform.SpringBootContext boot
+                    && boot.sourceResource(file));
     }
 
     record WatchedDirectory(Path directory, String moduleName, String sourceRoot, long baselineMillis) {

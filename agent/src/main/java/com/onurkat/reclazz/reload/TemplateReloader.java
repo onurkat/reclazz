@@ -40,12 +40,16 @@ public class TemplateReloader {
      *         rather than claim a reload that did not happen
      */
     public int reload(String fileName) {
+        return reload(fileName, null);
+    }
+
+    public int reload(String fileName, String resource) {
         Object[] engines = TemplateEngineRegistry.snapshot();
         if (engines.length == 0) return 0;
 
         int cleared = 0;
         for (Object engine : engines) {
-            if (clear(engine)) cleared++;
+            if (clear(engine, resource)) cleared++;
         }
 
         if (cleared > 0) {
@@ -55,10 +59,12 @@ public class TemplateReloader {
         return cleared;
     }
 
-    private boolean clear(Object engine) {
+    private boolean clear(Object engine, String resource) {
         for (String[] target : CLEAR_CALLS) {
             if (!isInstanceOf(engine, target[0])) continue;
             try {
+                if (resource != null && target[0].equals("org.thymeleaf.TemplateEngine") && clearNamed(engine, resource))
+                    return true;
                 Method m = engine.getClass().getMethod(target[1]);
                 m.invoke(engine);
                 return true;
@@ -72,6 +78,42 @@ public class TemplateReloader {
             }
         }
         return false;
+    }
+
+    private boolean clearNamed(Object engine, String resource) {
+        try {
+            var resolvers = (java.util.Set<?>) engine.getClass().getMethod("getTemplateResolvers").invoke(engine);
+            if (resolvers.size() != 1) return false;
+            Object resolver = resolvers.iterator().next();
+            Class<?> type = resolver.getClass();
+            if (!type.getName().equals("org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver")
+                    && !type.getName().equals("org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver")) return false;
+            if (!((java.util.Map<?, ?>) type.getMethod("getTemplateAliases").invoke(resolver)).isEmpty()) return false;
+            String prefix = (String) type.getMethod("getPrefix").invoke(resolver);
+            String suffix = (String) type.getMethod("getSuffix").invoke(resolver);
+            if (prefix == null || !prefix.startsWith("classpath:/") || suffix == null || suffix.isEmpty()) return false;
+            String dir = prefix.substring("classpath:/".length());
+            if (!resource.startsWith(dir) || !resource.endsWith(suffix) || dir.length() + suffix.length() >= resource.length()) return false;
+            Object manager = engine.getClass().getMethod("getCacheManager").invoke(engine);
+            if (manager == null) return false;
+            Object cache = manager.getClass().getMethod("getTemplateCache").invoke(manager);
+            if (cache == null) return false;
+            for (Object key : (java.util.Set<?>) cache.getClass().getMethod("keySet").invoke(cache)) {
+                for (String getter : new String[]{"getTemplate", "getOwnerTemplate"}) {
+                    String cached = (String) key.getClass().getMethod(getter).invoke(key);
+                    if (cached != null && (cached.startsWith("/") || cached.startsWith(".") || cached.contains("/.")
+                            || cached.contains("//") || cached.contains(":") || cached.contains("\\"))) return false;
+                }
+            }
+            String file = resource.substring(dir.length());
+            String name = file.substring(0, file.length() - suffix.length());
+            Method clear = engine.getClass().getMethod("clearTemplateCacheFor", String.class);
+            clear.invoke(engine, name);
+            clear.invoke(engine, file);
+            return true;
+        } catch (ReflectiveOperationException | ClassCastException unavailable) {
+            return false;
+        }
     }
 
     /** Name-based, because the agent has neither engine on its classpath. */

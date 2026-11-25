@@ -15,6 +15,7 @@ import com.onurkat.reclazz.compiler.IncrementalCompiler;
 import com.onurkat.reclazz.platform.HybrisPlatformContext;
 import com.onurkat.reclazz.platform.PlatformContext;
 import com.onurkat.reclazz.platform.PlatformDetector;
+import com.onurkat.reclazz.platform.SpringBootContext;
 import com.onurkat.reclazz.platform.SapIndexingGuidance;
 import com.onurkat.reclazz.platform.SapConfigFiles;
 import com.onurkat.reclazz.platform.SpringContextInterceptTransformer;
@@ -1217,7 +1218,13 @@ public class ReclazzAgent {
 
             // What the file is, decided in one testable place; whether we act
             // on it stays here, because that depends on configuration.
-            switch (ChangeKind.of(event.getPath())) {
+            ChangeKind kind = ChangeKind.of(event.getPath());
+            if (platformContext instanceof SpringBootContext boot && boot.sourceResource(event.getPath())
+                    && (kind == ChangeKind.TEMPLATE || kind == ChangeKind.UNKNOWN)) {
+                boot.sourceResourceSaved(event.getPath());
+                return;
+            }
+            switch (kind) {
                 case CLASS_FILE -> {
                     if (event.getType() != ChangeEvent.Type.DELETED) {
                         handleClassFileChange(event, reloader, springOrchestrator, modules);
@@ -2281,7 +2288,8 @@ public class ReclazzAgent {
      */
     private static void handleTemplateChange(ChangeEvent event, AgentConfig config) {
         String fileName = event.getPath().getFileName().toString();
-        int cleared = templateReloader.reload(fileName);
+        String resource = platformContext instanceof SpringBootContext boot ? boot.runtimeResourceName(event.getPath()) : null;
+        int cleared = templateReloader.reload(fileName, resource);
         if (cleared == 0 && config != null && config.isVerbose()) {
             StatusReporter.info("Template changed: " + fileName
                     + " (no template engine registered, nothing to clear)");
@@ -2313,8 +2321,15 @@ public class ReclazzAgent {
 
         StatusReporter.info("Config file changed: " + fileName);
         var candidate = fileName.endsWith(".properties") ? propertySnapshots.pending(event.getPath()) : null;
+        SpringBootContext boot = platformContext instanceof SpringBootContext ctx ? ctx : null;
+        boolean sourceSave = boot != null && boot.sourceResource(event.getPath());
         var fileResult = springPropertyFiles.apply(event.getPath(), platformContext::getAllApplicationContexts,
-                agentConfig != null && agentConfig.isRequestBoundary() ? RequestReloadBoundary::run : Runnable::run);
+                agentConfig != null && agentConfig.isRequestBoundary() ? RequestReloadBoundary::run : Runnable::run, sourceSave);
+        if (sourceSave && fileResult != null && fileResult.outcome().state()
+                == com.onurkat.reclazz.spring.PropertyChangeOutcome.State.NOT_RUN) {
+            boot.sourceResourceSaved(event.getPath());
+            return;
+        }
         if (fileResult != null) {
             if (fileResult.outcome().state() == com.onurkat.reclazz.spring.PropertyChangeOutcome.State.APPLIED) {
                 StatusReporter.success("Applied " + Plural.of(fileResult.changed().size(), "property change")

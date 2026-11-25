@@ -30,6 +30,9 @@ public class SpringBootContext implements PlatformContext {
     private final Map<String, List<Path>> classOutputDirs = new LinkedHashMap<>();
     private final Map<String, List<Path>> sourceDirs = new LinkedHashMap<>();
     private final Map<String, List<Path>> resourceDirs = new LinkedHashMap<>();
+    private final Set<Path> resourceSources = new LinkedHashSet<>();
+    private final Set<Path> runtimeResources = new LinkedHashSet<>();
+    private final Set<Path> advised = java.util.concurrent.ConcurrentHashMap.newKeySet();
     private String classpath;
 
     public SpringBootContext(AgentConfig config) {
@@ -68,6 +71,7 @@ public class SpringBootContext implements PlatformContext {
 
         // Auto-detect resource directories
         autoDetectResourceDirs();
+        discoverRuntimeResources();
 
         // Resolve classpath from system property
         classpath = System.getProperty("java.class.path");
@@ -201,8 +205,60 @@ public class SpringBootContext implements PlatformContext {
 
             if (!resPaths.isEmpty()) {
                 resourceDirs.put(module, resPaths);
+                resourceSources.addAll(resPaths);
             }
         }
+    }
+
+    private void discoverRuntimeResources() {
+        Set<Path> configuredSources = directoryPaths(System.getProperty("reclazz.gradle.resourceSources", ""));
+        resourceSources.addAll(configuredSources);
+        Set<Path> configuredOutputs = directoryPaths(System.getProperty("reclazz.gradle.resourceOutput", ""));
+        for (Path path : directoryPaths(System.getProperty("java.class.path", ""))) {
+            String name = path.toString().replace(File.separatorChar, '/');
+            if (configuredOutputs.contains(path) || resourceSources.contains(path)
+                    || name.endsWith("/build/resources/main") || name.endsWith("/target/classes")
+                    || (name.contains("/out/") && (name.endsWith("/resources") || name.contains("/production/")))) {
+                runtimeResources.add(path);
+                // IntelliJ's module output need not have an adjacent Gradle class directory.
+                int out = name.lastIndexOf("/out/");
+                if (out >= 0) {
+                    Path src = Path.of(name.substring(0, out)).resolve("src/main/resources");
+                    if (Files.isDirectory(src)) resourceSources.add(src);
+                }
+            }
+        }
+        if (resourceSources.isEmpty() && runtimeResources.isEmpty()) return;
+        Set<Path> all = new LinkedHashSet<>(resourceDirs.getOrDefault("app", List.of()));
+        all.addAll(resourceSources);
+        all.addAll(runtimeResources);
+        resourceDirs.put("app", List.copyOf(all));
+    }
+
+    private static Set<Path> directoryPaths(String paths) {
+        Set<Path> result = new LinkedHashSet<>();
+        for (String entry : paths.split(java.util.regex.Pattern.quote(File.pathSeparator))) {
+            if (entry.isEmpty()) continue;
+            Path path = Path.of(entry).toAbsolutePath().normalize();
+            if (Files.isDirectory(path)) result.add(path);
+        }
+        return result;
+    }
+
+    public boolean sourceResource(Path file) {
+        return runtimeResourceName(file) == null && resourceSources.stream().anyMatch(file::startsWith);
+    }
+
+    public String runtimeResourceName(Path file) {
+        for (Path root : runtimeResources) {
+            if (file.startsWith(root)) return root.relativize(file).toString().replace(File.separatorChar, '/');
+        }
+        return null;
+    }
+
+    public void sourceResourceSaved(Path file) {
+        if (!Boolean.getBoolean("reclazz.gradle.processResources") && advised.add(file))
+            StatusReporter.info(file.getFileName() + ": Build or run processResources to apply this resource; Reclazz applies the output when it changes.");
     }
 
     @Override
