@@ -36,7 +36,7 @@ class AspectPointcutReloadTest {
                 .with("App", APP).with("Service", SERVICE).with("Counter", COUNTER)
                 .with("Holder", HOLDER).with("Edited", aspect("first", 0, component)).start()) {
             app.awaitOrFail("PORT=", "application did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             int port = Integer.parseInt(app.latest("PORT=").substring(5));
             var client = HttpClient.newHttpClient();
             for (String kind : new String[]{"jdk", "cglib"}) {

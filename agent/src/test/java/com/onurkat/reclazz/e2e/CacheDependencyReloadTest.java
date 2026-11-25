@@ -24,7 +24,7 @@ class CacheDependencyReloadTest {
                 .with("App", APP).with("PriceService", price(0)).with("DiscountRules", rule(10))
                 .with("CatalogService", CATALOG).with("QuoteService", QUOTE).with("Counters", COUNTERS).start()) {
             app.awaitOrFail("WARM=10:10:description:1", "cache warmup failed");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             if (auto) Files.writeString(tmp.resolve("src/main/java/app/DiscountRules.java"), rule(20));
             else app.rewrite("DiscountRules", rule(20));
             app.awaitOrFail("Reloaded app.DiscountRules", "helper reload failed");

@@ -27,7 +27,7 @@ class SapIndexingGuidanceTest {
         try (var app = WatchedApp.in(tmp).with(contract, marker).with("Provider", provider)
                 .with("Ordinary", ordinary).with("App", APP).jvmArgs("-Dreindex.file=" + reindex).start()) {
             app.awaitOrFail("live=v1;stored=v1;ordinary=plain1", "initial snapshot missing");
-            app.awaitOrFail("] Watching ", "watcher missing");
+            app.awaitWatcherReady();
             app.rewriteAll(Map.of("Provider", provider.replace("v1", "v2"),
                     "Ordinary", ordinary.replace("plain1", "plain2")));
             app.awaitOrFail("live=v2;stored=v1;ordinary=plain2", "code and stored document must be separate");

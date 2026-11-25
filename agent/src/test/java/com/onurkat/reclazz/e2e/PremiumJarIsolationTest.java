@@ -4,6 +4,8 @@
  */
 package com.onurkat.reclazz.e2e;
 
+import com.onurkat.reclazz.e2e.harness.WatchedApp;
+
 import com.onurkat.reclazz.transform.TransformTestBase;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -55,7 +57,7 @@ class PremiumJarIsolationTest extends TransformTestBase {
             long end = System.nanoTime() + TimeUnit.SECONDS.toNanos(30);
             while (child.isAlive() && System.nanoTime() < end) {
                 String output = Files.readString(log);
-                if (output.contains("Watching ") && output.contains("PROBE_MAIN_READY")) {
+                if (WatchedApp.hasWatcherReadyMessage(output) && output.contains("PROBE_MAIN_READY")) {
                     Files.writeString(tmp.resolve("watcher-ready"), "ready"); break;
                 }
                 Thread.sleep(50);

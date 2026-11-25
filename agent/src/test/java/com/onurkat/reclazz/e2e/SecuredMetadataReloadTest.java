@@ -24,7 +24,7 @@ class SecuredMetadataReloadTest {
         if(child)b.childClassLoader();
         try(var app=b.start()) {
             app.awaitOrFail("READY="+expected(0),"warm native security failed");
-            app.awaitOrFail("] Watching ","watcher missing");
+            app.awaitWatcherReady();
             assertEquals(expected(0),nativeFresh(app.classesDir(),cp,0));
             for(int stage=1;stage<=4;stage++) {
                 app.rewrite("Store",store(stage));

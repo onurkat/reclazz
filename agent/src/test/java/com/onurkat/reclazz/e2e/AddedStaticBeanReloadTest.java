@@ -23,7 +23,7 @@ class AddedStaticBeanReloadTest {
                 .with("App", APP).with("Config", config(0, false, false))
                 .with("Product", PRODUCT).with("Consumer", CONSUMER).start()) {
             app.awaitOrFail("READY", "Spring did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             probe(app, 0, "missing");
             reload(app, 1, true, true); probe(app, 1, "1");
             reload(app, 2, true, true); probe(app, 2, "2");

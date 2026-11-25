@@ -33,7 +33,7 @@ class AddedConversionHelperPropertyReloadTest {
         try (var app = WatchedApp.in(tmp).classpath(WatchedApp.springClasspath() + java.io.File.pathSeparator + core + java.io.File.pathSeparator + guava).agentArgs("startupDelaySec=1,debounceMs=100")
                 .jvmArgs("-Dprobe.dir=" + tmp).with("App", APP).with("Dto", dto(false)).start()) {
             app.awaitOrFail("READY", "app did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             assertEquals("false|-|-", probe(app, "0"));
             app.rewrite("Dto", dto(true));
             assertEquals("true|z|x", await(app, 1, "true|z|x"), app.tail());

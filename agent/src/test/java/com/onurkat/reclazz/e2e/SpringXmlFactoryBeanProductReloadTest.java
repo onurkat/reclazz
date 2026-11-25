@@ -21,7 +21,7 @@ class SpringXmlFactoryBeanProductReloadTest {
         if (child) builder.childClassLoader();
         try (var app = builder.jvmArgs("-Ddefs=" + xml, "-Dtest.dir=" + tmp).with("App", APP).start()) {
             app.awaitOrFail("READY=true", "native factory/product fixture missing");
-            app.awaitOrFail("] Watching ", "watcher missing");
+            app.awaitWatcherReady();
             if (child) app.awaitOrFail("APP_IN_CHILD_MODULE=true", "child module missing");
             save(app, xml, "before", "before", 1); probe(app, 1, "before");
             assertEquals(0, warnings(app), app.tail());

@@ -58,7 +58,7 @@ class AddedConstructorBoundaryReloadTest {
                     """);
         if(childLoader)builder.childClassLoader();
         try(var app=builder.start()) {
-            app.awaitOrFail("READY=initial","inner class loaded before edit");app.awaitOrFail("] Watching ","watcher ready");
+            app.awaitOrFail("READY=initial","inner class loaded before edit");app.awaitWatcherReady();
             for(int stage=1;stage<=2;stage++) {
                 app.rewrite("Outer",outer(stage));
                 app.awaitOrFail("OK:"+stage+":capture-before-parent:parent-once:held-reflection-and-lookup:exception-shape",

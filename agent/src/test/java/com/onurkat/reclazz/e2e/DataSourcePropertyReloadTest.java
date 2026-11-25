@@ -38,7 +38,7 @@ class DataSourcePropertyReloadTest {
                 .agentArgs("startupDelaySec=1,debounceMs=100")
                 .jvmArgs("-Dconfig.file=" + file, "-Dprobe.dir=" + tmp).with("App", APP).start()) {
             app.awaitOrFail("DS_READY=", "Boot application with a Hikari pool did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             assertTrue(app.latest("DS_READY=").startsWith("DS_READY=alpha"), app.tail());
 
             Files.writeString(file, properties("jdbc:h2:mem:beta;DB_CLOSE_DELAY=-1", ""));

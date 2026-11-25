@@ -34,7 +34,7 @@ class SapProcessDefinitionCreateTest {
         for (String path:List.of("com/onurkat/reclazz/hybris/ProcessTenantFixture.java", "de/hybris/platform/core/Registry.java", "de/hybris/platform/jalo/JaloSession.java"))
             builder.with(Path.of(path).getFileName().toString().replace(".java",""),Files.readString(Path.of((path.startsWith("de/")?"src/processTestFixtures/java/":"src/test/java/")+path)));
         try(var app=builder.with("App",APP).start()) {
-            app.awaitOrFail("CREATE_READY","warm native fixture missing");app.awaitOrFail("] Watching ","watcher missing");
+            app.awaitOrFail("CREATE_READY","warm native fixture missing");app.awaitWatcherReady();
             Files.writeString(spring,beans(resource("firstResource",first)));
             app.awaitOrFail("Spring bean added: firstResource","bean-first save not applied");
             Files.writeString(first,"<process name='exampleFirst' start='v1'/>");

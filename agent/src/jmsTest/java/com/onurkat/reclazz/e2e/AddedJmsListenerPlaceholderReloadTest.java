@@ -42,7 +42,7 @@ class AddedJmsListenerPlaceholderReloadTest {
                 .agentArgs("startupDelaySec=1,debounceMs=100,verbose=true")
                 .with("Listener", listener(false)).with("App", APP).start()) {
             app.awaitOrFail("PORT=", "JMS app did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             int port = Integer.parseInt(app.latest("PORT=").substring(5));
 
             long before = reloads(app);

@@ -1,6 +1,8 @@
 /* Copyright 2026 Onur Kat. SPDX-License-Identifier: Apache-2.0 */
 package com.onurkat.reclazz.e2e;
 
+import com.onurkat.reclazz.e2e.harness.WatchedApp;
+
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.jupiter.api.io.TempDir;
@@ -15,7 +17,7 @@ class BackofficeModuleWatcherTest {
     @TempDir Path root;
     @ParameterizedTest @ValueSource(booleans={true,false})
     void savedModuleReloadsHeldWidget(boolean autoCompile) throws Exception {
-        Path jar=Path.of(com.onurkat.reclazz.e2e.harness.WatchedApp.agentJarOrSkip());
+        Path jar=Path.of(WatchedApp.agentJarOrSkip());
         Path ext=Files.createDirectories(root.resolve("bin/custom/example"));
         Files.createDirectories(root.resolve("bin/platform"));Files.createDirectories(root.resolve("config"));
         Files.writeString(root.resolve("config/localextensions.xml"),"<hybrisconfig><extensions><extension name='example'/></extensions></hybrisconfig>");
@@ -33,7 +35,7 @@ class BackofficeModuleWatcherTest {
                 "-cp",jar+java.io.File.pathSeparator+appClasses,"com.example.ModuleApp",output.toString())
                 .directory(root.toFile()).redirectErrorStream(true).redirectOutput(log.toFile()).start();
         try {
-            await(log,"WIDGET=before");await(log,"] Watching ");
+            await(log,"WIDGET=before");WatchedApp.awaitWatcherReady(log, 40);
             Files.writeString(source,controller("body",false));if(!autoCompile)compile(output,jar,List.of(source));
             await(log,"WIDGET=body");
             Files.writeString(source,controller("after",true));if(!autoCompile)compile(output,jar,List.of(source));

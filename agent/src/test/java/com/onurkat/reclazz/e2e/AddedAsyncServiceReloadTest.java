@@ -27,7 +27,7 @@ class AddedAsyncServiceReloadTest {
         var builder=WatchedApp.in(tmp).classpath(WatchedApp.springClasspath()+File.pathSeparator+h2);
         if(child)builder.childClassLoader();
         try(var app=builder.jvmArgs("-Dprobe.dir="+tmp).with("App",APP).with("Service",service(0)).with("Probe",probe(false)).start()) {
-            app.awaitOrFail("READY","context did not start");app.awaitOrFail("] Watching ","watcher did not start");
+            app.awaitOrFail("READY","context did not start");app.awaitWatcherReady();
             if(child)app.awaitOrFail("APP_IN_CHILD_MODULE=true","child loader missing");
             String[] expected={"pending=true calls=0","captured=true old=true current=true failed=true cancelled=true",
                     "sync=true","removed=true","restored=true self=true original=true"};

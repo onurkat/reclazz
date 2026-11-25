@@ -35,7 +35,7 @@ class StandaloneJacksonGetterReloadTest {
                 .agentArgs("startupDelaySec=1,debounceMs=100,verbose=true")
                 .with("App", APP).with("Dto", dto(0)).with("Upper", UPPER).start()) {
             app.awaitOrFail("PORT=", "HTTP server did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             int port = Integer.parseInt(app.latest("PORT=").substring(5));
             {
                 var client = HttpClient.newHttpClient();

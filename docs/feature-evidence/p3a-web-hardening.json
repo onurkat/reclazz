@@ -360,7 +360,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
           "kind": "watcher",
           "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves.",
-          "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
+          "method_sha256": "313f85e700055a58f7415d32b162e5141acb1cbe3cd2167c879fd0278d659a59"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
@@ -370,9 +370,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
-            "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
+            "method_sha256": "313f85e700055a58f7415d32b162e5141acb1cbe3cd2167c879fd0278d659a59"
           },
-          "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
+          "method_sha256": "313f85e700055a58f7415d32b162e5141acb1cbe3cd2167c879fd0278d659a59"
         }
       ],
       "observable": "An existing DTO field gaining NotBlank/Size rejects invalid HTTP input.",
@@ -410,7 +410,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
           "kind": "watcher",
           "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves.",
-          "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
+          "method_sha256": "313f85e700055a58f7415d32b162e5141acb1cbe3cd2167c879fd0278d659a59"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
@@ -420,9 +420,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
-            "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
+            "method_sha256": "313f85e700055a58f7415d32b162e5141acb1cbe3cd2167c879fd0278d659a59"
           },
-          "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
+          "method_sha256": "313f85e700055a58f7415d32b162e5141acb1cbe3cd2167c879fd0278d659a59"
         }
       ],
       "observable": "A changed Size minimum is enforced after warmed native metadata.",
@@ -460,7 +460,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
           "kind": "watcher",
           "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves.",
-          "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
+          "method_sha256": "313f85e700055a58f7415d32b162e5141acb1cbe3cd2167c879fd0278d659a59"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
@@ -470,9 +470,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
-            "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
+            "method_sha256": "313f85e700055a58f7415d32b162e5141acb1cbe3cd2167c879fd0278d659a59"
           },
-          "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
+          "method_sha256": "313f85e700055a58f7415d32b162e5141acb1cbe3cd2167c879fd0278d659a59"
         }
       ],
       "observable": "Removing and restoring constraints changes acceptance without restarting.",
@@ -510,7 +510,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
           "kind": "watcher",
           "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves.",
-          "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
+          "method_sha256": "313f85e700055a58f7415d32b162e5141acb1cbe3cd2167c879fd0278d659a59"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
@@ -520,9 +520,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
-            "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
+            "method_sha256": "313f85e700055a58f7415d32b162e5141acb1cbe3cd2167c879fd0278d659a59"
           },
-          "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
+          "method_sha256": "313f85e700055a58f7415d32b162e5141acb1cbe3cd2167c879fd0278d659a59"
         }
       ],
       "observable": "A validator reference and DTO instance captured before edits use current constraints.",
@@ -560,7 +560,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
           "kind": "watcher",
           "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves.",
-          "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
+          "method_sha256": "313f85e700055a58f7415d32b162e5141acb1cbe3cd2167c879fd0278d659a59"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
@@ -570,9 +570,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
-            "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
+            "method_sha256": "313f85e700055a58f7415d32b162e5141acb1cbe3cd2167c879fd0278d659a59"
           },
-          "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
+          "method_sha256": "313f85e700055a58f7415d32b162e5141acb1cbe3cd2167c879fd0278d659a59"
         }
       ],
       "observable": "Rejected validation/malformed JSON never executes the controller body.",
@@ -610,7 +610,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
           "kind": "watcher",
           "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves.",
-          "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
+          "method_sha256": "313f85e700055a58f7415d32b162e5141acb1cbe3cd2167c879fd0278d659a59"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
@@ -620,9 +620,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
-            "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
+            "method_sha256": "313f85e700055a58f7415d32b162e5141acb1cbe3cd2167c879fd0278d659a59"
           },
-          "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
+          "method_sha256": "313f85e700055a58f7415d32b162e5141acb1cbe3cd2167c879fd0278d659a59"
         }
       ],
       "observable": "Unedited DTO constraints and context identity remain correct across saves.",

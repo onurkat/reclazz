@@ -26,7 +26,7 @@ class AddedOrikaPropertyReloadTest {
                 .agentArgs("startupDelaySec=1,debounceMs=100,verbose=true")
                 .with("App", APP).with("Dto", dto(0)).with("Source", SOURCE).start()) {
             app.awaitOrFail("PORT=", "HTTP server did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             int port = Integer.parseInt(app.latest("PORT=").substring(5));
             var client = HttpClient.newHttpClient();
             assertEquals("code:v0|null:v0|code:v0|alias:v0", get(client, port), app.tail());
@@ -73,7 +73,7 @@ class AddedOrikaPropertyReloadTest {
                 .agentArgs("startupDelaySec=1,debounceMs=100,verbose=true")
                 .with("App", SHADOWED_APP).with("Data", data(false)).with("WsDto", WS_DTO).start()) {
             app.awaitOrFail("PORT=", "HTTP server did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             int port = Integer.parseInt(app.latest("PORT=").substring(5));
             var client = HttpClient.newHttpClient();
             assertEquals("code0:null", get(client, port), app.tail());

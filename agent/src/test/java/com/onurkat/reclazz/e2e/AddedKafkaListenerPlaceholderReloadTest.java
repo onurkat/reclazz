@@ -39,7 +39,7 @@ class AddedKafkaListenerPlaceholderReloadTest {
                 .agentArgs("startupDelaySec=1,debounceMs=100,verbose=true")
                 .with("Listener", listener(false)).with("App", APP).start()) {
             app.awaitOrFail("PORT=", "Kafka app did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             int port = Integer.parseInt(app.latest("PORT=").substring(5));
 
             // Add a listener whose topic is "${app.topic}".

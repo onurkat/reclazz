@@ -17,7 +17,7 @@ class SpringXmlDefinitionChangesReloadTest {
         var builder=WatchedApp.in(temp).classpath(WatchedApp.springClasspath());if(child)builder.childClassLoader();
         try(var app=builder.jvmArgs("-Ddefs="+xml,"-Dtest.dir="+temp).with("App",APP).start()) {
             try{
-                app.awaitOrFail("READY=before:init|1|1|0","initial prototype/consumer missing");app.awaitOrFail("] Watching ","watcher missing");
+                app.awaitOrFail("READY=before:init|1|1|0","initial prototype/consumer missing");app.awaitWatcherReady();
                 save(app,xml,prototype("after"),1);probe(app,1,"true|true|before:init|after:init|1|2|2|0|false");
                 save(app,xml,prototype("again"),2);probe(app,2,"true|true|before:init|again:init|2|3|3|0|false");
                 assertFalse(app.output().stream().anyMatch(line->line.contains("Restart required for:")),app.tail());
@@ -31,7 +31,7 @@ class SpringXmlDefinitionChangesReloadTest {
         var builder=WatchedApp.in(temp).classpath(WatchedApp.springClasspath());if(child)builder.childClassLoader();
         try(var app=builder.jvmArgs("-Ddefs="+xml,"-Dtest.dir="+temp).with("App",COLD_APP).start()) {
             try {
-                app.awaitOrFail("READY=0|false","cold target was created at boot");app.awaitOrFail("] Watching ","watcher missing");
+                app.awaitOrFail("READY=0|false","cold target was created at boot");app.awaitWatcherReady();
                 save(app,xml,coldPolicy("b","byType"),1);probe(app,1,"true|B,T,A|true|0|b,a");
                 assertFalse(app.output().stream().anyMatch(line->line.contains("Restart required for:")),app.tail());
                 Files.createFile(temp.resolve("close"));app.awaitOrFail("CLOSED=1","target destruction must occur only on actual close");

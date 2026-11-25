@@ -38,7 +38,7 @@ class MvcInterceptorDependencyReloadTest {
         if (child) builder.childClassLoader();
         try (var app = builder.start()) {
             app.awaitOrFail("READY=true", "MVC parent/web fixture missing");
-            app.awaitOrFail("] Watching ", "watcher missing");
+            app.awaitWatcherReady();
             if (child) app.awaitOrFail("APP_IN_CHILD_MODULE=true", "child module missing");
             int probe = 0;
             check(app, ++probe, 1, 1);
@@ -77,7 +77,7 @@ class MvcInterceptorDependencyReloadTest {
                 .with("Primary", bodyPrimary(1)).with("Stable", stable()).with("Helper", helper(1));
         if (child) builder.childClassLoader();
         try (var app = builder.start()) {
-            app.awaitOrFail("READY=true", "MVC fixture missing"); app.awaitOrFail("] Watching ", "watcher missing");
+            app.awaitOrFail("READY=true", "MVC fixture missing"); app.awaitWatcherReady();
             check(app, 1, 1, 1);
             app.rewrite("Primary", bodyPrimary(2)); awaitReload(app, "Primary", 1);
             // Probe 2 asserts the original mapping is retained while serving the changed body.

@@ -24,7 +24,7 @@ class AddedFullConfigurationReloadTest {
                 .with("Product", "package app; public record Product(int version) {}")
                 .with("Pair", "package app; public record Pair(Product first, Product second, Object seed) {}")
                 .start()) {
-            app.awaitOrFail("READY", "context not ready"); app.awaitOrFail("] Watching ", "watcher not ready");
+            app.awaitOrFail("READY", "context not ready"); app.awaitWatcherReady();
             for (int stage = 1; stage <= 5; stage++) {
                 // Complete each save before publishing the probe. A per-class log
                 // within a batch precedes that batch's dependent-bean recreation.

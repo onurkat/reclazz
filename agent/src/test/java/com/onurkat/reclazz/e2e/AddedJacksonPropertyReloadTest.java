@@ -40,7 +40,7 @@ class AddedJacksonPropertyReloadTest {
         try (var app = builder.agentArgs("startupDelaySec=1,debounceMs=100,verbose=true")
                 .with("App", APP).with("Dto", dto(0, fields)).with("Upper", UPPER).start()) {
             app.awaitOrFail("PORT=", "HTTP server did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             if (childLoader) app.awaitOrFail("APP_IN_CHILD_MODULE=true", "child module was not used");
             int port = Integer.parseInt(app.latest("PORT=").substring(5));
             var client = HttpClient.newHttpClient();

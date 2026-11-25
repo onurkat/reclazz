@@ -27,7 +27,7 @@ class SpringXmlDefinitionMetadataReloadTest {
         if (child) builder.childClassLoader();
         try (var app = builder.jvmArgs("-Ddefs=" + xml, "-Dtest.dir=" + tmp).with("App", com.onurkat.reclazz.e2e.harness.SpringPatchWitness.instrumentMain(APP)).start()) {
             app.awaitOrFail("READY=true", "native initial metadata is missing");
-            app.awaitOrFail("] Watching ", "watcher missing");
+            app.awaitWatcherReady();
             save(app, xml, false, "before", "before", 1);
             assertEquals(0, warnings(app), app.tail());
             for (int n = 2; n <= 4; n++) {

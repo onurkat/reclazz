@@ -49,7 +49,7 @@ class AddedVarHandleReloadTest {
                     """);
         if(childLoader)builder.childClassLoader();
         try(var app=builder.start()) {
-            app.awaitOrFail("READY","physical baseline");app.awaitOrFail("] Watching ","watcher ready");
+            app.awaitOrFail("READY","physical baseline");app.awaitWatcherReady();
             for(int stage=1;stage<=2;stage++){
                 app.rewrite("Bean",bean(stage));
                 app.awaitOrFail("OK:"+stage+":fresh-and-held:get-set-cas:mode-contract","fresh/held VarHandles remain usable across body saves");

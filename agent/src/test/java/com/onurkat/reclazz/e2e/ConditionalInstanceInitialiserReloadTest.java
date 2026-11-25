@@ -42,7 +42,7 @@ class ConditionalInstanceInitialiserReloadTest {
                 .with("App", main).with("Counts", "package app; public class Counts { public static int constructors, delegations, blocks; }")
                 .with("Holder", holder(0, multiple, richer)).start()) {
             app.awaitOrFail("READY", "application did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             probe(app, 0, "initial|initial|unread|initial:4:0,0,0,0:77");
             reload(app, 1, multiple, richer); probe(app, 1, "on1/true|off1/false|unread|null:4:1,1,0,0:77");
             reload(app, 2, multiple, richer); probe(app, 2, "user/true|off1/false|on2/true|null:4:1,1,1,0:77");

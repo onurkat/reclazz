@@ -35,7 +35,7 @@ class AddedVelocityPropertyReloadTest {
         try (var app = WatchedApp.in(tmp).classpath(jars).agentArgs("startupDelaySec=1,debounceMs=100")
                 .jvmArgs("-Dprobe.dir=" + tmp).with("App", APP).with("Dto", dto(false)).start()) {
             app.awaitOrFail("READY", "app did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             assertEquals("false|-|-", probe(app, "0"));
             app.rewrite("Dto", dto(true));
             assertEquals("true|x|y", await(app, 1, "true|x|y"), app.tail());

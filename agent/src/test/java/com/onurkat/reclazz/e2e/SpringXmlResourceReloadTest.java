@@ -31,7 +31,7 @@ class SpringXmlResourceReloadTest {
         try (var app = builder.jvmArgs("-Dxml.file=" + root, "-Dother.file=" + other,
                 "-Dtest.dir=" + tmp).with("App", APP).with("Value", VALUE).start()) {
             app.awaitOrFail("READY=before:1:root-before:other", "initial XML missing");
-            app.awaitOrFail("] Watching ", "watcher missing");
+            app.awaitWatcherReady();
             Files.writeString(imported, bean("target", "after", false));
             awaitReport(app, "spring-mvc-config.xml", 1);
             probe(app, 1, "after:2:root-before:other");

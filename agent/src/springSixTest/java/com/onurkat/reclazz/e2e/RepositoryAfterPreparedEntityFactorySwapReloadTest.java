@@ -30,7 +30,7 @@ class RepositoryAfterPreparedEntityFactorySwapReloadTest {
                 .jvmArgs("-Dprobe.dir="+tmp,"-Dmode="+mode).with("App",APP).with("Existing",EXISTING).with("Records",RECORDS);
         if(child)b.childClassLoader();
         try(var app=b.start()) {
-            app.awaitOrFail("READY="+data(false),"repository startup/warm query failed");app.awaitOrFail("] Watching ","watcher missing");
+            app.awaitOrFail("READY="+data(false),"repository startup/warm query failed");app.awaitWatcherReady();
             assertEquals(data(false),nativeFresh(app.classesDir(),cp,mode,false,0));
             app.rewrite("Added",added(1));awaitReload(app,1);
             boolean first=mode.equals("prepared");

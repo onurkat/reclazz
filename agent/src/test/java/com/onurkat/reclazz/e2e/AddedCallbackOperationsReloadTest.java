@@ -29,7 +29,7 @@ class AddedCallbackOperationsReloadTest {
         try (var app = builder.jvmArgs("-Dprobe.dir=" + tmp).with("App", APP)
                 .with("Service", service(0)).with("Receipt", "package app; public record Receipt(int id) { }").start()) {
             app.awaitOrFail("READY", "context did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             if (child) app.awaitOrFail("APP_IN_CHILD_MODULE=true", "child loader missing");
             for (int stage = 1; stage <= 4; stage++) {
                 app.rewrite("Service", service(stage));

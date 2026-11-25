@@ -22,7 +22,7 @@ class SpringXmlPropertyFailureReloadTest {
         if (child) builder.childClassLoader();
         try (var app = builder.jvmArgs("-Ddefs=" + xml, "-Dtest.dir=" + tmp).with("App", APP).start()) {
             app.awaitOrFail("READY=true", "initial native injection missing");
-            app.awaitOrFail("] Watching ", "watcher missing");
+            app.awaitWatcherReady();
             for (int n = 1; n <= 2; n++) {
                 save(app, xml, "old", "1", "missing", n, n);
                 probe(app, n, "true:true:old:1:a:1:after" + n);

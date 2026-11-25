@@ -37,7 +37,7 @@ class AddedMvcBindingReloadTest {
                 .with("Api", api(advice, 0)).with("Advice", advice(0)).with("Other", OTHER)
                 .with("Editor", EDITOR).with("Global", GLOBAL).with("App", APP).start()) {
             app.awaitOrFail("PORT=", "server did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             if (childLoader) app.awaitOrFail("APP_IN_CHILD_MODULE=true", "fixture did not cross a module boundary");
             int port = Integer.parseInt(app.latest("PORT=").substring(5));
             var client = HttpClient.newHttpClient();

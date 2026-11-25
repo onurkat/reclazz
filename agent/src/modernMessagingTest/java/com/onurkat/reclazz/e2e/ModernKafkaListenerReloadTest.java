@@ -48,7 +48,7 @@ class ModernKafkaListenerReloadTest {
                 .agentArgs("startupDelaySec=1,debounceMs=100,verbose=true")
                 .with("Listener", listener(existing, 0, first, base, stereotype)).with("Other", other(other)).with("App", APP).start()) {
             app.awaitOrFail("PORT=", "Kafka app did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             int port = Integer.parseInt(app.latest("PORT=").substring(5));
             assertEquals("used", http(port, "/use"));
             waitState(port, "other:assigned", app);

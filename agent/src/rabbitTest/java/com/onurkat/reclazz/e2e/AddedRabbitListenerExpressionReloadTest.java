@@ -43,7 +43,7 @@ class AddedRabbitListenerExpressionReloadTest {
                 .agentArgs("startupDelaySec=1,debounceMs=100,verbose=true")
                 .with("Listener", listener(0)).with("Routing", ROUTING).with("App", APP).start()) {
             app.awaitOrFail("PORT=", "Rabbit app did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             if (child) app.awaitOrFail("APP_IN_CHILD_MODULE=true", "child loader missing");
             int port = Integer.parseInt(app.latest("PORT=").substring(5));
             for (int version = 1; version <= 5; version++) {

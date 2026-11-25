@@ -24,7 +24,7 @@ class XmlSingletonLifecycleReloadTest {
         try(var app=builder.jvmArgs("-Dxml.file="+xml,"-Dtest.dir="+tmp)
                 .with("App",APP).with("Product",PRODUCT).with("Factory",FACTORY).with("Holder",HOLDER).start()) {
             app.awaitOrFail("READY=1:1:1:3:0", "initial products missing");
-            app.awaitOrFail("] Watching ","watcher did not start");
+            app.awaitWatcherReady();
             save(app,xml,1,xml("2","make","init","stop"),"2:2:2:6:3");
             save(app,xml,2,xml("3","other","initOther","stopOther"),"3:13:13:36:6");
             save(app,xml,3,xml("3","other","initOther","stopOther"),"3:13:13:36:6");

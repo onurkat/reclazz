@@ -29,7 +29,7 @@ class AddedScheduledMethodReloadTest {
                         "@org.springframework.scheduling.annotation.Scheduled(fixedDelay=25)", ""))
                 .with("Counters", COUNTERS).start()) {
             app.awaitOrFail("READY", "Spring did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             probe(app, 0, baseline, 0);
 
             reload(app, jobs(2, true, true), 1);

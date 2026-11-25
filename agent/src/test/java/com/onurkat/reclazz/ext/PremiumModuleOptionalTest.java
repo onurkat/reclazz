@@ -83,7 +83,7 @@ class PremiumModuleOptionalTest extends TransformTestBase {
             Field instrumentation = ReclazzAgent.class.getDeclaredField("instrumentation");
             instrumentation.setAccessible(true); instrumentation.set(null, ByteBuddyAgent.install());
             var watching = new CountDownLatch(1);
-            StatusReporter.addListener((level, message) -> { if (message.startsWith("Watching ")) watching.countDown(); });
+            StatusReporter.addListener((level, message) -> { if (message.matches("Watching [1-9][0-9]* director(?:y|ies)")) watching.countDown(); });
             Method initialize = ReclazzAgent.class.getDeclaredMethod("initialize", String.class, PremiumModules.class);
             initialize.setAccessible(true);
             initialize.invoke(null, "platform=hybris,hybrisHome=" + args[0] + ",startupDelaySec=0,debounceMs=100",

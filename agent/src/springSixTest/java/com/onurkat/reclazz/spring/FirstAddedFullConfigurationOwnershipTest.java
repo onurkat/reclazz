@@ -211,7 +211,7 @@ class FirstAddedFullConfigurationOwnershipTest {
                 .with("Pair", "package app; public record Pair(Product first, Product second) {}");
         if (child) builder.childClassLoader();
         try (var app = builder.start()) {
-            app.awaitOrFail("READY", "contexts not ready"); app.awaitOrFail("] Watching ", "watcher not ready");
+            app.awaitOrFail("READY", "contexts not ready"); app.awaitWatcherReady();
             for (int stage = 1; stage <= 3; stage++) {
                 app.rewrite("Config", config(stage)); awaitReload(app, "Config", stage);
                 app.rewrite("Observer", observer(stage != 2)); awaitReload(app, "Observer", stage);

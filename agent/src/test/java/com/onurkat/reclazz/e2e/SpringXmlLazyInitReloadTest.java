@@ -20,7 +20,7 @@ class SpringXmlLazyInitReloadTest {
         var builder = WatchedApp.in(tmp).classpath(WatchedApp.springClasspath());
         if (child) builder.childClassLoader();
         try (var app = builder.jvmArgs("-Ddefs=" + xml, "-Dtest.dir=" + tmp).with("App", APP).start()) {
-            app.awaitOrFail("READY=true", "initial native creation state missing"); app.awaitOrFail("] Watching ", "watcher missing");
+            app.awaitOrFail("READY=true", "initial native creation state missing"); app.awaitWatcherReady();
             for (int n = 1; n <= 6; n++) {
                 Files.writeString(xml, document(n));
                 long until = System.nanoTime() + Duration.ofSeconds(20).toNanos();

@@ -2970,7 +2970,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedScheduledMethodReloadTest.java",
           "kind": "watcher",
           "assertions": "PROBE0..7 exact task count/body generation and original-ok; stopped means counter unchanged across 150ms after settle.",
-          "method_sha256": "353543996f23dbfeb1314c58cd95b9effea46c1a6d37b01c81c9b33c0869c7f1"
+          "method_sha256": "8b50a1fa99e5e2cce9dbbae0caa9afda20c7acc48d0991ebb8800c42863be4d2"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedScheduledMethodReloadTest#addedTaskRunsOncePerRegistrationFollowsEditsAndStopsOnRemoval",
@@ -2980,9 +2980,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedScheduledMethodReloadTest#addedTaskRunsOncePerRegistrationFollowsEditsAndStopsOnRemoval",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedScheduledMethodReloadTest.java",
-            "method_sha256": "353543996f23dbfeb1314c58cd95b9effea46c1a6d37b01c81c9b33c0869c7f1"
+            "method_sha256": "8b50a1fa99e5e2cce9dbbae0caa9afda20c7acc48d0991ebb8800c42863be4d2"
           },
-          "method_sha256": "353543996f23dbfeb1314c58cd95b9effea46c1a6d37b01c81c9b33c0869c7f1"
+          "method_sha256": "8b50a1fa99e5e2cce9dbbae0caa9afda20c7acc48d0991ebb8800c42863be4d2"
         }
       ],
       "shipped_surfaces": [
@@ -3020,7 +3020,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedScheduledMethodReloadTest.java",
           "kind": "watcher",
           "assertions": "BEAN-REPLACED, no STALE-BEAN at any stage; CLOSED=0:stable; existing original timer remains active.",
-          "method_sha256": "353543996f23dbfeb1314c58cd95b9effea46c1a6d37b01c81c9b33c0869c7f1"
+          "method_sha256": "8b50a1fa99e5e2cce9dbbae0caa9afda20c7acc48d0991ebb8800c42863be4d2"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedScheduledMethodReloadTest#addedTaskRunsOncePerRegistrationFollowsEditsAndStopsOnRemoval",
@@ -3030,9 +3030,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedScheduledMethodReloadTest#addedTaskRunsOncePerRegistrationFollowsEditsAndStopsOnRemoval",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedScheduledMethodReloadTest.java",
-            "method_sha256": "353543996f23dbfeb1314c58cd95b9effea46c1a6d37b01c81c9b33c0869c7f1"
+            "method_sha256": "8b50a1fa99e5e2cce9dbbae0caa9afda20c7acc48d0991ebb8800c42863be4d2"
           },
-          "method_sha256": "353543996f23dbfeb1314c58cd95b9effea46c1a6d37b01c81c9b33c0869c7f1"
+          "method_sha256": "8b50a1fa99e5e2cce9dbbae0caa9afda20c7acc48d0991ebb8800c42863be4d2"
         }
       ],
       "shipped_surfaces": [
@@ -3070,7 +3070,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedScheduledOnProxyReloadTest.java",
           "kind": "watcher",
           "assertions": "R0 ticks=0; R1 ticks=growing and cache=ok; R2 ticks=stopped; both normal and child loaders.",
-          "method_sha256": "475d9d79b979a077a5ec2000d1af1cce6a790d21d3dcc455755f0dae34b3184f"
+          "method_sha256": "4501df65c6d0047e2aed0465054195a25cf0a2a317ca644771c0a05a97d87f9c"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedScheduledOnProxyReloadTest#scheduledMethodAddedToACacheProxiedSingletonRunsOnTheRealTarget",
@@ -3080,9 +3080,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedScheduledOnProxyReloadTest#scheduledMethodAddedToACacheProxiedSingletonRunsOnTheRealTarget",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedScheduledOnProxyReloadTest.java",
-            "method_sha256": "475d9d79b979a077a5ec2000d1af1cce6a790d21d3dcc455755f0dae34b3184f"
+            "method_sha256": "4501df65c6d0047e2aed0465054195a25cf0a2a317ca644771c0a05a97d87f9c"
           },
-          "method_sha256": "475d9d79b979a077a5ec2000d1af1cce6a790d21d3dcc455755f0dae34b3184f"
+          "method_sha256": "4501df65c6d0047e2aed0465054195a25cf0a2a317ca644771c0a05a97d87f9c"
         }
       ],
       "shipped_surfaces": [
@@ -3272,7 +3272,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedEventListenerMethodReloadTest.java",
           "kind": "watcher",
           "assertions": "PROBE0..8 exact added counts/value; go/no/integer/go publications; three unrelated deliveries remain; annotation and method removal.",
-          "method_sha256": "03209eaffd03bfa98011b540733ed9a01d8ef6d07f33bb64fc53ae2ec6d86b52"
+          "method_sha256": "00d9fdbc798b4cec9700148af64d3aa18b192786cb9d5ba9d0669a6428df1cdf"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedEventListenerMethodReloadTest#addedListenerFiltersRunsOnceFollowsReplacementAndStopsOnRemoval",
@@ -3282,9 +3282,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedEventListenerMethodReloadTest#addedListenerFiltersRunsOnceFollowsReplacementAndStopsOnRemoval",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedEventListenerMethodReloadTest.java",
-            "method_sha256": "03209eaffd03bfa98011b540733ed9a01d8ef6d07f33bb64fc53ae2ec6d86b52"
+            "method_sha256": "00d9fdbc798b4cec9700148af64d3aa18b192786cb9d5ba9d0669a6428df1cdf"
           },
-          "method_sha256": "03209eaffd03bfa98011b540733ed9a01d8ef6d07f33bb64fc53ae2ec6d86b52"
+          "method_sha256": "00d9fdbc798b4cec9700148af64d3aa18b192786cb9d5ba9d0669a6428df1cdf"
         }
       ],
       "shipped_surfaces": [
@@ -3322,7 +3322,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedEventListenerMethodReloadTest.java",
           "kind": "watcher",
           "assertions": "BEAN-REPLACED and every PROBE=current, exact original counts 3 or0.",
-          "method_sha256": "03209eaffd03bfa98011b540733ed9a01d8ef6d07f33bb64fc53ae2ec6d86b52"
+          "method_sha256": "00d9fdbc798b4cec9700148af64d3aa18b192786cb9d5ba9d0669a6428df1cdf"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedEventListenerMethodReloadTest#addedListenerFiltersRunsOnceFollowsReplacementAndStopsOnRemoval",
@@ -3332,9 +3332,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedEventListenerMethodReloadTest#addedListenerFiltersRunsOnceFollowsReplacementAndStopsOnRemoval",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedEventListenerMethodReloadTest.java",
-            "method_sha256": "03209eaffd03bfa98011b540733ed9a01d8ef6d07f33bb64fc53ae2ec6d86b52"
+            "method_sha256": "00d9fdbc798b4cec9700148af64d3aa18b192786cb9d5ba9d0669a6428df1cdf"
           },
-          "method_sha256": "03209eaffd03bfa98011b540733ed9a01d8ef6d07f33bb64fc53ae2ec6d86b52"
+          "method_sha256": "00d9fdbc798b4cec9700148af64d3aa18b192786cb9d5ba9d0669a6428df1cdf"
         }
       ],
       "shipped_surfaces": [
@@ -3372,7 +3372,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedEventListenerOnProxyReloadTest.java",
           "kind": "watcher",
           "assertions": "events0 -> fired -> silent, proxied=true and cache=ok in ordinary/child loaders.",
-          "method_sha256": "58a1c06e2b565f7b331f627cfb0b35d2d87d336051ec8cc190c3832314bc88d9"
+          "method_sha256": "bd5c40bfff23d79d23d421bb6d58274beaf2c7aea1a3dd1b99937c4afc99e83b"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedEventListenerOnProxyReloadTest#eventListenerAddedToACacheProxiedSingletonRunsOnTheRealTarget",
@@ -3382,9 +3382,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedEventListenerOnProxyReloadTest#eventListenerAddedToACacheProxiedSingletonRunsOnTheRealTarget",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedEventListenerOnProxyReloadTest.java",
-            "method_sha256": "58a1c06e2b565f7b331f627cfb0b35d2d87d336051ec8cc190c3832314bc88d9"
+            "method_sha256": "bd5c40bfff23d79d23d421bb6d58274beaf2c7aea1a3dd1b99937c4afc99e83b"
           },
-          "method_sha256": "58a1c06e2b565f7b331f627cfb0b35d2d87d336051ec8cc190c3832314bc88d9"
+          "method_sha256": "bd5c40bfff23d79d23d421bb6d58274beaf2c7aea1a3dd1b99937c4afc99e83b"
         }
       ],
       "shipped_surfaces": [
@@ -3422,7 +3422,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedEventListenerResultReloadTest.java",
           "kind": "watcher",
           "assertions": "RESULT0..9 exact calls:received:value:failures:2:identity-ok; null/failure/condition suppress publication; replacement and restore.",
-          "method_sha256": "53bfbd9965b51df4c62431ec62441397334db9607a6317120b5426eee08ddc2f"
+          "method_sha256": "be696ba977322ffd80cd3ee2cb577453b00566b1258fee5e039d5db8dbd597b6"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedEventListenerResultReloadTest#returnedEventsFollowBodyConditionAndRemovalEdits",
@@ -3432,9 +3432,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedEventListenerResultReloadTest#returnedEventsFollowBodyConditionAndRemovalEdits",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedEventListenerResultReloadTest.java",
-            "method_sha256": "53bfbd9965b51df4c62431ec62441397334db9607a6317120b5426eee08ddc2f"
+            "method_sha256": "be696ba977322ffd80cd3ee2cb577453b00566b1258fee5e039d5db8dbd597b6"
           },
-          "method_sha256": "53bfbd9965b51df4c62431ec62441397334db9607a6317120b5426eee08ddc2f"
+          "method_sha256": "be696ba977322ffd80cd3ee2cb577453b00566b1258fee5e039d5db8dbd597b6"
         }
       ],
       "shipped_surfaces": [
@@ -3700,7 +3700,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedTransactionalEventListenerReloadTest.java",
           "kind": "watcher",
           "assertions": "MATRIX1/4 exact ordered tape: before callback appears only after transaction boundary and only on commit; row counts1/4; no callback runs early inside transaction.",
-          "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
+          "method_sha256": "6ce771889fc1abe07cb73d8eaf85e262b617063f985f73d84cbe0be629ffcb21"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration",
@@ -3710,9 +3710,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedTransactionalEventListenerReloadTest.java",
-            "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
+            "method_sha256": "6ce771889fc1abe07cb73d8eaf85e262b617063f985f73d84cbe0be629ffcb21"
           },
-          "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
+          "method_sha256": "6ce771889fc1abe07cb73d8eaf85e262b617063f985f73d84cbe0be629ffcb21"
         }
       ],
       "shipped_surfaces": [
@@ -3750,7 +3750,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedTransactionalEventListenerReloadTest.java",
           "kind": "watcher",
           "assertions": "MATRIX1/4 exact ordered tape: after callback appears on commit and not rollback; row counts1/4; no callback runs early inside transaction.",
-          "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
+          "method_sha256": "6ce771889fc1abe07cb73d8eaf85e262b617063f985f73d84cbe0be629ffcb21"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration",
@@ -3760,9 +3760,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedTransactionalEventListenerReloadTest.java",
-            "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
+            "method_sha256": "6ce771889fc1abe07cb73d8eaf85e262b617063f985f73d84cbe0be629ffcb21"
           },
-          "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
+          "method_sha256": "6ce771889fc1abe07cb73d8eaf85e262b617063f985f73d84cbe0be629ffcb21"
         }
       ],
       "shipped_surfaces": [
@@ -3800,7 +3800,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedTransactionalEventListenerReloadTest.java",
           "kind": "watcher",
           "assertions": "MATRIX1/4 exact ordered tape: rollback callback appears only on rollback; row counts1/4; no callback runs early inside transaction.",
-          "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
+          "method_sha256": "6ce771889fc1abe07cb73d8eaf85e262b617063f985f73d84cbe0be629ffcb21"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration",
@@ -3810,9 +3810,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedTransactionalEventListenerReloadTest.java",
-            "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
+            "method_sha256": "6ce771889fc1abe07cb73d8eaf85e262b617063f985f73d84cbe0be629ffcb21"
           },
-          "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
+          "method_sha256": "6ce771889fc1abe07cb73d8eaf85e262b617063f985f73d84cbe0be629ffcb21"
         }
       ],
       "shipped_surfaces": [
@@ -3850,7 +3850,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedTransactionalEventListenerReloadTest.java",
           "kind": "watcher",
           "assertions": "MATRIX1/4 exact ordered tape: complete callback appears once on each commit and rollback; row counts1/4; no callback runs early inside transaction.",
-          "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
+          "method_sha256": "6ce771889fc1abe07cb73d8eaf85e262b617063f985f73d84cbe0be629ffcb21"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration",
@@ -3860,9 +3860,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedTransactionalEventListenerReloadTest.java",
-            "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
+            "method_sha256": "6ce771889fc1abe07cb73d8eaf85e262b617063f985f73d84cbe0be629ffcb21"
           },
-          "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
+          "method_sha256": "6ce771889fc1abe07cb73d8eaf85e262b617063f985f73d84cbe0be629ffcb21"
         }
       ],
       "shipped_surfaces": [
@@ -3900,7 +3900,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedTransactionalEventListenerReloadTest.java",
           "kind": "watcher",
           "assertions": "QUEUED2 before reload; HELD2 contains only ok-new generation2; HELD3 empty after removal; MATRIX4 restored.",
-          "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
+          "method_sha256": "6ce771889fc1abe07cb73d8eaf85e262b617063f985f73d84cbe0be629ffcb21"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration",
@@ -3910,9 +3910,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedTransactionalEventListenerReloadTest.java",
-            "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
+            "method_sha256": "6ce771889fc1abe07cb73d8eaf85e262b617063f985f73d84cbe0be629ffcb21"
           },
-          "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
+          "method_sha256": "6ce771889fc1abe07cb73d8eaf85e262b617063f985f73d84cbe0be629ffcb21"
         }
       ],
       "shipped_surfaces": [
@@ -3950,7 +3950,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedTransactionalEventListenerReloadTest.java",
           "kind": "watcher",
           "assertions": "First tape entry fallback1/4:outside; other phases absent outside; ok condition gates transactional delivery.",
-          "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
+          "method_sha256": "6ce771889fc1abe07cb73d8eaf85e262b617063f985f73d84cbe0be629ffcb21"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration",
@@ -3960,9 +3960,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedTransactionalEventListenerReloadTest.java",
-            "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
+            "method_sha256": "6ce771889fc1abe07cb73d8eaf85e262b617063f985f73d84cbe0be629ffcb21"
           },
-          "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
+          "method_sha256": "6ce771889fc1abe07cb73d8eaf85e262b617063f985f73d84cbe0be629ffcb21"
         }
       ],
       "shipped_surfaces": [
@@ -4152,7 +4152,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedAsyncServiceReloadTest.java",
           "kind": "watcher",
           "assertions": "R1 pending=true calls0; R2 captured/old/current true across one->two; nativeSlot=false; normal/child loaders.",
-          "method_sha256": "9bec8a8ae894739f2c6ad671249caaaedbc29065491e37d43fc3e47837338d15"
+          "method_sha256": "546489e49a645bb438214d94b7c51fdadd31aa3c8fb12c194d9d31b1f358401f"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedAsyncServiceReloadTest#heldCallsGetNativeFuturesAcrossExecutorChangesRemovalAndRestore",
@@ -4162,9 +4162,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedAsyncServiceReloadTest#heldCallsGetNativeFuturesAcrossExecutorChangesRemovalAndRestore",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedAsyncServiceReloadTest.java",
-            "method_sha256": "9bec8a8ae894739f2c6ad671249caaaedbc29065491e37d43fc3e47837338d15"
+            "method_sha256": "546489e49a645bb438214d94b7c51fdadd31aa3c8fb12c194d9d31b1f358401f"
           },
-          "method_sha256": "9bec8a8ae894739f2c6ad671249caaaedbc29065491e37d43fc3e47837338d15"
+          "method_sha256": "546489e49a645bb438214d94b7c51fdadd31aa3c8fb12c194d9d31b1f358401f"
         }
       ],
       "shipped_surfaces": [
@@ -4202,7 +4202,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedAsyncServiceReloadTest.java",
           "kind": "watcher",
           "assertions": "R2 failed=true verifies rows unchanged and no void error handler; cancelled=true verifies no added calls.",
-          "method_sha256": "9bec8a8ae894739f2c6ad671249caaaedbc29065491e37d43fc3e47837338d15"
+          "method_sha256": "546489e49a645bb438214d94b7c51fdadd31aa3c8fb12c194d9d31b1f358401f"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedAsyncServiceReloadTest#heldCallsGetNativeFuturesAcrossExecutorChangesRemovalAndRestore",
@@ -4212,9 +4212,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedAsyncServiceReloadTest#heldCallsGetNativeFuturesAcrossExecutorChangesRemovalAndRestore",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedAsyncServiceReloadTest.java",
-            "method_sha256": "9bec8a8ae894739f2c6ad671249caaaedbc29065491e37d43fc3e47837338d15"
+            "method_sha256": "546489e49a645bb438214d94b7c51fdadd31aa3c8fb12c194d9d31b1f358401f"
           },
-          "method_sha256": "9bec8a8ae894739f2c6ad671249caaaedbc29065491e37d43fc3e47837338d15"
+          "method_sha256": "546489e49a645bb438214d94b7c51fdadd31aa3c8fb12c194d9d31b1f358401f"
         }
       ],
       "shipped_surfaces": [
@@ -4252,7 +4252,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedAsyncServiceReloadTest.java",
           "kind": "watcher",
           "assertions": "R3 sync=true, R4 removed=true, R5 restored/self/original true; old callsites retained.",
-          "method_sha256": "9bec8a8ae894739f2c6ad671249caaaedbc29065491e37d43fc3e47837338d15"
+          "method_sha256": "546489e49a645bb438214d94b7c51fdadd31aa3c8fb12c194d9d31b1f358401f"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedAsyncServiceReloadTest#heldCallsGetNativeFuturesAcrossExecutorChangesRemovalAndRestore",
@@ -4262,9 +4262,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedAsyncServiceReloadTest#heldCallsGetNativeFuturesAcrossExecutorChangesRemovalAndRestore",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedAsyncServiceReloadTest.java",
-            "method_sha256": "9bec8a8ae894739f2c6ad671249caaaedbc29065491e37d43fc3e47837338d15"
+            "method_sha256": "546489e49a645bb438214d94b7c51fdadd31aa3c8fb12c194d9d31b1f358401f"
           },
-          "method_sha256": "9bec8a8ae894739f2c6ad671249caaaedbc29065491e37d43fc3e47837338d15"
+          "method_sha256": "546489e49a645bb438214d94b7c51fdadd31aa3c8fb12c194d9d31b1f358401f"
         }
       ],
       "shipped_surfaces": [
@@ -4530,7 +4530,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedAsyncEventReloadTest.java",
           "kind": "watcher",
           "assertions": "R1..5 exact queue/captured/rerouted/original/refused/rollback/handler/removed checks; nativeSlot=false.",
-          "method_sha256": "3551ff04275fd71a37fce3c60c2221b3a6c856c680807662892064f7f2e008a8"
+          "method_sha256": "7e8b02437008bc97480615da6d0a60bfa3f52e73697d4f3385093ad45d4acace"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedAsyncEventReloadTest#asyncEventsUseNativeExecutorAndKeepAdmittedBodyAcrossReloadAndRemoval",
@@ -4540,9 +4540,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedAsyncEventReloadTest#asyncEventsUseNativeExecutorAndKeepAdmittedBodyAcrossReloadAndRemoval",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedAsyncEventReloadTest.java",
-            "method_sha256": "3551ff04275fd71a37fce3c60c2221b3a6c856c680807662892064f7f2e008a8"
+            "method_sha256": "7e8b02437008bc97480615da6d0a60bfa3f52e73697d4f3385093ad45d4acace"
           },
-          "method_sha256": "3551ff04275fd71a37fce3c60c2221b3a6c856c680807662892064f7f2e008a8"
+          "method_sha256": "7e8b02437008bc97480615da6d0a60bfa3f52e73697d4f3385093ad45d4acace"
         }
       ],
       "shipped_surfaces": [
@@ -4580,7 +4580,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedAsyncScheduledReloadTest.java",
           "kind": "watcher",
           "assertions": "R1..7 exact queue/captured/rerouted/refusal/rollback/error/sync/remove/restore/close checks; registered Runnable explicitly fired, no actual timer claim.",
-          "method_sha256": "8dd387e01ea8404c474ed1a333ce9f8334ba6f40280efb56e7825e222afb4d2a"
+          "method_sha256": "9cc9429c04ed81372aeb69a881588acf9d06ad1e3a7376a730931b39f11c0779"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedAsyncScheduledReloadTest#asyncSchedulesKeepAcceptedWorkAndRefreshFutureTicks",
@@ -4590,9 +4590,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedAsyncScheduledReloadTest#asyncSchedulesKeepAcceptedWorkAndRefreshFutureTicks",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedAsyncScheduledReloadTest.java",
-            "method_sha256": "8dd387e01ea8404c474ed1a333ce9f8334ba6f40280efb56e7825e222afb4d2a"
+            "method_sha256": "9cc9429c04ed81372aeb69a881588acf9d06ad1e3a7376a730931b39f11c0779"
           },
-          "method_sha256": "8dd387e01ea8404c474ed1a333ce9f8334ba6f40280efb56e7825e222afb4d2a"
+          "method_sha256": "9cc9429c04ed81372aeb69a881588acf9d06ad1e3a7376a730931b39f11c0779"
         }
       ],
       "shipped_surfaces": [
@@ -4782,7 +4782,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedCallbackOperationsReloadTest.java",
           "kind": "watcher",
           "assertions": "R1/4 rows2 txtrue, R2 rows4 txfalse, R3 removed rows0; actual H2 writes; registered scheduled Runnable invoked explicitly.",
-          "method_sha256": "dff53decf5604801c39c6246070bff96d91f17d0d05cb19b20d0947e7513e9c3"
+          "method_sha256": "445bd853a5f12061e4bfdf691134391d06bd63e011a3841a7eba367447725ef3"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedCallbackOperationsReloadTest#callbacksUseNativeTransactionsAndCachesAcrossSaves",
@@ -4792,9 +4792,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedCallbackOperationsReloadTest#callbacksUseNativeTransactionsAndCachesAcrossSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedCallbackOperationsReloadTest.java",
-            "method_sha256": "dff53decf5604801c39c6246070bff96d91f17d0d05cb19b20d0947e7513e9c3"
+            "method_sha256": "445bd853a5f12061e4bfdf691134391d06bd63e011a3841a7eba367447725ef3"
           },
-          "method_sha256": "dff53decf5604801c39c6246070bff96d91f17d0d05cb19b20d0947e7513e9c3"
+          "method_sha256": "445bd853a5f12061e4bfdf691134391d06bd63e011a3841a7eba367447725ef3"
         }
       ],
       "shipped_surfaces": [
@@ -4832,7 +4832,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedCallbackOperationsReloadTest.java",
           "kind": "watcher",
           "assertions": "R1/4 cacheevicted lookups1 receipts2; R2 cacheretained lookups2; failed callback leaves after-success cache entry.",
-          "method_sha256": "dff53decf5604801c39c6246070bff96d91f17d0d05cb19b20d0947e7513e9c3"
+          "method_sha256": "445bd853a5f12061e4bfdf691134391d06bd63e011a3841a7eba367447725ef3"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedCallbackOperationsReloadTest#callbacksUseNativeTransactionsAndCachesAcrossSaves",
@@ -4842,9 +4842,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedCallbackOperationsReloadTest#callbacksUseNativeTransactionsAndCachesAcrossSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedCallbackOperationsReloadTest.java",
-            "method_sha256": "dff53decf5604801c39c6246070bff96d91f17d0d05cb19b20d0947e7513e9c3"
+            "method_sha256": "445bd853a5f12061e4bfdf691134391d06bd63e011a3841a7eba367447725ef3"
           },
-          "method_sha256": "dff53decf5604801c39c6246070bff96d91f17d0d05cb19b20d0947e7513e9c3"
+          "method_sha256": "445bd853a5f12061e4bfdf691134391d06bd63e011a3841a7eba367447725ef3"
         }
       ],
       "shipped_surfaces": [
@@ -5214,7 +5214,7 @@
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/SpringDataRepositoryReloadTest.java",
           "kind": "watcher",
           "assertions": "Four annotated/normal/child combinations; same PID/nonce/holder identity; before/after alternated three saves over native local HTTP.",
-          "method_sha256": "26bbbb2a6a75482871648856ebc2d085e5283a1cea9a19652989a9c1092b2a39"
+          "method_sha256": "a141742f1bad860521834844866c6a55dc9d578c43fad7f923cdbb91b062be08"
         }
       ],
       "shipped_surfaces": [
@@ -5792,9 +5792,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedAsyncEventReloadTest#asyncEventsUseNativeExecutorAndKeepAdmittedBodyAcrossReloadAndRemoval",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedAsyncEventReloadTest.java",
-            "method_sha256": "3551ff04275fd71a37fce3c60c2221b3a6c856c680807662892064f7f2e008a8"
+            "method_sha256": "7e8b02437008bc97480615da6d0a60bfa3f52e73697d4f3385093ad45d4acace"
           },
-          "method_sha256": "3551ff04275fd71a37fce3c60c2221b3a6c856c680807662892064f7f2e008a8"
+          "method_sha256": "7e8b02437008bc97480615da6d0a60bfa3f52e73697d4f3385093ad45d4acace"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedCallbackOperationsReloadTest#callbacksUseNativeTransactionsAndCachesAcrossSaves",
@@ -5804,9 +5804,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedCallbackOperationsReloadTest#callbacksUseNativeTransactionsAndCachesAcrossSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedCallbackOperationsReloadTest.java",
-            "method_sha256": "dff53decf5604801c39c6246070bff96d91f17d0d05cb19b20d0947e7513e9c3"
+            "method_sha256": "445bd853a5f12061e4bfdf691134391d06bd63e011a3841a7eba367447725ef3"
           },
-          "method_sha256": "dff53decf5604801c39c6246070bff96d91f17d0d05cb19b20d0947e7513e9c3"
+          "method_sha256": "445bd853a5f12061e4bfdf691134391d06bd63e011a3841a7eba367447725ef3"
         }
       ],
       "shipped_surfaces": [
@@ -5847,9 +5847,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedTransactionalEventListenerReloadTest.java",
-            "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
+            "method_sha256": "6ce771889fc1abe07cb73d8eaf85e262b617063f985f73d84cbe0be629ffcb21"
           },
-          "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
+          "method_sha256": "6ce771889fc1abe07cb73d8eaf85e262b617063f985f73d84cbe0be629ffcb21"
         }
       ],
       "shipped_surfaces": [
@@ -5887,7 +5887,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ExistingScheduledMetadataReloadTest.java",
           "kind": "watcher",
           "assertions": "One real native task with intervals25/40/60/25; body values1/2/3/4; current receiver ticks, all retired instance counters remain stable; context close cancels future ticks.",
-          "method_sha256": "0b6b82550f9208fbcbb41601b26887edaf204b2fe1ceca6c0d33c56ee0a462c2"
+          "method_sha256": "5f5d60ba20db1895a922c304f2ecd4d998357fb81d38feb1a8a8e8bc5643d859"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaExistingScheduledMetadataReloadTest#existingTimerUsesSavedIntervalAndCurrentSingletonWithoutRetiredTicks",
@@ -5897,9 +5897,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.ExistingScheduledMetadataReloadTest#existingTimerUsesSavedIntervalAndCurrentSingletonWithoutRetiredTicks",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ExistingScheduledMetadataReloadTest.java",
-            "method_sha256": "0b6b82550f9208fbcbb41601b26887edaf204b2fe1ceca6c0d33c56ee0a462c2"
+            "method_sha256": "5f5d60ba20db1895a922c304f2ecd4d998357fb81d38feb1a8a8e8bc5643d859"
           },
-          "method_sha256": "0b6b82550f9208fbcbb41601b26887edaf204b2fe1ceca6c0d33c56ee0a462c2"
+          "method_sha256": "5f5d60ba20db1895a922c304f2ecd4d998357fb81d38feb1a8a8e8bc5643d859"
         }
       ],
       "shipped_surfaces": [
@@ -6013,7 +6013,7 @@
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/SpringDataSqlNativeQueryReloadTest.java",
           "kind": "watcher",
           "assertions": "Four normal/child loader x plain/Repository interfaces; six compiled SQL-native saves: predicate, UPPER scalar expression, missing-column SQL_ERROR:42122, valid recovery, CONCAT scalar expression, revert. Exact expected result and fresh agentless native JVM per version. Retained managed manual-holder identity, current tracked owner distinct from startup holder/current injected-product identity; unrelated and other-context repository identities, both EMF identities/open state,3 rows.",
-          "method_sha256": "d0856328eeb4bd733bb35b33a40cb44c99bb5c3be6b88821cf85fcab11be647d"
+          "method_sha256": "0a32f01622c6776158c5c4f9265c0d3b9ea4ce289859c2e36784a14d5f53d8b3"
         }
       ],
       "shipped_surfaces": [

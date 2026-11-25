@@ -49,7 +49,7 @@ class NewEntityPreparedSchemaReloadTest {
         if(child)builder.childClassLoader();
         if(auto)builder.mavenLayout();
         try(var app=builder.start()) {
-            app.awaitOrFail("READY", "JPA application failed to start"); app.awaitOrFail("] Watching ","watcher missing");
+            app.awaitOrFail("READY", "JPA application failed to start"); app.awaitWatcherReady();
             save(app,auto,added(1)); awaitReload(app,1);
             int saves=1;
             probe(app,0,retry?"false:true:kept":"true:false:kept");

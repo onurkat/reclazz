@@ -44,7 +44,7 @@ class OrdinarySpringReloadEvidenceTest {
         if (child) builder.childClassLoader();
         try (var app = builder.start()) {
             app.awaitOrFail("BEFORE=1:41:null:0:null", "baseline state/injection differs");
-            app.awaitOrFail("] Watching ", "watcher missing");
+            app.awaitWatcherReady();
             if (child) app.awaitOrFail("APP_IN_CHILD_MODULE=true", "child loader missing");
             String edited = service(injection).replace("return 1;", "return 2;");
             // Recreation evidence needs a real creation change; body-only state retention has its own regression.

@@ -5988,7 +5988,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlResourceReloadTest.java",
           "kind": "watcher",
           "assertions": "PROBE1 after:2:root-before:other; rootedit ->root-after; isolatedotherunchanged.",
-          "method_sha256": "59f8a778957d21cf693781e14a9070a2ab8b854011d6fc7fe2969bbb6a8d6bf9"
+          "method_sha256": "b40ce63cb515ca818455144f17a0888724cdf88d0c6c0dd5441a63f3914df534"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.ModernSpringXmlResourceReloadTest#loadedImportsReloadOutsideWatchedRootsWithoutChangingAnotherContext",
@@ -5998,9 +5998,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.SpringXmlResourceReloadTest#loadedImportsReloadOutsideWatchedRootsWithoutChangingAnotherContext",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlResourceReloadTest.java",
-            "method_sha256": "59f8a778957d21cf693781e14a9070a2ab8b854011d6fc7fe2969bbb6a8d6bf9"
+            "method_sha256": "b40ce63cb515ca818455144f17a0888724cdf88d0c6c0dd5441a63f3914df534"
           },
-          "method_sha256": "59f8a778957d21cf693781e14a9070a2ab8b854011d6fc7fe2969bbb6a8d6bf9"
+          "method_sha256": "b40ce63cb515ca818455144f17a0888724cdf88d0c6c0dd5441a63f3914df534"
         }
       ],
       "shipped_surfaces": [
@@ -6038,7 +6038,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlResourceReloadTest.java",
           "kind": "watcher",
           "assertions": "PROBE2 still after:2, not extra setter invocation.",
-          "method_sha256": "59f8a778957d21cf693781e14a9070a2ab8b854011d6fc7fe2969bbb6a8d6bf9"
+          "method_sha256": "b40ce63cb515ca818455144f17a0888724cdf88d0c6c0dd5441a63f3914df534"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.ModernSpringXmlResourceReloadTest#loadedImportsReloadOutsideWatchedRootsWithoutChangingAnotherContext",
@@ -6048,9 +6048,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.SpringXmlResourceReloadTest#loadedImportsReloadOutsideWatchedRootsWithoutChangingAnotherContext",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlResourceReloadTest.java",
-            "method_sha256": "59f8a778957d21cf693781e14a9070a2ab8b854011d6fc7fe2969bbb6a8d6bf9"
+            "method_sha256": "b40ce63cb515ca818455144f17a0888724cdf88d0c6c0dd5441a63f3914df534"
           },
-          "method_sha256": "59f8a778957d21cf693781e14a9070a2ab8b854011d6fc7fe2969bbb6a8d6bf9"
+          "method_sha256": "b40ce63cb515ca818455144f17a0888724cdf88d0c6c0dd5441a63f3914df534"
         }
       ],
       "shipped_surfaces": [
@@ -6088,7 +6088,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlResourceReloadTest.java",
           "kind": "watcher",
           "assertions": "scope=prototype warning; PROBE4 still after:2/root-after/other.",
-          "method_sha256": "59f8a778957d21cf693781e14a9070a2ab8b854011d6fc7fe2969bbb6a8d6bf9"
+          "method_sha256": "b40ce63cb515ca818455144f17a0888724cdf88d0c6c0dd5441a63f3914df534"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.ModernSpringXmlResourceReloadTest#loadedImportsReloadOutsideWatchedRootsWithoutChangingAnotherContext",
@@ -6098,9 +6098,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.SpringXmlResourceReloadTest#loadedImportsReloadOutsideWatchedRootsWithoutChangingAnotherContext",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlResourceReloadTest.java",
-            "method_sha256": "59f8a778957d21cf693781e14a9070a2ab8b854011d6fc7fe2969bbb6a8d6bf9"
+            "method_sha256": "b40ce63cb515ca818455144f17a0888724cdf88d0c6c0dd5441a63f3914df534"
           },
-          "method_sha256": "59f8a778957d21cf693781e14a9070a2ab8b854011d6fc7fe2969bbb6a8d6bf9"
+          "method_sha256": "b40ce63cb515ca818455144f17a0888724cdf88d0c6c0dd5441a63f3914df534"
         }
       ],
       "shipped_surfaces": [
@@ -6138,7 +6138,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlNativePropertyBindingReloadTest.java",
           "kind": "watcher",
           "assertions": "Class,enum,char,BigDecimal,URI,typed lists/maps andwriterSTRING; repeatednext/before exactprobes.",
-          "method_sha256": "368bd59bcf0cf80d350e566f3a6b55b60b8c07da4a76b3647323cbf69de27973"
+          "method_sha256": "eb37fd1d747850201241f166809359f5178c6c853a98cef811d03b71e428df8d"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.ModernSpringXmlNativePropertyBindingReloadTest#nativeTypesSurviveRepeatedWatchedEditsAndInvalidValuesKeepMetadata",
@@ -6148,9 +6148,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.SpringXmlNativePropertyBindingReloadTest#nativeTypesSurviveRepeatedWatchedEditsAndInvalidValuesKeepMetadata",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlNativePropertyBindingReloadTest.java",
-            "method_sha256": "368bd59bcf0cf80d350e566f3a6b55b60b8c07da4a76b3647323cbf69de27973"
+            "method_sha256": "eb37fd1d747850201241f166809359f5178c6c853a98cef811d03b71e428df8d"
           },
-          "method_sha256": "368bd59bcf0cf80d350e566f3a6b55b60b8c07da4a76b3647323cbf69de27973"
+          "method_sha256": "eb37fd1d747850201241f166809359f5178c6c853a98cef811d03b71e428df8d"
         }
       ],
       "shipped_surfaces": [
@@ -6188,7 +6188,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlNativePropertyBindingReloadTest.java",
           "kind": "watcher",
           "assertions": "Fourth INVALIDmode probe remainsbefore:A:1.0:urn:old:OLD:STRING andmetadataOLD; other4 applies.",
-          "method_sha256": "368bd59bcf0cf80d350e566f3a6b55b60b8c07da4a76b3647323cbf69de27973"
+          "method_sha256": "eb37fd1d747850201241f166809359f5178c6c853a98cef811d03b71e428df8d"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.ModernSpringXmlNativePropertyBindingReloadTest#nativeTypesSurviveRepeatedWatchedEditsAndInvalidValuesKeepMetadata",
@@ -6198,9 +6198,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.SpringXmlNativePropertyBindingReloadTest#nativeTypesSurviveRepeatedWatchedEditsAndInvalidValuesKeepMetadata",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlNativePropertyBindingReloadTest.java",
-            "method_sha256": "368bd59bcf0cf80d350e566f3a6b55b60b8c07da4a76b3647323cbf69de27973"
+            "method_sha256": "eb37fd1d747850201241f166809359f5178c6c853a98cef811d03b71e428df8d"
           },
-          "method_sha256": "368bd59bcf0cf80d350e566f3a6b55b60b8c07da4a76b3647323cbf69de27973"
+          "method_sha256": "eb37fd1d747850201241f166809359f5178c6c853a98cef811d03b71e428df8d"
         }
       ],
       "shipped_surfaces": [
@@ -6238,7 +6238,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlPropertyFailureReloadTest.java",
           "kind": "watcher",
           "assertions": "PROBE1..3 old1/a;4 new2/b;5 keptvaliddefinition; RECREATED=true:new:2.",
-          "method_sha256": "83e3b491015595318e1cd3678b463b8f543fcd8f1a6cbc05cd87421a172f53d1"
+          "method_sha256": "11b6b3fbf6d5c89e741c4892ecb9a631d379958938bd9618a1d2052fd57d7866"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.ModernSpringXmlPropertyFailureReloadTest#failedEditsPreserveRawValuesAndAllowCorrection",
@@ -6248,9 +6248,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.SpringXmlPropertyFailureReloadTest#failedEditsPreserveRawValuesAndAllowCorrection",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlPropertyFailureReloadTest.java",
-            "method_sha256": "83e3b491015595318e1cd3678b463b8f543fcd8f1a6cbc05cd87421a172f53d1"
+            "method_sha256": "11b6b3fbf6d5c89e741c4892ecb9a631d379958938bd9618a1d2052fd57d7866"
           },
-          "method_sha256": "83e3b491015595318e1cd3678b463b8f543fcd8f1a6cbc05cd87421a172f53d1"
+          "method_sha256": "11b6b3fbf6d5c89e741c4892ecb9a631d379958938bd9618a1d2052fd57d7866"
         }
       ],
       "shipped_surfaces": [
@@ -6288,7 +6288,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlDefinitionMetadataReloadTest.java",
           "kind": "watcher",
           "assertions": "Three warnings, raw/mergedidentitytrue, beforelabel while siblingsother2..4; metadatarevert permitscorrected.",
-          "method_sha256": "e3c8d6bf8a3aef59280665ec9db5e01f7cc45bd7a6cfaab6a169af34f9e59838"
+          "method_sha256": "57a2cd5d8552e9f7f61eca8b5f6d12466b335a76fc656c0cedf695ca3af45970"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.ModernSpringXmlDefinitionMetadataReloadTest#metadataEditsWarnBeforePropertiesAndRepeatedSavesRemainSafe",
@@ -6298,9 +6298,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.SpringXmlDefinitionMetadataReloadTest#metadataEditsWarnBeforePropertiesAndRepeatedSavesRemainSafe",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlDefinitionMetadataReloadTest.java",
-            "method_sha256": "e3c8d6bf8a3aef59280665ec9db5e01f7cc45bd7a6cfaab6a169af34f9e59838"
+            "method_sha256": "57a2cd5d8552e9f7f61eca8b5f6d12466b335a76fc656c0cedf695ca3af45970"
           },
-          "method_sha256": "e3c8d6bf8a3aef59280665ec9db5e01f7cc45bd7a6cfaab6a169af34f9e59838"
+          "method_sha256": "57a2cd5d8552e9f7f61eca8b5f6d12466b335a76fc656c0cedf695ca3af45970"
         }
       ],
       "shipped_surfaces": [
@@ -6338,7 +6338,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlLazyInitReloadTest.java",
           "kind": "watcher",
           "assertions": "Warm/coldflags edits produceexactwarnings2; coldcount1 until nativecreation ->2.",
-          "method_sha256": "6736b4a45292af646dfb381efbf107314aa295a287a6512556df52aac8f05ecc"
+          "method_sha256": "2d6807b7c23e8c2e30612b3bc33cec9c3e7feebc1fce2be1ee1ebaeaefaa344c"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.ModernSpringXmlLazyInitReloadTest#watchedLazyMetadataPreservesCreationStateAndDefaultsRemainEquivalent",
@@ -6348,9 +6348,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.SpringXmlLazyInitReloadTest#watchedLazyMetadataPreservesCreationStateAndDefaultsRemainEquivalent",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlLazyInitReloadTest.java",
-            "method_sha256": "6736b4a45292af646dfb381efbf107314aa295a287a6512556df52aac8f05ecc"
+            "method_sha256": "2d6807b7c23e8c2e30612b3bc33cec9c3e7feebc1fce2be1ee1ebaeaefaa344c"
           },
-          "method_sha256": "6736b4a45292af646dfb381efbf107314aa295a287a6512556df52aac8f05ecc"
+          "method_sha256": "2d6807b7c23e8c2e30612b3bc33cec9c3e7feebc1fce2be1ee1ebaeaefaa344c"
         }
       ],
       "shipped_surfaces": [
@@ -6388,7 +6388,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlLazyInitReloadTest.java",
           "kind": "watcher",
           "assertions": "Six saves exactidentityflags/count1 and correctedlabels; CREATED=true:corrected:2 onlyatend.",
-          "method_sha256": "6736b4a45292af646dfb381efbf107314aa295a287a6512556df52aac8f05ecc"
+          "method_sha256": "2d6807b7c23e8c2e30612b3bc33cec9c3e7feebc1fce2be1ee1ebaeaefaa344c"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.ModernSpringXmlLazyInitReloadTest#watchedLazyMetadataPreservesCreationStateAndDefaultsRemainEquivalent",
@@ -6398,9 +6398,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.SpringXmlLazyInitReloadTest#watchedLazyMetadataPreservesCreationStateAndDefaultsRemainEquivalent",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlLazyInitReloadTest.java",
-            "method_sha256": "6736b4a45292af646dfb381efbf107314aa295a287a6512556df52aac8f05ecc"
+            "method_sha256": "2d6807b7c23e8c2e30612b3bc33cec9c3e7feebc1fce2be1ee1ebaeaefaa344c"
           },
-          "method_sha256": "6736b4a45292af646dfb381efbf107314aa295a287a6512556df52aac8f05ecc"
+          "method_sha256": "2d6807b7c23e8c2e30612b3bc33cec9c3e7feebc1fce2be1ee1ebaeaefaa344c"
         }
       ],
       "shipped_surfaces": [
@@ -6438,7 +6438,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlInnerBeanReloadTest.java",
           "kind": "watcher",
           "assertions": "PROBE2 true:true:new:after:after:1:1:0; changedplain stage new while resourcekept.",
-          "method_sha256": "ed4987785d5563e5b3037b7cdb86a08bcbc7277c7e6beebf091c0eebde930af4"
+          "method_sha256": "5b51d6c4c1a35d11a63211f79aec5239bc570d00f3c492b08a54d119a9538956"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.ModernSpringXmlInnerBeanReloadTest#innerNoOpsEditsAndResourceRefusalsFollowWatcher",
@@ -6448,9 +6448,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.SpringXmlInnerBeanReloadTest#innerNoOpsEditsAndResourceRefusalsFollowWatcher",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlInnerBeanReloadTest.java",
-            "method_sha256": "ed4987785d5563e5b3037b7cdb86a08bcbc7277c7e6beebf091c0eebde930af4"
+            "method_sha256": "5b51d6c4c1a35d11a63211f79aec5239bc570d00f3c492b08a54d119a9538956"
           },
-          "method_sha256": "ed4987785d5563e5b3037b7cdb86a08bcbc7277c7e6beebf091c0eebde930af4"
+          "method_sha256": "5b51d6c4c1a35d11a63211f79aec5239bc570d00f3c492b08a54d119a9538956"
         }
       ],
       "shipped_surfaces": [
@@ -6488,7 +6488,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlInnerBeanReloadTest.java",
           "kind": "watcher",
           "assertions": "PROBE1 and3 same resource construction/init counters1/1, closeonlyoriginal.",
-          "method_sha256": "ed4987785d5563e5b3037b7cdb86a08bcbc7277c7e6beebf091c0eebde930af4"
+          "method_sha256": "5b51d6c4c1a35d11a63211f79aec5239bc570d00f3c492b08a54d119a9538956"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.ModernSpringXmlInnerBeanReloadTest#innerNoOpsEditsAndResourceRefusalsFollowWatcher",
@@ -6498,9 +6498,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.SpringXmlInnerBeanReloadTest#innerNoOpsEditsAndResourceRefusalsFollowWatcher",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlInnerBeanReloadTest.java",
-            "method_sha256": "ed4987785d5563e5b3037b7cdb86a08bcbc7277c7e6beebf091c0eebde930af4"
+            "method_sha256": "5b51d6c4c1a35d11a63211f79aec5239bc570d00f3c492b08a54d119a9538956"
           },
-          "method_sha256": "ed4987785d5563e5b3037b7cdb86a08bcbc7277c7e6beebf091c0eebde930af4"
+          "method_sha256": "5b51d6c4c1a35d11a63211f79aec5239bc570d00f3c492b08a54d119a9538956"
         }
       ],
       "shipped_surfaces": [
@@ -6538,7 +6538,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlInnerBeanReloadTest.java",
           "kind": "watcher",
           "assertions": "PROBE4/5 resourceafter kept, siblingother4/5; warnings2, CLOSED1:1:1.",
-          "method_sha256": "ed4987785d5563e5b3037b7cdb86a08bcbc7277c7e6beebf091c0eebde930af4"
+          "method_sha256": "5b51d6c4c1a35d11a63211f79aec5239bc570d00f3c492b08a54d119a9538956"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.ModernSpringXmlInnerBeanReloadTest#innerNoOpsEditsAndResourceRefusalsFollowWatcher",
@@ -6548,9 +6548,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.SpringXmlInnerBeanReloadTest#innerNoOpsEditsAndResourceRefusalsFollowWatcher",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlInnerBeanReloadTest.java",
-            "method_sha256": "ed4987785d5563e5b3037b7cdb86a08bcbc7277c7e6beebf091c0eebde930af4"
+            "method_sha256": "5b51d6c4c1a35d11a63211f79aec5239bc570d00f3c492b08a54d119a9538956"
           },
-          "method_sha256": "ed4987785d5563e5b3037b7cdb86a08bcbc7277c7e6beebf091c0eebde930af4"
+          "method_sha256": "5b51d6c4c1a35d11a63211f79aec5239bc570d00f3c492b08a54d119a9538956"
         }
       ],
       "shipped_surfaces": [
@@ -6588,7 +6588,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlUnsupportedNoOpReloadTest.java",
           "kind": "watcher",
           "assertions": "First3 saves no warnings, identitytrue, labelsbefore, made1/init0/count3, siblingschange.",
-          "method_sha256": "8503167cf077e7e23e3ac06cf406f03a6991fd2b7c46a4f692b620ad0647b2a7"
+          "method_sha256": "44c7d2bb472a66509b0ca651d378b02c3b84b2e65d4f6048f1f383c7956f205d"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.ModernSpringXmlUnsupportedNoOpReloadTest#unchangedShapesStayQuietAndRealEditsStillWarn",
@@ -6598,9 +6598,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.SpringXmlUnsupportedNoOpReloadTest#unchangedShapesStayQuietAndRealEditsStillWarn",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlUnsupportedNoOpReloadTest.java",
-            "method_sha256": "8503167cf077e7e23e3ac06cf406f03a6991fd2b7c46a4f692b620ad0647b2a7"
+            "method_sha256": "44c7d2bb472a66509b0ca651d378b02c3b84b2e65d4f6048f1f383c7956f205d"
           },
-          "method_sha256": "8503167cf077e7e23e3ac06cf406f03a6991fd2b7c46a4f692b620ad0647b2a7"
+          "method_sha256": "44c7d2bb472a66509b0ca651d378b02c3b84b2e65d4f6048f1f383c7956f205d"
         }
       ],
       "shipped_surfaces": [
@@ -6638,7 +6638,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlUnsupportedNoOpReloadTest.java",
           "kind": "watcher",
           "assertions": "Saves4/5 restartheaders1/2 and3require; labelsbefore, closeoriginalonce.",
-          "method_sha256": "8503167cf077e7e23e3ac06cf406f03a6991fd2b7c46a4f692b620ad0647b2a7"
+          "method_sha256": "44c7d2bb472a66509b0ca651d378b02c3b84b2e65d4f6048f1f383c7956f205d"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.ModernSpringXmlUnsupportedNoOpReloadTest#unchangedShapesStayQuietAndRealEditsStillWarn",
@@ -6648,9 +6648,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.SpringXmlUnsupportedNoOpReloadTest#unchangedShapesStayQuietAndRealEditsStillWarn",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlUnsupportedNoOpReloadTest.java",
-            "method_sha256": "8503167cf077e7e23e3ac06cf406f03a6991fd2b7c46a4f692b620ad0647b2a7"
+            "method_sha256": "44c7d2bb472a66509b0ca651d378b02c3b84b2e65d4f6048f1f383c7956f205d"
           },
-          "method_sha256": "8503167cf077e7e23e3ac06cf406f03a6991fd2b7c46a4f692b620ad0647b2a7"
+          "method_sha256": "44c7d2bb472a66509b0ca651d378b02c3b84b2e65d4f6048f1f383c7956f205d"
         }
       ],
       "shipped_surfaces": [
@@ -6688,7 +6688,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlAliasReloadTest.java",
           "kind": "watcher",
           "assertions": "chosen staysa; newaliasabsent; newbean c present; original listener count1 unchanged.",
-          "method_sha256": "c493d1f878615dcc1cbe7ef71466f28abacd95f879ad21302c95a34faf0f4b9d"
+          "method_sha256": "4b7fff59a2d080e03f67f768830ae62c1f9fcf6ab64af221e687172192729f26"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.ModernSpringXmlAliasReloadTest#aliasOnlyEditsReportRestartAndPreserveEveryLookup",
@@ -6698,9 +6698,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.SpringXmlAliasReloadTest#aliasOnlyEditsReportRestartAndPreserveEveryLookup",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlAliasReloadTest.java",
-            "method_sha256": "c493d1f878615dcc1cbe7ef71466f28abacd95f879ad21302c95a34faf0f4b9d"
+            "method_sha256": "4b7fff59a2d080e03f67f768830ae62c1f9fcf6ab64af221e687172192729f26"
           },
-          "method_sha256": "c493d1f878615dcc1cbe7ef71466f28abacd95f879ad21302c95a34faf0f4b9d"
+          "method_sha256": "4b7fff59a2d080e03f67f768830ae62c1f9fcf6ab64af221e687172192729f26"
         }
       ],
       "shipped_surfaces": [
@@ -6738,7 +6738,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlAliasReloadTest.java",
           "kind": "watcher",
           "assertions": "Removedchosen warning, actual lookup stilla andlistenercount0.",
-          "method_sha256": "d41d72a8046590391c87d6b2014e61b31f75db2c6e2e707bf932a2e5fd1d8a5a"
+          "method_sha256": "eaa2e7fa8f416587943877ee7cc50f9347de01be9487eccfd2b7a165313f4ba2"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.ModernSpringXmlAliasReloadTest#inlineAliasEventsAreCapturedWithoutReplacingApplicationListener",
@@ -6748,9 +6748,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.SpringXmlAliasReloadTest#inlineAliasEventsAreCapturedWithoutReplacingApplicationListener",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlAliasReloadTest.java",
-            "method_sha256": "d41d72a8046590391c87d6b2014e61b31f75db2c6e2e707bf932a2e5fd1d8a5a"
+            "method_sha256": "eaa2e7fa8f416587943877ee7cc50f9347de01be9487eccfd2b7a165313f4ba2"
           },
-          "method_sha256": "d41d72a8046590391c87d6b2014e61b31f75db2c6e2e707bf932a2e5fd1d8a5a"
+          "method_sha256": "eaa2e7fa8f416587943877ee7cc50f9347de01be9487eccfd2b7a165313f4ba2"
         }
       ],
       "shipped_surfaces": [
@@ -6788,7 +6788,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlLookupMethodReloadTest.java",
           "kind": "watcher",
           "assertions": "Three warnings, identitiestrue, beforelabel despite targetb/removal; revertedmetadata final/final.",
-          "method_sha256": "4d7ef78c0a6cf58093d30cc83d0dc409951a1782c8f36f3da4ba6d972a9e3eeb"
+          "method_sha256": "2a9369a59f164e6c059f7f2703d18ab3cf49415ef397e5377b2fcaa18571280a"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.ModernSpringXmlLookupMethodReloadTest#lookupChangesPreserveFactoryAndReportRestart",
@@ -6798,9 +6798,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.SpringXmlLookupMethodReloadTest#lookupChangesPreserveFactoryAndReportRestart",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlLookupMethodReloadTest.java",
-            "method_sha256": "4d7ef78c0a6cf58093d30cc83d0dc409951a1782c8f36f3da4ba6d972a9e3eeb"
+            "method_sha256": "2a9369a59f164e6c059f7f2703d18ab3cf49415ef397e5377b2fcaa18571280a"
           },
-          "method_sha256": "4d7ef78c0a6cf58093d30cc83d0dc409951a1782c8f36f3da4ba6d972a9e3eeb"
+          "method_sha256": "2a9369a59f164e6c059f7f2703d18ab3cf49415ef397e5377b2fcaa18571280a"
         }
       ],
       "shipped_surfaces": [
@@ -6838,7 +6838,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlLoaderLifecycleReloadTest.java",
           "kind": "watcher",
           "assertions": "Eachsave5refusals; original raw/mergedidentitytrue, counter0; siblingsother2/3; COLD=before:before.",
-          "method_sha256": "ed8c45d7c59e914e1da947ed435fc09258f73922d9f5301a09aa61862570a221"
+          "method_sha256": "fd8f5c7f960ea3345e9ffb1c8511999ff51207291858ae703a6521e942613e50"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.ModernSpringXmlLoaderLifecycleReloadTest#lifecycleEditsRefuseInNormalAndChildLoadersWhileSiblingsReload",
@@ -6848,9 +6848,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.SpringXmlLoaderLifecycleReloadTest#lifecycleEditsRefuseInNormalAndChildLoadersWhileSiblingsReload",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlLoaderLifecycleReloadTest.java",
-            "method_sha256": "ed8c45d7c59e914e1da947ed435fc09258f73922d9f5301a09aa61862570a221"
+            "method_sha256": "fd8f5c7f960ea3345e9ffb1c8511999ff51207291858ae703a6521e942613e50"
           },
-          "method_sha256": "ed8c45d7c59e914e1da947ed435fc09258f73922d9f5301a09aa61862570a221"
+          "method_sha256": "fd8f5c7f960ea3345e9ffb1c8511999ff51207291858ae703a6521e942613e50"
         }
       ],
       "shipped_surfaces": [
@@ -6888,7 +6888,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlFactoryBeanProductReloadTest.java",
           "kind": "watcher",
           "assertions": "Warm/cold/nonsingleton products before and samecachedidentities;3refusals peredit; coldnativecreationbefore.",
-          "method_sha256": "a2fc495ac5d2f64330ecf42f6761a036a4e4ac6a75cacba21dfd8f0eee503d0d"
+          "method_sha256": "773565975810bfda1689502c69a1220cf3f0eac5443c76f254fc9b1e78fc89f6"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.ModernSpringXmlFactoryBeanProductReloadTest#factoryEditsWarnBeforeStateChangesAndNoOpStaysQuiet",
@@ -6898,9 +6898,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.SpringXmlFactoryBeanProductReloadTest#factoryEditsWarnBeforeStateChangesAndNoOpStaysQuiet",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlFactoryBeanProductReloadTest.java",
-            "method_sha256": "a2fc495ac5d2f64330ecf42f6761a036a4e4ac6a75cacba21dfd8f0eee503d0d"
+            "method_sha256": "773565975810bfda1689502c69a1220cf3f0eac5443c76f254fc9b1e78fc89f6"
           },
-          "method_sha256": "a2fc495ac5d2f64330ecf42f6761a036a4e4ac6a75cacba21dfd8f0eee503d0d"
+          "method_sha256": "773565975810bfda1689502c69a1220cf3f0eac5443c76f254fc9b1e78fc89f6"
         }
       ],
       "shipped_surfaces": [
@@ -6938,7 +6938,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/XmlSingletonLifecycleReloadTest.java",
           "kind": "watcher",
           "assertions": "XML1=2:2:2:6:3 thenXML2=3:13:13:36:6; constructor/static/instance values and lifecycle counts.",
-          "method_sha256": "c2a4b88e48a486a577cb4913db1ca3dc9c297f9d05dcff886a63681c4efd0ebf"
+          "method_sha256": "ee404f322456f134b599cfe59216cecb97755f147fdd6a9acdf425c80898765a"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.ModernXmlSingletonLifecycleReloadTest#xmlRecreatesConstructorAndFactoryProductsAndRepairsHeldConsumer",
@@ -6948,9 +6948,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.XmlSingletonLifecycleReloadTest#xmlRecreatesConstructorAndFactoryProductsAndRepairsHeldConsumer",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/XmlSingletonLifecycleReloadTest.java",
-            "method_sha256": "c2a4b88e48a486a577cb4913db1ca3dc9c297f9d05dcff886a63681c4efd0ebf"
+            "method_sha256": "ee404f322456f134b599cfe59216cecb97755f147fdd6a9acdf425c80898765a"
           },
-          "method_sha256": "c2a4b88e48a486a577cb4913db1ca3dc9c297f9d05dcff886a63681c4efd0ebf"
+          "method_sha256": "ee404f322456f134b599cfe59216cecb97755f147fdd6a9acdf425c80898765a"
         }
       ],
       "shipped_surfaces": [
@@ -6988,7 +6988,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/XmlSingletonLifecycleReloadTest.java",
           "kind": "watcher",
           "assertions": "XML3 equals2 includinginit36/destroy6; CLOSED36 nativecurrentcallbacks.",
-          "method_sha256": "c2a4b88e48a486a577cb4913db1ca3dc9c297f9d05dcff886a63681c4efd0ebf"
+          "method_sha256": "ee404f322456f134b599cfe59216cecb97755f147fdd6a9acdf425c80898765a"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.ModernXmlSingletonLifecycleReloadTest#xmlRecreatesConstructorAndFactoryProductsAndRepairsHeldConsumer",
@@ -6998,9 +6998,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.XmlSingletonLifecycleReloadTest#xmlRecreatesConstructorAndFactoryProductsAndRepairsHeldConsumer",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/XmlSingletonLifecycleReloadTest.java",
-            "method_sha256": "c2a4b88e48a486a577cb4913db1ca3dc9c297f9d05dcff886a63681c4efd0ebf"
+            "method_sha256": "ee404f322456f134b599cfe59216cecb97755f147fdd6a9acdf425c80898765a"
           },
-          "method_sha256": "c2a4b88e48a486a577cb4913db1ca3dc9c297f9d05dcff886a63681c4efd0ebf"
+          "method_sha256": "ee404f322456f134b599cfe59216cecb97755f147fdd6a9acdf425c80898765a"
         }
       ],
       "shipped_surfaces": [
@@ -8140,7 +8140,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/NativeMessageSourceReloadTest.java",
           "kind": "watcher",
           "assertions": "Four source-kind/application-loader cases; Before Ada ->Yeni Ada ->İyi günler Ada ->Again Ada with stablefallback.",
-          "method_sha256": "00a83a885234552974f15830c118af4fb562191967c5a2c9de31719c61a04ad9"
+          "method_sha256": "b4b801252c75a3e294914e6d3de13f290aa5183f5ea0417734377d0a5633d137"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.ModernNativeMessageSourceReloadTest#cachedNativeMessagesFollowRepeatedWatchedLocaleSaves",
@@ -8150,9 +8150,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.NativeMessageSourceReloadTest#cachedNativeMessagesFollowRepeatedWatchedLocaleSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/NativeMessageSourceReloadTest.java",
-            "method_sha256": "00a83a885234552974f15830c118af4fb562191967c5a2c9de31719c61a04ad9"
+            "method_sha256": "b4b801252c75a3e294914e6d3de13f290aa5183f5ea0417734377d0a5633d137"
           },
-          "method_sha256": "00a83a885234552974f15830c118af4fb562191967c5a2c9de31719c61a04ad9"
+          "method_sha256": "b4b801252c75a3e294914e6d3de13f290aa5183f5ea0417734377d0a5633d137"
         }
       ],
       "shipped_surfaces": [
@@ -8392,7 +8392,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/NativeTemplateReloadTest.java",
           "kind": "watcher",
           "assertions": "Four engine/application-loader cases; Before Ada ->Yeni Ada ->Again Ada; native cache is enabled throughout.",
-          "method_sha256": "38fbb7466db80e2f4c7aa839e8f5f1bcd7fb8f72aaf17581fb6e21734fa0fda3"
+          "method_sha256": "79648160276ebf4183a3b367ee19fa779d0383873545f8fa95b7fa880250b2e0"
         }
       ],
       "shipped_surfaces": [
@@ -8430,7 +8430,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/NativeTemplateReloadTest.java",
           "kind": "watcher",
           "assertions": "PROBE3 ERROR, correctedPROBE4 Recovered Ada; no promise of last-valid template rollback.",
-          "method_sha256": "38fbb7466db80e2f4c7aa839e8f5f1bcd7fb8f72aaf17581fb6e21734fa0fda3"
+          "method_sha256": "79648160276ebf4183a3b367ee19fa779d0383873545f8fa95b7fa880250b2e0"
         }
       ],
       "shipped_surfaces": [

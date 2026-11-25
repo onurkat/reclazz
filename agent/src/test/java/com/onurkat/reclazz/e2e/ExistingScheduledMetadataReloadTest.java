@@ -23,7 +23,7 @@ class ExistingScheduledMetadataReloadTest {
                 .agentArgs("startupDelaySec=1,debounceMs=100").jvmArgs("-Dprobe.dir=" + tmp)
                 .with("App", APP).with("Jobs", jobs(1, 25)).with("Tape", TAPE).start()) {
             app.awaitOrFail("READY", "context did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             probe(app, 0, 25, 1);
             int[] delays = {40, 60, 25};
             for (int stage = 1; stage <= 3; stage++) {

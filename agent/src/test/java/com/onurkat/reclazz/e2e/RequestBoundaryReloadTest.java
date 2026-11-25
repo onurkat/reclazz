@@ -53,7 +53,7 @@ class RequestBoundaryReloadTest {
                 .with("App", APP).with("Controller", CONTROLLER).with("Rules", rules(1))
                 .with("Fees", fees(1)).start()) {
             app.awaitOrFail("HELD=1", "first request never entered");
-            app.awaitOrFail("] Watching ", "watcher never started");
+            app.awaitWatcherReady();
             if (autoCompile) Files.writeString(tmp.resolve("src/main/java/app/Rules.java"), rules(2));
             else if (batch) app.rewriteAll(java.util.Map.of("Rules", rules(2), "Fees", fees(2)));
             else app.rewrite("Rules", rules(2));

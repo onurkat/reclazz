@@ -20,7 +20,7 @@ class WatcherHostPauseTest {
         Path port = tmp.resolve("agent.port");
         try (WatchedApp app = WatchedApp.in(tmp).agentArgs("startupDelaySec=0,portFile=" + port)
                 .jvmArgs("-Dpause.fixture=" + tmp).with("App", APP).start()) {
-            app.awaitOrFail("] Watching ", "watcher must complete startup");
+            app.awaitWatcherReady();
             Files.createFile(tmp.resolve("arm"));
             app.awaitOrFail("ARMED=", "fixture must hold the next poll until the health checker can run");
             long pid = Long.parseLong(app.latest("ARMED=").split("ARMED=")[1].trim());

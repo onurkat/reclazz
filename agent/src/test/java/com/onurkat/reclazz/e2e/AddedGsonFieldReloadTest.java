@@ -29,7 +29,7 @@ class AddedGsonFieldReloadTest {
         try (var app = WatchedApp.in(tmp).classpath(gson).agentArgs("startupDelaySec=1,debounceMs=100")
                 .jvmArgs("-Dprobe.dir=" + tmp).with("App", APP).with("Dto", dto(false)).start()) {
             app.awaitOrFail("READY", "app did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             assertEquals("{\"name\":\"a\"}|n", probe(app, 0));
 
             app.rewrite("Dto", dto(true));

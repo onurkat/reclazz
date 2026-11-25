@@ -33,7 +33,7 @@ class ChangedHandlerSignatureHttpReloadTest {
                 .agentArgs("startupDelaySec=1,debounceMs=100,verbose=true")
                 .jvmArgs("-Dprobe.dir=" + tmp).with("App", APP).with("Controller", controller(0)).start()) {
             app.awaitOrFail("PORT=", "native servlet did not start");
-            app.awaitOrFail("] Watching ", "watcher missing");
+            app.awaitWatcherReady();
             int port = Integer.parseInt(app.latest("PORT=").substring(5));
             assertEquals("v0", get(client, port, "/probe?mode=x"));
 

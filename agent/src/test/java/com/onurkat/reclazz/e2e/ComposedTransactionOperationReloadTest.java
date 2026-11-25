@@ -29,7 +29,7 @@ class ComposedTransactionOperationReloadTest {
         if(child)builder.childClassLoader();
         try(var app=builder.start()) {
             app.awaitOrFail("READY=true","native transaction proxy missing");
-            app.awaitOrFail("] Watching ","watcher missing");
+            app.awaitWatcherReady();
             if(child)app.awaitOrFail("APP_IN_CHILD_MODULE=true","child loader missing");
             String[] expected={"1:true:false:1:2:true:false","2:true:true:2:4:true:false",
                     "3:false:false:4:6:true:false","removed:4:6:true:false","5:true:false:5:8:true:false"};

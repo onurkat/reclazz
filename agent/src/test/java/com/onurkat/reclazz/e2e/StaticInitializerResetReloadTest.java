@@ -36,7 +36,7 @@ class StaticInitializerResetReloadTest {
                 .agentArgs("verbose=false,resetStatics=" + enabled + ",excludeClasses=app.NativeReader,startupDelaySec=1,debounceMs=200")
                 .with("App", APP).with("NativeReader", NATIVE).with("Holder", initial).start()) {
             app.awaitOrFail("READY=old:old:old", "readers did not warm");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             app.rewrite("Holder", changed);
             app.awaitOrFail("Reloaded app.Holder", "owner did not reload");
             Files.createFile(tmp.resolve("probe"));

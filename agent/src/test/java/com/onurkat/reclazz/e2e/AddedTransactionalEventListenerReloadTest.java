@@ -22,7 +22,7 @@ class AddedTransactionalEventListenerReloadTest {
         var builder=WatchedApp.in(tmp).classpath(WatchedApp.springClasspath()+java.io.File.pathSeparator+h2);
         if(child) builder.childClassLoader();
         try(var app=builder.jvmArgs("-Dtest.dir="+tmp).with("App",APP).with("Tape",TAPE).with("Listeners",listeners(0)).start()) {
-            app.awaitOrFail("READY", "context not ready"); app.awaitOrFail("] Watching ","watcher not ready");
+            app.awaitOrFail("READY", "context not ready"); app.awaitWatcherReady();
             reload(app,1); command("matrix1");
             expect(app,"MATRIX1=",matrix(1,1,3));
             command("hold2"); app.awaitOrFail("QUEUED2", "transaction did not queue callbacks");

@@ -2087,7 +2087,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/NewComponentConditionsReloadTest.java",
           "kind": "watcher",
           "assertions": "Live context contains two admitted beans and no three rejected beans; created=2 initialized=2 conditions=3, normal/child loader and class/source saves.",
-          "method_sha256": "39a9e2f805b44e61155ac574cad0aedde458693c8af2b534abcf537914e2bed8"
+          "method_sha256": "5aef962cbdc486b5481722f97eb3ce6ec40a983292f20ed517b68d9c427cf6eb"
         }
       ],
       "observable": "Live context contains two admitted beans and no three rejected beans; created=2 initialized=2 conditions=3, normal/child loader and class/source saves.",
@@ -2125,7 +2125,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/NewComponentConditionsReloadTest.java",
           "kind": "watcher",
           "assertions": "Live context contains two admitted beans and no three rejected beans; created=2 initialized=2 conditions=3, normal/child loader and class/source saves.",
-          "method_sha256": "39a9e2f805b44e61155ac574cad0aedde458693c8af2b534abcf537914e2bed8"
+          "method_sha256": "5aef962cbdc486b5481722f97eb3ce6ec40a983292f20ed517b68d9c427cf6eb"
         }
       ],
       "observable": "Live context contains two admitted beans and no three rejected beans; created=2 initialized=2 conditions=3, normal/child loader and class/source saves.",
@@ -2163,7 +2163,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/NewComponentConditionsReloadTest.java",
           "kind": "watcher",
           "assertions": "Live context contains two admitted beans and no three rejected beans; created=2 initialized=2 conditions=3, normal/child loader and class/source saves.",
-          "method_sha256": "39a9e2f805b44e61155ac574cad0aedde458693c8af2b534abcf537914e2bed8"
+          "method_sha256": "5aef962cbdc486b5481722f97eb3ce6ec40a983292f20ed517b68d9c427cf6eb"
         }
       ],
       "observable": "Live context contains two admitted beans and no three rejected beans; created=2 initialized=2 conditions=3, normal/child loader and class/source saves.",
@@ -2201,7 +2201,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/NewComponentScopeReloadTest.java",
           "kind": "watcher",
           "assertions": "BEFORE=0:0; LOOKUPS=true:true:1:2; CLOSED=1:0 on normal and child loaders.",
-          "method_sha256": "7ad28fd78aa5d2be65f5324657200412e0a14ab00a2aa70609467f3134f9761d"
+          "method_sha256": "c9a99a66d16ea5b32bbdcfe6037694aedddfa5ed5ac771afa16f01d700356745"
         }
       ],
       "observable": "BEFORE=0:0; LOOKUPS=true:true:1:2; CLOSED=1:0 on normal and child loaders.",
@@ -2239,7 +2239,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/NewComponentScopeReloadTest.java",
           "kind": "watcher",
           "assertions": "BEFORE=0:0; LOOKUPS=true:true:1:2; CLOSED=1:0 on normal and child loaders.",
-          "method_sha256": "7ad28fd78aa5d2be65f5324657200412e0a14ab00a2aa70609467f3134f9761d"
+          "method_sha256": "c9a99a66d16ea5b32bbdcfe6037694aedddfa5ed5ac771afa16f01d700356745"
         }
       ],
       "observable": "BEFORE=0:0; LOOKUPS=true:true:1:2; CLOSED=1:0 on normal and child loaders.",
@@ -2532,7 +2532,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedBeanMethodReloadTest.java",
           "kind": "watcher",
           "assertions": "Products missing→2→3→4→missing→6→missing→factory failure missing→9; singleton identity and original singleton stay intact, CLOSED=5.",
-          "method_sha256": "52be47b97e1167d1af58e0c9c8a0afa59cc33886cfc89198a5185c07782ded41"
+          "method_sha256": "d18921da0b11988d653a6e6afc454f0c24556c8fdae64e8a16a031b4f0f15243"
         }
       ],
       "observable": "Products missing→2→3→4→missing→6→missing→factory failure missing→9; singleton identity and original singleton stay intact, CLOSED=5.",
@@ -2570,7 +2570,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedBeanArgumentsReloadTest.java",
           "kind": "watcher",
           "assertions": "Blue/red qualified dependencies and saved body versions update; missing dependency/removed annotation remove the product; correction recovers, dependency identities preserved, CLOSED=5.",
-          "method_sha256": "e784483c0ccfa79249d1a79bb8285721573a216a73e1cb562b7a9633a82a4cf9"
+          "method_sha256": "4f2afc8c14df557a0bdf9f9a6b0c6d9eb186b120323ef0a6341aa0e8a4d79c54"
         }
       ],
       "observable": "Blue/red qualified dependencies and saved body versions update; missing dependency/removed annotation remove the product; correction recovers, dependency identities preserved, CLOSED=5.",
@@ -2608,7 +2608,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedBeanRichArgumentsReloadTest.java",
           "kind": "watcher",
           "assertions": "Ordered list [red,blue], map names [blue,red], Optional absent→present, primitive int/long/double values; provider target is not created eagerly and PROVIDER=1:2:true after target retirement; invalid conversion/removal/recovery, CLOSED=4.",
-          "method_sha256": "cecdb4d4bbd231893ab6f814264a797b4612d87ceaf167895ec2abf64fb83b1d"
+          "method_sha256": "c2e420214aa5e8e1f7f5920d8854353848bd3af51081048de2bebe25bf086801"
         }
       ],
       "observable": "Ordered list [red,blue], map names [blue,red], Optional absent→present, primitive int/long/double values; provider target is not created eagerly and PROVIDER=1:2:true after target retirement; invalid conversion/removal/recovery, CLOSED=4.",
@@ -2646,7 +2646,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedBeanRichArgumentsReloadTest.java",
           "kind": "watcher",
           "assertions": "Ordered list [red,blue], map names [blue,red], Optional absent→present, primitive int/long/double values; provider target is not created eagerly and PROVIDER=1:2:true after target retirement; invalid conversion/removal/recovery, CLOSED=4.",
-          "method_sha256": "cecdb4d4bbd231893ab6f814264a797b4612d87ceaf167895ec2abf64fb83b1d"
+          "method_sha256": "c2e420214aa5e8e1f7f5920d8854353848bd3af51081048de2bebe25bf086801"
         }
       ],
       "observable": "Ordered list [red,blue], map names [blue,red], Optional absent→present, primitive int/long/double values; provider target is not created eagerly and PROVIDER=1:2:true after target retirement; invalid conversion/removal/recovery, CLOSED=4.",
@@ -2684,7 +2684,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedBeanRichArgumentsReloadTest.java",
           "kind": "watcher",
           "assertions": "Ordered list [red,blue], map names [blue,red], Optional absent→present, primitive int/long/double values; provider target is not created eagerly and PROVIDER=1:2:true after target retirement; invalid conversion/removal/recovery, CLOSED=4.",
-          "method_sha256": "cecdb4d4bbd231893ab6f814264a797b4612d87ceaf167895ec2abf64fb83b1d"
+          "method_sha256": "c2e420214aa5e8e1f7f5920d8854353848bd3af51081048de2bebe25bf086801"
         }
       ],
       "observable": "Ordered list [red,blue], map names [blue,red], Optional absent→present, primitive int/long/double values; provider target is not created eagerly and PROVIDER=1:2:true after target retirement; invalid conversion/removal/recovery, CLOSED=4.",
@@ -2836,7 +2836,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedBeanAliasesReloadTest.java",
           "kind": "watcher",
           "assertions": "Renames main/legacy/current resolve one identical product, stale aliases disappear, consumer points to it; factory failure/removal/restoration leave only owned names, CLOSED=5.",
-          "method_sha256": "b165d01ea40e1ae31f1ddf974dc92876f1e41ba8f14b571b993dec8dbda8b8ea"
+          "method_sha256": "f9c9e5ef14089bfe1bf579ddbe9440e18024314689c83222a1acf3416019a63e"
         }
       ],
       "observable": "Renames main/legacy/current resolve one identical product, stale aliases disappear, consumer points to it; factory failure/removal/restoration leave only owned names, CLOSED=5.",
@@ -2874,7 +2874,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedBeanSelectionReloadTest.java",
           "kind": "watcher",
           "assertions": "Selection first/second→second/first; no primary, missing qualifier and two primaries fail only affected consumers; corrected metadata recovers, no fast alias, CLOSED=9.",
-          "method_sha256": "85db20cf3ffdd2fcfff1bc67f64921939bae35d58340d4fd5e424de2c7fcd4ab"
+          "method_sha256": "1e79b51fef4c1bb974815ea619bff12dd64d84faed3d66b4cbbdb436a06d3e29"
         }
       ],
       "observable": "Selection first/second→second/first; no primary, missing qualifier and two primaries fail only affected consumers; corrected metadata recovers, no fast alias, CLOSED=9.",
@@ -2912,7 +2912,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedBeanSelectionReloadTest.java",
           "kind": "watcher",
           "assertions": "Selection first/second→second/first; no primary, missing qualifier and two primaries fail only affected consumers; corrected metadata recovers, no fast alias, CLOSED=9.",
-          "method_sha256": "85db20cf3ffdd2fcfff1bc67f64921939bae35d58340d4fd5e424de2c7fcd4ab"
+          "method_sha256": "1e79b51fef4c1bb974815ea619bff12dd64d84faed3d66b4cbbdb436a06d3e29"
         }
       ],
       "observable": "Selection first/second→second/first; no primary, missing qualifier and two primaries fail only affected consumers; corrected metadata recovers, no fast alias, CLOSED=9.",
@@ -2950,7 +2950,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedBeanNativeConditionsReloadTest.java",
           "kind": "watcher",
           "assertions": "Disabled/admitted/throwing/removed/restored factories change presence and exact made/closed counts; saved MethodMetadata and live bean factory/registry/environment/loader/resource checked; final lazy made count 2 before lookup, CLOSED=3 CONDITIONS=6.",
-          "method_sha256": "ed503446e9949be1793bf31f048d79b0165822f8ffcc6d3d0458d2971cfc06de"
+          "method_sha256": "32674a21f499c4c205e8b036536b5c5abf5feec77a02b97f2e5408e40ce05df3"
         }
       ],
       "observable": "Disabled/admitted/throwing/removed/restored factories change presence and exact made/closed counts; saved MethodMetadata and live bean factory/registry/environment/loader/resource checked; final lazy made count 2 before lookup, CLOSED=3 CONDITIONS=6.",
@@ -2988,7 +2988,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedBeanBootConditionsReloadTest.java",
           "kind": "watcher",
           "assertions": "Native property/bean/missing-bean decisions yield exact present/made/closed sequence; aliases agree, startup control identity retained, lazy restoration leaves made=3 until lookup; CLOSED=4.",
-          "method_sha256": "95ae83879b2b022bdf4f6f0f484d6a63181b15277200ea2293181e5e0d25daf2"
+          "method_sha256": "3172bd7f933adfaad85f3a032fd07aaa6a73fe9384dd76385b1c3ed14e87a68f"
         }
       ],
       "observable": "Native property/bean/missing-bean decisions yield exact present/made/closed sequence; aliases agree, startup control identity retained, lazy restoration leaves made=3 until lookup; CLOSED=4.",
@@ -3026,7 +3026,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedBeanBootConditionsReloadTest.java",
           "kind": "watcher",
           "assertions": "Native property/bean/missing-bean decisions yield exact present/made/closed sequence; aliases agree, startup control identity retained, lazy restoration leaves made=3 until lookup; CLOSED=4.",
-          "method_sha256": "95ae83879b2b022bdf4f6f0f484d6a63181b15277200ea2293181e5e0d25daf2"
+          "method_sha256": "3172bd7f933adfaad85f3a032fd07aaa6a73fe9384dd76385b1c3ed14e87a68f"
         }
       ],
       "observable": "Native property/bean/missing-bean decisions yield exact present/made/closed sequence; aliases agree, startup control identity retained, lazy restoration leaves made=3 until lookup; CLOSED=4.",
@@ -3064,7 +3064,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedBeanBootConditionsReloadTest.java",
           "kind": "watcher",
           "assertions": "Native property/bean/missing-bean decisions yield exact present/made/closed sequence; aliases agree, startup control identity retained, lazy restoration leaves made=3 until lookup; CLOSED=4.",
-          "method_sha256": "95ae83879b2b022bdf4f6f0f484d6a63181b15277200ea2293181e5e0d25daf2"
+          "method_sha256": "3172bd7f933adfaad85f3a032fd07aaa6a73fe9384dd76385b1c3ed14e87a68f"
         }
       ],
       "observable": "Native property/bean/missing-bean decisions yield exact present/made/closed sequence; aliases agree, startup control identity retained, lazy restoration leaves made=3 until lookup; CLOSED=4.",
@@ -3102,7 +3102,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedBeanConditionalReloadTest.java",
           "kind": "watcher",
           "assertions": "Added lazy/prototype factory creation deferred; profile annotations swap admitted names on saves; singleton reused after lookup, prototype distinct, CLOSED held=1 proto=0.",
-          "method_sha256": "6dedc7c021bcf2a7b31bab13b41ca77d175705d71b82727958ebe544a9e50cf7"
+          "method_sha256": "2f486c8c3031ceda321ab7de9f409a58bcdf8a587a58958379355a233cdeafdc"
         }
       ],
       "observable": "Added lazy/prototype factory creation deferred; profile annotations swap admitted names on saves; singleton reused after lookup, prototype distinct, CLOSED held=1 proto=0.",
@@ -3140,7 +3140,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedBeanConditionalReloadTest.java",
           "kind": "watcher",
           "assertions": "Added lazy/prototype factory creation deferred; profile annotations swap admitted names on saves; singleton reused after lookup, prototype distinct, CLOSED held=1 proto=0.",
-          "method_sha256": "6dedc7c021bcf2a7b31bab13b41ca77d175705d71b82727958ebe544a9e50cf7"
+          "method_sha256": "2f486c8c3031ceda321ab7de9f409a58bcdf8a587a58958379355a233cdeafdc"
         }
       ],
       "observable": "Added lazy/prototype factory creation deferred; profile annotations swap admitted names on saves; singleton reused after lookup, prototype distinct, CLOSED held=1 proto=0.",
@@ -3178,7 +3178,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedBeanConditionalReloadTest.java",
           "kind": "watcher",
           "assertions": "Added lazy/prototype factory creation deferred; profile annotations swap admitted names on saves; singleton reused after lookup, prototype distinct, CLOSED held=1 proto=0.",
-          "method_sha256": "6dedc7c021bcf2a7b31bab13b41ca77d175705d71b82727958ebe544a9e50cf7"
+          "method_sha256": "2f486c8c3031ceda321ab7de9f409a58bcdf8a587a58958379355a233cdeafdc"
         }
       ],
       "observable": "Added lazy/prototype factory creation deferred; profile annotations swap admitted names on saves; singleton reused after lookup, prototype distinct, CLOSED held=1 proto=0.",
@@ -3216,7 +3216,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedFullConfigurationReloadTest.java",
           "kind": "watcher",
           "assertions": "Held configuration and saved method reference resolve one container singleton across saves; cycle is refused, removal clears owned names/aliases, restoration gets current version; static calls remain distinct Java calls.",
-          "method_sha256": "bee273f6d102e08afa8e91bb47b23aaadc77dd409588b042676360b3337b233f"
+          "method_sha256": "371fcac7e6a5863c1f607b0502940e54a9c7f077645dbc12c7280af2e1e00397"
         }
       ],
       "observable": "Held configuration and saved method reference resolve one container singleton across saves; cycle is refused, removal clears owned names/aliases, restoration gets current version; static calls remain distinct Java calls.",
@@ -3254,7 +3254,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedFullConfigurationArgumentsReloadTest.java",
           "kind": "watcher",
           "assertions": "Five saves prove injected/full inter-bean identity, explicit prototype arguments and held method reference semantics; plain new Config retains Java arguments, removal/restoration observed.",
-          "method_sha256": "00809d64df75b122057cb2a6bd75ea67ce9131fb6a5e373820580d9b928c979b"
+          "method_sha256": "6d9578a3c283bba191c882fb282fef7b2bc07b37a942580f28838b4c320d2350"
         }
       ],
       "observable": "Five saves prove injected/full inter-bean identity, explicit prototype arguments and held method reference semantics; plain new Config retains Java arguments, removal/restoration observed.",
@@ -3292,7 +3292,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedStaticBeanReloadTest.java",
           "kind": "watcher",
           "assertions": "Static companion product body/alias/qualifier updates, factory failure/removal/restoration; mixed static/instance consumers use same dependency, original identity preserved, CLOSED=4.",
-          "method_sha256": "c46e91156944c72c781e3ee665bed9037be27eec4c01a2e01f4db569419c7e67"
+          "method_sha256": "0acd17b4fdc7e0c6cd62bcb286ed9e7bbf6f52750cc534941d17731d86792443"
         }
       ],
       "observable": "Static companion product body/alias/qualifier updates, factory failure/removal/restoration; mixed static/instance consumers use same dependency, original identity preserved, CLOSED=4.",
@@ -3330,7 +3330,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedFullConfigurationReloadTest.java",
           "kind": "watcher",
           "assertions": "Held configuration and saved method reference resolve one container singleton across saves; cycle is refused, removal clears owned names/aliases, restoration gets current version; static calls remain distinct Java calls.",
-          "method_sha256": "bee273f6d102e08afa8e91bb47b23aaadc77dd409588b042676360b3337b233f"
+          "method_sha256": "371fcac7e6a5863c1f607b0502940e54a9c7f077645dbc12c7280af2e1e00397"
         }
       ],
       "observable": "Held configuration and saved method reference resolve one container singleton across saves; cycle is refused, removal clears owned names/aliases, restoration gets current version; static calls remain distinct Java calls.",
@@ -3368,14 +3368,14 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedLifecycleMethodReloadTest.java",
           "kind": "watcher",
           "assertions": "Exact ordered event list on six saves, ordinary factory recreation and context close; injection before added init, then InitializingBean; each instance retains its owed added destroy, then DisposableBean; open=0 at close.",
-          "method_sha256": "8f00d52f13f44cdda80ad566f221ecd4a46f139f298024d63cc2b72dd1471c28"
+          "method_sha256": "ac1733840d6404d65240f92c577378f1415fe95882b4580bd1cce8e9aa65343e"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaLifecycleReloadTest#addedCallbacksFollowInstanceLifetimeAcrossSaves",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaLifecycleReloadTest.java",
           "kind": "watcher",
           "assertions": "Exact ordered event list on six saves, ordinary factory recreation and context close; injection before added init, then InitializingBean; each instance retains its owed added destroy, then DisposableBean; open=0 at close.",
-          "method_sha256": "4a0c9bd69d76bfeb68c78c06a65a7a640f252d3e08512960292db201d70014db"
+          "method_sha256": "771f1ec051eec48c5199f0ac8f8971735809a75375acc2a960f635d05f19fd04"
         }
       ],
       "observable": "Exact ordered event list on six saves, ordinary factory recreation and context close; injection before added init, then InitializingBean; each instance retains its owed added destroy, then DisposableBean; open=0 at close.; Exact ordered event list on six saves, ordinary factory recreation and context close; injection before added init, then InitializingBean; each instance retains its owed added destroy, then DisposableBean; open=0 at close.",
@@ -3413,14 +3413,14 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedLifecycleMethodReloadTest.java",
           "kind": "watcher",
           "assertions": "Exact ordered event list on six saves, ordinary factory recreation and context close; injection before added init, then InitializingBean; each instance retains its owed added destroy, then DisposableBean; open=0 at close.",
-          "method_sha256": "8f00d52f13f44cdda80ad566f221ecd4a46f139f298024d63cc2b72dd1471c28"
+          "method_sha256": "ac1733840d6404d65240f92c577378f1415fe95882b4580bd1cce8e9aa65343e"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaLifecycleReloadTest#addedCallbacksFollowInstanceLifetimeAcrossSaves",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaLifecycleReloadTest.java",
           "kind": "watcher",
           "assertions": "Exact ordered event list on six saves, ordinary factory recreation and context close; injection before added init, then InitializingBean; each instance retains its owed added destroy, then DisposableBean; open=0 at close.",
-          "method_sha256": "4a0c9bd69d76bfeb68c78c06a65a7a640f252d3e08512960292db201d70014db"
+          "method_sha256": "771f1ec051eec48c5199f0ac8f8971735809a75375acc2a960f635d05f19fd04"
         }
       ],
       "observable": "Exact ordered event list on six saves, ordinary factory recreation and context close; injection before added init, then InitializingBean; each instance retains its owed added destroy, then DisposableBean; open=0 at close.; Exact ordered event list on six saves, ordinary factory recreation and context close; injection before added init, then InitializingBean; each instance retains its owed added destroy, then DisposableBean; open=0 at close.",
@@ -3458,14 +3458,14 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedLifecycleMethodReloadTest.java",
           "kind": "watcher",
           "assertions": "Exact ordered event list on six saves, ordinary factory recreation and context close; injection before added init, then InitializingBean; each instance retains its owed added destroy, then DisposableBean; open=0 at close.",
-          "method_sha256": "8f00d52f13f44cdda80ad566f221ecd4a46f139f298024d63cc2b72dd1471c28"
+          "method_sha256": "ac1733840d6404d65240f92c577378f1415fe95882b4580bd1cce8e9aa65343e"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaLifecycleReloadTest#addedCallbacksFollowInstanceLifetimeAcrossSaves",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaLifecycleReloadTest.java",
           "kind": "watcher",
           "assertions": "Exact ordered event list on six saves, ordinary factory recreation and context close; injection before added init, then InitializingBean; each instance retains its owed added destroy, then DisposableBean; open=0 at close.",
-          "method_sha256": "4a0c9bd69d76bfeb68c78c06a65a7a640f252d3e08512960292db201d70014db"
+          "method_sha256": "771f1ec051eec48c5199f0ac8f8971735809a75375acc2a960f635d05f19fd04"
         }
       ],
       "observable": "Exact ordered event list on six saves, ordinary factory recreation and context close; injection before added init, then InitializingBean; each instance retains its owed added destroy, then DisposableBean; open=0 at close.; Exact ordered event list on six saves, ordinary factory recreation and context close; injection before added init, then InitializingBean; each instance retains its owed added destroy, then DisposableBean; open=0 at close.",
@@ -3804,7 +3804,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ComposedTransactionOperationReloadTest.java",
           "kind": "watcher",
           "assertions": "Held proxy follows meta-transaction readOnly aliases; checked-exception DB counts distinguish rollback from annotation removal; same target retained, removal/restoration observed on normal/child loaders.",
-          "method_sha256": "3c67c13833484a01150279fc54b505470ebdd765c27645e9fe3685e7afa0e94e"
+          "method_sha256": "7a85619a18c842c28f37edcf62e6e212ac234eece8cc484e40758dab6a952436"
         }
       ],
       "observable": "Held proxy follows meta-transaction readOnly aliases; checked-exception DB counts distinguish rollback from annotation removal; same target retained, removal/restoration observed on normal/child loaders.",
@@ -3842,7 +3842,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ComposedCacheOperationReloadTest.java",
           "kind": "watcher",
           "assertions": "Held native proxy returns identical cached repeats; changed region/key aliases use actual cache entries, condition false/annotation removal execute twice, native control remains cached; removal/restoration and identity checked.",
-          "method_sha256": "c29e284587b95a50792328586b9139a2502f781ca2d1ff0f2cc7b97ba148cff9"
+          "method_sha256": "f6b186eb10984467bff802d0b489c13d2517948cc87b0b92fde93890c4a854fb"
         }
       ],
       "observable": "Held native proxy returns identical cached repeats; changed region/key aliases use actual cache entries, condition false/annotation removal execute twice, native control remains cached; removal/restoration and identity checked.",
@@ -3925,7 +3925,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedMethodSecurityReloadTest.java",
           "kind": "watcher",
           "assertions": "Native pre/post authorization permits/denies real calls with exact body counts 1,2,4,5,5,6; unauthenticated denied, return policy enforced; body/policy/removal/restoration, same held proxy and native original control.",
-          "method_sha256": "02ea57639f34f34fae6245106ea028a602d3bdb37ba18fc28158d6ed1936aad8"
+          "method_sha256": "f3125d4ead60bcc6b1767dbb0e64fbb962265802f3d08c2f809047f65c1a0011"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedModernMethodSecurityReloadTest#heldNativeSecurityProxyFollowsPolicyBodyRemovalAndRestore",
@@ -3935,9 +3935,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedMethodSecurityReloadTest#heldNativeSecurityProxyFollowsPolicyBodyRemovalAndRestore",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedMethodSecurityReloadTest.java",
-            "method_sha256": "02ea57639f34f34fae6245106ea028a602d3bdb37ba18fc28158d6ed1936aad8"
+            "method_sha256": "f3125d4ead60bcc6b1767dbb0e64fbb962265802f3d08c2f809047f65c1a0011"
           },
-          "method_sha256": "02ea57639f34f34fae6245106ea028a602d3bdb37ba18fc28158d6ed1936aad8"
+          "method_sha256": "f3125d4ead60bcc6b1767dbb0e64fbb962265802f3d08c2f809047f65c1a0011"
         }
       ],
       "observable": "Native pre/post authorization permits/denies real calls with exact body counts 1,2,4,5,5,6; unauthenticated denied, return policy enforced; body/policy/removal/restoration, same held proxy and native original control.; Native pre/post authorization permits/denies real calls with exact body counts 1,2,4,5,5,6; unauthenticated denied, return policy enforced; body/policy/removal/restoration, same held proxy and native original control.",
@@ -3978,9 +3978,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedMethodSecurityReloadTest#heldNativeSecurityProxyFollowsPolicyBodyRemovalAndRestore",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedMethodSecurityReloadTest.java",
-            "method_sha256": "02ea57639f34f34fae6245106ea028a602d3bdb37ba18fc28158d6ed1936aad8"
+            "method_sha256": "f3125d4ead60bcc6b1767dbb0e64fbb962265802f3d08c2f809047f65c1a0011"
           },
-          "method_sha256": "02ea57639f34f34fae6245106ea028a602d3bdb37ba18fc28158d6ed1936aad8"
+          "method_sha256": "f3125d4ead60bcc6b1767dbb0e64fbb962265802f3d08c2f809047f65c1a0011"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.ModernComposedMethodSecurityReloadTest#heldNativeSecurityProxyFollowsPolicyBodyRemovalAndRestore",
@@ -3990,9 +3990,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedMethodSecurityReloadTest#heldNativeSecurityProxyFollowsPolicyBodyRemovalAndRestore",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedMethodSecurityReloadTest.java",
-            "method_sha256": "02ea57639f34f34fae6245106ea028a602d3bdb37ba18fc28158d6ed1936aad8"
+            "method_sha256": "f3125d4ead60bcc6b1767dbb0e64fbb962265802f3d08c2f809047f65c1a0011"
           },
-          "method_sha256": "02ea57639f34f34fae6245106ea028a602d3bdb37ba18fc28158d6ed1936aad8"
+          "method_sha256": "f3125d4ead60bcc6b1767dbb0e64fbb962265802f3d08c2f809047f65c1a0011"
         }
       ],
       "observable": "Native pre/post authorization permits/denies real calls with exact body counts 1,2,4,5,5,6; unauthenticated denied, return policy enforced; body/policy/removal/restoration, same held proxy and native original control.; Native pre/post authorization permits/denies real calls with exact body counts 1,2,4,5,5,6; unauthenticated denied, return policy enforced; body/policy/removal/restoration, same held proxy and native original control.",
@@ -4030,14 +4030,14 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SecuredMetadataReloadTest.java",
           "kind": "watcher",
           "assertions": "Held startup proxy enforces original Secured authority edits and last-annotation removal/restoration; denied calls execute zero bodies. Fresh agentless native JVM per saved version, normal/child loader. Unchanged secured control remains valid while the edited method policy changes.",
-          "method_sha256": "8f390f93eb5de87bbce2dfcb5e18852df513c5c78ab603cf4287e35915640d9f"
+          "method_sha256": "cf1da6bb9443980a79188f89f7682d9435f7ad35c4df22e5e9cb6fcbbcb053f1"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.LastSecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/LastSecuredMetadataReloadTest.java",
           "kind": "watcher",
           "assertions": "Held startup proxy enforces original Secured authority edits and last-annotation removal/restoration; denied calls execute zero bodies. Fresh agentless native JVM per saved version, normal/child loader. Removal leaves no security annotation on the class; fresh native stage3 may have no proxy, while the watched application retains its startup proxy.",
-          "method_sha256": "8f390f93eb5de87bbce2dfcb5e18852df513c5c78ab603cf4287e35915640d9f"
+          "method_sha256": "cf1da6bb9443980a79188f89f7682d9435f7ad35c4df22e5e9cb6fcbbcb053f1"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.ModernSecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves",
@@ -4047,9 +4047,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.SecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SecuredMetadataReloadTest.java",
-            "method_sha256": "8f390f93eb5de87bbce2dfcb5e18852df513c5c78ab603cf4287e35915640d9f"
+            "method_sha256": "cf1da6bb9443980a79188f89f7682d9435f7ad35c4df22e5e9cb6fcbbcb053f1"
           },
-          "method_sha256": "8f390f93eb5de87bbce2dfcb5e18852df513c5c78ab603cf4287e35915640d9f"
+          "method_sha256": "cf1da6bb9443980a79188f89f7682d9435f7ad35c4df22e5e9cb6fcbbcb053f1"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.ModernLastSecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves",
@@ -4059,9 +4059,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.LastSecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/LastSecuredMetadataReloadTest.java",
-            "method_sha256": "8f390f93eb5de87bbce2dfcb5e18852df513c5c78ab603cf4287e35915640d9f"
+            "method_sha256": "cf1da6bb9443980a79188f89f7682d9435f7ad35c4df22e5e9cb6fcbbcb053f1"
           },
-          "method_sha256": "8f390f93eb5de87bbce2dfcb5e18852df513c5c78ab603cf4287e35915640d9f"
+          "method_sha256": "cf1da6bb9443980a79188f89f7682d9435f7ad35c4df22e5e9cb6fcbbcb053f1"
         }
       ],
       "observable": "Held startup proxy enforces original Secured authority edits and last-annotation removal/restoration; denied calls execute zero bodies.",
@@ -4099,14 +4099,14 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SecuredMetadataReloadTest.java",
           "kind": "watcher",
           "assertions": "Held startup proxy enforces original Secured authority edits and last-annotation removal/restoration; denied calls execute zero bodies. Fresh agentless native JVM per saved version, normal/child loader. Unchanged secured control remains valid while the edited method policy changes.",
-          "method_sha256": "8f390f93eb5de87bbce2dfcb5e18852df513c5c78ab603cf4287e35915640d9f"
+          "method_sha256": "cf1da6bb9443980a79188f89f7682d9435f7ad35c4df22e5e9cb6fcbbcb053f1"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.LastSecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/LastSecuredMetadataReloadTest.java",
           "kind": "watcher",
           "assertions": "Held startup proxy enforces original Secured authority edits and last-annotation removal/restoration; denied calls execute zero bodies. Fresh agentless native JVM per saved version, normal/child loader. Removal leaves no security annotation on the class; fresh native stage3 may have no proxy, while the watched application retains its startup proxy.",
-          "method_sha256": "8f390f93eb5de87bbce2dfcb5e18852df513c5c78ab603cf4287e35915640d9f"
+          "method_sha256": "cf1da6bb9443980a79188f89f7682d9435f7ad35c4df22e5e9cb6fcbbcb053f1"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.ModernSecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves",
@@ -4116,9 +4116,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.SecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SecuredMetadataReloadTest.java",
-            "method_sha256": "8f390f93eb5de87bbce2dfcb5e18852df513c5c78ab603cf4287e35915640d9f"
+            "method_sha256": "cf1da6bb9443980a79188f89f7682d9435f7ad35c4df22e5e9cb6fcbbcb053f1"
           },
-          "method_sha256": "8f390f93eb5de87bbce2dfcb5e18852df513c5c78ab603cf4287e35915640d9f"
+          "method_sha256": "cf1da6bb9443980a79188f89f7682d9435f7ad35c4df22e5e9cb6fcbbcb053f1"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.ModernLastSecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves",
@@ -4128,9 +4128,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.LastSecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/LastSecuredMetadataReloadTest.java",
-            "method_sha256": "8f390f93eb5de87bbce2dfcb5e18852df513c5c78ab603cf4287e35915640d9f"
+            "method_sha256": "cf1da6bb9443980a79188f89f7682d9435f7ad35c4df22e5e9cb6fcbbcb053f1"
           },
-          "method_sha256": "8f390f93eb5de87bbce2dfcb5e18852df513c5c78ab603cf4287e35915640d9f"
+          "method_sha256": "cf1da6bb9443980a79188f89f7682d9435f7ad35c4df22e5e9cb6fcbbcb053f1"
         }
       ],
       "observable": "Held startup proxy enforces original Secured authority edits and last-annotation removal/restoration; denied calls execute zero bodies.",
@@ -4168,7 +4168,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/HttpSecurityPolicyReloadTest.java",
           "kind": "watcher",
           "assertions": "Actual servlet status and body counters follow saved permit/deny rules; startup chain priority, ignored route, unrelated denial and application nonce retained. Fresh agentless servlet JVM for every saved version; rejected requests execute zero servlet bodies.",
-          "method_sha256": "db24a8f701eac5555a645e0b90cc2905727ce2048baeb1a5d7d4b06a7b25603f"
+          "method_sha256": "f46cfd7ffb0e4cd0179b283fe1d9680b23419ec499c41c51c07a20c56940c46a"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.ModernHttpSecurityPolicyReloadTest#realOrderedServletRulesAndIgnoredRouteFollowFourSaves",
@@ -4178,9 +4178,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.HttpSecurityPolicyReloadTest#realOrderedServletRulesAndIgnoredRouteFollowFourSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/HttpSecurityPolicyReloadTest.java",
-            "method_sha256": "db24a8f701eac5555a645e0b90cc2905727ce2048baeb1a5d7d4b06a7b25603f"
+            "method_sha256": "f46cfd7ffb0e4cd0179b283fe1d9680b23419ec499c41c51c07a20c56940c46a"
           },
-          "method_sha256": "db24a8f701eac5555a645e0b90cc2905727ce2048baeb1a5d7d4b06a7b25603f"
+          "method_sha256": "f46cfd7ffb0e4cd0179b283fe1d9680b23419ec499c41c51c07a20c56940c46a"
         }
       ],
       "observable": "Actual servlet status and body counters follow saved permit/deny rules; startup chain priority, ignored route, unrelated denial and application nonce retained.",
@@ -4478,7 +4478,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/HttpSecurityPolicyReloadTest.java",
           "kind": "watcher",
           "assertions": "Actual servlet status and body counters follow saved permit/deny rules; startup chain priority, ignored route, unrelated denial and application nonce retained. Fresh agentless servlet JVM for every saved version; rejected requests execute zero servlet bodies.",
-          "method_sha256": "db24a8f701eac5555a645e0b90cc2905727ce2048baeb1a5d7d4b06a7b25603f"
+          "method_sha256": "f46cfd7ffb0e4cd0179b283fe1d9680b23419ec499c41c51c07a20c56940c46a"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.ModernHttpSecurityPolicyReloadTest#realOrderedServletRulesAndIgnoredRouteFollowFourSaves",
@@ -4488,9 +4488,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.HttpSecurityPolicyReloadTest#realOrderedServletRulesAndIgnoredRouteFollowFourSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/HttpSecurityPolicyReloadTest.java",
-            "method_sha256": "db24a8f701eac5555a645e0b90cc2905727ce2048baeb1a5d7d4b06a7b25603f"
+            "method_sha256": "f46cfd7ffb0e4cd0179b283fe1d9680b23419ec499c41c51c07a20c56940c46a"
           },
-          "method_sha256": "db24a8f701eac5555a645e0b90cc2905727ce2048baeb1a5d7d4b06a7b25603f"
+          "method_sha256": "f46cfd7ffb0e4cd0179b283fe1d9680b23419ec499c41c51c07a20c56940c46a"
         }
       ],
       "observable": "Actual servlet status and body counters follow saved permit/deny rules; startup chain priority, ignored route, unrelated denial and application nonce retained.",

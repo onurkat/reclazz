@@ -26,7 +26,7 @@ class ComposedCacheOperationReloadTest {
         if (child) builder.childClassLoader();
         try (var app = builder.start()) {
             app.awaitOrFail("READY=true", "native caching proxy missing");
-            app.awaitOrFail("] Watching ", "watcher missing");
+            app.awaitWatcherReady();
             if (child) app.awaitOrFail("APP_IN_CHILD_MODULE=true", "child loader missing");
             String[] expected = {
                     "1:k1:1|1:k1:1:1:true:false", "2:k2:2|2:k2:2:2:true:false",

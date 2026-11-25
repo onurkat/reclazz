@@ -33,7 +33,7 @@ class AddedReflectionBeanReloadTest {
                 .with("App", APP).with("Dto", dto(0)).with("Child", "package app; public class Child extends Dto {}")
                 .start()) {
             app.awaitOrFail("PORT=", "server did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             int port = Integer.parseInt(app.latest("PORT=").substring(5));
             assertEquals("absent", get(port), app.tail());
             for (int stage=1;stage<=4;stage++) {

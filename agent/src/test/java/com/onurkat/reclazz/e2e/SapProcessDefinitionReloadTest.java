@@ -41,7 +41,7 @@ class SapProcessDefinitionReloadTest {
             builder.with(Path.of(path).getFileName().toString().replace(".java", ""), Files.readString(Path.of((path.startsWith("de/") ? "src/processTestFixtures/java/" : "src/test/java/") + path)));
         try (var app = builder.with("App", APP).start()) {
             app.awaitOrFail("PROCESS_READY", "native fixture did not load");
-            app.awaitOrFail("] Watching ", "watcher missing");
+            app.awaitWatcherReady();
             Files.writeString(file, "<process name='exampleA' start='v2'/>");
             app.awaitOrFail("SAP process exampleA reloaded from flow.xml", "registered save did not reload");
             app.awaitOrFail("PROCESS_V2_WITH_V1_RETAINED", "active graph/history contract failed");

@@ -33,7 +33,7 @@ class ConfigFileRemovalReloadTest {
                 .agentArgs("startupDelaySec=1,debounceMs=100")
                 .jvmArgs("-Dconfig.file=" + file).with("App", APP).with("Settings", SETTINGS).start()) {
             app.awaitOrFail("PORT=", "Boot application did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             String portLine = app.latest("PORT=");
             int port = Integer.parseInt(portLine.substring(portLine.lastIndexOf("PORT=") + 5));
             var client = HttpClient.newHttpClient();

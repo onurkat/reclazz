@@ -30,7 +30,7 @@ class JacksonThreeGetterReloadTest {
                 .with("App",APP).with("Dto",dto(null)).start()) {
             String expected=System.getProperty("reclazz.jackson3.expectedVersion");
             if(expected!=null) app.awaitOrFail("JACKSON_VERSION="+expected,"child JVM Jackson version");
-            app.awaitOrFail("PORT=","HTTP server did not start");app.awaitOrFail("] Watching ","watcher did not start");
+            app.awaitOrFail("PORT=","HTTP server did not start");app.awaitWatcherReady();
             int port=Integer.parseInt(app.latest("PORT=").substring(5));var client=HttpClient.newHttpClient();
             String initial=get(client,port);long pid=new com.fasterxml.jackson.databind.ObjectMapper().readTree(initial).path("pid").asLong();
             assertTrue(pid>0,initial);assertFalse(initial.contains("detail"),initial);

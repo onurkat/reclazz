@@ -85,7 +85,7 @@ class HierarchyBeanReloadTest {
         }
         try (var live = app("live",reverse,base(""),config("")).start()) {
             live.awaitOrFail("STATE - - held=true","missing baseline");
-            live.awaitOrFail("] Watching ","watcher did not start");
+            live.awaitWatcherReady();
             var sources = new LinkedHashMap<String,String>();
             if (reverse) sources.put("First",child);
             sources.put("Base",changed);
@@ -102,7 +102,7 @@ class HierarchyBeanReloadTest {
         }
         try (var live=app("live",false,base(""),config("")).start()) {
             live.awaitOrFail("STATE - - held=true","missing baseline");
-            live.awaitOrFail("] Watching ","watcher did not start");
+            live.awaitWatcherReady();
             live.rewrite("Base",base(FACTORY));
             if (refusedOnSpringSeven(live, false)) return;
             assertTrue(live.awaits(expected,20),live::tail);
@@ -118,7 +118,7 @@ class HierarchyBeanReloadTest {
         }
         try (var live = app("live",false,base(""),config("")).start()) {
             live.awaitOrFail("STATE - - held=true","missing baseline");
-            live.awaitOrFail("] Watching ","watcher did not start");
+            live.awaitWatcherReady();
             live.rewriteAll(java.util.Map.of("Base",parent,"First",subclass));
             if (refusedOnSpringSeven(live, false)) return;
             assertTrue(live.awaits(expected,20),live::tail);
@@ -131,7 +131,7 @@ class HierarchyBeanReloadTest {
         String probe = APP.replace("ctx.refresh();", "ctx.registerBean(\"label\", String.class, () -> \"wired\"); ctx.refresh();");
         try (var live = app("cycles",false,base(""),config(""),probe).start()) {
             live.awaitOrFail("STATE - - held=true","missing baseline");
-            live.awaitOrFail("] Watching ","watcher ready");
+            live.awaitWatcherReady();
             live.rewrite("Base",base(first));
             if (refusedOnSpringSeven(live, false)) return;
             live.awaitOrFail("STATE first/Base/true/truewired - held=true","argument was not autowired");
@@ -149,7 +149,7 @@ class HierarchyBeanReloadTest {
     @Test void subclassFirstAndBaseSecondCanArriveInSeparateBatches() throws Exception {
         try (var live = app("child-first",false,base(""),config("")).start()) {
             live.awaitOrFail("STATE - - held=true","context ready");
-            live.awaitOrFail("] Watching ","watcher ready");
+            live.awaitWatcherReady();
             live.rewrite("First",config(LOCAL));
             if (refusedOnSpringSeven(live, false)) return;
             live.awaitOrFail("STATE - first/First/true/true held=true","first save");
@@ -171,7 +171,7 @@ class HierarchyBeanReloadTest {
                 """);
         try (var live = app("rollback",false,base(""),config(""),inspection).start()) {
             live.awaitOrFail("STATE - - held=true","context ready");
-            live.awaitOrFail("] Watching ","watcher ready");
+            live.awaitWatcherReady();
             live.rewrite("Base",base(FACTORY.replace("return new", "System.out.println(\"FIRST-RAN\"); return new") + throwing));
             if (refusedOnSpringSeven(live, false)) return;
             live.awaitOrFail("FIRST-RAN","first eager factory never initialized");
@@ -202,7 +202,7 @@ class HierarchyBeanReloadTest {
                     """);
         try (var live = app("remove-failure",false,base(""),config(""),probe).start()) {
             live.awaitOrFail("STATE - - held=true","context ready");
-            live.awaitOrFail("] Watching ","watcher ready");
+            live.awaitWatcherReady();
             live.rewrite("Base",base(FACTORY));
             if (refusedOnSpringSeven(live, false)) return;
             live.awaitOrFail("STATE first/Base/true/true - held=true","original product");
@@ -227,7 +227,7 @@ class HierarchyBeanReloadTest {
         }
         try (var live = app("import-live",false,base(""),config(""),bootstrap).with("Root",root).start()) {
             live.awaitOrFail("STATE - - held=true","context ready");
-            live.awaitOrFail("] Watching ","watcher ready");
+            live.awaitWatcherReady();
             live.rewrite("Base",base(FACTORY));
             if (refusedOnSpringSeven(live, false)) return;
             live.awaitOrFail(expected,"native imported owner not preserved");
@@ -243,7 +243,7 @@ class HierarchyBeanReloadTest {
         }
         try (var live = app("live-override",false,base(""),config("")).start()) {
             live.awaitOrFail("STATE - - held=true","context ready");
-            live.awaitOrFail("] Watching ","watcher ready");
+            live.awaitWatcherReady();
             var sources = new LinkedHashMap<String,String>();
             sources.put("First",config(override));
             sources.put("Base",base(FACTORY));
@@ -279,7 +279,7 @@ class HierarchyBeanReloadTest {
                 if (control) application.awaitOrFail("STATE second/Factories/true/true - held=true","native shared default owner");
                 else {
                     application.awaitOrFail("STATE - - held=true","baseline");
-                    application.awaitOrFail("] Watching ","watcher ready");
+                    application.awaitWatcherReady();
                     application.rewrite("Factories",saved);
                     application.awaitOrFail(SPRING_SEVEN ? HIERARCHY_REFUSAL : "multiple inherited factories claim inherited","shared default must refuse before publication");
                     java.nio.file.Files.createFile(tmp.resolve(name).resolve("probe"));
@@ -302,7 +302,7 @@ class HierarchyBeanReloadTest {
                     """);
         try (var live = app("lazy",false,base(""),child,probe).start()) {
             live.awaitOrFail("STATE held-lazy - held=true","lazy context");
-            live.awaitOrFail("] Watching ","watcher ready");
+            live.awaitWatcherReady();
             live.rewrite("Base",base(FACTORY + LOCAL));
             if (refusedOnSpringSeven(live, true)) return;
             live.awaitOrFail("STATE held-lazy first/Base/true/true held=true","sibling factory registered");
@@ -376,7 +376,7 @@ class HierarchyBeanReloadTest {
         try (var live=builder.start()) {
             String original = alreadyImplemented + "/true/-";
             live.awaitOrFail("CURRENT " + original,"initial hierarchy");
-            live.awaitOrFail("] Watching ","watcher did not start");
+            live.awaitWatcherReady();
             if (alreadyImplemented) live.rewrite("Factories",IFACE.formatted(DEFAULT));
             else live.rewrite("First",IFACE_CONFIG.formatted("implements Factories"));
             if (enhanced && SPRING_SEVEN) {
@@ -397,7 +397,7 @@ class HierarchyBeanReloadTest {
         String full = config("").replace("@Configuration(proxyBeanMethods=false)", "@Configuration");
         try (var live=app("live",false,base(""),full).start()) {
             live.awaitOrFail("STATE - - held=true","missing baseline");
-            live.awaitOrFail("] Watching ","watcher did not start");
+            live.awaitWatcherReady();
             live.rewrite("Base",base(FACTORY));
             if (refusedOnSpringSeven(live, false)) return;
             assertTrue(live.awaits("native configuration owner is not a live raw singleton",20),live::tail);
@@ -409,7 +409,7 @@ class HierarchyBeanReloadTest {
         String libraryBase = base("").replace("class Base {","class Base extends org.springframework.core.AttributeAccessorSupport {");
         try (var live=app("live",false,libraryBase,config("")).start()) {
             live.awaitOrFail("STATE - - held=true","missing baseline");
-            live.awaitOrFail("] Watching ","watcher did not start");
+            live.awaitWatcherReady();
             live.rewrite("First",config(LOCAL));
             if (refusedOnSpringSeven(live, false)) return;
             assertTrue(live.awaits("library or unavailable configuration ancestor",20),live::tail);
@@ -423,7 +423,7 @@ class HierarchyBeanReloadTest {
         String saved = base("@Bean public T inherited(){ return null; }").replace("class Base","class Base<T>");
         try (var live=app("live",false,original,first).start()) {
             live.awaitOrFail("STATE - - held=true","missing baseline");
-            live.awaitOrFail("] Watching ","watcher did not start");
+            live.awaitWatcherReady();
             live.rewrite("Base",saved);
             if (refusedOnSpringSeven(live, false)) return;
             assertTrue(live.awaits("unresolved factory type variable",20),live::tail);
@@ -434,7 +434,7 @@ class HierarchyBeanReloadTest {
     @Test void newAncestorFieldRefusesBothFactories() throws Exception {
         try (var live=app("live",false,base(""),config("")).start()) {
             live.awaitOrFail("STATE - - held=true","missing baseline");
-            live.awaitOrFail("] Watching ","watcher did not start");
+            live.awaitWatcherReady();
             live.rewriteAll(java.util.Map.of("First",config(LOCAL),"Base",base("public int generation;" + FACTORY)));
             if (refusedOnSpringSeven(live, false)) return;
             assertTrue(live.awaits("configuration creation state changed since startup",20),live::tail);
@@ -446,7 +446,7 @@ class HierarchyBeanReloadTest {
         String initial="public Base(){System.setProperty(\"hierarchy.fixture\",\"old\");}";
         try (var live=app("live",false,base(initial),config("")).start()) {
             live.awaitOrFail("STATE - - held=true","missing baseline");
-            live.awaitOrFail("] Watching ","watcher did not start");
+            live.awaitWatcherReady();
             live.rewriteAll(java.util.Map.of("Base",base(initial.replace("old","new") + FACTORY),"First",config(LOCAL)));
             if (refusedOnSpringSeven(live, false)) return;
             assertTrue(live.awaits("configuration creation state changed since startup",20),live::tail);

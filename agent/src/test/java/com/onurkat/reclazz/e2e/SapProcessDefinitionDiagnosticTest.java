@@ -25,7 +25,7 @@ class SapProcessDefinitionDiagnosticTest {
                 .with("ProcessDefinitionResource", contract).with("App", APP)
                 .jvmArgs("-Dprocess.file=" + process).start()) {
             app.awaitOrFail("READY", "application missing");
-            app.awaitOrFail("] Watching ", "watcher missing");
+            app.awaitWatcherReady();
             Files.writeString(other, "<process name='unrelated-change'/>");
             Files.writeString(process, "<process name='after'/>");
             app.awaitOrFail("SAP process definition flow.xml MODIFIED: not applied; restart required", "changed definition was silently ignored");

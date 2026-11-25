@@ -30,7 +30,7 @@ class AddedOccFieldSetReloadTest {
         try (var app = WatchedApp.in(tmp).classpath(WatchedApp.springClasspath() + java.io.File.pathSeparator + jar).agentArgs("startupDelaySec=1,debounceMs=100")
                 .jvmArgs("-Dprobe.dir=" + tmp).with("App", APP).with("Dto", dto(false)).start()) {
             app.awaitOrFail("READY", "app did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             assertEquals("name|name", probe(app, "0"));
             app.rewrite("Dto", dto(true));
             assertEquals("name,extra|name", await(app, 1, "name,extra|name"), app.tail());

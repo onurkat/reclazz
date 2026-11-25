@@ -24,7 +24,7 @@ class AddedFullConfigurationArgumentsReloadTest {
                 .with("Wire", "package app; public record Wire(String name) {}")
                 .with("Product", "package app; public record Product(int version, Wire wire, int count) {}")
                 .start()) {
-            app.awaitOrFail("READY", "context not ready"); app.awaitOrFail("] Watching ", "watcher not ready");
+            app.awaitOrFail("READY", "context not ready"); app.awaitWatcherReady();
             for (int stage = 1; stage <= 5; stage++) {
                 app.rewrite("Config", config(stage));
                 awaitReload(app, "Config", stage);

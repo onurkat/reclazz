@@ -28,7 +28,7 @@ class SpringDataSqlNativeQueryReloadTest {
         if(child)b.childClassLoader();
         try(var app=b.start()) {
             app.awaitOrFail("READY="+expected(0),"native query startup failed");
-            app.awaitOrFail("] Watching ","watcher missing");
+            app.awaitWatcherReady();
             assertEquals(expected(0),nativeFresh(app.classesDir(),cp,0));
             for(int stage=1;stage<=6;stage++) {
                 app.rewrite("Records",records(stage,annotated));

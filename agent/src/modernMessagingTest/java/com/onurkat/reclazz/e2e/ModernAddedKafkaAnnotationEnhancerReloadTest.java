@@ -51,7 +51,7 @@ class ModernAddedKafkaAnnotationEnhancerReloadTest {
                 .with("Listener", listener(original, added, false))
                 .with("App", APP).start()) {
             app.awaitOrFail("PORT=", "Kafka app did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             int port = Integer.parseInt(app.latest("PORT=").substring(5));
             awaitState(port, "original:assigned", app);
             deliver(producer, app, original + "-enhanced", "BASE:initial");
@@ -121,7 +121,7 @@ class ModernAddedKafkaAnnotationEnhancerReloadTest {
                 .with("Listener", listener(topic + "-base", topic, false)).with("App", appWithRetryConfiguration()).start()) {
             app.awaitOrFail("PORT=", "Kafka app did not start");
             int port = Integer.parseInt(app.latest("PORT=").substring(5));
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             app.rewrite("Listener", listener(topic + "-base", topic, true));
             app.awaitOrFail("added @KafkaListener registered", "listener registration");
             producer.send(destination, "g1").get(10, TimeUnit.SECONDS);
@@ -146,7 +146,7 @@ class ModernAddedKafkaAnnotationEnhancerReloadTest {
                 .with("Listener", listener(original, topic, false))
                 .with("App", appWithRetryConfiguration()).start()) {
             app.awaitOrFail("PORT=", "Kafka app did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             long before = reloads(app);
             app.rewrite("Listener", listener(original, topic, true));
             app.awaitOrFail("added @KafkaListener registered", "matched retry configuration must register");

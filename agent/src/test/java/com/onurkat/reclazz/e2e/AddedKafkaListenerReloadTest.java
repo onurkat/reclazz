@@ -52,7 +52,7 @@ class AddedKafkaListenerReloadTest {
                 .agentArgs("startupDelaySec=1,debounceMs=100,verbose=true")
                 .with("Listener", listener(existing, 0, first, base, stereotype)).with("Other", other(other)).with("App", app(enhanced)).start()) {
             app.awaitOrFail("PORT=", "Kafka app did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             int port = Integer.parseInt(app.latest("PORT=").substring(5));
             assertEquals("used", http(port, "/use"));
             waitState(port, "other:assigned", app);
@@ -156,7 +156,7 @@ class AddedKafkaListenerReloadTest {
                     app.awaitOrFail("PORT=", "Kafka factory startup");
                     int port = Integer.parseInt(app.latest("PORT=").substring(5));
                     if (!nativeStart) {
-                        app.awaitOrFail("] Watching ", "watcher initialization");
+                        app.awaitWatcherReady();
                         app.rewrite("Listener", added);
                     }
                     waitState(port, "added:assigned", app);

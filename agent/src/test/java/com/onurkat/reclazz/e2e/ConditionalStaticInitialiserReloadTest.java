@@ -29,7 +29,7 @@ class ConditionalStaticInitialiserReloadTest {
         try (var app = WatchedApp.in(tmp).jvmArgs("-Dtest.dir=" + tmp)
                 .with("App", APP).with("State", STATE).with("Holder", holder(0, richer)).start()) {
             app.awaitOrFail("READY", "application did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             probe(app, 0, "initial:77:" + blocks + ":0:0:0");
             reload(app, 1, richer); probe(app, 1, "left:true:77:" + blocks + ":1:1:0");
             reload(app, 2, richer); probe(app, 2, "user:true:right:77:" + blocks + ":2:1:1");

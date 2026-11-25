@@ -27,7 +27,7 @@ class AddedBeanConditionalReloadTest {
                 .with("App", APP).with("Config", config(0, false))
                 .with("Held", HELD).with("Proto", PROTO).with("Marker", MARKER).start()) {
             app.awaitOrFail("READY", "Spring did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             if (child) app.awaitOrFail("APP_IN_CHILD_MODULE=true", "fixture did not cross a module boundary");
 
             // Registration, profile gate, and lazy not created until first access.

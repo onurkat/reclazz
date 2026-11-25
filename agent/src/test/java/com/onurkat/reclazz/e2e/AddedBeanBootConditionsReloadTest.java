@@ -26,7 +26,7 @@ class AddedBeanBootConditionsReloadTest {
         try (var app = builder.agentArgs("startupDelaySec=1,debounceMs=100").jvmArgs("-Dtest.dir=" + tmp)
                 .with("App", APP).with("Config", config(0, full)).with("Product", PRODUCT).start()) {
             app.awaitOrFail("READY", "Spring did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             if (child) app.awaitOrFail("APP_IN_CHILD_MODULE=true", "child loader missing");
             String[] expected = {
                     "present=false alias=false made=0 closed=0 version=-1 originalMethod=false control=true",

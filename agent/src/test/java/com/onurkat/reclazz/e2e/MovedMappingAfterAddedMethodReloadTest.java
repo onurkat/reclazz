@@ -35,7 +35,7 @@ class MovedMappingAfterAddedMethodReloadTest {
         if (autoCompile) builder.mavenLayout();
         try (var app = builder.start()) {
             app.awaitOrFail("PORT=", "native servlet did not start");
-            app.awaitOrFail("] Watching ", "watcher missing");
+            app.awaitWatcherReady();
             int port = Integer.parseInt(app.latest("PORT=").substring(5));
             int saves = 0;
             if (addedFirst) {

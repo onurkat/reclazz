@@ -28,7 +28,7 @@ class InheritedAddedFieldReloadTest {
                     }
                     """).start()) {
             app.awaitOrFail("OBS child0|reader0|reader0","all classes are loaded before edits");
-            app.awaitOrFail("] Watching ","watcher ready");
+            app.awaitWatcherReady();
             app.rewrite("Parent","package app;public class Parent {public int b=7;public static int S=13;public int version(){return 1;}}");
             app.awaitOrFail("Structural reload: app.Parent","parent adds instance and static fields");
             app.rewrite("Holder",holder+"public String value(){b=8;S=14;return b+\":\"+S;}}");

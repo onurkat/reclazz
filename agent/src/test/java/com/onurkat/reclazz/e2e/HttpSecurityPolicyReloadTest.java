@@ -28,7 +28,7 @@ class HttpSecurityPolicyReloadTest {
                 .jvmArgs("-Dprobe.dir="+tmp).with("App",appSource()).with("SecurityConfig",config(0));
         if(child)builder.childClassLoader();
         try(var app=builder.start()) {
-            app.awaitOrFail("PORT=","servlet startup failed");app.awaitOrFail("] Watching ","watcher missing");
+            app.awaitOrFail("PORT=","servlet startup failed");app.awaitWatcherReady();
             int port=Integer.parseInt(app.latest("PORT=").substring(5));
             String nonce=observe(port,0);nativeFresh(app.classesDir(),cp,0);
             for(int stage=1;stage<=4;stage++) {

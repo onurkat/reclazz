@@ -22,7 +22,7 @@ class SpringXmlLookupMethodReloadTest {
         if (child) builder.childClassLoader();
         try (var app = builder.jvmArgs("-Ddefs=" + xml, "-Dtest.dir=" + tmp).with("App", APP).start()) {
             app.awaitOrFail("READY=true", "native lookup is missing");
-            app.awaitOrFail("] Watching ", "watcher missing");
+            app.awaitWatcherReady();
             save(app, xml, "a", "before", "before", 1);
             assertEquals(0, warnings(app), app.tail());
             for (int n = 2; n <= 4; n++) {

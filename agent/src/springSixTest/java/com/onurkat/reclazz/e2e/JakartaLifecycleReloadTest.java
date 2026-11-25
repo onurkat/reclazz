@@ -33,7 +33,7 @@ class JakartaLifecycleReloadTest {
                 .with("App", APP).with("Counters", COUNTERS)
                 .with("Service", service(0, false, false, original)).start()) {
             app.awaitOrFail("READY", "Spring did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             probe(app, 0, events, 0);
             int previous = 0;
             for (int stage = 1; stage <= 6; stage++) {

@@ -54,7 +54,7 @@ class ImplicitConstantByproductTest {
                     """).start()) {
             app.awaitOrFail("OWNER_LOADED="+loadOwner,"independent loaded-class census");
             app.awaitOrFail("EXTERNAL_DISK=2","external output ready");
-            app.awaitOrFail("] Watching ","source watcher ready");
+            app.awaitWatcherReady();
             app.awaitOrFail("CONSUMER=1","running consumer still has inlined old value");
             assertFalse(app.output().stream().anyMatch(l->l.contains("CONSUMER=2")),app.tail());
             Files.writeString(tmp.resolve("before-trigger"),"census");

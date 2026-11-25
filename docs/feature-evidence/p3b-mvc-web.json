@@ -1638,7 +1638,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedEndpointHttpReloadTest.java",
           "kind": "watcher",
           "assertions": "Native HTTP 404 -> 200 exact response -> changed response -> 404 removal -> restored response -> 404 unannotated; existing route and context nonce unchanged.",
-          "method_sha256": "228dcff24ba9081f3242e8658af852d7941d0855f9e6bdc4fdc5b93ba90a29e7"
+          "method_sha256": "e67b06f0f64bab4000f6c2e0671afc5642e14c3b96fd34e745191b23d42b3733"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedEndpointHttpReloadTest#getAndPostEndpointsFollowFiveSavesWithoutRestart",
@@ -1648,9 +1648,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedEndpointHttpReloadTest#getAndPostEndpointsFollowFiveSavesWithoutRestart",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedEndpointHttpReloadTest.java",
-            "method_sha256": "228dcff24ba9081f3242e8658af852d7941d0855f9e6bdc4fdc5b93ba90a29e7"
+            "method_sha256": "e67b06f0f64bab4000f6c2e0671afc5642e14c3b96fd34e745191b23d42b3733"
           },
-          "method_sha256": "228dcff24ba9081f3242e8658af852d7941d0855f9e6bdc4fdc5b93ba90a29e7"
+          "method_sha256": "e67b06f0f64bab4000f6c2e0671afc5642e14c3b96fd34e745191b23d42b3733"
         }
       ],
       "shipped_surfaces": [
@@ -1688,7 +1688,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedEndpointHttpReloadTest.java",
           "kind": "watcher",
           "assertions": "Native HTTP 404 -> 200 exact response -> changed response -> 404 removal -> restored response -> 404 unannotated; existing route and context nonce unchanged.",
-          "method_sha256": "228dcff24ba9081f3242e8658af852d7941d0855f9e6bdc4fdc5b93ba90a29e7"
+          "method_sha256": "e67b06f0f64bab4000f6c2e0671afc5642e14c3b96fd34e745191b23d42b3733"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedEndpointHttpReloadTest#getAndPostEndpointsFollowFiveSavesWithoutRestart",
@@ -1698,9 +1698,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedEndpointHttpReloadTest#getAndPostEndpointsFollowFiveSavesWithoutRestart",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedEndpointHttpReloadTest.java",
-            "method_sha256": "228dcff24ba9081f3242e8658af852d7941d0855f9e6bdc4fdc5b93ba90a29e7"
+            "method_sha256": "e67b06f0f64bab4000f6c2e0671afc5642e14c3b96fd34e745191b23d42b3733"
           },
-          "method_sha256": "228dcff24ba9081f3242e8658af852d7941d0855f9e6bdc4fdc5b93ba90a29e7"
+          "method_sha256": "e67b06f0f64bab4000f6c2e0671afc5642e14c3b96fd34e745191b23d42b3733"
         }
       ],
       "shipped_surfaces": [
@@ -2290,7 +2290,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedJacksonGetterReloadTest.java",
           "kind": "watcher",
           "assertions": "Four saves; plain/snake policies, old/new DTOs, private annotated getter, nested output, null/empty inclusion, custom serializers and added getter visibility with removal/restoration.",
-          "method_sha256": "143292e238146b0bea5b8cd2ba46d6723154f2058ff9f2b4e6b708532341cafd"
+          "method_sha256": "eafb586e12e85b65daf80bf7430de3eb22e5d55f1322569924aecc333de31a1c"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedJacksonGetterReloadTest#addedGettersReachHttpWithMapperPoliciesAcrossSaves",
@@ -2300,9 +2300,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedJacksonGetterReloadTest#addedGettersReachHttpWithMapperPoliciesAcrossSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedJacksonGetterReloadTest.java",
-            "method_sha256": "143292e238146b0bea5b8cd2ba46d6723154f2058ff9f2b4e6b708532341cafd"
+            "method_sha256": "eafb586e12e85b65daf80bf7430de3eb22e5d55f1322569924aecc333de31a1c"
           },
-          "method_sha256": "143292e238146b0bea5b8cd2ba46d6723154f2058ff9f2b4e6b708532341cafd"
+          "method_sha256": "eafb586e12e85b65daf80bf7430de3eb22e5d55f1322569924aecc333de31a1c"
         }
       ],
       "shipped_surfaces": [
@@ -2378,7 +2378,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedJacksonGetterReloadTest.java",
           "kind": "watcher",
           "assertions": "Four saves; plain/snake policies, old/new DTOs, private annotated getter, nested output, null/empty inclusion, custom serializers and added getter visibility with removal/restoration.",
-          "method_sha256": "143292e238146b0bea5b8cd2ba46d6723154f2058ff9f2b4e6b708532341cafd"
+          "method_sha256": "eafb586e12e85b65daf80bf7430de3eb22e5d55f1322569924aecc333de31a1c"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedJacksonGetterReloadTest#addedGettersReachHttpWithMapperPoliciesAcrossSaves",
@@ -2388,9 +2388,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedJacksonGetterReloadTest#addedGettersReachHttpWithMapperPoliciesAcrossSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedJacksonGetterReloadTest.java",
-            "method_sha256": "143292e238146b0bea5b8cd2ba46d6723154f2058ff9f2b4e6b708532341cafd"
+            "method_sha256": "eafb586e12e85b65daf80bf7430de3eb22e5d55f1322569924aecc333de31a1c"
           },
-          "method_sha256": "143292e238146b0bea5b8cd2ba46d6723154f2058ff9f2b4e6b708532341cafd"
+          "method_sha256": "eafb586e12e85b65daf80bf7430de3eb22e5d55f1322569924aecc333de31a1c"
         }
       ],
       "shipped_surfaces": [
@@ -2428,7 +2428,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedJacksonGetterReloadTest.java",
           "kind": "watcher",
           "assertions": "Four saves; plain/snake policies, old/new DTOs, private annotated getter, nested output, null/empty inclusion, custom serializers and added getter visibility with removal/restoration.",
-          "method_sha256": "143292e238146b0bea5b8cd2ba46d6723154f2058ff9f2b4e6b708532341cafd"
+          "method_sha256": "eafb586e12e85b65daf80bf7430de3eb22e5d55f1322569924aecc333de31a1c"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedJacksonGetterReloadTest#addedGettersReachHttpWithMapperPoliciesAcrossSaves",
@@ -2438,9 +2438,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedJacksonGetterReloadTest#addedGettersReachHttpWithMapperPoliciesAcrossSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedJacksonGetterReloadTest.java",
-            "method_sha256": "143292e238146b0bea5b8cd2ba46d6723154f2058ff9f2b4e6b708532341cafd"
+            "method_sha256": "eafb586e12e85b65daf80bf7430de3eb22e5d55f1322569924aecc333de31a1c"
           },
-          "method_sha256": "143292e238146b0bea5b8cd2ba46d6723154f2058ff9f2b4e6b708532341cafd"
+          "method_sha256": "eafb586e12e85b65daf80bf7430de3eb22e5d55f1322569924aecc333de31a1c"
         }
       ],
       "shipped_surfaces": [
@@ -2516,7 +2516,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedJacksonGetterReloadTest.java",
           "kind": "watcher",
           "assertions": "Four saves; plain/snake policies, old/new DTOs, private annotated getter, nested output, null/empty inclusion, custom serializers and added getter visibility with removal/restoration.",
-          "method_sha256": "143292e238146b0bea5b8cd2ba46d6723154f2058ff9f2b4e6b708532341cafd"
+          "method_sha256": "eafb586e12e85b65daf80bf7430de3eb22e5d55f1322569924aecc333de31a1c"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedJacksonGetterReloadTest#addedGettersReachHttpWithMapperPoliciesAcrossSaves",
@@ -2526,9 +2526,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedJacksonGetterReloadTest#addedGettersReachHttpWithMapperPoliciesAcrossSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedJacksonGetterReloadTest.java",
-            "method_sha256": "143292e238146b0bea5b8cd2ba46d6723154f2058ff9f2b4e6b708532341cafd"
+            "method_sha256": "eafb586e12e85b65daf80bf7430de3eb22e5d55f1322569924aecc333de31a1c"
           },
-          "method_sha256": "143292e238146b0bea5b8cd2ba46d6723154f2058ff9f2b4e6b708532341cafd"
+          "method_sha256": "eafb586e12e85b65daf80bf7430de3eb22e5d55f1322569924aecc333de31a1c"
         }
       ],
       "shipped_surfaces": [
@@ -2746,7 +2746,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/MvcInterceptorDependencyReloadTest.java",
           "kind": "watcher",
           "assertions": "Repeated watched body/helper saves: exact current interceptor identity and constructorD2/D3/D4; native path include/exclude, callback order, unrelated identities, source-only no-op and servlet mapping public view equals context mapping.",
-          "method_sha256": "f4cad2442bc4a5ca17d5b85d29d893343ba3cc5b1e7b784a813d6f127e2d19b7"
+          "method_sha256": "b76bba9fd08d24a7ab7f40514bcef7c952057777d58749eaad97f3e81155e127"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaMvcInterceptorDependencyReloadTest#requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation",
@@ -2756,9 +2756,9 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.MvcInterceptorDependencyReloadTest#requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/MvcInterceptorDependencyReloadTest.java",
-            "method_sha256": "f4cad2442bc4a5ca17d5b85d29d893343ba3cc5b1e7b784a813d6f127e2d19b7"
+            "method_sha256": "b76bba9fd08d24a7ab7f40514bcef7c952057777d58749eaad97f3e81155e127"
           },
-          "method_sha256": "f4cad2442bc4a5ca17d5b85d29d893343ba3cc5b1e7b784a813d6f127e2d19b7"
+          "method_sha256": "b76bba9fd08d24a7ab7f40514bcef7c952057777d58749eaad97f3e81155e127"
         }
       ],
       "shipped_surfaces": [

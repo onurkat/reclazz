@@ -22,7 +22,7 @@ class AddedEventListenerResultReloadTest {
                 .with("App", APP).with("Listeners", listeners(0, false, false, "go", "value"))
                 .with("Receiver", RECEIVER).with("Counters", COUNTERS).with("Reply", REPLY).start()) {
             app.awaitOrFail("READY", "Spring did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             probe(app, 0, 0, 0, 0, 0);
             reload(app, 1, listeners(2, true, true, "go", "value")); probe(app, 1, 1, 1, 2, 0);
             reload(app, 2, listeners(3, true, true, "go", "value")); probe(app, 2, 1, 1, 3, 0);

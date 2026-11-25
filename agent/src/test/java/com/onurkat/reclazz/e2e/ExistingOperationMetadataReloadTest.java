@@ -37,7 +37,7 @@ class ExistingOperationMetadataReloadTest {
         try(var app=b.start()) {
             String initial=expected(kind,0);
             app.awaitOrFail("READY="+initial,"native warm original method failed");
-            app.awaitOrFail("] Watching ","watcher missing");
+            app.awaitWatcherReady();
             if(child)app.awaitOrFail("APP_IN_CHILD_MODULE=true","child loader missing");
             assertEquals(initial,nativeFresh(app.classesDir(),cp,kind,0));
             for(int stage=1;stage<=4;stage++) {

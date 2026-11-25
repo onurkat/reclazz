@@ -49,7 +49,7 @@ class ReflectionMemberParityReloadTest {
         try (var live = WatchedApp.in(tmp.resolve("live")).agentArgs("startupDelaySec=1,debounceMs=100")
                 .with("Base",base.formatted("")).with("Sub",sub.formatted("")).with("App",probe).start()) {
             live.awaitOrFail("HELD","initialize subclass");
-            live.awaitOrFail("] Watching ","watcher ready");
+            live.awaitWatcherReady();
             live.rewriteAll(saved);
             assertTrue(live.awaits("RESULT child/child",15),live::tail);
         }
@@ -71,7 +71,7 @@ class ReflectionMemberParityReloadTest {
                 .with("App",APP);
         if(childLoader)builder.childClassLoader();
         try(var app=builder.start()) {
-            app.awaitOrFail("PORT=","server ready");app.awaitOrFail("] Watching ","watcher ready");
+            app.awaitOrFail("PORT=","server ready");app.awaitWatcherReady();
             int port=Integer.parseInt(app.latest("PORT=").substring(5));
             assertEquals("BASE",get(port));
             for(int stage=1;stage<=4;stage++) {

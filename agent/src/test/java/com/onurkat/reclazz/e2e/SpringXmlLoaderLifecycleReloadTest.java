@@ -20,7 +20,7 @@ class SpringXmlLoaderLifecycleReloadTest {
         var builder = WatchedApp.in(tmp).classpath(WatchedApp.springClasspath());
         if (child) builder.childClassLoader();
         try (var app = builder.jvmArgs("-Ddefs=" + xml, "-Dtest.dir=" + tmp).with("App", APP).start()) {
-            app.awaitOrFail("READY=true", "lifecycle fixture missing"); app.awaitOrFail("] Watching ", "watcher missing");
+            app.awaitOrFail("READY=true", "lifecycle fixture missing"); app.awaitWatcherReady();
             if (child) app.awaitOrFail("APP_IN_CHILD_MODULE=true", "child fixture missing");
             save(app, xml, "before", "before", 1); probe(app, 1, "before");
             assertEquals(0, warnings(app), app.tail());

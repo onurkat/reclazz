@@ -25,7 +25,7 @@ class SpringXmlAliasReloadTest {
         try (var app = builder.jvmArgs("-Ddefs=" + defs, "-Daliases=" + aliases, "-Dtest.dir=" + tmp)
                 .with("App", APP).start()) {
             app.awaitOrFail("READY=true:1", "initial lookup or application event listener missing");
-            app.awaitOrFail("] Watching ", "watcher missing");
+            app.awaitWatcherReady();
             save(app, aliases, alias("a", "chosen"), 1);
             assertFalse(app.output().stream().anyMatch(v -> v.contains("alias declaration")), app.tail());
             save(app, aliases, alias("b", "chosen"), 2);
@@ -51,7 +51,7 @@ class SpringXmlAliasReloadTest {
         try (var app = builder.jvmArgs("-Ddefs=" + defs, "-Daliases=" + aliases, "-Dtest.dir=" + tmp)
                 .with("App", APP).start()) {
             app.awaitOrFail("READY=true:0", "inline alias missing");
-            app.awaitOrFail("] Watching ", "watcher missing");
+            app.awaitWatcherReady();
             Files.writeString(defs, xml(bean("a")));
             app.awaitOrFail("alias 'chosen' (alias declaration removed", "inline alias removal warning missing");
             probe(app, 1, "true:false:false:0");

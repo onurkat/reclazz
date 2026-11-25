@@ -23,7 +23,7 @@ class AddedBeanArgumentsReloadTest {
                 .with("App", APP).with("Config", config(0, "blue", false, false))
                 .with("Transport", TRANSPORT).with("Product", PRODUCT).start()) {
             app.awaitOrFail("READY", "Spring did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             probe(app, 0, "missing");
             reload(app, config(2, "blue", true, true), 1); probe(app, 1, "blue:2");
             reload(app, config(3, "blue", true, true), 2); probe(app, 2, "blue:3");

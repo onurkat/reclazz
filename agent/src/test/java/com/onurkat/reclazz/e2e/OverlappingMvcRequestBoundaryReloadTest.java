@@ -36,7 +36,7 @@ class OverlappingMvcRequestBoundaryReloadTest {
         if (child) builder.childClassLoader();
         var client = HttpClient.newHttpClient();
         try (var app = builder.start()) {
-            app.awaitOrFail("PORT=", "native servlet missing"); app.awaitOrFail("] Watching ", "watcher missing");
+            app.awaitOrFail("PORT=", "native servlet missing"); app.awaitWatcherReady();
             if (child) app.awaitOrFail("APP_IN_CHILD_MODULE=true", "child loader missing");
             int port = Integer.parseInt(app.latest("PORT=").substring(5));
             String nonce = get(client, port, "/nonce").body();

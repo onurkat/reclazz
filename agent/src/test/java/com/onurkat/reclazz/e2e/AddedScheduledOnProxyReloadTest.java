@@ -26,7 +26,7 @@ class AddedScheduledOnProxyReloadTest {
         try (var app = builder.agentArgs("startupDelaySec=1,debounceMs=100").jvmArgs("-Dtest.dir=" + tmp)
                 .with("App", APP).with("Service", service(0, false)).start()) {
             app.awaitOrFail("READY", "Spring did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             if (child) app.awaitOrFail("APP_IN_CHILD_MODULE=true", "fixture did not cross a module boundary");
             // The bean is a CGLIB proxy because of @Cacheable.
             probe(app, 0, "proxied=true cache=ok ticks=0");

@@ -21,7 +21,7 @@ class CacheComputationCrossingReloadTest {
                 .with("App", APP).with("PriceService", SERVICE.formatted(sync))
                 .with("DiscountRules", rule(10)).start()) {
             app.awaitOrFail("HELD=10", "first cache miss did not reach latch");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             app.rewrite("DiscountRules", rule(20));
             app.awaitOrFail("Reloaded app.DiscountRules", "helper did not reload");
             Files.createFile(tmp.resolve("release"));

@@ -38,7 +38,7 @@ class ConfigImportReloadTest {
         try (var app = WatchedApp.in(tmp).classpath(classpath).agentArgs("startupDelaySec=1,debounceMs=100")
                 .jvmArgs("-Dconfig.file=" + u(main), "-Dprobe.dir=" + tmp).with("App", APP).with("Settings", SETTINGS).start()) {
             app.awaitOrFail("READY", "Boot application did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             assertTrue(probe(app, 0).startsWith("base:1:none:base|"), app.tail());
 
             Files.writeString(main, "svc.note=base\nsvc.timeout=1\nspring.config.import=optional:file:" + u(a) + ",file:" + u(b) + "\n");
@@ -105,7 +105,7 @@ class ConfigImportReloadTest {
         try (var app = WatchedApp.in(tmp).classpath(classpath).agentArgs("startupDelaySec=1,debounceMs=100")
                 .jvmArgs("-Dconfig.file=" + u(main), "-Dprobe.dir=" + tmp).with("App", APP).with("Settings", SETTINGS).start()) {
             app.awaitOrFail("READY", "Boot application did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             for (int i = 0; i < steps.length; i++) {
                 Files.writeString(main, steps[i][0]);
                 String live = await(app, 10 + i, steps[i][1]);
@@ -140,7 +140,7 @@ class ConfigImportReloadTest {
         try (var app = WatchedApp.in(tmp).classpath(classpath).agentArgs("startupDelaySec=1,debounceMs=100")
                 .jvmArgs("-Dconfig.file=" + main, "-Dprobe.dir=" + tmp).with("App", APP).with("Settings", SETTINGS).start()) {
             app.awaitOrFail("READY", "Boot application did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             assertTrue(probe(app, 0).startsWith("base:1:none:base|"), app.tail());
             Files.writeString(main, "svc.note=base\nsvc.timeout=1\nspring.config.import=sub/r.properties\n");
             assertTrue(app.awaits("a restart would fail too", 30), agentLines(app));
@@ -169,7 +169,7 @@ class ConfigImportReloadTest {
         try (var app = WatchedApp.in(tmp).classpath(classpath).agentArgs("startupDelaySec=1,debounceMs=100")
                 .jvmArgs("-Dprobe.dir=" + tmp).with("App", APP).with("Settings", SETTINGS).start()) {
             app.awaitOrFail("READY", "Boot application did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             assertTrue(probe(app, 30).startsWith("c:1:cc:c|"), app.tail());
             // An import present at startup, removed: it and its nested import go.
             Files.writeString(main, "svc.note=base\nsvc.timeout=1\n");

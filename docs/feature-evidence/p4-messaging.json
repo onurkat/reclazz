@@ -6916,7 +6916,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedKafkaListenerPlaceholderReloadTest.java",
           "assertions": "ADDED:hello, resolved-kafka-group, removal leaves no added ID.",
           "kind": "watcher",
-          "method_sha256": "a99fc39d38e562efacfe461c7e70a35d77aecea116a872727236ad8c6474cfd8"
+          "method_sha256": "98cde38d03e1ffc417998bfc4e57e4884f3919cfbb1f95d3ccd36b3dd154b345"
         }
       ],
       "verdict": "PROVEN_WITH_SCOPE",
@@ -6984,7 +6984,7 @@
           "path": "agent/src/jmsTest/java/com/onurkat/reclazz/e2e/AddedJmsListenerPlaceholderReloadTest.java",
           "assertions": "ADDED:kept, no ADDED:dropped with native selector; removal leaves no added ID.",
           "kind": "watcher",
-          "method_sha256": "261b7652d08a18cd26b57e7831aee3183e5f55ae2e77916efbd217be2d232bcf"
+          "method_sha256": "ba1768ab1b3ddfd96f06803e1ddaa8efcf28fbfa80e5b77622efd916a870287c"
         }
       ],
       "verdict": "PROVEN_WITH_SCOPE",
@@ -7052,7 +7052,7 @@
           "path": "agent/src/jmsTest/java/com/onurkat/reclazz/e2e/AddedJmsListenerPlaceholderReloadTest.java",
           "assertions": "ADDED:kept, no ADDED:dropped with native selector; removal leaves no added ID.",
           "kind": "watcher",
-          "method_sha256": "261b7652d08a18cd26b57e7831aee3183e5f55ae2e77916efbd217be2d232bcf"
+          "method_sha256": "ba1768ab1b3ddfd96f06803e1ddaa8efcf28fbfa80e5b77622efd916a870287c"
         }
       ],
       "verdict": "PROVEN_WITH_SCOPE",
@@ -7120,7 +7120,7 @@
           "path": "agent/src/rabbitTest/java/com/onurkat/reclazz/e2e/AddedRabbitListenerPlaceholderReloadTest.java",
           "assertions": "ADDED:hello, removal leaves no added ID.",
           "kind": "watcher",
-          "method_sha256": "22142bbfe46f791c94a3f38afa3108043d6474fd0d71abb071d2bdeb309ffb46"
+          "method_sha256": "73153390e0a339ce7fd13233675961d871a768616fac1a541b59136de55ed4e5"
         }
       ],
       "verdict": "PROVEN_WITH_SCOPE",
@@ -7188,7 +7188,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedKafkaListenerExpressionReloadTest.java",
           "assertions": "routes one/two and group1/2 verified with real ADDED1/2 outputs.",
           "kind": "watcher",
-          "method_sha256": "7836eb2e2c11d079c8c532356ac7abcb72472faa4443968aa09dee4b8f80fce9"
+          "method_sha256": "75962e979cadfcb27cfe4e6bfb5cc9c7627c8c9714052260e47104dfdab35638"
         }
       ],
       "verdict": "PROVEN_WITH_SCOPE",
@@ -7256,7 +7256,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedKafkaListenerExpressionReloadTest.java",
           "assertions": "/move followed by unchanged topicone/group1 before next class save.",
           "kind": "watcher",
-          "method_sha256": "7836eb2e2c11d079c8c532356ac7abcb72472faa4443968aa09dee4b8f80fce9"
+          "method_sha256": "75962e979cadfcb27cfe4e6bfb5cc9c7627c8c9714052260e47104dfdab35638"
         }
       ],
       "verdict": "EXPECTED",
@@ -7324,7 +7324,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedKafkaListenerExpressionReloadTest.java",
           "assertions": "version3 topics/group=none and must resolve to a String diagnostic.",
           "kind": "watcher",
-          "method_sha256": "7836eb2e2c11d079c8c532356ac7abcb72472faa4443968aa09dee4b8f80fce9"
+          "method_sha256": "75962e979cadfcb27cfe4e6bfb5cc9c7627c8c9714052260e47104dfdab35638"
         }
       ],
       "verdict": "EXPECTED",
@@ -7392,7 +7392,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedKafkaListenerExpressionReloadTest.java",
           "assertions": "version4 consumes both newly sent topic messages, topics one,two/group3.",
           "kind": "watcher",
-          "method_sha256": "7836eb2e2c11d079c8c532356ac7abcb72472faa4443968aa09dee4b8f80fce9"
+          "method_sha256": "75962e979cadfcb27cfe4e6bfb5cc9c7627c8c9714052260e47104dfdab35638"
         }
       ],
       "verdict": "PROVEN_WITH_SCOPE",
@@ -7460,7 +7460,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedKafkaListenerExpressionReloadTest.java",
           "assertions": "ADDED4:v1-q0 and ADDED4:v2-q0 actual retained-record outputs.",
           "kind": "watcher",
-          "method_sha256": "7836eb2e2c11d079c8c532356ac7abcb72472faa4443968aa09dee4b8f80fce9"
+          "method_sha256": "75962e979cadfcb27cfe4e6bfb5cc9c7627c8c9714052260e47104dfdab35638"
         }
       ],
       "verdict": "PROVEN_WITH_SCOPE",
@@ -7528,7 +7528,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedKafkaListenerExpressionReloadTest.java",
           "assertions": "version5 topics/group=none; six ADDED outputs total.",
           "kind": "watcher",
-          "method_sha256": "7836eb2e2c11d079c8c532356ac7abcb72472faa4443968aa09dee4b8f80fce9"
+          "method_sha256": "75962e979cadfcb27cfe4e6bfb5cc9c7627c8c9714052260e47104dfdab35638"
         }
       ],
       "verdict": "PROVEN_WITH_SCOPE",
@@ -7596,7 +7596,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedKafkaListenerExpressionReloadTest.java",
           "assertions": "/original=false on every watched save. The probe now checks native MethodHandles resolution, with a physical App.main positive control, rather than virtual Class reflection visibility.",
           "kind": "watcher",
-          "method_sha256": "7836eb2e2c11d079c8c532356ac7abcb72472faa4443968aa09dee4b8f80fce9"
+          "method_sha256": "75962e979cadfcb27cfe4e6bfb5cc9c7627c8c9714052260e47104dfdab35638"
         }
       ],
       "verdict": "PROVEN_WITH_SCOPE",
@@ -7664,7 +7664,7 @@
           "path": "agent/src/rabbitTest/java/com/onurkat/reclazz/e2e/AddedRabbitListenerExpressionReloadTest.java",
           "assertions": "one then two queue; actual ADDED generation output.",
           "kind": "watcher",
-          "method_sha256": "d8c614b2a065e17cf57cd529b49fa67af502f5fee855aabf4799c92b7c6d1dd8"
+          "method_sha256": "e96cce13db5fbd376bcd04d1443cbaad91f46e705def938c7c48efc956bc3e3d"
         }
       ],
       "verdict": "PROVEN_WITH_SCOPE",
@@ -7732,7 +7732,7 @@
           "path": "agent/src/rabbitTest/java/com/onurkat/reclazz/e2e/AddedRabbitListenerExpressionReloadTest.java",
           "assertions": "/move then queues stillone before class save.",
           "kind": "watcher",
-          "method_sha256": "d8c614b2a065e17cf57cd529b49fa67af502f5fee855aabf4799c92b7c6d1dd8"
+          "method_sha256": "e96cce13db5fbd376bcd04d1443cbaad91f46e705def938c7c48efc956bc3e3d"
         }
       ],
       "verdict": "EXPECTED",
@@ -7800,7 +7800,7 @@
           "path": "agent/src/rabbitTest/java/com/onurkat/reclazz/e2e/AddedRabbitListenerExpressionReloadTest.java",
           "assertions": "version3 queues=none, no added ID and cannot resolve diagnostic.",
           "kind": "watcher",
-          "method_sha256": "d8c614b2a065e17cf57cd529b49fa67af502f5fee855aabf4799c92b7c6d1dd8"
+          "method_sha256": "e96cce13db5fbd376bcd04d1443cbaad91f46e705def938c7c48efc956bc3e3d"
         }
       ],
       "verdict": "EXPECTED",
@@ -7868,7 +7868,7 @@
           "path": "agent/src/rabbitTest/java/com/onurkat/reclazz/e2e/AddedRabbitListenerExpressionReloadTest.java",
           "assertions": "version4 consumes one/two messages, four ADDED outputs total.",
           "kind": "watcher",
-          "method_sha256": "d8c614b2a065e17cf57cd529b49fa67af502f5fee855aabf4799c92b7c6d1dd8"
+          "method_sha256": "e96cce13db5fbd376bcd04d1443cbaad91f46e705def938c7c48efc956bc3e3d"
         }
       ],
       "verdict": "PROVEN_WITH_SCOPE",
@@ -7936,7 +7936,7 @@
           "path": "agent/src/rabbitTest/java/com/onurkat/reclazz/e2e/AddedRabbitListenerExpressionReloadTest.java",
           "assertions": "version5 queues=none and no added ID.",
           "kind": "watcher",
-          "method_sha256": "d8c614b2a065e17cf57cd529b49fa67af502f5fee855aabf4799c92b7c6d1dd8"
+          "method_sha256": "e96cce13db5fbd376bcd04d1443cbaad91f46e705def938c7c48efc956bc3e3d"
         }
       ],
       "verdict": "PROVEN_WITH_SCOPE",
@@ -8004,7 +8004,7 @@
           "path": "agent/src/rabbitTest/java/com/onurkat/reclazz/e2e/AddedRabbitListenerExpressionReloadTest.java",
           "assertions": "/original=false on every save. The probe now checks native MethodHandles resolution, with a physical App.main positive control, rather than virtual Class reflection visibility.",
           "kind": "watcher",
-          "method_sha256": "d8c614b2a065e17cf57cd529b49fa67af502f5fee855aabf4799c92b7c6d1dd8"
+          "method_sha256": "e96cce13db5fbd376bcd04d1443cbaad91f46e705def938c7c48efc956bc3e3d"
         }
       ],
       "verdict": "PROVEN_WITH_SCOPE",

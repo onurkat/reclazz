@@ -23,7 +23,7 @@ class AddedBeanRichArgumentsReloadTest {
                 .jvmArgs("-Dtest.dir=" + tmp).with("App", APP).with("Config", config(0))
                 .with("Wire", WIRE).with("Product", PRODUCT).with("Missing", "package app; public class Missing {}")
                 .with("Late", "package app; public class Late { public static int made; public final int id=++made; }").start()) {
-            app.awaitOrFail("READY", "Spring did not start"); app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitOrFail("READY", "Spring did not start"); app.awaitWatcherReady();
             if (child) app.awaitOrFail("APP_IN_CHILD_MODULE=true", "child loader missing");
             reload(app, 1); probe(app, 1, "1:[red, blue]:[blue, red]:false:blue:7:0:9:2.5:blue");
             Files.createFile(tmp.resolve("provider")); app.awaitOrFail("PROVIDER=1:2:true", "provider did not resolve fresh targets lazily");

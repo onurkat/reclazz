@@ -23,7 +23,7 @@ class AddedBeanSelectionReloadTest {
                 .with("App", APP).with("Config", config(0, "", "", false))
                 .with("Transport", TRANSPORT).with("Product", PRODUCT).start()) {
             app.awaitOrFail("READY", "Spring did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             probe(app, 0, "missing/missing");
             reload(app, 1, "first", "second", true, null); probe(app, 1, "first/second");
             reload(app, 2, "second", "first", true, null); probe(app, 2, "second/first");

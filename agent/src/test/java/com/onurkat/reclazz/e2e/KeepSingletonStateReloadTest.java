@@ -71,7 +71,7 @@ public class KeepSingletonStateReloadTest {
         if(together)builder.mavenLayout();
         if(!mode.equals("external"))builder.with(parentName,parent);
         try(var app=builder.start()) {
-            app.awaitOrFail("PORT=","servlet missing");app.awaitOrFail("] Watching ","watcher missing");
+            app.awaitOrFail("PORT=","servlet missing");app.awaitWatcherReady();
             app.awaitOrFail("Last-known-good bytecode cache:","startup baseline missing");
             int port=Integer.parseInt(app.latest("PORT=").substring(5));
             String[] first=request(client,port).split(":");
@@ -240,7 +240,7 @@ public class KeepSingletonStateReloadTest {
                 .agentArgs("startupDelaySec=1,debounceMs=250,verbose=true")
                 .jvmArgs("-Dprobe.dir="+tmp).with("App",APP).with("Stateful",stateful("v1",false))
                 .with("Endpoint",dependent).with("StatefulB",b).with("EndpointB",dependentB).start()) {
-            app.awaitOrFail("PORT=","servlet missing");app.awaitOrFail("] Watching ","watcher missing");
+            app.awaitOrFail("PORT=","servlet missing");app.awaitWatcherReady();
             int port=Integer.parseInt(app.latest("PORT=").substring(5));
             String[] aBefore=request(client,port).split(":"), bBefore=request(client,port,"/b").split(":");
             long before=reloads(app);
@@ -263,7 +263,7 @@ public class KeepSingletonStateReloadTest {
         try(var app=WatchedApp.in(tmp).classpath(ValidationConstraintReloadTest.nativeClasspath())
                 .agentArgs("startupDelaySec=1,debounceMs=100,verbose=true").jvmArgs("-Dprobe.dir="+tmp)
                 .with("App",APP).with("Stateful",initial).with("Endpoint",endpoint(false)).start()) {
-            app.awaitOrFail("PORT=","servlet missing");app.awaitOrFail("] Watching ","watcher missing");
+            app.awaitOrFail("PORT=","servlet missing");app.awaitWatcherReady();
             int port=Integer.parseInt(app.latest("PORT=").substring(5));
             String[] first=request(client,port).split(":");
             String field=variantSource("field",true);
@@ -287,7 +287,7 @@ public class KeepSingletonStateReloadTest {
         try(var app=WatchedApp.in(tmp).classpath(ValidationConstraintReloadTest.nativeClasspath())
                 .agentArgs("startupDelaySec=1,debounceMs=100,verbose=true,structuralReload=false")
                 .jvmArgs("-Dprobe.dir="+tmp).with("App",APP).with("Stateful",original).with("Endpoint",endpoint(false)).start()) {
-            app.awaitOrFail("PORT=","servlet missing");app.awaitOrFail("] Watching ","watcher missing");
+            app.awaitOrFail("PORT=","servlet missing");app.awaitWatcherReady();
             int port=Integer.parseInt(app.latest("PORT=").substring(5));String[] first=request(client,port).split(":");
             app.rewrite("Stateful",original.replace("private int count;","private int count; private int added;"));
             assertTrue(app.awaits("Hot-swap failed for",45),app.tail());
@@ -312,7 +312,7 @@ public class KeepSingletonStateReloadTest {
         try(var app=WatchedApp.in(tmp).classpath(ValidationConstraintReloadTest.nativeClasspath())
                 .agentArgs("startupDelaySec=1,debounceMs=100,verbose=true,structuralReload=false")
                 .jvmArgs("-javaagent:"+jar,"-Dprobe.dir="+tmp).with("App",APP).with("Stateful",stateful("v1",false)).with("Endpoint",endpoint(false)).start()) {
-            app.awaitOrFail("PORT=","servlet missing");app.awaitOrFail("] Watching ","watcher missing");
+            app.awaitOrFail("PORT=","servlet missing");app.awaitWatcherReady();
             int port=Integer.parseInt(app.latest("PORT=").substring(5));String[] first=request(client,port).split(":");
             long before=reloads(app);app.rewrite("Stateful",stateful("v2",false));awaitReloads(app,before+1);
             String[] answer=request(client,port).split(":");
@@ -332,7 +332,7 @@ public class KeepSingletonStateReloadTest {
                 .with("Endpoint", endpoint(controller))
                 .start()) {
             app.awaitOrFail("PORT=", "native servlet did not start");
-            app.awaitOrFail("] Watching ", "watcher missing");
+            app.awaitWatcherReady();
             int port = Integer.parseInt(app.latest("PORT=").substring(5));
             String identity = null;
             for (int n = 1; n <= 3; n++) {

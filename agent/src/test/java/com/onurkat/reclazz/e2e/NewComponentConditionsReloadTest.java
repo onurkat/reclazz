@@ -26,7 +26,7 @@ class NewComponentConditionsReloadTest {
         try (var app = builder.jvmArgs("-Dprobe.dir=" + tmp)
                 .with("App", APP).with("FeatureCondition", CONDITION).start()) {
             app.awaitOrFail("READY", "context did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             if (child) app.awaitOrFail("APP_IN_CHILD_MODULE=true", "child loader missing");
             save(app, autoCompile, "OffProfile", component("OffProfile", "offProfile", "@Profile(\"test\")"));
             app.awaitOrFail("New component app.OffProfile conditions did not match", "inactive profile was not filtered");

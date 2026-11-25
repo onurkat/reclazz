@@ -20,7 +20,7 @@ class SpringXmlUnsupportedNoOpReloadTest {
         var builder = WatchedApp.in(tmp).classpath(WatchedApp.springClasspath());
         if (child) builder.childClassLoader();
         try (var app = builder.jvmArgs("-Ddefs=" + xml, "-Dtest.dir=" + tmp).with("App", APP).start()) {
-            app.awaitOrFail("READY=true", "native unsupported fixtures missing"); app.awaitOrFail("] Watching ", "watcher missing");
+            app.awaitOrFail("READY=true", "native unsupported fixtures missing"); app.awaitWatcherReady();
             for (int n = 1; n <= 3; n++) {
                 String other = n == 1 ? "before" : "other" + n;
                 save(app, xml, "before", other, n); probe(app, n, other);

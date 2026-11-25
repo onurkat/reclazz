@@ -61,7 +61,7 @@ class NativeMessageSourceReloadTest {
         if (child) builder.childClassLoader();
         try (var running = builder.start()) {
             running.awaitOrFail("READY=Before Ada:Fallback", "native message lookup did not warm the caches");
-            running.awaitOrFail("] Watching ", "watcher missing");
+            running.awaitWatcherReady();
             if (child) running.awaitOrFail("APP_IN_CHILD_MODULE=true", "child application loader missing");
             for (int n = 1; n <= 3; n++) {
                 String label = n == 1 ? "Yeni" : n == 2 ? "İyi günler" : "Again";

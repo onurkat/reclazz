@@ -155,7 +155,7 @@ class AddedScopedBeanHttpTest {
                 var first=client();var second=client();
                 assertEquals("original",get(first,port,"foreignAlias"));
                 if(!nativeRun) {
-                    app.awaitOrFail("] Watching ","watcher ready");
+                    app.awaitWatcherReady();
                     assertEquals("absent",get(first,port,"requestBean"));
                     save(app,"v1",false);
                 }

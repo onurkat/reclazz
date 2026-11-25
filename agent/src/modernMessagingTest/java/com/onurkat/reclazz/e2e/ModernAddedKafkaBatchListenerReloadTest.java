@@ -36,7 +36,7 @@ class ModernAddedKafkaBatchListenerReloadTest {
                 .agentArgs("startupDelaySec=1,debounceMs=100,verbose=true")
                 .with("Listener", listener(topic, base, null)).with("App", APP).start()) {
             app.awaitOrFail("READY", "Kafka app did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             deliver(producer, app, base, "BASE", "initial");
             // stage: prefix printed by the added listener, or null when it is removed
             String[] stages = {"ADDED", "EDITED", null, "AGAIN"};

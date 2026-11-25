@@ -26,7 +26,7 @@ public class RecreatedBeanDependentSeesNewInstanceTest {
                 .agentArgs("startupDelaySec=1,debounceMs=100,verbose=true").jvmArgs("-Dprobe.dir="+tmp)
                 .with("App",APP).with("Stateful",service).with("Middle",middle)
                 .with("Endpoint",endpoint).with("Unaffected",UNAFFECTED).start()) {
-            app.awaitOrFail("PORT=","servlet missing");app.awaitOrFail("] Watching ","watcher missing");
+            app.awaitOrFail("PORT=","servlet missing");app.awaitWatcherReady();
             int port=Integer.parseInt(app.latest("PORT=").substring(5));
             assertEquals("3",request(client,port,"/state"));
             String[] unaffectedBefore=request(client,port,"/unaffected").split(":");

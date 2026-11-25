@@ -159,7 +159,7 @@ class AddedInterfaceMethodsTest {
         try (var app = WatchedApp.in(dir).jvmArgs("-Dprobe.dir=" + dir).with("Api", initial)
                 .with("Step", "package app; " + step).with("App", main).start()) {
             app.awaitOrFail("BEFORE=1", "original method");
-            app.awaitOrFail("] Watching ", "watcher ready");
+            app.awaitWatcherReady();
             app.rewrite("Api", edit);
             app.awaitOrFail(reason, "named refusal before definition changes");
             signal(dir, 0);

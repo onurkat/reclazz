@@ -57,7 +57,7 @@ class LiveWatchExtensionsReloadTest {
                 .jvmArgs("-Dscope.a="+a.resolve("classes"),"-Dscope.b="+b.resolve("classes"),"-Dscope.request="+request)
                 .with("App",DRIVER).start()){
             app.awaitOrFail("READY=","synthetic SAP child did not start");
-            app.awaitOrFail("] Watching ","watcher did not start");
+            app.awaitWatcherReady();
             String ready=app.output().stream().filter(line->line.startsWith("READY=")).findFirst().orElseThrow();
             assertTrue(ready.endsWith(":true:false"),"A must be instrumented; B must already be loaded raw: "+ready);
             // Hold the production native-run admission fence before its output hold exists.

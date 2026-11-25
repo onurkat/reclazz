@@ -379,6 +379,19 @@ public final class WatchedApp implements AutoCloseable {
     // Spring Boot can also log "Watching N class output directories" before registration.
     private static final Pattern WATCHER_READY = Pattern.compile("\\] Watching [1-9][0-9]* director(?:y|ies)\\b");
 
+    public static boolean hasWatcherReadyMessage(String output) {
+        return WATCHER_READY.matcher(output).find();
+    }
+
+    public static void awaitWatcherReady(Path log, long timeoutSeconds) throws Exception {
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(timeoutSeconds);
+        while (System.nanoTime() - deadline < 0) {
+            if (Files.exists(log) && hasWatcherReadyMessage(Files.readString(log))) return;
+            Thread.sleep(25);
+        }
+        fail("watcher did not finish registering directories:\n" + (Files.exists(log) ? Files.readString(log) : "missing child log"));
+    }
+
     public void awaitWatcherReady() {
         assertTrue(awaits(WATCHER_READY.asPredicate(), DEFAULT_TIMEOUT_SEC),
                 () -> "watcher did not finish registering directories:\n" + tail());

@@ -23,7 +23,7 @@ class AddedBeanAliasesReloadTest {
                 .with("App", APP).with("Config", config(0, "main", "legacy", false, false))
                 .with("Product", PRODUCT).with("Consumer", CONSUMER).start()) {
             app.awaitOrFail("READY", "Spring did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             probe(app, 0, "missing");
             reload(app, 1, "main", "legacy", true, true); probe(app, 1, "1:main,legacy");
             reload(app, 2, "main", "current", true, true); probe(app, 2, "2:main,current");

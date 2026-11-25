@@ -37,7 +37,7 @@ class AddedExceptionHandlerReloadTest {
                 .with("App", APP).with("Api", api(advice, 0)).with("Advice", advice(0))
                 .with("Fallback", FALLBACK).with("Other", OTHER).with("Local", LOCAL).start()) {
             app.awaitOrFail("PORT=", "MVC HTTP bridge did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             if (childLoader) app.awaitOrFail("APP_IN_CHILD_MODULE=true", "fixture did not cross a module boundary");
             int port = Integer.parseInt(app.latest("PORT=").substring(5));
             var client = HttpClient.newHttpClient();

@@ -24,7 +24,7 @@ class AddedMethodSecurityReloadTest {
         if(child)builder.childClassLoader();
         try(var app=builder.start()) {
             app.awaitOrFail("READY=true","native security proxy missing");
-            app.awaitOrFail("] Watching ","watcher missing");
+            app.awaitWatcherReady();
             if(child)app.awaitOrFail("APP_IN_CHILD_MODULE=true","child loader missing");
             int[] calls={1,2,4,5,5,6};
             for(int stage=1;stage<=6;stage++) {

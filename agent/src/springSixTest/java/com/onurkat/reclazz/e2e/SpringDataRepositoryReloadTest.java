@@ -30,7 +30,7 @@ class SpringDataRepositoryReloadTest {
                 .with("App",APP).with("Row",ROW).with("Records",records(1,annotated));
         if(childLoader)builder.childClassLoader();
         try(var app=builder.start()) {
-            app.awaitOrFail("PORT=","application not ready");app.awaitOrFail("] Watching ","watcher not ready");
+            app.awaitOrFail("PORT=","application not ready");app.awaitWatcherReady();
             int port=Integer.parseInt(app.latest("PORT=").substring(5));
             var client=HttpClient.newHttpClient();
             String initial=get(client,port);assertTrue(initial.endsWith("|before|before"),app.tail());

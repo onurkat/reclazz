@@ -35,7 +35,7 @@ class AddedServiceOperationReloadTest {
                 .with("App", APP).with("Config", CONFIG).with("Store", store(0, proxied, component))
                 .with("Probe", probe(false)).start()) {
             app.awaitOrFail("PORT=", "application did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             int port = Integer.parseInt(app.latest("PORT=").substring(5));
             var client = HttpClient.newHttpClient();
             assertEquals("ready", get(client, port, "ready"));

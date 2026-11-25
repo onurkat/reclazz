@@ -64,7 +64,7 @@ class NativeTemplateReloadTest {
         if (child) builder.childClassLoader();
         try (var running = builder.start()) {
             running.awaitOrFail("READY=" + rendered(thymeleaf, "Before"), "native render did not warm its cache");
-            running.awaitOrFail("] Watching ", "watcher missing");
+            running.awaitWatcherReady();
             if (child) running.awaitOrFail("APP_IN_CHILD_MODULE=true", "child application loader missing");
             for (int n = 1; n <= 4; n++) {
                 String label = n == 1 ? "Yeni" : n == 2 ? "Again" : "Recovered";

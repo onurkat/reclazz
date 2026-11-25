@@ -48,7 +48,7 @@ class SapSolrReindexTest {
         builder.with(contract, "package de.hybris.platform.solrfacetsearch.provider; public interface " + contract + " {}")
                 .with("Provider", source).with("App", APP);
         try (var app = builder.start()) {
-            app.awaitOrFail("SOLR_READY v1", "fixture did not start"); app.awaitOrFail("] Watching ", "watcher missing");
+            app.awaitOrFail("SOLR_READY v1", "fixture did not start"); app.awaitWatcherReady();
             app.rewrite("Provider", source.replace("v1", "v2"));
             app.awaitOrFail("Reloaded app.Provider", "class reload did not land");
             app.awaitOrFail(failing ? "SAP Solr owner1/config1/type1: FAILED" : ": FINISHED ", "native operation did not finish");

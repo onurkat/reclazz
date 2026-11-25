@@ -39,7 +39,7 @@ class JakartaAsyncMvcRequestBoundaryReloadTest {
         if(child)builder.childClassLoader();
         var client=HttpClient.newHttpClient();
         try(var app=builder.start()) {
-            app.awaitOrFail("PORT=","Tomcat did not start"); app.awaitOrFail("] Watching ","watcher missing");
+            app.awaitOrFail("PORT=","Tomcat did not start"); app.awaitWatcherReady();
             int port=Integer.parseInt(app.latest("PORT=").substring(5));
             assertEquals("1:1",get(client,port,"fast").body());
             CompletableFuture<HttpResponse<String>> held=client.sendAsync(request(port,kind),HttpResponse.BodyHandlers.ofString());

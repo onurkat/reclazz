@@ -1,6 +1,8 @@
 /* Copyright 2026 Onur Kat; SPDX-License-Identifier: Apache-2.0 */
 package com.onurkat.reclazz.e2e;
 
+import com.onurkat.reclazz.e2e.harness.WatchedApp;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import java.nio.file.*;
@@ -15,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ScanBaselineSafetyTest {
     @TempDir Path root;
     @Test void scanNeverAutoImportsBaselineImpex() throws Exception {
-        Path jar=Path.of(com.onurkat.reclazz.e2e.harness.WatchedApp.agentJarOrSkip());
+        Path jar=Path.of(WatchedApp.agentJarOrSkip());
         Path extension=Files.createDirectories(root.resolve("bin/custom/example"));
         Files.createDirectories(extension.resolve("classes"));
         Files.createDirectories(extension.resolve("resources"));
@@ -44,7 +46,7 @@ class ScanBaselineSafetyTest {
                 "-cp",jar+java.io.File.pathSeparator+classes,"com.example.ScanImportProbe",root.toString())
                 .directory(root.toFile()).redirectErrorStream(true).redirectOutput(log.toFile()).start();
         try {
-            await(log,"PROBE_READY"); await(log,"Watching ");
+            await(log,"PROBE_READY"); WatchedApp.awaitWatcherReady(log, 30);
             int port=Integer.parseInt(Files.readString(portFile).strip());
             scan(port);Files.createFile(root.resolve("probe0"));await(log,"COUNT0=");
             assertTrue(Files.readString(log).contains("COUNT0=0"),Files.readString(log));

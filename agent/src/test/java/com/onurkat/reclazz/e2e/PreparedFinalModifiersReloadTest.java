@@ -19,7 +19,7 @@ class PreparedFinalModifiersReloadTest {
         try (var app = WatchedApp.in(tmp).jvmArgs("-Dtest.dir=" + tmp)
                 .agentArgs("resetStatics=true,startupDelaySec=1,debounceMs=200")
                 .with("App", APP).with("Holder", holder("public static final Object VALUE = java.util.List.of(\"a\");", 0)).start()) {
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             probe(app, 0, "STATE0=final:true:set:refused");
             reload(app, holder("public static Object VALUE = java.util.List.of(\"a\");", 1), 1);
             probe(app, 1, "STATE1=final:false:set:ok");

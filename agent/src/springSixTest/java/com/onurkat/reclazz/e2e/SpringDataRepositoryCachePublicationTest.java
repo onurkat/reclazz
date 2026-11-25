@@ -38,7 +38,7 @@ class SpringDataRepositoryCachePublicationTest {
         String evidence=System.getenv("RECLAZZ_REPOSITORY_TEST_OUTPUT");
         Path out=evidence==null?null:Path.of(evidence);if(out!=null)Files.createDirectories(out);
         try(app) {
-            app.awaitOrFail("PORT=","application not ready");app.awaitOrFail("] Watching ","watcher not ready");
+            app.awaitOrFail("PORT=","application not ready");app.awaitWatcherReady();
             int port=Integer.parseInt(app.latest("PORT=").substring(5));var uri=URI.create("http://127.0.0.1:"+port+"/");
             var client=HttpClient.newHttpClient();String initial=get(client,uri);assertTrue(initial.endsWith("|before|before"),app.tail());
             String identity=initial.substring(0,initial.indexOf('|'));

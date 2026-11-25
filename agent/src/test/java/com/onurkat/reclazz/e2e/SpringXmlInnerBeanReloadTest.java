@@ -20,7 +20,7 @@ class SpringXmlInnerBeanReloadTest {
         var builder = WatchedApp.in(tmp).classpath(WatchedApp.springClasspath());
         if (child) builder.childClassLoader();
         try (var app = builder.jvmArgs("-Ddefs=" + xml, "-Dtest.dir=" + tmp).with("App", APP).start()) {
-            app.awaitOrFail("READY=true", "native inner bean missing"); app.awaitOrFail("] Watching ", "watcher missing");
+            app.awaitOrFail("READY=true", "native inner bean missing"); app.awaitWatcherReady();
             save(app, xml, "old", "old", "before", "before", 1); probe(app, 1, "true:true:old:before:before:1:1:0");
             save(app, xml, "new", "old", "after", "after", 2); probe(app, 2, "true:true:new:after:after:1:1:0");
             save(app, xml, "new", "old", "after", "after", 3); probe(app, 3, "true:true:new:after:after:1:1:0");

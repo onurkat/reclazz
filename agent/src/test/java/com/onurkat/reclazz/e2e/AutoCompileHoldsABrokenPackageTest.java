@@ -33,7 +33,7 @@ class AutoCompileHoldsABrokenPackageTest {
                         }
                         """).start()) {
             app.awaitOrFail("VALUES=1:1", "original application");
-            app.awaitOrFail("] Watching ", "source watcher ready");
+            app.awaitWatcherReady();
             Path sources = tmp.resolve("src/main/java/app");
             Path output = app.classesDir().resolve("app/Service.class");
             byte[] before = Files.readAllBytes(output);

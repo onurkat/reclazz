@@ -24,7 +24,7 @@ class NewComponentScopeReloadTest {
         if (child) builder.childClassLoader();
         try (var app = builder.jvmArgs("-Dprobe.dir=" + tmp).with("App", APP).start()) {
             app.awaitOrFail("READY", "context did not start");
-            app.awaitOrFail("] Watching ", "watcher did not start");
+            app.awaitWatcherReady();
             if (child) app.awaitOrFail("APP_IN_CHILD_MODULE=true", "child loader missing");
             app.rewrite("LazyComponent", component("Lazy", "@Lazy"));
             app.awaitOrFail("New bean registered: 'lazyComponent'", "lazy definition not registered");
