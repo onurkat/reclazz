@@ -110,6 +110,16 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h3>1.10.0</h3>
+        <ul>
+            <li><b>Faster saves:</b> a saved Java file is applied in about 0.3 s (was about 0.75 s); on SAP Commerce about 0.5 s (was about 1.2 s). The fixed delay is now an optional override in Settings.</li>
+            <li><b>JSP, tag and web resources</b> on SAP Commerce show on the next request (about 1 s instead of Tomcat's 5 s cache), without changing Tomcat settings.</li>
+            <li><b>Spring Boot resources:</b> application.properties, Thymeleaf templates and static files under src/main/resources apply on save with the Gradle plugin, and with Maven for unfiltered resources.</li>
+            <li><b>Maven:</b> spring-boot:run compiles saved Java inside the app with the project's own javac settings (Lombok included); projects with code-generating processors such as MapStruct keep mvn compile.</li>
+            <li><b>Interfaces:</b> static and private methods can be added to an interface without a restart.</li>
+            <li><b>Spring:</b> added @Bean methods can use request, session and custom scopes with scoped proxies; any Spring patch version whose internals match is accepted; SAP Commerce converter populator lists and several directives on one list apply live.</li>
+            <li><b>Fixes:</b> no false "file watcher" errors after the machine sleeps or idles; no false "cannot find symbol" errors when beans.xml and Java are saved together; an added service method keeps working in apps with aspects; DevTools apps reload the class actually in use; lower idle CPU on SAP Commerce.</li>
+        </ul>
         <h3>1.9.0</h3>
         <ul>
             <li><b>Connect AI assistant</b> in Settings &gt; Tools &gt; Reclazz: the plugin now bundles its MCP server and sets it up for Claude Code, Cursor, VS Code or Codex. You see a preview first, other entries are kept, and an existing config is backed up before it is replaced.</li>

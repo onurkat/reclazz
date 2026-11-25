@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [1.10.0] - 2026-11-25
+
 ### Changed
 
 - DOCTOR reports the registration kind for each sampled directory so a resource watch can be distinguished from a compiled class watch.

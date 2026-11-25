@@ -5,7 +5,7 @@ For a Spring Boot development run, start with the opt-in profile below. It uses
 not an application dependency. The longer dependency-plugin alternative remains
 below. Return to [installation](installation.md) for other launch methods.
 
-Examples use Reclazz source version **1.9.0**. Use matching artifacts available
+Examples use Reclazz source version **1.10.0**. Use matching artifacts available
 in your chosen repository or [build them locally](#local-builds); the source
 version alone does not certify Maven Central availability. This recipe targets
 Maven 3.9.x / Java 17+ and the runnable fixture pins Boot 3.3.5. Keep your existing
@@ -22,7 +22,7 @@ run goal is configured.
 
 ```xml
 <properties>
-  <reclazz.version>1.9.0</reclazz.version>
+  <reclazz.version>1.10.0</reclazz.version>
   <app.jvmArgs>-Ddemo.marker=kept</app.jvmArgs>
 </properties>
 ```
@@ -148,7 +148,7 @@ the dev profile, this older alternative attaches to tests as well.
   <dependency>
     <groupId>com.onurkat.reclazz</groupId>
     <artifactId>reclazz-agent</artifactId>
-    <version>1.9.0</version>
+    <version>1.10.0</version>
     <scope>provided</scope>
   </dependency>
 </dependencies>
@@ -180,7 +180,7 @@ the Java agent on its own classpath and sets `argLine` (which Surefire reads) to
 <plugin>
   <groupId>com.onurkat.reclazz</groupId>
   <artifactId>reclazz-maven-plugin</artifactId>
-  <version>1.9.0</version>
+  <version>1.10.0</version>
   <executions>
     <execution>
       <goals><goal>prepare-agent</goal></goals>
@@ -243,10 +243,10 @@ entrypoint, not a lifecycle execution and not a change to `prepare-agent` or pla
 <plugin>
   <groupId>com.onurkat.reclazz</groupId>
   <artifactId>reclazz-maven-plugin</artifactId>
-  <version>1.9.0</version>
+  <version>1.10.0</version>
   <inherited>false</inherited>
   <configuration>
-    <mcpJar>${project.basedir}/tools/reclazz-mcp-1.9.0.jar</mcpJar>
+    <mcpJar>${project.basedir}/tools/reclazz-mcp-1.10.0.jar</mcpJar>
     <mavenExecutable>/absolute/path/to/mvn</mavenExecutable>
     <buildArguments>
       <argument>--offline</argument>
@@ -259,7 +259,7 @@ entrypoint, not a lifecycle execution and not a change to `prepare-agent` or pla
 With that local plugin installed, invoke the goal alone from the reactor root:
 
 ```text
-mvn com.onurkat.reclazz:reclazz-maven-plugin:1.9.0:safe-build -Dreclazz.port=54123 -Dreclazz.owner=builder-alice
+mvn com.onurkat.reclazz:reclazz-maven-plugin:1.10.0:safe-build -Dreclazz.port=54123 -Dreclazz.owner=builder-alice
 ```
 
 Do not bind it to a phase, combine it with other outer goals/phases, invoke it
