@@ -1,0 +1,8 @@
+<idea-plugin>
+    <id>com.example.reclazz.ui.driver</id>
+    <name>Reclazz UI test driver</name>
+    <vendor>Reclazz tests</vendor>
+    <version>1</version>
+    <depends>com.intellij.java</depends>
+    <depends>com.onurkat.reclazz</depends>
+</idea-plugin>
