@@ -516,12 +516,62 @@ def stage3b_contract_errors(repo,output,records):
     return errors
 
 
-def usage_contract_errors(repo,text=None,rendered=None):
+def refreshed_usage_anchors(repo):
+    """Refresh bodies only at an already approved heading location."""
+    from website.markdown import pinned_usage_headings, usage_heading_blocks
+    path = repo / 'website/usage-anchors.json'
+    original = path.read_text()
+    record = json.loads(original)
+    entries = record['headings']
+    source = record['source']
+    text = (repo / source).read_text()
+    structure = json.loads((repo / 'website/usage-structure.json').read_bytes())
+    groups = {'Option 1: Manual Setup': structure['manual_keys']}
+    groups.update({group['heading']: group['keys'] for group in structure['groups']})
+    parents = {key: parent for parent, keys in groups.items() for key in keys}
+    blocks = {(tuple(b['identity']), b['occurrence']): b for b in usage_heading_blocks(text)}
+    pins, _ = pinned_usage_headings(repo, source, text)
+    matched = {}
+    changed = False
+    for entry in entries:
+        key = entry['key']
+        identity = tuple(entry['identity'])
+        if key in parents:
+            identity = (parents[key], entry['title'])
+        block = blocks.get((identity, entry['occurrence']))
+        level = structure.get('allowed_level_changes', {}).get(key, entry['level'])
+        heading = '#' * level + entry['heading'].lstrip('#')
+        if not block or block['level'] != level or block['heading'] != heading:
+            raise ValueError('Missing or moved usage heading: ' + entry['title'])
+        pinned = pins.get(block['line'])
+        if pinned and pinned['key'] != key:
+            raise ValueError('Usage heading now belongs to a different fragment: ' + key)
+        matched[key] = block['line']
+        if entry['body_sha256'] != block['body_sha256']:
+            entry['body_sha256'] = block['body_sha256']
+            changed = True
+    original_siblings = {}
+    for entry in entries:
+        if entry['level'] > 2 and entry['key'] not in parents:
+            original_siblings.setdefault(tuple(entry['identity'][:-1]), []).append(entry['key'])
+    for keys in [*groups.values(), *original_siblings.values()]:
+        ordered = sorted(keys, key=matched.__getitem__)
+        if ordered != keys:
+            moved = [key for i, key in enumerate(keys) if ordered[i] != key]
+            raise ValueError('Usage section order changed: ' + ', '.join(moved))
+    errors = usage_contract_errors(repo, text=text, frozen=entries)
+    if errors:
+        raise ValueError('\n'.join(errors))
+    return json.dumps(record, ensure_ascii=False, indent=2) + '\n' if changed else original
+
+
+def usage_contract_errors(repo,text=None,rendered=None,frozen=None):
     """C1-C3: frozen section bodies/ids, exact additions and group membership."""
     from website.markdown import usage_heading_blocks
     repo=Path(repo);a=repo/'website/usage-anchors.json';p=repo/'website/usage-structure.json'
     if not a.is_file() or not p.is_file():return ['Missing usage preservation contract']
-    frozen=json.loads(a.read_text())['headings'];structure=json.loads(p.read_text());errors=[]
+    if frozen is None:frozen=json.loads(a.read_text())['headings']
+    structure=json.loads(p.read_text());errors=[]
     text=(repo/'docs/usage.md').read_text() if text is None else text
     blocks=usage_heading_blocks(text);signatures={(e['title'],e['body_sha256']):e for e in frozen}
     if len(signatures)!=len(frozen):errors.append('C1 ambiguous frozen usage identity')

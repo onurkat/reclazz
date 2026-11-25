@@ -129,7 +129,7 @@ def snapshot(root, registry):
     return registry["claims"]
 
 
-def refresh(root):
+def refresh(root, *, extra_outputs=None):
     records = dict(registries(root))
     sources = RegistrySources(root)
     claims = {}
@@ -145,7 +145,8 @@ def refresh(root):
         for item in claim["shipped_surfaces"]:
             if item["path"] == HUMAN:
                 item["block_sha256"] = sources.surface(item)
-    outputs = {root / HUMAN: human}
+    outputs = dict(extra_outputs or {})
+    outputs[root / HUMAN] = human
     outputs.update({path: json.dumps(record, ensure_ascii=False, indent=2) + "\n"
                     for path, record in records.items()})
     changed = 0
