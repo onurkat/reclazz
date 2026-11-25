@@ -147,7 +147,7 @@ class BatchedConstructorReloadTest {
         try (var app = builder.start()) {
             try {
             app.awaitOrFail("BEFORE=hello", "baseline singleton");
-            app.awaitOrFail("] Watching 1 director", "watcher ready");
+            app.awaitOrFail(auto ? "] Watching 2 directories" : "] Watching 1 directory", "watcher ready");
             scan(port);
             int start = app.output().size();
             if (batch) control(port, "pause");

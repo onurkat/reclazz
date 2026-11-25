@@ -35,7 +35,14 @@ class RecordStockBatchAdmissionTest {
         if(auto)builder.mavenLayout();
         WatchedApp child=builder.start();
         try(child){
-            child.awaitOrFail("] Watching 1 director","watch installed before application loading");
+            child.awaitOrFail(auto ? "] Watching 2 directories" : "] Watching 1 directory", "watch installed before application loading");
+            if (auto) {
+                var doctor = json.readTree(request("DOCTOR roots", "DOCTOR_RESULT roots "));
+                Set<Path> watched = new HashSet<>();
+                for (var entry : doctor.get("watchedDirectories")) watched.add(Path.of(entry.asText()).toRealPath());
+                assertTrue(watched.contains(dir.resolve("src/main/java").toRealPath()), "Java source root");
+                assertTrue(watched.contains(child.classesDir().toRealPath()), "Maven runtime resource output");
+            }
             Files.writeString(dir.resolve("load"),"go");child.awaitOrFail("STOCK_READY|","stock structural engine and physical startup objects");
             control("pause");
             String changedRecord=record(true);
