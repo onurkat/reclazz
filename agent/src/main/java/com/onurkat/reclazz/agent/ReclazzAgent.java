@@ -1223,6 +1223,8 @@ public class ReclazzAgent {
             // What the file is, decided in one testable place; whether we act
             // on it stays here, because that depends on configuration.
             ChangeKind kind = ChangeKind.of(event.getPath());
+            if (platformContext instanceof SpringBootContext boot
+                    && boot.handleMavenResource(event.getPath(), event.getType() == ChangeEvent.Type.DELETED)) return;
             if (platformContext instanceof SpringBootContext boot && boot.sourceResource(event.getPath())
                     && (kind == ChangeKind.TEMPLATE || kind == ChangeKind.UNKNOWN)) {
                 boot.sourceResourceSaved(event.getPath());

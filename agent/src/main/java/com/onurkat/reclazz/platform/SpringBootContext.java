@@ -33,6 +33,8 @@ public class SpringBootContext implements PlatformContext {
     private final Set<Path> resourceSources = new LinkedHashSet<>();
     private final Set<Path> runtimeResources = new LinkedHashSet<>();
     private final Set<Path> advised = java.util.concurrent.ConcurrentHashMap.newKeySet();
+    private final Set<Path> deletionAdvice = java.util.concurrent.ConcurrentHashMap.newKeySet();
+    private MavenResourceCopy mavenResources;
     private String classpath;
 
     public SpringBootContext(AgentConfig config) {
@@ -214,7 +216,18 @@ public class SpringBootContext implements PlatformContext {
         Set<Path> configuredSources = directoryPaths(System.getProperty("reclazz.gradle.resourceSources", ""));
         resourceSources.addAll(configuredSources);
         Set<Path> configuredOutputs = directoryPaths(System.getProperty("reclazz.gradle.resourceOutput", ""));
-        for (Path path : directoryPaths(System.getProperty("java.class.path", ""))) {
+        Set<Path> runtimeDirs = directoryPaths(System.getProperty("java.class.path", ""));
+        String manifest = System.getProperty("reclazz.maven.resources", "");
+        if (Boolean.getBoolean("reclazz.maven.prepareAgent") && !manifest.isEmpty()) {
+            try {
+                mavenResources = MavenResourceCopy.load(Path.of(manifest), runtimeDirs);
+                for (Path source : mavenResources.sources()) if (Files.isDirectory(source)) resourceSources.add(source);
+                if (mavenResources.output() != null) configuredOutputs.add(mavenResources.output());
+            } catch (java.io.IOException | RuntimeException unavailable) {
+                StatusReporter.warn("Could not read Maven resource settings. Use mvn resources:resources to apply edits.");
+            }
+        }
+        for (Path path : runtimeDirs) {
             String name = path.toString().replace(File.separatorChar, '/');
             if (configuredOutputs.contains(path) || resourceSources.contains(path)
                     || name.endsWith("/build/resources/main") || name.endsWith("/target/classes")
@@ -254,6 +267,21 @@ public class SpringBootContext implements PlatformContext {
             if (file.startsWith(root)) return root.relativize(file).toString().replace(File.separatorChar, '/');
         }
         return null;
+    }
+
+    public boolean handleMavenResource(Path file, boolean deleted) {
+        if (mavenResources == null || !sourceResource(file)
+                || mavenResources.sources().stream().noneMatch(file::startsWith)) return false;
+        MavenResourceCopy.Outcome outcome = mavenResources.saved(file, deleted);
+        if (outcome == MavenResourceCopy.Outcome.DELETED) {
+            advised.remove(file);
+            if (deletionAdvice.add(file)) StatusReporter.info(file.getFileName()
+                    + ": Maven retains deleted resources in its output. A clean build removes them.");
+        } else {
+            deletionAdvice.remove(file);
+            if (outcome == MavenResourceCopy.Outcome.MANUAL) sourceResourceSaved(file);
+        }
+        return true;
     }
 
     public void sourceResourceSaved(Path file) {

@@ -131,6 +131,18 @@ public class PrepareAgentMojo extends AbstractMojo {
                 .filter(option -> option.equals("-Dreclazz.maven.prepareAgent") || option.startsWith("-Dreclazz.maven.prepareAgent="))
                 .reduce((first, last) -> last).orElse("");
         if (!MAVEN_MARKER.equals(lastMarker)) value += " " + MAVEN_MARKER;
+        String resourceProperty = "-Dreclazz.maven.resources=";
+        String previous = arguments.stream().filter(a -> a.startsWith(resourceProperty))
+                .reduce((first, last) -> last).orElse("");
+        java.nio.file.Path manifest = null;
+        try {
+            manifest = MavenResourceSettings.snapshot(project, session);
+        } catch (Exception unsupported) {
+            getLog().debug("Maven resource layout unavailable", unsupported);
+        }
+        String resourceOption = resourceProperty + (manifest == null ? "" : manifest);
+        if ((manifest != null || !previous.isEmpty()) && !resourceOption.equals(previous))
+            value += " " + quoteArgument(resourceOption);
         project.getProperties().setProperty(propertyName, value);
     }
 
@@ -215,6 +227,10 @@ public class PrepareAgentMojo extends AbstractMojo {
         }
         String flag = "-javaagent:" + agentJar.getAbsolutePath();
         String argument = joined.length() == 0 ? flag : flag + "=" + joined;
+        return quoteArgument(argument);
+    }
+
+    private static String quoteArgument(String argument) {
         if (argument.chars().noneMatch(c -> Character.isWhitespace(c) || c == '"' || c == '\'')) {
             return argument;
         }

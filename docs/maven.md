@@ -200,10 +200,17 @@ profile above instead of relying on initialization inside Boot's forked lifecycl
 Configure the platform and any Java agent argument through the plugin's
 `<configuration>` (`platform`, `watchDirs`, `agentArgs`).
 
-When you save a file in `src/main/resources` and the app reads its copy in
-`target/classes`, run `mvn resources:resources` to apply the project's resource
-processing. Reclazz prints this advice once per file. With Boot's
-`addResources=true`, the app reads the source directory directly.
+For Spring Boot development launches, `prepare-agent` reads the effective Maven
+resource configuration. With the standard Maven Resources Plugin 3.3.1 execution,
+saving an unfiltered resource copies its bytes to the running application's output
+directory when exactly one source maps to that destination. Maven includes, excludes,
+default excludes, target paths and overwrite settings apply. Boot's
+`addResources=true` continues to serve source directories directly.
+
+Filtered resources, ambiguous destinations, externally modified output and unsupported
+plugin configurations use Maven's own processing. Reclazz advises running
+`mvn resources:resources` once per edited file. Maven retains output after its
+source is deleted. A clean build removes the stale copy.
 
 Repeated `prepare-agent` calls reuse one identical Reclazz argument already in
 the selected property (`argLine` by default, or `propertyName`). Quote syntax is
