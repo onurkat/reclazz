@@ -192,7 +192,7 @@ dependencies {
     // Native Boot condition regressions only; never packaged with the agent.
     testImplementation("org.springframework.boot:spring-boot-autoconfigure:2.7.18")
     // Boot 2.7 YAML regression fixtures only; not shipped in the agent.
-    testImplementation("org.yaml:snakeyaml:1.30")
+    testImplementation("org.yaml:snakeyaml:2.7")
     // Real DTO serialization regressions; never included in the agent jar.
     testImplementation("com.fasterxml.jackson.core:jackson-databind:2.23.0")
     testImplementation("com.google.code.gson:gson:2.11.0")
