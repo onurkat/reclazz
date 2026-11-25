@@ -68,6 +68,7 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
                                 .flatMap(List::stream).toList()), context::generatedOutputAccepted);
                 if (context.scopeFence() != null) codegen.setScopeFence(context.scopeFence());
                 codegen.setWatchedExtensions(platform::shouldWatch);
+                codegen.setHacConfigLoader(loader);
                 codegen.setLiveOptions(config::liveOptions);
             } else codegen = null;
             java.util.Map<Capability, PlatformChangeHandler> handlers = new java.util.EnumMap<>(Capability.class);
@@ -312,9 +313,8 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
                 if (!applied.isEmpty()) {
                     StatusReporter.info("Applied "
                             + Plural.of(applied.size(), "property change") + ": "
-                            + (applied.size() > 8 ? applied.subList(0, 8) + " …" : applied.toString()));
-                    StatusReporter.info("Values read per request take effect now; "
-                            + "supported XML scalar setters are refreshed; other startup consumers may still need a restart.");
+                            + (applied.size() > 8 ? applied.subList(0, 8) + " …" : applied.toString())
+                            + ". Config readers see the new value; consumers that were not refreshed may still hold the previous value.");
                     context.propertiesApplied(applied);
                     return;
                 }

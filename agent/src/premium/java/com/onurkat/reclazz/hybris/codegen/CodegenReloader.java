@@ -90,6 +90,12 @@ public class CodegenReloader {
         }
     }
 
+    private java.util.function.Supplier<ClassLoader> hacConfigLoader = () -> null;
+
+    public void setHacConfigLoader(java.util.function.Supplier<ClassLoader> loader) {
+        hacConfigLoader = java.util.Objects.requireNonNull(loader);
+    }
+
     private final HybrisContext hybrisContext;
     private java.util.function.Predicate<String> watchedExtensions = name -> true;
     private final boolean autoUpdateRunningSystem;
@@ -380,7 +386,7 @@ public class CodegenReloader {
         // did not complete) the developer runs it in HAC before using the new attributes.
         StatusReporter.warn("items.xml changed, new attributes require a DB schema update + "
                 + "type system refresh. Open HAC → Platform → Update Running System "
-                + "(default URL: https://localhost:9002/hac/platform/update) to apply.");
+                + "(" + HacUpdateLocation.read(hacConfigLoader.get()) + ") to apply.");
         StatusReporter.warn("New attributes on existing model instances will return null "
                 + "until HAC updatesystem runs and ModelService re-fetches from the DB.");
         // Enumtype values have the same second half. A static enumtype regenerates as a

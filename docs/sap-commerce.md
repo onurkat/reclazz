@@ -282,12 +282,15 @@ changed properties and log levels reach the running server, `.impex` files impor
 on save with `autoImpex=true` (a REMOVE header is refused), and interceptor
 registrations and backoffice labels are restored. A new items.xml attribute still
 needs its database column: by default Reclazz prints a reminder to run
-**HAC > Update Running System**, and with `autoUpdateRunningSystem=true` it runs that
+**HAC > Update Running System** with a link based on the configured HTTPS port and HAC webroot.
+If the location is unavailable, the reminder labels the default URL. With `autoUpdateRunningSystem=true` it runs that
 schema-only update itself (add columns, no data, never drop) so the attribute is live
 without the manual click. That option runs DDL on the live database, so it is opt-in and
 for development only. With it, a saved locales file also writes the names it keys onto
 the types (what Backoffice shows), only those keys rather than the whole "Localize
 types" step. A property added to a WsDTO shows in OCC responses after the regen.
+
+After a SAP property save, the receipt identifies the keys applied to Config. Per-request Config reads see the new values. An existing consumer that cached a value at startup can keep the old value. Supported XML scalar setters report their own refresh.
 
 Business-process actions (`AbstractProceduralAction`, `AbstractSimpleDecisionAction`)
 are prototype-scoped beans the process engine resolves at each transition, so editing an

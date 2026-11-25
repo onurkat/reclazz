@@ -57,7 +57,10 @@ final class SapOperationObservation {
         add(rules,"ERROR",q("Codegen: failed to invoke ant: ") + PRIVATE_DETAIL,"codegen","error","ant_invocation_failed");
 
         exact(rules,"OK","items.xml changed, ran Update Running System (schema only); the new attributes and enum values are live. No restart, no HAC click.","items_schema","applied","schema_updated");
-        exact(rules,"WARN","items.xml changed, new attributes require a DB schema update + type system refresh. Open HAC → Platform → Update Running System (default URL: https://localhost:9002/hac/platform/update) to apply.","items_schema","manual_required","manual_schema_required");
+        String guidance = q("items.xml changed, new attributes require a DB schema update + type system refresh. Open HAC → Platform → Update Running System (");
+        String location = "(?:" + q("default URL: https://localhost:9002/hac/platform/update")
+                + "|" + q("URL: https://localhost:") + "[1-9][0-9]{0,4}(?:/[A-Za-z0-9._~%-]++)*" + q("/platform/update") + ")";
+        add(rules,"WARN",guidance + location + q(") to apply."),"items_schema","manual_required","manual_schema_required");
         exact(rules,"WARN","New attributes on existing model instances will return null until HAC updatesystem runs and ModelService re-fetches from the DB.","items_schema","manual_required","model_refetch_required");
         exact(rules,"WARN","The same applies to new enumtype values: the JVM side reloads, but the platform can persist a value only after Update Running System (or an ImpEx) has created its EnumerationValue item.","items_schema","manual_required","enum_persistence_required");
         exact(rules,"WARN","Automatic Update Running System could not bind a tenant; apply it in HAC instead.","items_schema","unavailable","schema_tenant_unavailable");

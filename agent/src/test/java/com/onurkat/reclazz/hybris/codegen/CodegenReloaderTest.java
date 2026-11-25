@@ -169,6 +169,16 @@ class CodegenReloaderTest {
                 "lookup is a pure function of the extensions map, same object both calls");
     }
 
+    @Test
+    void manualUpdateLocationUsesConfiguredPortAndContext() {
+        assertEquals("URL: https://localhost:9202/platform/update", HacUpdateLocation.format("9202", ""));
+        assertEquals("URL: https://localhost:9443/admin/hac/platform/update", HacUpdateLocation.format("9443", "/admin/hac/"));
+        assertEquals("URL: https://localhost:9202/admin%20tools/platform/update", HacUpdateLocation.format("9202", "/admin tools"));
+        assertEquals(HacUpdateLocation.DEFAULT, HacUpdateLocation.format("65536", "/hac"));
+        assertEquals(HacUpdateLocation.DEFAULT, HacUpdateLocation.format("9202", null));
+        assertEquals(HacUpdateLocation.DEFAULT, HacUpdateLocation.read(null));
+    }
+
     // ─── handleNewPersistence (items.xml schema side) ──────────────────────────
 
     @Test

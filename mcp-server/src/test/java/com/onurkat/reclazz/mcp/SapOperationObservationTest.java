@@ -124,6 +124,15 @@ class SapOperationObservationTest {
         for (String line : List.of("Regenerating DTOs via platform `ant build` (runs in background, usually 15-30s)","Codegen: pending save queued, re-running ant for example","beans.xml changed: example-beans.xml [example]","Codegen: ant produced no output (suspicious)"))
             assertNull(SapOperationObservation.describe("INFO",line));
     }
+    @Test void manualSchemaGuidanceUsesTheInstalledHacLocation() {
+        for (String location : List.of("https://localhost:9202/platform/update",
+                "https://localhost:9443/admin/hac/platform/update")) {
+            String message = MANUAL.replace("default URL: https://localhost:9002/hac/platform/update", "URL: " + location);
+            assertEquals("manual_required", SapOperationObservation.describe("WARN", message).get("reportedOutcome").getAsString());
+            assertNull(SapOperationObservation.describe("INFO", message));
+            assertNull(SapOperationObservation.describe("WARN", message.replace("/platform/update)", "/platform/login)")));
+        }
+    }
     @Test void fullMessageIsParsedBeforeClippingAndPrivateDetailIsNotCopiedIntoFields() {
         String detail = "synthetic-private-context-" + "x".repeat(700);
         JsonObject row = EventObservationTest.row("ERROR","Failed to import ImpEx example.impex: " + detail);

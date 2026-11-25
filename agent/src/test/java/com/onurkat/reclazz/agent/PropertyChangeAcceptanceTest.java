@@ -469,7 +469,11 @@ class PropertyChangeAcceptanceTest {
             var snapshots=new PropertyFileSnapshots();Path file=Files.createDirectories(tmp.resolve("hybris/config")).resolve("local.properties");
             Files.writeString(file,"svc.timeout=10\nobsolete=old\nlog4j2.logger.fixture.name=app\nlog4j2.logger.fixture.level=DEBUG\n");snapshots.baseline(file);
             int[] callbacks=new int[3];var warnings=new ArrayList<String>();
-            com.onurkat.reclazz.ui.StatusReporter.StatusListener listener=(level,message)->{if(level.equals("WARN"))warnings.add(message);};
+            var receipts = new ArrayList<String>();
+            com.onurkat.reclazz.ui.StatusReporter.StatusListener listener = (level, message) -> {
+                if (level.equals("WARN")) warnings.add(message);
+                if (message.startsWith("Applied ")) receipts.add(message);
+            };
             var context=(com.onurkat.reclazz.ext.PremiumContext)Proxy.newProxyInstance(getClass().getClassLoader(),new Class<?>[]{com.onurkat.reclazz.ext.PremiumContext.class},(proxy,method,args)->switch(method.getName()) {
                 case "platform" -> platform;case "config" -> AgentConfig.parse("");case "propertySnapshots" -> snapshots;case "instrumentation","scopeFence" -> null;
                 case "applyLoggerLevels" -> 0;
@@ -488,6 +492,9 @@ class PropertyChangeAcceptanceTest {
                 assertArrayEquals(new int[]{0,1,1},callbacks);
                 assertEquals(Set.of("log4j2.logger.fixture.name","log4j2.logger.fixture.level"),snapshots.removed(snapshots.pending(file)));
                 assertDoesNotThrow(()->handler.handle(change));assertArrayEquals(new int[]{0,1,1},callbacks);
+                assertTrue(receipts.stream().anyMatch(message -> message.contains("svc.timeout")
+                        && message.contains("Config readers see the new value")
+                        && message.contains("consumers that were not refreshed may still hold the previous value")), receipts.toString());
                 assertEquals(1,warnings.stream().filter(m->m.toLowerCase(java.util.Locale.ROOT).contains("logger") && m.contains("pending")).count());
                 if(restorePair) {
                     Files.writeString(file,"svc.timeout=20\nlog4j2.logger.fixture.name=app\nlog4j2.logger.fixture.level=DEBUG\n");handler.handle(change);
