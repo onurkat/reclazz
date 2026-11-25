@@ -59,6 +59,11 @@ public interface PlatformContext {
      */
     Map<String, List<Path>> getResourceDirs();
 
+    /** Exploded extension web applications within the active watch scope. */
+    default Map<String, List<Path>> getWebRoots() {
+        return Map.of();
+    }
+
     /** Exact configuration files outside recursive resource roots. */
     default Map<String, List<Path>> getConfigurationFiles() {
         return Map.of();

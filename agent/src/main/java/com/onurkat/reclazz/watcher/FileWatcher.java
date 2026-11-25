@@ -9,6 +9,9 @@ import com.onurkat.reclazz.ext.Capability;
 import com.onurkat.reclazz.ext.PlatformChangeHandler;
 import com.onurkat.reclazz.ext.AdviceOnlyChangeHandler;
 import com.onurkat.reclazz.platform.PlatformContext;
+import com.onurkat.reclazz.platform.TomcatContextScanner;
+import com.onurkat.reclazz.platform.SapProcessResources;
+import com.onurkat.reclazz.platform.SpringXmlResources;
 import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.io.IOException;
@@ -417,6 +420,16 @@ public class FileWatcher {
         for (var entry : roots.entrySet()) {
             if (!view.shouldWatch(entry.getKey())) continue;
             for (Path path : entry.getValue()) {
+                if ("webroot".equals(sourceRoot)) {
+                    if (Files.isDirectory(path)) {
+                        for (var dir : WebRootDirectories.select(path, WebRootDirectories.MAX_DIRECTORIES, this::noteUnwatchable)) {
+                            try {
+                                target.put(dir.path().toRealPath(), new WatchedDirectory(dir.path(), entry.getKey(), sourceRoot, baseline));
+                            } catch (IOException failed) { noteUnwatchable(dir.path(), failed); }
+                        }
+                    }
+                    continue;
+                }
                 // Discovery retains roots across a clean build. Match startup:
                 // an output/source root absent now is not a failed transition.
                 if (!Files.isDirectory(path)) continue;
@@ -456,6 +469,7 @@ public class FileWatcher {
     }
     Map<Path, WatchedDirectory> inventory(PlatformContext view,AgentConfig.LiveOptions options) throws IOException {
         Map<Path, WatchedDirectory> target = new LinkedHashMap<>(); long baseline = System.currentTimeMillis();
+        inventoryRoots(view,target, view.getWebRoots(), "webroot", baseline);
         if (options.autoCompile()) {
             inventoryRoots(view,target, view.getSourceDirs(), "src", baseline);
             inventoryRoots(view,target, view.getGeneratedClassDirs(), "classes", baseline);
@@ -475,7 +489,7 @@ public class FileWatcher {
         // staging yet. Inventory the departing directory before any key is cancelled.
         try (var files = Files.newDirectoryStream(owner.directory())) {
             for (Path file : files) {
-                if (!Files.isRegularFile(file) || !isInterestingFile(file) || config.isExcluded(file.getFileName().toString())) continue;
+                if (!Files.isRegularFile(file) || !isInterestingFile(file, owner.sourceRoot()) || config.isExcluded(file.getFileName().toString())) continue;
                 var type = inventoryChange(file, owner.baselineMillis());
                 var state = fileStates.get(file);
                 if (type == null && file.getFileName().toString().endsWith(".class") && state != null
@@ -493,7 +507,7 @@ public class FileWatcher {
             Path file = owner.directory().resolve(relative);
             if (Files.isDirectory(file)) {
                 if (event.kind() == ENTRY_CREATE) enqueueRecoveredFiles(new WatchedDirectory(file, owner.moduleName(), owner.sourceRoot(), owner.baselineMillis()), pending);
-            } else if (isInterestingFile(file) && !config.isExcluded(file.getFileName().toString())) {
+            } else if (isInterestingFile(file, owner.sourceRoot()) && !config.isExcluded(file.getFileName().toString())) {
                 ChangeEvent.Type type = event.kind() == ENTRY_DELETE ? ChangeEvent.Type.DELETED
                         : event.kind() == ENTRY_CREATE ? ChangeEvent.Type.CREATED : ChangeEvent.Type.MODIFIED;
                 pending.put(file, new PendingEvent(System.currentTimeMillis(), file, type, owner.moduleName(), owner.sourceRoot()));
@@ -594,6 +608,15 @@ public class FileWatcher {
 
     private void registerDirectories() throws IOException {
         int watchCount = 0;
+        for (var entry : platformContext.getWebRoots().entrySet()) {
+            if (!platformContext.shouldWatch(entry.getKey())) continue;
+            for (Path root : entry.getValue()) {
+                if (Files.isDirectory(root)) {
+                    registerRecursive(root, entry.getKey(), "webroot");
+                    watchCount++;
+                }
+            }
+        }
 
         if (config.isAutoCompile()) {
             // Snapshot before watch registration; a raced/uncertain version is delivered.
@@ -714,6 +737,17 @@ public class FileWatcher {
         for (WatchedDirectory lost : lostDirectories.values()) {
             if (root.startsWith(lost.directory()) && moduleName.equals(lost.moduleName())
                     && sourceRoot.equals(lost.sourceRoot())) baseline = Math.min(baseline, lost.baselineMillis());
+        }
+        if ("webroot".equals(sourceRoot)) {
+            int used = (int) watchKeyMap.values().stream()
+                    .filter(dir -> "webroot".equals(dir.sourceRoot()) && moduleName.equals(dir.moduleName())).count();
+            for (var dir : WebRootDirectories.select(root, WebRootDirectories.MAX_DIRECTORIES - used, this::noteUnwatchable)) {
+                try {
+                    registerSingle(dir.path(), moduleName, sourceRoot, baseline);
+                    watchedFiles.addAndGet(dir.files());
+                } catch (IOException failed) { noteUnwatchable(dir.path(), failed); }
+            }
+            return;
         }
         final long registeredBaseline = baseline;
         Files.walkFileTree(root, new SimpleFileVisitor<>() {
@@ -1022,9 +1056,13 @@ public class FileWatcher {
     private void enqueueRecoveredFiles(WatchedDirectory owner, Map<Path, PendingEvent> pendingEvents) {
         try {
             long now = System.currentTimeMillis();
+            Set<Path> allowed = webRecoveryDirectories(owner.sourceRoot());
             Files.walkFileTree(owner.directory(), new SimpleFileVisitor<>() {
+                @Override public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
+                    return allowed != null && !allowed.contains(dir) ? FileVisitResult.SKIP_SUBTREE : FileVisitResult.CONTINUE;
+                }
                 @Override public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                    if (!isInterestingFile(file) || config.isExcluded(file.getFileName().toString()))
+                    if (!isInterestingFile(file, owner.sourceRoot()) || config.isExcluded(file.getFileName().toString()))
                         return FileVisitResult.CONTINUE;
                     FileState state = fileStates.get(file);
                     // Known class files retain hash-based recovery, including a build
@@ -1046,11 +1084,16 @@ public class FileWatcher {
                                Map<Path, PendingEvent> pendingEvents) {
         try {
             long now = System.currentTimeMillis();
+            Set<Path> allowed = webRecoveryDirectories(sourceRoot);
             Files.walkFileTree(root, new SimpleFileVisitor<>() {
+                @Override
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
+                    return allowed != null && !allowed.contains(dir) ? FileVisitResult.SKIP_SUBTREE : FileVisitResult.CONTINUE;
+                }
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                     String fileName = file.getFileName().toString();
-                    if (!isInterestingFile(file)) return FileVisitResult.CONTINUE;
+                    if (!isInterestingFile(file, sourceRoot)) return FileVisitResult.CONTINUE;
                     if (config.isExcluded(fileName)) return FileVisitResult.CONTINUE;
                     pendingEvents.put(file, new PendingEvent(
                             now, file, ChangeEvent.Type.CREATED, moduleName, sourceRoot));
@@ -1122,7 +1165,7 @@ public class FileWatcher {
                         }
 
                         String fileName = changedFile.getFileName().toString();
-                        if (!isInterestingFile(changedFile)) continue;
+                        if (!isInterestingFile(changedFile, watchedDir.sourceRoot())) continue;
                         if (config.isExcluded(fileName)) continue;
 
                         ChangeEvent.Type eventType = switch (kind.name()) {
@@ -1206,6 +1249,7 @@ public class FileWatcher {
         watched.sort(java.util.Comparator.comparingInt(w -> w.directory().getNameCount()));
         java.util.Set<Path> registered = new java.util.HashSet<>();
         for (WatchedDirectory directory : watched) {
+            if ("webroot".equals(directory.sourceRoot())) continue;
             registered.add(directory.directory());
             if (roots.stream().noneMatch(root -> directory.directory().startsWith(root.directory()))) roots.add(directory);
         }
@@ -1257,7 +1301,7 @@ public class FileWatcher {
             try (java.nio.file.DirectoryStream<Path> entries = Files.newDirectoryStream(watched.directory())) {
                 for (Path file : entries) {
                     String fileName = file.getFileName().toString();
-                    if (!isInterestingFile(file) || config.isExcluded(fileName)) continue;
+                    if (!isInterestingFile(file, watched.sourceRoot()) || config.isExcluded(fileName)) continue;
                     if (!Files.isRegularFile(file)) continue;
                     ChangeEvent.Type type = inventoryChange(file, watched.baselineMillis());
                     if (type == null) continue;
@@ -1511,6 +1555,22 @@ public class FileWatcher {
             }
         }
 
+        if ("webroot".equals(pending.sourceRoot())) {
+            Path path = pending.path();
+            evictWebResource(path);
+            // Before webroot subscription these exact resources were delivered by
+            // polling. Native directory ownership must not swallow their reload.
+            if (path.getFileName().toString().endsWith(".xml")) {
+                if (SapProcessResources.isRegistered(path))
+                    return new ChangeEvent(path, pending.type(), pending.moduleName(), "sap-process-xml");
+                if (SpringXmlResources.isLoaded(path))
+                    return new ChangeEvent(path, pending.type(), pending.moduleName(), "spring-xml");
+            }
+            if (configurationMtimes.containsKey(path))
+                return new ChangeEvent(path, pending.type(), pending.moduleName(), "resources");
+            return null;
+        }
+
         // The hot scan can deliver a source/config save before the JDK poll
         // reports the same write. Repeating it recompiles Java or resets the
         // Backoffice configuration again. A deliberate resave (new mtime)
@@ -1748,8 +1808,21 @@ public class FileWatcher {
      * where only four patterns are handled), so an unrelated XML save was
      * hashed, queued and handled as nothing.
      */
-    private boolean isInterestingFile(Path file) {
-        return ChangeKind.of(file) != ChangeKind.UNKNOWN;
+    void evictWebResource(Path file) {
+        TomcatContextScanner.evictWebResource(file);
+    }
+
+    private Set<Path> webRecoveryDirectories(String sourceRoot) {
+        if (!"webroot".equals(sourceRoot)) return null;
+        Set<Path> directories = new HashSet<>();
+        for (WatchedDirectory dir : watchKeyMap.values()) {
+            if ("webroot".equals(dir.sourceRoot())) directories.add(dir.directory());
+        }
+        return directories;
+    }
+
+    private boolean isInterestingFile(Path file, String sourceRoot) {
+        return "webroot".equals(sourceRoot) || ChangeKind.of(file) != ChangeKind.UNKNOWN;
     }
 
     record WatchedDirectory(Path directory, String moduleName, String sourceRoot, long baselineMillis) {

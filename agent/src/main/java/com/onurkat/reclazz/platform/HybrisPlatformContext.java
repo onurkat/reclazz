@@ -217,6 +217,18 @@ public class HybrisPlatformContext implements PlatformContext {
     }
 
     @Override
+    public Map<String, List<Path>> getWebRoots() {
+        var scope = scope();
+        Map<String, List<Path>> roots = new LinkedHashMap<>();
+        for (ExtensionInfo ext : hybrisContext.getExtensions().values()) {
+            if (!scope.includes(ext.getName()) || (scope.all() && !ext.isCustom())) continue;
+            Path root = ext.getPath().resolve("web/webroot");
+            if (Files.isDirectory(root)) roots.put(ext.getName(), List.of(root));
+        }
+        return roots;
+    }
+
+    @Override
     public Map<String, List<Path>> getConfigurationFiles() {
         var scope = scope();
         Map<String, List<Path>> result = new LinkedHashMap<>();

@@ -48,6 +48,30 @@ class SpringXmlResourceRecognitionTest {
         Files.writeString(xml, "<beans xmlns='http://www.springframework.org/schema/beans'/>");
         return xml;
     }
+
+    @Test void savedWebXmlRetainsItsRegisteredSpringHandler() throws Exception {
+        Path loaded = empty("web/WEB-INF/settings.xml");
+        Path other = empty("web/nearby/settings.xml");
+        context(loaded, false);
+        List<Path> evicted = new ArrayList<>();
+        List<ChangeEvent> delivered = new ArrayList<>();
+        var watcher = new FileWatcher(platform(), AgentConfig.parse(null)) {
+            @Override void evictWebResource(Path file) { evicted.add(file); }
+        };
+        try {
+            watcher.onFileChange(delivered::add);
+            for (Path file : List.of(loaded, other)) {
+                watcher.dispatchEvent(new FileWatcher.PendingEvent(System.currentTimeMillis(), file,
+                        ChangeEvent.Type.MODIFIED, "store", "webroot"));
+            }
+            assertEquals(List.of(loaded, other), evicted);
+            assertEquals(List.of(loaded), delivered.stream().map(ChangeEvent::getPath).toList());
+            assertEquals("spring-xml", delivered.get(0).getSourceRoot());
+        } finally {
+            watcher.stopWatching();
+        }
+    }
+
     private PlatformContext platform() { return new TestPlatform(); }
 
     @Test void onlyExactLoadedPathIsRecognizedAndStringConventionIsUnchanged() throws Exception {

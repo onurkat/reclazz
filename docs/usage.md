@@ -4344,6 +4344,19 @@ for the distinct unit, watcher, SDK and live verification status.
 
 ### SAP Commerce reload outcomes and verification<a id="sap-reload-outcomes-and-verification"></a>
 
+Saving a JSP, tag, include or static file in a watched extension webroot evicts that
+file from the deployed Tomcat context’s resource cache. Other entries keep their
+normal expiry. To limit idle filesystem polling on large storefronts, Reclazz
+selects at most 384 webroot directories per extension. Directories containing
+JSPs, JSP fragments or tag files get the available slots first. Discovery looks
+under `WEB-INF/views`, `WEB-INF/jsp` and `WEB-INF/tags` before bundled `_ui`
+assets. Static directories use the remaining slots. The discovery budget at
+startup and on scope changes is 2,048 entries per root. Directories with over 512 entries and their
+descendants retain Tomcat’s normal cache timing. New directories use the
+remaining watch slots. Dependency and tooling trees (`node_modules`, `.git`,
+`.gradle`, `.cache`, `.sass-cache`, `.parcel-cache`) are skipped.
+`WEB-INF/classes` and `WEB-INF/lib` are outside web-resource watching.
+
 An identical property save retries keys whose runtime write failed. Successful
 keys are acknowledged individually, so a later HAC edit to one of those keys is
 not overwritten while another key retries. Unresolved placeholders remain

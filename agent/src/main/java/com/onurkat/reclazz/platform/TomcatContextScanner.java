@@ -6,6 +6,9 @@ package com.onurkat.reclazz.platform;
 
 import com.onurkat.reclazz.ui.StatusReporter;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Enumeration;
@@ -70,6 +73,48 @@ public final class TomcatContextScanner {
             StatusReporter.warn("Tomcat context scan failed: " + Failures.describe(t));
         }
         return registered;
+    }
+
+    /** Invalidate a single exploded resource after a filesystem save. */
+    public static void evictWebResource(Path file) {
+        try {
+            Object server = findCatalinaServer();
+            if (server == null) return;
+            for (Object service : (Object[]) invoke(server, "findServices")) {
+                for (Object host : children(invoke(service, "getContainer"))) {
+                    for (Object context : children(host)) evictFromContext(context, file);
+                }
+            }
+        } catch (Exception | LinkageError unavailable) {
+            // The container may be stopping or use a different implementation.
+        }
+    }
+
+    static void evictFromContext(Object context, Path file) {
+        try {
+            if (!"STARTED".equals(invoke(context, "getStateName"))) return;
+            String docBase = (String) context.getClass().getMethod("getRealPath", String.class)
+                    .invoke(context, "/");
+            if (docBase == null) return;
+            Path root = Path.of(docBase).toRealPath();
+            Path saved = file.getParent().toRealPath().resolve(file.getFileName());
+            if (!saved.startsWith(root) || saved.equals(root)) return;
+            if (Files.isSymbolicLink(saved) && !saved.toRealPath().startsWith(root)) return;
+            String key = "/" + root.relativize(saved).toString().replace(java.io.File.separatorChar, '/');
+
+            Object resources = invoke(context, "getResources");
+            // The native removal also updates Tomcat's cached byte count.
+            Class<?> standardRoot = Class.forName("org.apache.catalina.webresources.StandardRoot",
+                    false, resources.getClass().getClassLoader());
+            if (!standardRoot.isInstance(resources)) return;
+            Field field = standardRoot.getDeclaredField("cache");
+            if (!field.trySetAccessible()) return;
+            Object cache = field.get(resources);
+            Method remove = cache.getClass().getDeclaredMethod("removeCacheEntry", String.class);
+            if (remove.trySetAccessible()) remove.invoke(cache, key);
+        } catch (ReflectiveOperationException | IOException | RuntimeException | LinkageError unavailable) {
+            // Missing directories, stopped apps and unsupported cache versions keep their native TTL.
+        }
     }
 
     /** Bootstrap.daemon → catalinaDaemon → getServer() */
@@ -155,7 +200,7 @@ public final class TomcatContextScanner {
         return false;
     }
 
-    private static Object invoke(Object target, String methodName) throws Exception {
+    private static Object invoke(Object target, String methodName) throws ReflectiveOperationException {
         Method m = target.getClass().getMethod(methodName);
         m.setAccessible(true);
         return m.invoke(target);
