@@ -17,7 +17,7 @@ public final class SapDirectiveHistory {
         final WeakReference<Object> owner;
         final String kind;
         final List<String> order = new ArrayList<>();
-        final List<WeakReference<Object>> base;
+        List<WeakReference<Object>> base;
         List<WeakReference<Object>> last;
         boolean incomplete;
         boolean invalid;
@@ -115,6 +115,13 @@ public final class SapDirectiveHistory {
     static synchronized History get(Object factory, Target target) {
         Map<Target, History> records = factories.get(factory);
         return records == null ? null : records.get(target);
+    }
+
+    static void publishedBase(History history, List<?> base, List<?> live) {
+        var nextBase = snapshot(base);
+        var nextLive = snapshot(live);
+        history.base = nextBase;
+        history.last = nextLive;
     }
 
     static void published(History history, List<?> elements) { history.last = snapshot(elements); }

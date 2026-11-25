@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   methods. Watched callers, reflection and method-handle lookups can use them.
   The first static invocation initializes a cold interface. Changing the
   superinterface list now reports the hierarchy change as the restart reason.
+- SAP Commerce converters that inherit the native populator list methods can reload an edited list of populators, including references declared in the same save. The running converter keeps its identity and applies the native duplicate handling.
 
 - Reordering enum constants keeps their running ordinals, including when the same save adds new constants. Reload reports the running order. With Hibernate 6.5.3.Final, startup-tracked factories can reload inserts and reorders when their mappings store enum names. Ordinal or opaque mappings still require a restart. Direct enum switches whose case keys would change also require restart. A newly opened Hibernate factory with incompatible storage raises a warning, and a Reclazz-managed rebuild keeps the previous factory. Managed rebuilds refuse destructive schema actions while enum order diverges. Other create/create-drop rebuilds follow Hibernate’s configured startup policy. Retiring a create-drop factory preserves the replacement’s tables and shutdown action. Enum order checks also cover converted wrappers, embedded properties, composite keys, registered XML listeners and recognized numeric serializers and compiler switch tables.
 

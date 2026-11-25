@@ -70,6 +70,11 @@ final class SapListMergeDirectives {
         boolean modify=MODIFY.equals(live.getClass().getName());
         Object targetOwner=modify?call(live,"getList"):owner(factory,definition);
         List<Object> targetList=modify?populators(targetOwner):target(factory,definition,live);
+        return directiveForList(factory, name, targetOwner, targetList, live.getClass().getClassLoader(), observed);
+    }
+
+    static String directiveForList(Object factory, String name, Object targetOwner, List<?> targetList,
+                                   ClassLoader loader, Set<String> observed) throws Exception {
         var factories=Collections.newSetFromMap(new IdentityHashMap<Object,Boolean>());factories.add(factory);
         for(Object ctx:com.onurkat.reclazz.platform.ApplicationContextHolder.getAllContexts()) {
             try{factories.add(call(ctx,"getBeanFactory"));}catch(Exception closed){/* A closed context has no live ownership. */}
@@ -101,7 +106,7 @@ final class SapListMergeDirectives {
                 if(dependencies==null)continue;
                 Object descriptor=instance;
                 if(descriptor==null) {
-                    descriptor=Class.forName(TYPE,false,live.getClass().getClassLoader()).getConstructor().newInstance();
+                    descriptor=Class.forName(TYPE,false,loader).getConstructor().newInstance();
                     for(String property:List.of("listPropertyDescriptor","fieldName")) {
                         Object value=rawValue(merged,property);
                         if(value!=null&&value.getClass().getName().equals("org.springframework.beans.factory.config.TypedStringValue"))value=call(value,"getValue");
@@ -109,9 +114,9 @@ final class SapListMergeDirectives {
                         set(descriptor,"set"+Character.toUpperCase(property.charAt(0))+property.substring(1),value);
                     }
                 }
-                Class<?> processorType=Class.forName("de.hybris.platform.spring.config.ListMergeDirectiveBeanPostProcessor",false,live.getClass().getClassLoader());
+                Class<?> processorType=Class.forName("de.hybris.platform.spring.config.ListMergeDirectiveBeanPostProcessor",false,targetOwner.getClass().getClassLoader());
                 Object processor=processorType.getConstructor().newInstance();
-                Method resolve=processorType.getDeclaredMethod("resolveListBean",Class.forName(TYPE,false,live.getClass().getClassLoader()),String.class,Object.class,String.class);resolve.setAccessible(true);
+                Method resolve=processorType.getDeclaredMethod("resolveListBean",Class.forName(TYPE,false,loader),String.class,Object.class,String.class);resolve.setAccessible(true);
                 for(String dependency:dependencies) {
                     Object otherOwner=existing(otherFactory,dependency);
                     if(otherOwner==targetOwner)return other;

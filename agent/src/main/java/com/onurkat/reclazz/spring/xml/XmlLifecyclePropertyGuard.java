@@ -10,11 +10,11 @@ final class XmlLifecyclePropertyGuard {
 
     static boolean classify(Object factory, Object parsedFactory, String name, Object previous,
                             Object candidate, BeanDefinitionDiff diff) {
-        return classify(factory, parsedFactory, name, previous, candidate, diff, null);
+        return classify(factory, parsedFactory, name, previous, candidate, diff, null, null);
     }
 
     static boolean classify(Object factory, Object parsedFactory, String name, Object previous,
-                            Object candidate, BeanDefinitionDiff diff, SapXmlEventListeners.Admission admission) {
+                            Object candidate, BeanDefinitionDiff diff, SapXmlEventListeners.Admission admission, java.nio.file.Path xml) {
         try {
             Object instance = previous == null ? null : factory.getClass()
                     .getMethod("getSingleton", String.class).invoke(factory, name);
@@ -70,7 +70,8 @@ final class XmlLifecyclePropertyGuard {
                 }
             }
             if (reason == null) return false;
-            if (!XmlSafetyClassifier.unchangedUnsupported(factory, parsedFactory, name, previous, candidate))
+            if (!XmlSafetyClassifier.unchangedUnsupported(factory, parsedFactory, name, previous, candidate)
+                    && (xml == null || !XmlScannedInfrastructure.unchanged(factory, parsedFactory, name, previous, candidate, xml)))
                 diff.unsafe.add(new BeanDefinitionDiff.UnsafeChange(name,
                         "implements " + reason + "; lifecycle/infrastructure state was not refreshed, "
                                 + "restart required, bean and definition were not updated"));

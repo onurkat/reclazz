@@ -254,6 +254,10 @@ public final class SpringXmlReloader {
                     change.endpoints.derivedAliases());
         }
         var definitionOwners=changes.stream().map(change->new XmlDefinitionTransaction.Owner(change.context,change.factory,change.temporary,change.diff,change.observed)).toList();
+        var converterOwners = changes.stream().filter(owner -> !owner.securityHandled)
+                .map(owner -> new SapConverterLists.Owner(owner.factory, owner.temporary, owner.diff, owner::activate)).toList();
+        var converterCounts = SapConverterLists.apply(converterOwners, converterOwners.size() == owners.size());
+        for (var owner : changes) owner.applied += converterCounts.getOrDefault(owner.factory, 0);
         var definitionCounts=XmlDefinitionTransaction.apply(definitionOwners,gatherCandidateContexts());
         for(var change:changes)change.applied+=definitionCounts.getOrDefault(change.factory,0);
         boolean hybris;

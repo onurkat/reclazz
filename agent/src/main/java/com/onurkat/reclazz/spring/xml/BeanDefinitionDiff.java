@@ -25,6 +25,7 @@ import java.util.List;
  */
 final class BeanDefinitionDiff {
 
+    final List<SapConverterLists.Edit> converterEdits = new ArrayList<>();
     final List<NewBean> added = new ArrayList<>();
     final List<PropertyChange> propertyChanges = new ArrayList<>();
     final List<UnsafeChange> unsafe = new ArrayList<>();
@@ -33,7 +34,7 @@ final class BeanDefinitionDiff {
     final List<SapPopulatorDirectives.Edit> directiveEdits = new ArrayList<>();
 
     boolean hasChanges() {
-        return !added.isEmpty() || !propertyChanges.isEmpty() || !unsafe.isEmpty() || !recreated.isEmpty() || !directiveEdits.isEmpty() || !definitionEdits.isEmpty();
+        return !converterEdits.isEmpty() || !added.isEmpty() || !propertyChanges.isEmpty() || !unsafe.isEmpty() || !recreated.isEmpty() || !directiveEdits.isEmpty() || !definitionEdits.isEmpty();
     }
 
     static final class NewBean {

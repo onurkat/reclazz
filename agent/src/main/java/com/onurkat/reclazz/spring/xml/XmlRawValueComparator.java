@@ -113,7 +113,7 @@ final class XmlRawValueComparator {
         return Arrays.asList(call(holder, "getName"), call(holder, "getType"), value(call(holder, "getValue"), depth, inners, standardOnly));
     }
 
-    private void requireSimpleInner(Object definition, ClassLoader loader) throws ReflectiveOperationException {
+    void requireSimpleInner(Object definition, ClassLoader loader) throws ReflectiveOperationException {
         require(!(Boolean) call(definition, "isAbstract") && (Boolean) call(definition, "isSingleton"), "inner scope/template");
         require(call(definition, "getParentName") == null, "inner parent definition");
         require(empty(call(definition, "getFactoryBeanName")) && empty(call(definition, "getFactoryMethodName")), "inner factory construction");

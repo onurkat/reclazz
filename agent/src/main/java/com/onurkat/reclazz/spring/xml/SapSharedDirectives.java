@@ -10,7 +10,7 @@ import static com.onurkat.reclazz.spring.xml.SapPopulatorDirectives.*;
 /** Replay a complete native startup sequence against its original elements before publishing. */
 final class SapSharedDirectives {
     private SapSharedDirectives() { }
-    private record Group(SapDirectiveHistory.History history, SapDirectiveHistory.Target key,
+    record Group(SapDirectiveHistory.History history, SapDirectiveHistory.Target key,
                          Object owner, List<String> names) { }
 
     private static SapDirectiveHistory.Target target(Object factory, Object definition, Object live) throws Exception {
@@ -35,6 +35,27 @@ final class SapSharedDirectives {
     private static Group inspect(Object factory, String name, Object definition, Object live) throws Exception {
         String peer = SapListMergeDirectives.sharedDirective(factory, name, definition, live);
         if (peer == null) return null;
+        return verified(factory, name, definition, live, peer);
+    }
+
+    static Group forConverter(Object factory, String name, Object converter) throws Exception {
+        var key = new SapDirectiveHistory.Target(name, false);
+        String peer = SapListMergeDirectives.directiveForList(factory, name, converter, populators(converter),
+                converter.getClass().getClassLoader(), Set.of());
+        if (peer == null) {
+            if (SapDirectiveHistory.get(factory, key) != null) throw refused(name, "captured directives are missing");
+            return null;
+        }
+        if (!SpringReflection.containsBeanDefinition(factory, peer))
+            throw refused(peer, "directive belongs to a different factory");
+        Object definition = SpringReflection.getBeanDefinition(factory, peer);
+        Object live = SpringReflection.getExistingSingleton(factory, peer);
+        if (definition == null || live == null || !key.equals(target(factory, definition, live)))
+            throw refused(peer, "directive does not belong to the converter's local sequence");
+        return verified(factory, peer, definition, live, peer);
+    }
+
+    private static Group verified(Object factory, String name, Object definition, Object live, String peer) throws Exception {
         var key = target(factory, definition, live);
         Object owner = SpringReflection.getExistingSingleton(factory, key.name());
         var history = SapDirectiveHistory.get(factory, key);
@@ -96,11 +117,7 @@ final class SapSharedDirectives {
             set(replacement, "set" + Character.toUpperCase(key.charAt(0)) + key.substring(1), entry.getValue());
         }
         List<Object> desired = group.history().baseCopy();
-        for (String name : group.names()) {
-            Object member = name.equals(edit.beanName()) ? replacement : SpringReflection.getExistingSingleton(factory, name);
-            if (modify) replayModify(member, desired);
-            else SapListMergeDirectives.replay(factory, member, desired, name);
-        }
+        replay(factory, group, desired, edit.beanName(), replacement);
         Group current = inspect(factory, edit.beanName(), definition, live);
         if (!group.equals(current)) throw new IllegalStateException("shared directive ownership changed during reload");
         synchronized (group.history()) {
@@ -110,6 +127,14 @@ final class SapSharedDirectives {
             SapDirectiveHistory.published(group.history(), desired);
         }
         return true;
+    }
+
+    static void replay(Object factory, Group group, List<Object> desired, String editedName, Object replacement) throws Exception {
+        for (String name : group.names()) {
+            Object member = name.equals(editedName) ? replacement : SpringReflection.getExistingSingleton(factory, name);
+            if (MODIFY.equals(group.history().kind)) replayModify(member, desired);
+            else SapListMergeDirectives.replay(factory, member, desired, name);
+        }
     }
 
     // The native processor only invokes getPopulators on this detached target.

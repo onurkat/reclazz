@@ -9,7 +9,7 @@ import tempfile
 parser = argparse.ArgumentParser()
 parser.add_argument('hybris_home', type=Path)
 parser.add_argument('--disable-guard', action='store_true', help='negative control: restart assertions must fail')
-parser.add_argument('--scenario', choices=['all', 'existing', 'modify-target', 'merge', 'boundaries', 'shared-order', 'publish-no-empty', 'snapshot-mutation', 'shared-replay'], default='all')
+parser.add_argument('--scenario', choices=['all', 'existing', 'modify-target', 'merge', 'boundaries', 'shared-order', 'publish-no-empty', 'snapshot-mutation', 'shared-replay', 'converter-list', 'converter-replay'], default='all')
 args = parser.parse_args()
 repo = Path(__file__).resolve().parents[1]
 sdk = args.hybris_home.resolve()
@@ -35,7 +35,7 @@ def run(command):
 with tempfile.TemporaryDirectory(prefix='reclazz-directives-sdk-') as temporary:
     out = Path(temporary)
     sources = [str(source), str(source.with_name("R28DirectiveSdkProbe.java")), str(source.with_name("R28PublicationSdkProbe.java"))]
-    if args.scenario == 'shared-replay':
+    if args.scenario in ('shared-replay', 'converter-replay'):
         # The packaged transformer uses the agent's relocated ASM, as in a live SAP JVM.
         properties = (repo / 'gradle.properties').read_text().splitlines()
         version = next(line.partition('=')[2].strip() for line in properties if line.startswith('pluginVersion='))
@@ -44,6 +44,8 @@ with tempfile.TemporaryDirectory(prefix='reclazz-directives-sdk-') as temporary:
             parser.error(f'Build the shaded agent with :agent:shadowJar (missing {jar.name})')
         classpath = os.pathsep.join([str(jar), classpath])
         sources.append(str(source.with_name('R40SharedDirectivesProbe.java')))
+    if args.scenario in ("converter-list", "all"):
+        sources.append(str(source.with_name("ConverterListSdkProbe.java")))
     if args.disable_guard:
         production = repo / 'agent/src/main/java/com/onurkat/reclazz/spring/xml/XmlSafetyClassifier.java'
         text = production.read_text()
@@ -59,16 +61,19 @@ with tempfile.TemporaryDirectory(prefix='reclazz-directives-sdk-') as temporary:
     java = ['java',
             '-Dlog4j.configurationFactory=org.apache.logging.log4j.core.config.xml.XmlConfigurationFactory',
             '-Dlog4j.configurationFile=' + str(logging), '-cp', os.pathsep.join([temporary, classpath])]
-    scenarios = ['existing', 'modify-target', 'merge', 'boundaries', 'shared-order', 'publish-no-empty', 'snapshot-mutation'] if args.scenario == 'all' else [args.scenario]
-    if args.scenario == 'shared-replay':
+    scenarios = ['existing', 'modify-target', 'merge', 'boundaries', 'shared-order', 'publish-no-empty', 'snapshot-mutation', 'converter-list'] if args.scenario == 'all' else [args.scenario]
+    if args.scenario in ('shared-replay', 'converter-replay'):
         probe = 'com.onurkat.reclazz.spring.xml.R40SharedDirectivesProbe'
         manifest = out / 'MANIFEST.MF'
         manifest.write_text('Premain-Class: ' + probe + '\n')
         observer = out / 'observer.jar'
         run(['jar', 'cfm', str(observer), str(manifest), '-C', str(out), probe.replace('.', '/') + '.class'])
-        run(java + [probe, str(out / 'late'), 'late'])
-        run([java[0], '-javaagent:' + str(observer), *java[1:], probe, str(out / 'startup'), 'startup'])
+        run(java + [probe, str(out / 'late'), 'late', args.scenario])
+        run([java[0], '-javaagent:' + str(observer), *java[1:], probe, str(out / 'startup'), 'startup', args.scenario])
         scenarios = []
     for scenario in scenarios:
+        if scenario == "converter-list":
+            run(java + ["com.onurkat.reclazz.spring.xml.ConverterListSdkProbe", str(out / scenario)])
+            continue
         run(java + ['com.onurkat.reclazz.spring.xml.' + ('ListDirectiveSdkProbe' if scenario == 'existing' else 'R28PublicationSdkProbe' if scenario in ['shared-order', 'publish-no-empty', 'snapshot-mutation'] else 'R28DirectiveSdkProbe'),
                     str(out / scenario), *([] if scenario == 'existing' else [scenario])])

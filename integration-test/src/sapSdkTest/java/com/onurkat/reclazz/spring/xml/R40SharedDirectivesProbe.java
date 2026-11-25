@@ -80,10 +80,59 @@ public final class R40SharedDirectivesProbe {
             check(RestartLedger.digest().stream().anyMatch(s->s.contains("outside its directives")),"external edit refusal named");
         } finally { ApplicationContextHolder.clear(); RestartLedger.clear(); }
     }
+    private static String converterXml(boolean modify, int count, int changed, String add) {
+        // The installed converter deduplicates in its native Jakarta @PostConstruct callback.
+        return xml(modify, count, changed, add, null, false).replace("</beans>",
+                "<bean id='annotations' class='org.springframework.context.annotation.CommonAnnotationBeanPostProcessor'/></beans>");
+    }
+
+    private static void converterEdit(Path root, boolean modify, int count, boolean late) throws Exception {
+        Files.createDirectories(root);
+        Path live = root.resolve("live.xml"), fresh = root.resolve("fresh.xml");
+        String initial = converterXml(modify, count, -1, "B");
+        String oldBase = "<list><ref bean='A'/></list>";
+        String newBase = "<list><ref bean='D'/><ref bean='A'/><ref bean='D'/></list>";
+        Files.writeString(live, initial);
+        try (var ctx = context(live, true)) {
+            var converter = (AbstractPopulatingConverter) ctx.getBean("converter");
+            var previous = converter.getPopulators();
+            String original = output(ctx);
+            String edited = initial.replace(oldBase, newBase);
+            Files.writeString(fresh, edited);
+            String expected;
+            try (var restart = context(fresh, false)) { expected = output(restart); }
+            check(!expected.equals(original), "native revised converter output differs");
+            Files.writeString(live, edited);
+            RestartLedger.clear();
+            reloader(ctx).reloadLoaded(live);
+            if (late) {
+                check(converter.getPopulators() == previous && original.equals(output(ctx)), "uncaptured directive changed converter");
+                check(RestartLedger.digest().stream().anyMatch(m -> m.contains("d0") && m.contains("populators")),
+                        "uncaptured directive refusal must name the member and property: " + RestartLedger.digest());
+                return;
+            }
+            check(ctx.getBean("converter") == converter && expected.equals(output(ctx)),
+                    "new base plus native directive order: expected " + expected + ", got " + output(ctx) + " " + RestartLedger.digest());
+            if (count > 1) {
+                String next = converterXml(modify, count, 0, "E").replace(oldBase, newBase);
+                Files.writeString(fresh, next);
+                try (var restart = context(fresh, false)) { expected = output(restart); }
+                Files.writeString(live, next);
+                reloader(ctx).reloadLoaded(live);
+                check(expected.equals(output(ctx)), "subsequent directive used stale base: " + output(ctx));
+            }
+        } finally { ApplicationContextHolder.clear(); RestartLedger.clear(); }
+    }
+
     public static void main(String[] args) throws Exception {
         boolean late = args[1].equals("late");
-        for (boolean modify : List.of(false,true)) for (int count : List.of(2,3))
-            scenario(Path.of(args[0]).resolve(modify+"-"+count),modify,count,late);
+        if (args.length > 2 && args[2].equals("converter-replay")) {
+            for (boolean modify : List.of(false, true)) for (int count : List.of(1, 2))
+                converterEdit(Path.of(args[0]).resolve(modify+"-"+count), modify, count, late);
+        } else {
+            for (boolean modify : List.of(false,true)) for (int count : List.of(2,3))
+                scenario(Path.of(args[0]).resolve(modify+"-"+count),modify,count,late);
+        }
         System.out.println("R40 "+args[1]+": "+checks+" checks passed");
     }
 }

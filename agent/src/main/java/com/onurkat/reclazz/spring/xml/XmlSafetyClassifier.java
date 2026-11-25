@@ -59,13 +59,14 @@ final class XmlSafetyClassifier {
             if (newBd == null) continue;
 
             Object existing = SpringReflection.getBeanDefinition(liveFactory, beanName);
+            if (SapConverterLists.classify(liveFactory, tempFactory, beanName, existing, newBd, out)) continue;
             if (XmlDefinitionTransaction.classifyColdPolicy(liveFactory,tempFactory,beanName,existing,newBd,xmlPath,out)) continue;
             if (XmlDefinitionTransaction.classifyPrototype(liveFactory,tempFactory,beanName,existing,newBd,xmlPath,out)) continue;
             String shapeReason = unsafeShapeReason(newBd, existing == null);
             boolean recreation = existing != null && XmlBeanRecreator.handles(existing, newBd);
             if (shapeReason != null && unchangedUnsupported(liveFactory, tempFactory, beanName, existing, newBd)) continue;
             if (shapeReason == null && !recreation) {
-                if (XmlLifecyclePropertyGuard.classify(liveFactory, tempFactory, beanName, existing, newBd, out, listeners.get(beanName))) continue;
+                if (XmlLifecyclePropertyGuard.classify(liveFactory, tempFactory, beanName, existing, newBd, out, listeners.get(beanName), xmlPath)) continue;
                 if (XmlFactoryBeanPropertyGuard.classify(liveFactory, beanName, existing, newBd, out)) continue;
             }
             if (SapListDirectiveGuard.classify(liveFactory, beanName, existing, newBd, out)) continue;
