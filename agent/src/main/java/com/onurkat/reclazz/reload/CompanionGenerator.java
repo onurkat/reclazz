@@ -118,6 +118,8 @@ public class CompanionGenerator implements Opcodes {
     public static CompanionResult generate(String originalClassName,byte[] newBytecode,
                                             StructuralAnalyzer.StructuralDiff diff,int version,Set<String> staticsToInitialise,
                                             Set<String> skipMethods,TransformContext context,Set<String> constructors,ClassLoader loader) {
+        if (context != null)
+            newBytecode = com.onurkat.reclazz.transform.InterfaceMethodCalls.rewrite(newBytecode,context::isWatched,Set.of());
         ClassReader reader = new ClassReader(newBytecode);
         String companionName = originalClassName + "$$Reclazz$v" + version;
 

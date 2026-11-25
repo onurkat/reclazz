@@ -434,6 +434,7 @@
     "cross-class-access-to-added-instance-fields",
     "setting-up-jbr",
     "known-limitations",
+    "interface-method-edits",
     "changed-static-initializers",
     "added-static-field-values",
     "new-field-values-on-objects-that-already-existed",

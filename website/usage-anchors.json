@@ -1133,8 +1133,21 @@
       "level": 2,
       "title": "Known Limitations",
       "id": "known-limitations",
-      "body_sha256": "e28712ce3e0724d58a36a9c65b5b99106a9ab089e669d9961aac44f3d57bbc70",
+      "body_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
       "heading": "## Known Limitations\n"
+    },
+    {
+      "key": "interface-method-edits",
+      "identity": [
+        "Known Limitations",
+        "Interface method edits"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Interface method edits",
+      "id": "interface-method-edits",
+      "body_sha256": "b4db2d10df35e83a07c0d79b13c007a28f1d637425867d35d4ea40969577d931",
+      "heading": "### Interface method edits\n"
     },
     {
       "key": "changed-static-initializers",

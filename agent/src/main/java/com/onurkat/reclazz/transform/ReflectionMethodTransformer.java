@@ -254,6 +254,17 @@ public final class ReflectionMethodTransformer implements ClassFileTransformer {
                             super.visitInsn(Opcodes.ARETURN);super.visitLabel(ordinary);
                         }};
                     }
+                    if(kind==4 && method.equals("findStatic") && desc.equals("(Ljava/lang/Class;Ljava/lang/String;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/MethodHandle;")) {
+                        hooks.add(method);
+                        return new MethodVisitor(Opcodes.ASM9,mv){@Override public void visitCode(){
+                            super.visitCode();
+                            for (int i=0;i<4;i++) super.visitVarInsn(Opcodes.ALOAD,i);
+                            super.visitMethodInsn(Opcodes.INVOKESTATIC,"com/onurkat/reclazz/bootstrap/InterfaceCalls","logicalStatic",
+                                    "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/Class;Ljava/lang/String;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/MethodHandle;",false);
+                            Label ordinary=new Label();super.visitInsn(Opcodes.DUP);super.visitJumpInsn(Opcodes.IFNULL,ordinary);
+                            super.visitInsn(Opcodes.ARETURN);super.visitLabel(ordinary);super.visitInsn(Opcodes.POP);
+                        }};
+                    }
                     if(kind==4 && method.equals("findConstructor") && desc.equals("(Ljava/lang/Class;Ljava/lang/invoke/MethodType;)Ljava/lang/invoke/MethodHandle;")) {
                         hooks.add(method);
                         return new MethodVisitor(Opcodes.ASM9,mv){@Override public void visitCode(){
@@ -291,7 +302,7 @@ public final class ReflectionMethodTransformer implements ClassFileTransformer {
             Set<String> expected=switch(kind){
                 case 1->Set.of("privateGetDeclaredMethods","privateGetDeclaredFields","privateGetDeclaredConstructors","privateGetPublicMethods","privateGetPublicFields","getRecordComponents","getGenericInfo","annotationData","getAnnotatedSuperclass","getAnnotatedInterfaces");
                 case 2->Set.of("parameters","typeAnnotations","sharedGetParameterAnnotations","getAnnotatedReturnType0","getAnnotatedParameterTypes","getAnnotatedExceptionTypes","getAnnotatedReceiverType");
-                case 4->Set.of("findConstructor","unreflect","unreflectSpecial","unreflectConstructor","unreflectGetter","unreflectSetter","unreflectVarHandle");
+                case 4->Set.of("findStatic","findConstructor","unreflect","unreflectSpecial","unreflectConstructor","unreflectGetter","unreflectSetter","unreflectVarHandle");
                 case 16->Set.of("getGenericType","getAnnotatedType");
                 case 32->Set.of("newInstanceWithCaller","getGenericInfo");
                 case 64->Set.of("getGenericInfo");

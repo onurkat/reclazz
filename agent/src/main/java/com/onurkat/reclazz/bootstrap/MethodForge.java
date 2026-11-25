@@ -89,6 +89,21 @@ public final class MethodForge {
                                      int modifiers,MethodHandle target,String signature,Class<?>[] exceptions) {
         return createMethod(owner,name,parameters,result,modifiers,target,signature,exceptions,null);
     }
+    /** Preserve each interface Method's own declaration across saves, including failed saves. */
+    public static Method interfaceMethod(MethodHandles.Lookup ownerLookup, Method source, MethodHandle target, String signature) {
+        Class<?> owner = ownerLookup.lookupClass();
+        Class<?> carrier = source.getDeclaringClass();
+        if (!owner.isInterface() || !ownerLookup.hasFullPrivilegeAccess() || !carrier.isHidden()
+                || !carrier.isInterface() || !owner.isNestmateOf(carrier)) {
+            throw new IllegalArgumentException("Interface method metadata needs a hidden nestmate and its owner's lookup");
+        }
+        var type = MethodType.methodType(source.getReturnType(), source.getParameterTypes());
+        if (!Modifier.isStatic(source.getModifiers())) type = type.insertParameterTypes(0, owner);
+        if (!type.equals(target.type())) throw new IllegalArgumentException("Interface method target type changed");
+        return createMethod(owner, source.getName(), source.getParameterTypes(), source.getReturnType(),
+                source.getModifiers(), target, signature, source.getExceptionTypes(), source);
+    }
+
     /** A private prepared root owns its metadata; equal live roots are never re-registered. */
     public static Method snapshotMethod(Class<?> owner,Method metadata,MethodHandle target,String signature) {
         LookupCapture.requireTrusted(StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).getCallerClass(),"preparing record method roots");

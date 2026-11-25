@@ -3984,12 +3984,26 @@ members visible on the original class. See the [versioned core evidence](feature
 
 ## Known Limitations
 
-Interfaces are not instrumented, because an interface cannot hold the private
-fields Reclazz adds to classes. Method body edits in an interface, including
-default and static method bodies, still reload on any JVM, with no warning.
-Adding, removing or changing the signature of an interface method or field is
-refused on a stock JVM with a restart reason that says so; JetBrains Runtime with
-enhanced class redefinition applies it.
+### Interface method edits
+
+Existing default and static method bodies reload on a stock JVM. A watched
+interface can also gain private helpers and public static methods when Reclazz
+can prepare them in the defining module. Existing interface bodies and compiled
+callers in watched output directories can call the additions. Reflection on
+the interface and `MethodHandles.Lookup.findStatic` use the caller's usual
+access rights. Looking up an added static method leaves a cold interface
+uninitialized. Its first invocation runs the original initializer.
+
+You can change or remove methods added by an earlier save. A held handle
+follows a body edit and throws `NoSuchMethodError` after removal. Compile
+affected callers together. A direct call from outside watched output still
+requires the method to exist physically, so restart for that caller.
+
+Restart on stock JVMs for new default or abstract methods, field changes,
+changes to the superinterface list, and removal or retyping of an original
+method. An added method containing a direct superinterface body call also
+requires a restart. A compatible enhanced-redefinition JVM can apply physical
+interface changes.
 
 ### Changed Static Initializers
 

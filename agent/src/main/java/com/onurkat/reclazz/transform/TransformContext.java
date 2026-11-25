@@ -149,7 +149,7 @@ public class TransformContext {
         for (var entry : platformContext.getClassOutputDirs().entrySet()) {
             for (Path dir : entry.getValue()) {
                 if (Files.isDirectory(dir)) {
-                    watchedClassDirs.add(dir);
+                    addRoot(watchedClassDirs,dir);
                     scanClassDirectory(dir);
                 }
             }

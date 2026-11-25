@@ -17,6 +17,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - SAP Commerce can reload an edit to an earlier directive on a shared list while preserving startup order. The agent must have observed all directives on that list in one bean factory and through one processor kind.
 - Spring constructor cache repair, singleton proxy recreation, future XML definition edits and raw configuration reload check the native members they need on the installed Spring patch. Unsupported layouts report the unavailable member.
 - Suspending the application JVM no longer triggers a file watcher stall warning on wake. A build scan interrupted by the pause gets one additional ten-second window to finish.
+- On stock JVMs, watched interfaces can gain private helpers and public static
+  methods. Watched callers, reflection and method-handle lookups can use them.
+  The first static invocation initializes a cold interface. Changing the
+  superinterface list now reports the hierarchy change as the restart reason.
 
 - Reordering enum constants keeps their running ordinals, including when the same save adds new constants. Reload reports the running order. With Hibernate 6.5.3.Final, startup-tracked factories can reload inserts and reorders when their mappings store enum names. Ordinal or opaque mappings still require a restart. Direct enum switches whose case keys would change also require restart. A newly opened Hibernate factory with incompatible storage raises a warning, and a Reclazz-managed rebuild keeps the previous factory. Managed rebuilds refuse destructive schema actions while enum order diverges. Other create/create-drop rebuilds follow Hibernate’s configured startup policy. Retiring a create-drop factory preserves the replacement’s tables and shutdown action. Enum order checks also cover converted wrappers, embedded properties, composite keys, registered XML listeners and recognized numeric serializers and compiler switch tables.
 

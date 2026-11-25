@@ -385,7 +385,7 @@ class HierarchyBeanReloadTest {
                 live.awaitOrFail("CHECK true/true/-", "same owner and no product after refusal");
             } else if (enhanced) assertTrue(live.awaits("CURRENT " + expected,20),live::tail);
             else {
-                String reason=alreadyImplemented ? "stock JVM applies only" : "interfaces of a loaded class";
+                String reason=alreadyImplemented ? "only static and private method additions are supported" : "interfaces of a loaded class";
                 assertTrue(live.awaits(reason,20),live::tail);
                 java.nio.file.Files.createFile(dir.resolve("probe"));
                 live.awaitOrFail("CHECK " + original,"held instance and factory after refusal");

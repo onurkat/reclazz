@@ -157,16 +157,12 @@ public class ReclazzTransformer implements ClassFileTransformer {
             // which conflicts with our PRIVATE SYNTHETIC infrastructure fields
             // (__reclazz$lookup, __reclazz$ext). Adding such a field to an
             // interface produces ClassFormatError "Illegal field modifiers"
-            // and crashes class loading. Hot-reloading default/static methods
-            // on interfaces is not supported.
+            // and crashes class loading. Only adapt calls inside interface bodies.
             ClassReader peek = new ClassReader(classfileBuffer);
             if ((peek.getAccess() & Opcodes.ACC_INTERFACE) != 0) {
                 if (classBeingRedefined == null) AdmittedBytes.defined(loader, className, classfileBuffer);
-                if (config.isVerbose()) {
-                    StatusReporter.info("Skipping interface (hot-reload not supported): " +
-                            className.replace('/', '.'));
-                }
-                return null;
+                byte[] linked = InterfaceMethodCalls.rewrite(classfileBuffer,context::isWatched,java.util.Set.of());
+                return linked == classfileBuffer ? null : linked;
             }
 
             byte[] schema = classBeingRedefined == null
@@ -264,6 +260,7 @@ public class ReclazzTransformer implements ClassFileTransformer {
     }
 
     private byte[] doTransform(String className, byte[] classfileBuffer, ClassLoader loader, Long originalUid) {
+        classfileBuffer = InterfaceMethodCalls.rewrite(classfileBuffer,context::isWatched,java.util.Set.of());
         classfileBuffer = StaticFieldPreparation.stableSchema(loader, className, classfileBuffer);
         ClassReader reader = new ClassReader(classfileBuffer);
 

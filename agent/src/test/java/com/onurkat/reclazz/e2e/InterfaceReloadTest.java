@@ -71,6 +71,19 @@ class InterfaceReloadTest {
         }
     }
 
+    @Test
+    void changedSuperinterfaceReportsTheHierarchyReason() throws Exception {
+        String before = greeter("default String greet() { return name(); }");
+        try (var app = WatchedApp.in(dir).with("Greeter",before).with("Impl",IMPL)
+                .with("App","package app; public class App { public static void main(String[] args) throws Exception {"
+                        + "System.out.println(\"READY=\" + new Impl().greet()); Thread.sleep(120000); } }").start()) {
+            app.awaitOrFail("READY=impl","original interface loaded");
+            app.awaitOrFail("] Watching 1 director","watcher ready");
+            app.rewrite("Greeter",before.replace("interface Greeter","interface Greeter extends java.io.Serializable"));
+            app.awaitOrFail("superinterface hierarchy changed","an extends-only edit must identify the hierarchy change");
+        }
+    }
+
     /** R33 audit F1: a changed interface static initializer is not applied, so it must leave a restart, with the option off or on. */
     @org.junit.jupiter.params.ParameterizedTest @org.junit.jupiter.params.provider.ValueSource(strings = {"resetStatics=false", "resetStatics=true", "excludeClasses=app.Holder"})
     void changedInterfaceInitializerReportsARestart(String option) throws Exception {

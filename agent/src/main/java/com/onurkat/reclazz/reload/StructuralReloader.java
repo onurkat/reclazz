@@ -237,26 +237,47 @@ public class StructuralReloader {
                                 className+" was loaded before Reclazz could instrument it; class members changed; restart to apply",false);
                         StatusReporter.detail("Loaded schema preflight unavailable; the JVM will check this edit atomically: "+className);
                     }
+                    if (old != null && loaded.isInterface()) {
+                        if (!old.interfaces().equals(next.interfaces())) {
+                            return interfaceRefusal(className, "the superinterface hierarchy changed");
+                        }
+                        var history = InterfaceMethodReload.history(loaded);
+                        synchronized (history) {
+                            if (!old.equals(next) || history.hasMembers()) {
+                                if (config.isClassExcluded(internalName)) {
+                                    return interfaceRefusal(className, "the interface is excluded from structural reload");
+                                }
+                                InterfaceMethodReload.Prepared prepared;
+                                try {
+                                    prepared = InterfaceMethodReload.prepare(loaded, interfaceLookup(loaded),
+                                            newBytecode, old, context::isWatched, history);
+                                } catch (ReflectiveOperationException | RuntimeException | LinkageError failure) {
+                                    return interfaceRefusal(className, Failures.describe(failure));
+                                }
+                                var targets = prepared.invocationTargets();
+                                synchronized (com.onurkat.reclazz.bootstrap.InterfaceCalls.publicationLock(loaded)) {
+                                    var result = reloadInterfaceBodies(loaded, prepared.definition(), newBytecode);
+                                    if (result.isSuccess()) {
+                                        prepared.publish(loaded, history);
+                                        com.onurkat.reclazz.bootstrap.InterfaceCalls.publish(loaded, targets);
+                                        com.onurkat.reclazz.transform.ReflectionMethodTransformer.invalidate(instrumentation, loaded);
+                                    }
+                                    return result;
+                                }
+                            }
+                        }
+                    }
                     if(old!=null && !old.equals(next)){
-                        if(loaded.isInterface())return interfaceMembersChanged(className);
                         return ClassReloader.ReloadResult.failure(
                             className+" was loaded before Reclazz could instrument it; class schema changed; restart to apply",false);
                     }
                 }
-                StaticInitializerReset.InterfaceInit interfaceInit=loaded!=null&&loaded.isInterface()
-                        ?StaticInitializerReset.interfaceInitialization(loaded,newBytecode):StaticInitializerReset.InterfaceInit.UNCHANGED;
-                ClassReloader.ReloadResult reloaded=standardReload(className, newBytecode);
-                if(reloaded.isSuccess()&&loaded!=null&&loaded.isInterface()) {
-                    if(interfaceInit!=StaticInitializerReset.InterfaceInit.UNCHANGED){
-                        String reason=interfaceInit==StaticInitializerReset.InterfaceInit.CHANGED
-                                ?"static initialization of interface changed; its static fields keep their first values on a running JVM"
-                                :"static initialization of interface could not be compared (loaded before Reclazz recorded it); its static fields keep their first values on a running JVM";
-                        StatusReporter.warn(className+": "+reason+"; restart to apply if you changed a static field. Method bodies reloaded.");
-                        RestartLedger.note(className,reason);
-                    }
-                    StaticInitializerReset.interfaceInitializationAccepted(loaded,newBytecode);
+                if (loaded != null && loaded.isInterface()) {
+                    byte[] definition = com.onurkat.reclazz.transform.InterfaceMethodCalls.rewrite(
+                            newBytecode, context::isWatched, java.util.Set.of());
+                    return reloadInterfaceBodies(loaded, definition, newBytecode);
                 }
-                return reloaded;
+                return standardReload(className, newBytecode);
             }
 
             // Analyze structural changes
@@ -1077,6 +1098,47 @@ public class StructuralReloader {
         String reason = "an interface method or field was added, removed or changed in signature; a stock JVM applies only "
                 + "method body changes to an interface (default and static method bodies reload), and JetBrains Runtime "
                 + "with enhanced class redefinition applies member changes";
+        return interfaceRefusal(className,reason);
+    }
+
+    private MethodHandles.Lookup interfaceLookup(Class<?> owner) {
+        try {
+            var direct = MethodHandles.privateLookupIn(owner, MethodHandles.lookup());
+            if (direct.hasFullPrivilegeAccess()) return direct;
+        } catch (IllegalAccessException unavailable) {
+            // A watched application class in the same module may already have supplied a lookup.
+        }
+        for (Class<?> type : instrumentation.getAllLoadedClasses()) {
+            if (type.getModule() != owner.getModule() || !context.isTransformed(type)) continue;
+            var anchor = LookupCapture.get(type);
+            if (anchor == null || !anchor.hasFullPrivilegeAccess()) continue;
+            try {
+                return MethodHandles.privateLookupIn(owner, anchor);
+            } catch (IllegalAccessException ignored) {
+                // Continue to another application-provided lookup.
+            }
+        }
+        return null;
+    }
+
+    private ClassReloader.ReloadResult reloadInterfaceBodies(Class<?> owner, byte[] definition, byte[] source) {
+        String className = owner.getName();
+        var init = StaticInitializerReset.interfaceInitialization(owner, source);
+        var result = standardReload(className, definition, source);
+        if (result.isSuccess()) {
+            if (init != StaticInitializerReset.InterfaceInit.UNCHANGED) {
+                String reason = init == StaticInitializerReset.InterfaceInit.CHANGED
+                        ? "static initialization of interface changed; its static fields keep their first values on a running JVM"
+                        : "static initialization of interface could not be compared (loaded before Reclazz recorded it); its static fields keep their first values on a running JVM";
+                StatusReporter.warn(className + ": " + reason + "; restart to apply if you changed a static field. Method bodies reloaded.");
+                RestartLedger.note(className, reason);
+            }
+            StaticInitializerReset.interfaceInitializationAccepted(owner, source);
+        }
+        return result;
+    }
+
+    private static ClassReloader.ReloadResult interfaceRefusal(String className,String reason) {
         RestartLedger.note(className, reason);
         return ClassReloader.ReloadResult.failure(className + ": " + reason + "; restart to apply", false);
     }
