@@ -384,8 +384,16 @@ class DocumentationBuildTest(unittest.TestCase):
         self.assertIn('Copyright 2024-2026 Onur Kat and Reclazz Contributors',text)
 
     def test_stale_human_readable_evidence_digest_is_rejected(self):
-        self.write('docs/feature-evidence.md','**Shipped surfaces:** `docs/first.md:1` (SHA-256 `'+('0'*64)+'`)\n')
-        self.assertEqual(['Human-readable evidence digest drift: docs/first.md:1'],readable_surface_errors(self.root))
+        from website.evidence import block_hash
+        item = {'path': 'docs/first.md', 'quote': 'One'}
+        item['block_sha256'] = block_hash(item['path'], (self.root/item['path']).read_text(), item['quote'])
+        self.write('docs/feature-evidence/sample.json', json.dumps({'claims': [
+            {'id': 'TEST', 'shipped_surfaces': [item]}]}))
+        self.write('docs/feature-evidence.md', '### TEST\\n\\n**Shipped surfaces:** stale digest\\n')
+        errors = readable_surface_errors(self.root)
+        self.assertEqual(1, len(errors))
+        self.assertIn('Human-readable evidence digest drift: TEST', errors[0])
+
 
 
 class DesignGateTest(unittest.TestCase):

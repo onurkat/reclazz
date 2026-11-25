@@ -4,7 +4,7 @@ from datetime import date
 from html import escape
 from pathlib import Path
 import json
-import hashlib
+from website.evidence_registry import HINT, RegistrySources, references, registries
 import re
 from urllib.parse import urlsplit, unquote
 
@@ -144,19 +144,32 @@ def source_link_errors(repo):
 
 
 def readable_surface_errors(repo):
-    repo = Path(repo).resolve(); errors = []; digests = {}
-    source = repo/'docs/feature-evidence.md'
-    if not source.is_file(): return errors
-    pattern = r'`([^`]+):(\d+)` \(SHA-256 `([a-f0-9]{64})`\)'
-    for line in source.read_text().splitlines():
-        if not line.startswith('**Shipped surfaces:**'): continue
-        for name, number, recorded in re.findall(pattern,line):
-            path = (repo/name).resolve()
-            if not path.is_relative_to(repo) or not path.is_file():
-                errors.append('Missing human-readable evidence surface: '+name); continue
-            if path not in digests: digests[path] = hashlib.sha256(path.read_bytes()).hexdigest()
-            if digests[path] != recorded:
-                errors.append('Human-readable evidence digest drift: '+name+':'+number)
+    repo = Path(repo).resolve()
+    source = repo / 'docs/feature-evidence.md'
+    if not source.is_file():
+        return []
+    sections = {}
+    current = None
+    for line in source.read_text(encoding='utf-8').splitlines():
+        if line.startswith('### '):
+            current = line[4:]
+        elif line.startswith('**Shipped surfaces:**'):
+            sections.setdefault(current, []).append(line)
+    errors = []
+    sources = RegistrySources(repo)
+    for _, record in registries(repo):
+        for claim in record['claims']:
+            name = claim['id']
+            for item in claim['shipped_surfaces']:
+                try:
+                    if sources.surface(item) != item.get('block_sha256'):
+                        raise ValueError('block digest changed')
+                except (OSError, ValueError) as error:
+                    errors.append(f"{name}: {item['path']} {item['quote']}: {error}; {HINT}")
+            if sections.pop(name, []) != [references(claim)]:
+                errors.append(f"Human-readable evidence digest drift: {name}; {HINT}")
+    for unknown in sections:
+        errors.append(f"Evidence references have no claim: {unknown}")
     return errors
 
 

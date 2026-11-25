@@ -1636,35 +1636,33 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedEndpointHttpReloadTest#getAndPostEndpointsFollowFiveSavesWithoutRestart",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedEndpointHttpReloadTest.java",
-          "source_sha256": "ef6337e201080681bc57a9c5c140210a458ee3103888819b90f3f760cb165be3",
           "kind": "watcher",
-          "assertions": "Native HTTP 404 -> 200 exact response -> changed response -> 404 removal -> restored response -> 404 unannotated; existing route and context nonce unchanged."
+          "assertions": "Native HTTP 404 -> 200 exact response -> changed response -> 404 removal -> restored response -> 404 unannotated; existing route and context nonce unchanged.",
+          "method_sha256": "228dcff24ba9081f3242e8658af852d7941d0855f9e6bdc4fdc5b93ba90a29e7"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedEndpointHttpReloadTest#getAndPostEndpointsFollowFiveSavesWithoutRestart",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedEndpointHttpReloadTest.java",
-          "source_sha256": "e038c84f8ea13508ae3deb95ee34718198d01f68edfd523d86a945bd9996a05f",
           "kind": "watcher",
           "assertions": "Native HTTP 404 -> 200 exact response -> changed response -> 404 removal -> restored response -> 404 unannotated; existing route and context nonce unchanged.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedEndpointHttpReloadTest#getAndPostEndpointsFollowFiveSavesWithoutRestart",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedEndpointHttpReloadTest.java",
-            "source_sha256": "ef6337e201080681bc57a9c5c140210a458ee3103888819b90f3f760cb165be3"
-          }
+            "method_sha256": "228dcff24ba9081f3242e8658af852d7941d0855f9e6bdc4fdc5b93ba90a29e7"
+          },
+          "method_sha256": "228dcff24ba9081f3242e8658af852d7941d0855f9e6bdc4fdc5b93ba90a29e7"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 96,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**MVC Re-scan**"
+          "quote": "**MVC Re-scan**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2523,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-ENDPOINT-GET"
+          "quote": "### P3B-ENDPOINT-GET",
+          "block_sha256": "28dfb5be697f8ed74844fda71ba00498732c56da89f5156a7720b3ea00067a85"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -1688,35 +1686,33 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedEndpointHttpReloadTest#getAndPostEndpointsFollowFiveSavesWithoutRestart",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedEndpointHttpReloadTest.java",
-          "source_sha256": "ef6337e201080681bc57a9c5c140210a458ee3103888819b90f3f760cb165be3",
           "kind": "watcher",
-          "assertions": "Native HTTP 404 -> 200 exact response -> changed response -> 404 removal -> restored response -> 404 unannotated; existing route and context nonce unchanged."
+          "assertions": "Native HTTP 404 -> 200 exact response -> changed response -> 404 removal -> restored response -> 404 unannotated; existing route and context nonce unchanged.",
+          "method_sha256": "228dcff24ba9081f3242e8658af852d7941d0855f9e6bdc4fdc5b93ba90a29e7"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedEndpointHttpReloadTest#getAndPostEndpointsFollowFiveSavesWithoutRestart",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedEndpointHttpReloadTest.java",
-          "source_sha256": "e038c84f8ea13508ae3deb95ee34718198d01f68edfd523d86a945bd9996a05f",
           "kind": "watcher",
           "assertions": "Native HTTP 404 -> 200 exact response -> changed response -> 404 removal -> restored response -> 404 unannotated; existing route and context nonce unchanged.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedEndpointHttpReloadTest#getAndPostEndpointsFollowFiveSavesWithoutRestart",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedEndpointHttpReloadTest.java",
-            "source_sha256": "ef6337e201080681bc57a9c5c140210a458ee3103888819b90f3f760cb165be3"
-          }
+            "method_sha256": "228dcff24ba9081f3242e8658af852d7941d0855f9e6bdc4fdc5b93ba90a29e7"
+          },
+          "method_sha256": "228dcff24ba9081f3242e8658af852d7941d0855f9e6bdc4fdc5b93ba90a29e7"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 96,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**MVC Re-scan**"
+          "quote": "**MVC Re-scan**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2533,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-ENDPOINT-POST"
+          "quote": "### P3B-ENDPOINT-POST",
+          "block_sha256": "f0b93fe8dd4b5325ae7152f66c130ef6cb87058f8dac778908df750149f8291b"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -1740,30 +1736,28 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest#addedLocalHandlerCompetesWithExistingHandlersAndFollowsSaves",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedExceptionHandlerReloadTest.java",
-          "source_sha256": "389ba93a3ad1b6436dd98d98a5a474b085b42f61bbcc458153c4d66214e6df11",
           "kind": "watcher",
-          "assertions": "Five saves: exact422/423/fallback/425/fallback response; old/new endpoints, unrelated controller and existing local priority."
+          "assertions": "Five saves: exact422/423/fallback/425/fallback response; old/new endpoints, unrelated controller and existing local priority.",
+          "method_sha256": "09b992bddd9f03aed562afa2bece2a7bc616ceb96910e46a8714cbc5d351cc06"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest#localHandlersOnAddedEndpointsWorkAcrossChildLoaderSaves",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedExceptionHandlerReloadTest.java",
-          "source_sha256": "389ba93a3ad1b6436dd98d98a5a474b085b42f61bbcc458153c4d66214e6df11",
           "kind": "watcher",
-          "assertions": "Five saves: exact422/423/fallback/425/fallback response; old/new endpoints, unrelated controller and existing local priority."
+          "assertions": "Five saves: exact422/423/fallback/425/fallback response; old/new endpoints, unrelated controller and existing local priority.",
+          "method_sha256": "eac82f3efd54b9b44b1fc9eeb845979ac02ff3a23fb71fdbb4c2276383091811"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1054,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "Spring sees a hidden metadata class"
+          "quote": "Spring sees a hidden metadata class",
+          "block_sha256": "f3712805bae6713f4aa05c633fd8e9c787d2993a0033673e784688ed373b9ee2"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2543,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-EXCEPTION-LOCAL"
+          "quote": "### P3B-EXCEPTION-LOCAL",
+          "block_sha256": "12d93ba7a819132fa67f7d428f79cb5b35f177e28e114fc37a2e1e186f9b6fa3"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -1787,30 +1781,28 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest#addedAdviceHandlerKeepsSelectorsLocalPriorityAndFollowsSaves",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedExceptionHandlerReloadTest.java",
-          "source_sha256": "389ba93a3ad1b6436dd98d98a5a474b085b42f61bbcc458153c4d66214e6df11",
           "kind": "watcher",
-          "assertions": "Five saves: exact422/423/fallback/425/fallback response; old/new endpoints, unrelated controller and existing local priority."
+          "assertions": "Five saves: exact422/423/fallback/425/fallback response; old/new endpoints, unrelated controller and existing local priority.",
+          "method_sha256": "45a4d2f6e5e021cd21080cd15412171d20749a775de6b271fb0c7a063617f4e3"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest#adviceHandlersOnAddedEndpointsWorkAcrossChildLoaderSaves",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedExceptionHandlerReloadTest.java",
-          "source_sha256": "389ba93a3ad1b6436dd98d98a5a474b085b42f61bbcc458153c4d66214e6df11",
           "kind": "watcher",
-          "assertions": "Five saves: exact422/423/fallback/425/fallback response; old/new endpoints, unrelated controller and existing local priority."
+          "assertions": "Five saves: exact422/423/fallback/425/fallback response; old/new endpoints, unrelated controller and existing local priority.",
+          "method_sha256": "a974e05e74889496372a740b0e4694aac64f5ceb045d0ab9b0b1c58a83ceef9f"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1054,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "Spring sees a hidden metadata class"
+          "quote": "Spring sees a hidden metadata class",
+          "block_sha256": "f3712805bae6713f4aa05c633fd8e9c787d2993a0033673e784688ed373b9ee2"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2553,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-EXCEPTION-ADVICE"
+          "quote": "### P3B-EXCEPTION-ADVICE",
+          "block_sha256": "4d033b58baf6d54ae3fd84dd5c1e3db4ab5f714b48dd4142d5b69500ec00d803"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -1834,64 +1826,62 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedExceptionHandlerReloadTest#addedLocalHandlerCompetesWithExistingHandlersAndFollowsSaves",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedExceptionHandlerReloadTest.java",
-          "source_sha256": "0225831405a2d81e026c4554c0e19e4ed0c42eb16259bf1f7568eb45829c4e41",
           "kind": "watcher",
           "assertions": "Five saves:422/423/fallback/425/fallback; old/new endpoints, advice selector, existing local priority, no hook refusal.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest#addedLocalHandlerCompetesWithExistingHandlersAndFollowsSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedExceptionHandlerReloadTest.java",
-            "source_sha256": "389ba93a3ad1b6436dd98d98a5a474b085b42f61bbcc458153c4d66214e6df11"
-          }
+            "method_sha256": "09b992bddd9f03aed562afa2bece2a7bc616ceb96910e46a8714cbc5d351cc06"
+          },
+          "method_sha256": "09b992bddd9f03aed562afa2bece2a7bc616ceb96910e46a8714cbc5d351cc06"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedExceptionHandlerReloadTest#addedAdviceHandlerKeepsSelectorsLocalPriorityAndFollowsSaves",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedExceptionHandlerReloadTest.java",
-          "source_sha256": "0225831405a2d81e026c4554c0e19e4ed0c42eb16259bf1f7568eb45829c4e41",
           "kind": "watcher",
           "assertions": "Five saves:422/423/fallback/425/fallback; old/new endpoints, advice selector, existing local priority, no hook refusal.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest#addedAdviceHandlerKeepsSelectorsLocalPriorityAndFollowsSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedExceptionHandlerReloadTest.java",
-            "source_sha256": "389ba93a3ad1b6436dd98d98a5a474b085b42f61bbcc458153c4d66214e6df11"
-          }
+            "method_sha256": "45a4d2f6e5e021cd21080cd15412171d20749a775de6b271fb0c7a063617f4e3"
+          },
+          "method_sha256": "45a4d2f6e5e021cd21080cd15412171d20749a775de6b271fb0c7a063617f4e3"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedExceptionHandlerReloadTest#localHandlersOnAddedEndpointsWorkAcrossChildLoaderSaves",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedExceptionHandlerReloadTest.java",
-          "source_sha256": "0225831405a2d81e026c4554c0e19e4ed0c42eb16259bf1f7568eb45829c4e41",
           "kind": "watcher",
           "assertions": "Five saves:422/423/fallback/425/fallback; old/new endpoints, advice selector, existing local priority, no hook refusal.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest#localHandlersOnAddedEndpointsWorkAcrossChildLoaderSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedExceptionHandlerReloadTest.java",
-            "source_sha256": "389ba93a3ad1b6436dd98d98a5a474b085b42f61bbcc458153c4d66214e6df11"
-          }
+            "method_sha256": "eac82f3efd54b9b44b1fc9eeb845979ac02ff3a23fb71fdbb4c2276383091811"
+          },
+          "method_sha256": "eac82f3efd54b9b44b1fc9eeb845979ac02ff3a23fb71fdbb4c2276383091811"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedExceptionHandlerReloadTest#adviceHandlersOnAddedEndpointsWorkAcrossChildLoaderSaves",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedExceptionHandlerReloadTest.java",
-          "source_sha256": "0225831405a2d81e026c4554c0e19e4ed0c42eb16259bf1f7568eb45829c4e41",
           "kind": "watcher",
           "assertions": "Five saves:422/423/fallback/425/fallback; old/new endpoints, advice selector, existing local priority, no hook refusal.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest#adviceHandlersOnAddedEndpointsWorkAcrossChildLoaderSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedExceptionHandlerReloadTest.java",
-            "source_sha256": "389ba93a3ad1b6436dd98d98a5a474b085b42f61bbcc458153c4d66214e6df11"
-          }
+            "method_sha256": "a974e05e74889496372a740b0e4694aac64f5ceb045d0ab9b0b1c58a83ceef9f"
+          },
+          "method_sha256": "a974e05e74889496372a740b0e4694aac64f5ceb045d0ab9b0b1c58a83ceef9f"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 36,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "Entirely new `@ExceptionHandler` method"
+          "quote": "Entirely new `@ExceptionHandler` method",
+          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2563,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-EXCEPTION-MODERN"
+          "quote": "### P3B-EXCEPTION-MODERN",
+          "block_sha256": "1d0d045f382c0c4577425e7c84ba307d292560f4a0107de982d1df38a4cad539"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -1915,54 +1905,52 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest#localBindingAndModelMethodsFollowFiveSavesOnOldAndNewEndpoints",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedMvcBindingReloadTest.java",
-          "source_sha256": "99307150345f64a0168a62b2ae8325da2331efcdf3e237de698a90d943695782",
           "kind": "watcher",
-          "assertions": "HTTP amount factor and tag exact across five saves; named-binder restriction, global advice order, untouched other controller, original model fields preserved."
+          "assertions": "HTTP amount factor and tag exact across five saves; named-binder restriction, global advice order, untouched other controller, original model fields preserved.",
+          "method_sha256": "32c1f1f923f2084b17d187584ffe676114ce4193b8c0054fff37b87aa727f08e"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest#localBindingAndModelMethodsWorkAcrossChildLoaderSaves",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedMvcBindingReloadTest.java",
-          "source_sha256": "99307150345f64a0168a62b2ae8325da2331efcdf3e237de698a90d943695782",
           "kind": "watcher",
-          "assertions": "HTTP amount factor and tag exact across five saves; named-binder restriction, global advice order, untouched other controller, original model fields preserved."
+          "assertions": "HTTP amount factor and tag exact across five saves; named-binder restriction, global advice order, untouched other controller, original model fields preserved.",
+          "method_sha256": "8d269a8624608362d30033ede9800bed283e54e3186615517ed807b8327d0e26"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest#localBindingAndModelMethodsFollowFiveSavesOnOldAndNewEndpoints",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedMvcBindingReloadTest.java",
-          "source_sha256": "f34d595ede98e0b3305ba17a9cde12349ab13549a6a6e76276a1c07b25d22147",
           "kind": "watcher",
           "assertions": "HTTP amount factor and tag exact across five saves; named-binder restriction, global advice order, untouched other controller, original model fields preserved.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest#localBindingAndModelMethodsFollowFiveSavesOnOldAndNewEndpoints",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedMvcBindingReloadTest.java",
-            "source_sha256": "99307150345f64a0168a62b2ae8325da2331efcdf3e237de698a90d943695782"
-          }
+            "method_sha256": "32c1f1f923f2084b17d187584ffe676114ce4193b8c0054fff37b87aa727f08e"
+          },
+          "method_sha256": "32c1f1f923f2084b17d187584ffe676114ce4193b8c0054fff37b87aa727f08e"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest#localBindingAndModelMethodsWorkAcrossChildLoaderSaves",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedMvcBindingReloadTest.java",
-          "source_sha256": "f34d595ede98e0b3305ba17a9cde12349ab13549a6a6e76276a1c07b25d22147",
           "kind": "watcher",
           "assertions": "HTTP amount factor and tag exact across five saves; named-binder restriction, global advice order, untouched other controller, original model fields preserved.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest#localBindingAndModelMethodsWorkAcrossChildLoaderSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedMvcBindingReloadTest.java",
-            "source_sha256": "99307150345f64a0168a62b2ae8325da2331efcdf3e237de698a90d943695782"
-          }
+            "method_sha256": "8d269a8624608362d30033ede9800bed283e54e3186615517ed807b8327d0e26"
+          },
+          "method_sha256": "8d269a8624608362d30033ede9800bed283e54e3186615517ed807b8327d0e26"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1116,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "A supported plain controller or controller advice can gain entirely new"
+          "quote": "A supported plain controller or controller advice can gain entirely new",
+          "block_sha256": "70a4c8566d5d81c2b60981c6f79c3886bb4013afabcb7acc1e62b8ce4441f4e5"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2575,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-BINDER-LOCAL"
+          "quote": "### P3B-BINDER-LOCAL",
+          "block_sha256": "38ea30e8929e69cdf0d6a6490cc660fa8c36795d1483be220c93f8b792ef88bd"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -1986,54 +1974,52 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest#adviceBindingAndModelMethodsFollowFiveSavesAndRespectSelectors",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedMvcBindingReloadTest.java",
-          "source_sha256": "99307150345f64a0168a62b2ae8325da2331efcdf3e237de698a90d943695782",
           "kind": "watcher",
-          "assertions": "HTTP amount factor and tag exact across five saves; named-binder restriction, global advice order, untouched other controller, original model fields preserved."
+          "assertions": "HTTP amount factor and tag exact across five saves; named-binder restriction, global advice order, untouched other controller, original model fields preserved.",
+          "method_sha256": "cbbe00be7d362bce910a9a5c60d27a6a3254b81c2086779c0e5d7482d48f6cbf"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest#adviceBindingAndModelMethodsWorkAcrossChildLoaderSaves",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedMvcBindingReloadTest.java",
-          "source_sha256": "99307150345f64a0168a62b2ae8325da2331efcdf3e237de698a90d943695782",
           "kind": "watcher",
-          "assertions": "HTTP amount factor and tag exact across five saves; named-binder restriction, global advice order, untouched other controller, original model fields preserved."
+          "assertions": "HTTP amount factor and tag exact across five saves; named-binder restriction, global advice order, untouched other controller, original model fields preserved.",
+          "method_sha256": "3fe8f1cf2a5a7d9175584f995d149a1c84abeb17696269886652488581e73e8c"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest#adviceBindingAndModelMethodsFollowFiveSavesAndRespectSelectors",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedMvcBindingReloadTest.java",
-          "source_sha256": "f34d595ede98e0b3305ba17a9cde12349ab13549a6a6e76276a1c07b25d22147",
           "kind": "watcher",
           "assertions": "HTTP amount factor and tag exact across five saves; named-binder restriction, global advice order, untouched other controller, original model fields preserved.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest#adviceBindingAndModelMethodsFollowFiveSavesAndRespectSelectors",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedMvcBindingReloadTest.java",
-            "source_sha256": "99307150345f64a0168a62b2ae8325da2331efcdf3e237de698a90d943695782"
-          }
+            "method_sha256": "cbbe00be7d362bce910a9a5c60d27a6a3254b81c2086779c0e5d7482d48f6cbf"
+          },
+          "method_sha256": "cbbe00be7d362bce910a9a5c60d27a6a3254b81c2086779c0e5d7482d48f6cbf"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest#adviceBindingAndModelMethodsWorkAcrossChildLoaderSaves",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedMvcBindingReloadTest.java",
-          "source_sha256": "f34d595ede98e0b3305ba17a9cde12349ab13549a6a6e76276a1c07b25d22147",
           "kind": "watcher",
           "assertions": "HTTP amount factor and tag exact across five saves; named-binder restriction, global advice order, untouched other controller, original model fields preserved.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest#adviceBindingAndModelMethodsWorkAcrossChildLoaderSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedMvcBindingReloadTest.java",
-            "source_sha256": "99307150345f64a0168a62b2ae8325da2331efcdf3e237de698a90d943695782"
-          }
+            "method_sha256": "3fe8f1cf2a5a7d9175584f995d149a1c84abeb17696269886652488581e73e8c"
+          },
+          "method_sha256": "3fe8f1cf2a5a7d9175584f995d149a1c84abeb17696269886652488581e73e8c"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1116,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "A supported plain controller or controller advice can gain entirely new"
+          "quote": "A supported plain controller or controller advice can gain entirely new",
+          "block_sha256": "70a4c8566d5d81c2b60981c6f79c3886bb4013afabcb7acc1e62b8ce4441f4e5"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2585,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-BINDER-ADVICE"
+          "quote": "### P3B-BINDER-ADVICE",
+          "block_sha256": "4ec55aeb470f2425e474f8073034038f64b04b5d0bdb239e301908f574190769"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -2057,54 +2043,52 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest#localBindingAndModelMethodsFollowFiveSavesOnOldAndNewEndpoints",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedMvcBindingReloadTest.java",
-          "source_sha256": "99307150345f64a0168a62b2ae8325da2331efcdf3e237de698a90d943695782",
           "kind": "watcher",
-          "assertions": "HTTP amount factor and tag exact across five saves; named-binder restriction, global advice order, untouched other controller, original model fields preserved."
+          "assertions": "HTTP amount factor and tag exact across five saves; named-binder restriction, global advice order, untouched other controller, original model fields preserved.",
+          "method_sha256": "32c1f1f923f2084b17d187584ffe676114ce4193b8c0054fff37b87aa727f08e"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest#localBindingAndModelMethodsWorkAcrossChildLoaderSaves",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedMvcBindingReloadTest.java",
-          "source_sha256": "99307150345f64a0168a62b2ae8325da2331efcdf3e237de698a90d943695782",
           "kind": "watcher",
-          "assertions": "HTTP amount factor and tag exact across five saves; named-binder restriction, global advice order, untouched other controller, original model fields preserved."
+          "assertions": "HTTP amount factor and tag exact across five saves; named-binder restriction, global advice order, untouched other controller, original model fields preserved.",
+          "method_sha256": "8d269a8624608362d30033ede9800bed283e54e3186615517ed807b8327d0e26"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest#localBindingAndModelMethodsFollowFiveSavesOnOldAndNewEndpoints",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedMvcBindingReloadTest.java",
-          "source_sha256": "f34d595ede98e0b3305ba17a9cde12349ab13549a6a6e76276a1c07b25d22147",
           "kind": "watcher",
           "assertions": "HTTP amount factor and tag exact across five saves; named-binder restriction, global advice order, untouched other controller, original model fields preserved.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest#localBindingAndModelMethodsFollowFiveSavesOnOldAndNewEndpoints",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedMvcBindingReloadTest.java",
-            "source_sha256": "99307150345f64a0168a62b2ae8325da2331efcdf3e237de698a90d943695782"
-          }
+            "method_sha256": "32c1f1f923f2084b17d187584ffe676114ce4193b8c0054fff37b87aa727f08e"
+          },
+          "method_sha256": "32c1f1f923f2084b17d187584ffe676114ce4193b8c0054fff37b87aa727f08e"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest#localBindingAndModelMethodsWorkAcrossChildLoaderSaves",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedMvcBindingReloadTest.java",
-          "source_sha256": "f34d595ede98e0b3305ba17a9cde12349ab13549a6a6e76276a1c07b25d22147",
           "kind": "watcher",
           "assertions": "HTTP amount factor and tag exact across five saves; named-binder restriction, global advice order, untouched other controller, original model fields preserved.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest#localBindingAndModelMethodsWorkAcrossChildLoaderSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedMvcBindingReloadTest.java",
-            "source_sha256": "99307150345f64a0168a62b2ae8325da2331efcdf3e237de698a90d943695782"
-          }
+            "method_sha256": "8d269a8624608362d30033ede9800bed283e54e3186615517ed807b8327d0e26"
+          },
+          "method_sha256": "8d269a8624608362d30033ede9800bed283e54e3186615517ed807b8327d0e26"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1116,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "A supported plain controller or controller advice can gain entirely new"
+          "quote": "A supported plain controller or controller advice can gain entirely new",
+          "block_sha256": "70a4c8566d5d81c2b60981c6f79c3886bb4013afabcb7acc1e62b8ce4441f4e5"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2595,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-MODEL-LOCAL"
+          "quote": "### P3B-MODEL-LOCAL",
+          "block_sha256": "6a9a70186f6ad35fba53dddfeb3d30b713ed77dc01720694913ad1c01c1c6b39"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -2128,54 +2112,52 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest#adviceBindingAndModelMethodsFollowFiveSavesAndRespectSelectors",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedMvcBindingReloadTest.java",
-          "source_sha256": "99307150345f64a0168a62b2ae8325da2331efcdf3e237de698a90d943695782",
           "kind": "watcher",
-          "assertions": "HTTP amount factor and tag exact across five saves; named-binder restriction, global advice order, untouched other controller, original model fields preserved."
+          "assertions": "HTTP amount factor and tag exact across five saves; named-binder restriction, global advice order, untouched other controller, original model fields preserved.",
+          "method_sha256": "cbbe00be7d362bce910a9a5c60d27a6a3254b81c2086779c0e5d7482d48f6cbf"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest#adviceBindingAndModelMethodsWorkAcrossChildLoaderSaves",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedMvcBindingReloadTest.java",
-          "source_sha256": "99307150345f64a0168a62b2ae8325da2331efcdf3e237de698a90d943695782",
           "kind": "watcher",
-          "assertions": "HTTP amount factor and tag exact across five saves; named-binder restriction, global advice order, untouched other controller, original model fields preserved."
+          "assertions": "HTTP amount factor and tag exact across five saves; named-binder restriction, global advice order, untouched other controller, original model fields preserved.",
+          "method_sha256": "3fe8f1cf2a5a7d9175584f995d149a1c84abeb17696269886652488581e73e8c"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest#adviceBindingAndModelMethodsFollowFiveSavesAndRespectSelectors",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedMvcBindingReloadTest.java",
-          "source_sha256": "f34d595ede98e0b3305ba17a9cde12349ab13549a6a6e76276a1c07b25d22147",
           "kind": "watcher",
           "assertions": "HTTP amount factor and tag exact across five saves; named-binder restriction, global advice order, untouched other controller, original model fields preserved.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest#adviceBindingAndModelMethodsFollowFiveSavesAndRespectSelectors",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedMvcBindingReloadTest.java",
-            "source_sha256": "99307150345f64a0168a62b2ae8325da2331efcdf3e237de698a90d943695782"
-          }
+            "method_sha256": "cbbe00be7d362bce910a9a5c60d27a6a3254b81c2086779c0e5d7482d48f6cbf"
+          },
+          "method_sha256": "cbbe00be7d362bce910a9a5c60d27a6a3254b81c2086779c0e5d7482d48f6cbf"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest#adviceBindingAndModelMethodsWorkAcrossChildLoaderSaves",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedMvcBindingReloadTest.java",
-          "source_sha256": "f34d595ede98e0b3305ba17a9cde12349ab13549a6a6e76276a1c07b25d22147",
           "kind": "watcher",
           "assertions": "HTTP amount factor and tag exact across five saves; named-binder restriction, global advice order, untouched other controller, original model fields preserved.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest#adviceBindingAndModelMethodsWorkAcrossChildLoaderSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedMvcBindingReloadTest.java",
-            "source_sha256": "99307150345f64a0168a62b2ae8325da2331efcdf3e237de698a90d943695782"
-          }
+            "method_sha256": "3fe8f1cf2a5a7d9175584f995d149a1c84abeb17696269886652488581e73e8c"
+          },
+          "method_sha256": "3fe8f1cf2a5a7d9175584f995d149a1c84abeb17696269886652488581e73e8c"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1116,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "A supported plain controller or controller advice can gain entirely new"
+          "quote": "A supported plain controller or controller advice can gain entirely new",
+          "block_sha256": "70a4c8566d5d81c2b60981c6f79c3886bb4013afabcb7acc1e62b8ce4441f4e5"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2605,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-MODEL-ADVICE"
+          "quote": "### P3B-MODEL-ADVICE",
+          "block_sha256": "84e7b3203b1d547eb0262e5628fb64a9c1c6f57cf18841a30c44e36e04b1ea29"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -2199,54 +2181,52 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest#addedSettersReadJsonAcrossSaves",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedJacksonPropertyReloadTest.java",
-          "source_sha256": "2e03805f2442df49c473fd32e64dab30931fba7437b324e7917909ece21fd156",
           "kind": "watcher",
-          "assertions": "Four saves; alias reads, scalar/generic storage, null skip, ignored secret, private setter/field restoration, malformed scalar400 and added setter reflection and absent virtual fields."
+          "assertions": "Four saves; alias reads, scalar/generic storage, null skip, ignored secret, private setter/field restoration, malformed scalar400 and added setter reflection and absent virtual fields.",
+          "method_sha256": "e34e529a18a5527f3d7dd6c6b2ed653b4685ad1752d0669907c59318f21cf328"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest#addedFieldsReadAndWriteJsonAcrossSaves",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedJacksonPropertyReloadTest.java",
-          "source_sha256": "2e03805f2442df49c473fd32e64dab30931fba7437b324e7917909ece21fd156",
           "kind": "watcher",
-          "assertions": "Four saves; alias reads, scalar/generic storage, null skip, ignored secret, private setter/field restoration, malformed scalar400 and added setter reflection and absent virtual fields."
+          "assertions": "Four saves; alias reads, scalar/generic storage, null skip, ignored secret, private setter/field restoration, malformed scalar400 and added setter reflection and absent virtual fields.",
+          "method_sha256": "e6d967db46b8c2359b42128a6d83171d2cf46e67881a2391c8ce436278e777c1"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedJacksonPropertyReloadTest#addedSettersReadJsonAcrossSaves",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedJacksonPropertyReloadTest.java",
-          "source_sha256": "669eb3ef7411a7e33802f25ce592f0030dcb8526be51e5045a77c9970bbab649",
           "kind": "watcher",
           "assertions": "Four saves; alias reads, scalar/generic storage, null skip, ignored secret, private setter/field restoration, malformed scalar400 and added setter reflection and absent virtual fields.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest#addedSettersReadJsonAcrossSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedJacksonPropertyReloadTest.java",
-            "source_sha256": "2e03805f2442df49c473fd32e64dab30931fba7437b324e7917909ece21fd156"
-          }
+            "method_sha256": "e34e529a18a5527f3d7dd6c6b2ed653b4685ad1752d0669907c59318f21cf328"
+          },
+          "method_sha256": "e34e529a18a5527f3d7dd6c6b2ed653b4685ad1752d0669907c59318f21cf328"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedJacksonPropertyReloadTest#addedFieldsReadAndWriteJsonAcrossSaves",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedJacksonPropertyReloadTest.java",
-          "source_sha256": "669eb3ef7411a7e33802f25ce592f0030dcb8526be51e5045a77c9970bbab649",
           "kind": "watcher",
           "assertions": "Four saves; alias reads, scalar/generic storage, null skip, ignored secret, private setter/field restoration, malformed scalar400 and added setter reflection and absent virtual fields.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest#addedFieldsReadAndWriteJsonAcrossSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedJacksonPropertyReloadTest.java",
-            "source_sha256": "2e03805f2442df49c473fd32e64dab30931fba7437b324e7917909ece21fd156"
-          }
+            "method_sha256": "e6d967db46b8c2359b42128a6d83171d2cf46e67881a2391c8ce436278e777c1"
+          },
+          "method_sha256": "e6d967db46b8c2359b42128a6d83171d2cf46e67881a2391c8ce436278e777c1"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1267,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "Jackson still decides which properties to read and write."
+          "quote": "Jackson still decides which properties to read and write.",
+          "block_sha256": "c4723d227daf7c1063a70b1d40e22615cc12c02043ba9869e9825d3d2e074397"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2615,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-JACKSON-IN"
+          "quote": "### P3B-JACKSON-IN",
+          "block_sha256": "2f22373d72dd91a06f34fa3f9c16790fe0c90e852d69506e54658fc98a825814"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -2270,73 +2250,71 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest#addedSettersReadJsonAcrossSaves",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedJacksonPropertyReloadTest.java",
-          "source_sha256": "2e03805f2442df49c473fd32e64dab30931fba7437b324e7917909ece21fd156",
           "kind": "watcher",
-          "assertions": "Four saves; alias reads, scalar/generic storage, null skip, ignored secret, private setter/field restoration, malformed scalar400 and added setter reflection and absent virtual fields."
+          "assertions": "Four saves; alias reads, scalar/generic storage, null skip, ignored secret, private setter/field restoration, malformed scalar400 and added setter reflection and absent virtual fields.",
+          "method_sha256": "e34e529a18a5527f3d7dd6c6b2ed653b4685ad1752d0669907c59318f21cf328"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest#addedFieldsReadAndWriteJsonAcrossSaves",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedJacksonPropertyReloadTest.java",
-          "source_sha256": "2e03805f2442df49c473fd32e64dab30931fba7437b324e7917909ece21fd156",
           "kind": "watcher",
-          "assertions": "Four saves; alias reads, scalar/generic storage, null skip, ignored secret, private setter/field restoration, malformed scalar400 and added setter reflection and absent virtual fields."
+          "assertions": "Four saves; alias reads, scalar/generic storage, null skip, ignored secret, private setter/field restoration, malformed scalar400 and added setter reflection and absent virtual fields.",
+          "method_sha256": "e6d967db46b8c2359b42128a6d83171d2cf46e67881a2391c8ce436278e777c1"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedJacksonPropertyReloadTest#addedSettersReadJsonAcrossSaves",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedJacksonPropertyReloadTest.java",
-          "source_sha256": "669eb3ef7411a7e33802f25ce592f0030dcb8526be51e5045a77c9970bbab649",
           "kind": "watcher",
           "assertions": "Four saves; alias reads, scalar/generic storage, null skip, ignored secret, private setter/field restoration, malformed scalar400 and added setter reflection and absent virtual fields.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest#addedSettersReadJsonAcrossSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedJacksonPropertyReloadTest.java",
-            "source_sha256": "2e03805f2442df49c473fd32e64dab30931fba7437b324e7917909ece21fd156"
-          }
+            "method_sha256": "e34e529a18a5527f3d7dd6c6b2ed653b4685ad1752d0669907c59318f21cf328"
+          },
+          "method_sha256": "e34e529a18a5527f3d7dd6c6b2ed653b4685ad1752d0669907c59318f21cf328"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedJacksonPropertyReloadTest#addedFieldsReadAndWriteJsonAcrossSaves",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedJacksonPropertyReloadTest.java",
-          "source_sha256": "669eb3ef7411a7e33802f25ce592f0030dcb8526be51e5045a77c9970bbab649",
           "kind": "watcher",
           "assertions": "Four saves; alias reads, scalar/generic storage, null skip, ignored secret, private setter/field restoration, malformed scalar400 and added setter reflection and absent virtual fields.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest#addedFieldsReadAndWriteJsonAcrossSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedJacksonPropertyReloadTest.java",
-            "source_sha256": "2e03805f2442df49c473fd32e64dab30931fba7437b324e7917909ece21fd156"
-          }
+            "method_sha256": "e6d967db46b8c2359b42128a6d83171d2cf46e67881a2391c8ce436278e777c1"
+          },
+          "method_sha256": "e6d967db46b8c2359b42128a6d83171d2cf46e67881a2391c8ce436278e777c1"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedJacksonGetterReloadTest#addedGettersReachHttpWithMapperPoliciesAcrossSaves",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedJacksonGetterReloadTest.java",
-          "source_sha256": "ce10480eb914e3db13f3c6160f09cca79abde0c00d7f6e9cb65f97712c318c72",
           "kind": "watcher",
-          "assertions": "Four saves; plain/snake policies, old/new DTOs, private annotated getter, nested output, null/empty inclusion, custom serializers and added getter visibility with removal/restoration."
+          "assertions": "Four saves; plain/snake policies, old/new DTOs, private annotated getter, nested output, null/empty inclusion, custom serializers and added getter visibility with removal/restoration.",
+          "method_sha256": "143292e238146b0bea5b8cd2ba46d6723154f2058ff9f2b4e6b708532341cafd"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedJacksonGetterReloadTest#addedGettersReachHttpWithMapperPoliciesAcrossSaves",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedJacksonGetterReloadTest.java",
-          "source_sha256": "08544cd80fb0bbae01df7246081f019accb3d679b234e6f803a491c2f07fa741",
           "kind": "watcher",
           "assertions": "Four saves; plain/snake policies, old/new DTOs, private annotated getter, nested output, null/empty inclusion, custom serializers and added getter visibility with removal/restoration.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedJacksonGetterReloadTest#addedGettersReachHttpWithMapperPoliciesAcrossSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedJacksonGetterReloadTest.java",
-            "source_sha256": "ce10480eb914e3db13f3c6160f09cca79abde0c00d7f6e9cb65f97712c318c72"
-          }
+            "method_sha256": "143292e238146b0bea5b8cd2ba46d6723154f2058ff9f2b4e6b708532341cafd"
+          },
+          "method_sha256": "143292e238146b0bea5b8cd2ba46d6723154f2058ff9f2b4e6b708532341cafd"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1267,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "Jackson still decides which properties to read and write."
+          "quote": "Jackson still decides which properties to read and write.",
+          "block_sha256": "c4723d227daf7c1063a70b1d40e22615cc12c02043ba9869e9825d3d2e074397"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2625,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-JACKSON-OUT"
+          "quote": "### P3B-JACKSON-OUT",
+          "block_sha256": "ad04747aff8997a29e0ed8c419a59dc7cd42912319cd41d3a8e47e307ae0ea6f"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -2360,73 +2338,71 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest#addedSettersReadJsonAcrossSaves",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedJacksonPropertyReloadTest.java",
-          "source_sha256": "2e03805f2442df49c473fd32e64dab30931fba7437b324e7917909ece21fd156",
           "kind": "watcher",
-          "assertions": "Four saves; alias reads, scalar/generic storage, null skip, ignored secret, private setter/field restoration, malformed scalar400 and added setter reflection and absent virtual fields."
+          "assertions": "Four saves; alias reads, scalar/generic storage, null skip, ignored secret, private setter/field restoration, malformed scalar400 and added setter reflection and absent virtual fields.",
+          "method_sha256": "e34e529a18a5527f3d7dd6c6b2ed653b4685ad1752d0669907c59318f21cf328"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest#addedFieldsReadAndWriteJsonAcrossSaves",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedJacksonPropertyReloadTest.java",
-          "source_sha256": "2e03805f2442df49c473fd32e64dab30931fba7437b324e7917909ece21fd156",
           "kind": "watcher",
-          "assertions": "Four saves; alias reads, scalar/generic storage, null skip, ignored secret, private setter/field restoration, malformed scalar400 and added setter reflection and absent virtual fields."
+          "assertions": "Four saves; alias reads, scalar/generic storage, null skip, ignored secret, private setter/field restoration, malformed scalar400 and added setter reflection and absent virtual fields.",
+          "method_sha256": "e6d967db46b8c2359b42128a6d83171d2cf46e67881a2391c8ce436278e777c1"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedJacksonPropertyReloadTest#addedSettersReadJsonAcrossSaves",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedJacksonPropertyReloadTest.java",
-          "source_sha256": "669eb3ef7411a7e33802f25ce592f0030dcb8526be51e5045a77c9970bbab649",
           "kind": "watcher",
           "assertions": "Four saves; alias reads, scalar/generic storage, null skip, ignored secret, private setter/field restoration, malformed scalar400 and added setter reflection and absent virtual fields.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest#addedSettersReadJsonAcrossSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedJacksonPropertyReloadTest.java",
-            "source_sha256": "2e03805f2442df49c473fd32e64dab30931fba7437b324e7917909ece21fd156"
-          }
+            "method_sha256": "e34e529a18a5527f3d7dd6c6b2ed653b4685ad1752d0669907c59318f21cf328"
+          },
+          "method_sha256": "e34e529a18a5527f3d7dd6c6b2ed653b4685ad1752d0669907c59318f21cf328"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedJacksonPropertyReloadTest#addedFieldsReadAndWriteJsonAcrossSaves",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedJacksonPropertyReloadTest.java",
-          "source_sha256": "669eb3ef7411a7e33802f25ce592f0030dcb8526be51e5045a77c9970bbab649",
           "kind": "watcher",
           "assertions": "Four saves; alias reads, scalar/generic storage, null skip, ignored secret, private setter/field restoration, malformed scalar400 and added setter reflection and absent virtual fields.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest#addedFieldsReadAndWriteJsonAcrossSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedJacksonPropertyReloadTest.java",
-            "source_sha256": "2e03805f2442df49c473fd32e64dab30931fba7437b324e7917909ece21fd156"
-          }
+            "method_sha256": "e6d967db46b8c2359b42128a6d83171d2cf46e67881a2391c8ce436278e777c1"
+          },
+          "method_sha256": "e6d967db46b8c2359b42128a6d83171d2cf46e67881a2391c8ce436278e777c1"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedJacksonGetterReloadTest#addedGettersReachHttpWithMapperPoliciesAcrossSaves",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedJacksonGetterReloadTest.java",
-          "source_sha256": "ce10480eb914e3db13f3c6160f09cca79abde0c00d7f6e9cb65f97712c318c72",
           "kind": "watcher",
-          "assertions": "Four saves; plain/snake policies, old/new DTOs, private annotated getter, nested output, null/empty inclusion, custom serializers and added getter visibility with removal/restoration."
+          "assertions": "Four saves; plain/snake policies, old/new DTOs, private annotated getter, nested output, null/empty inclusion, custom serializers and added getter visibility with removal/restoration.",
+          "method_sha256": "143292e238146b0bea5b8cd2ba46d6723154f2058ff9f2b4e6b708532341cafd"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedJacksonGetterReloadTest#addedGettersReachHttpWithMapperPoliciesAcrossSaves",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedJacksonGetterReloadTest.java",
-          "source_sha256": "08544cd80fb0bbae01df7246081f019accb3d679b234e6f803a491c2f07fa741",
           "kind": "watcher",
           "assertions": "Four saves; plain/snake policies, old/new DTOs, private annotated getter, nested output, null/empty inclusion, custom serializers and added getter visibility with removal/restoration.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedJacksonGetterReloadTest#addedGettersReachHttpWithMapperPoliciesAcrossSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedJacksonGetterReloadTest.java",
-            "source_sha256": "ce10480eb914e3db13f3c6160f09cca79abde0c00d7f6e9cb65f97712c318c72"
-          }
+            "method_sha256": "143292e238146b0bea5b8cd2ba46d6723154f2058ff9f2b4e6b708532341cafd"
+          },
+          "method_sha256": "143292e238146b0bea5b8cd2ba46d6723154f2058ff9f2b4e6b708532341cafd"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1267,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "Jackson still decides which properties to read and write."
+          "quote": "Jackson still decides which properties to read and write.",
+          "block_sha256": "c4723d227daf7c1063a70b1d40e22615cc12c02043ba9869e9825d3d2e074397"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2635,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-JACKSON-NAMING"
+          "quote": "### P3B-JACKSON-NAMING",
+          "block_sha256": "57ca94528632ca779b6a50d709957d10e46a4f48f8f587455d9e4aad986d3a64"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -2450,35 +2426,33 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedJacksonGetterReloadTest#addedGettersReachHttpWithMapperPoliciesAcrossSaves",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedJacksonGetterReloadTest.java",
-          "source_sha256": "ce10480eb914e3db13f3c6160f09cca79abde0c00d7f6e9cb65f97712c318c72",
           "kind": "watcher",
-          "assertions": "Four saves; plain/snake policies, old/new DTOs, private annotated getter, nested output, null/empty inclusion, custom serializers and added getter visibility with removal/restoration."
+          "assertions": "Four saves; plain/snake policies, old/new DTOs, private annotated getter, nested output, null/empty inclusion, custom serializers and added getter visibility with removal/restoration.",
+          "method_sha256": "143292e238146b0bea5b8cd2ba46d6723154f2058ff9f2b4e6b708532341cafd"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedJacksonGetterReloadTest#addedGettersReachHttpWithMapperPoliciesAcrossSaves",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedJacksonGetterReloadTest.java",
-          "source_sha256": "08544cd80fb0bbae01df7246081f019accb3d679b234e6f803a491c2f07fa741",
           "kind": "watcher",
           "assertions": "Four saves; plain/snake policies, old/new DTOs, private annotated getter, nested output, null/empty inclusion, custom serializers and added getter visibility with removal/restoration.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedJacksonGetterReloadTest#addedGettersReachHttpWithMapperPoliciesAcrossSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedJacksonGetterReloadTest.java",
-            "source_sha256": "ce10480eb914e3db13f3c6160f09cca79abde0c00d7f6e9cb65f97712c318c72"
-          }
+            "method_sha256": "143292e238146b0bea5b8cd2ba46d6723154f2058ff9f2b4e6b708532341cafd"
+          },
+          "method_sha256": "143292e238146b0bea5b8cd2ba46d6723154f2058ff9f2b4e6b708532341cafd"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1267,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "Jackson still decides which properties to read and write."
+          "quote": "Jackson still decides which properties to read and write.",
+          "block_sha256": "c4723d227daf7c1063a70b1d40e22615cc12c02043ba9869e9825d3d2e074397"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2645,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-JACKSON-INCLUSION"
+          "quote": "### P3B-JACKSON-INCLUSION",
+          "block_sha256": "780baf762672553aa8e075dbc9f5ae5078352d095aee0c3faa9c1ca242c784c1"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -2502,73 +2476,71 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest#addedSettersReadJsonAcrossSaves",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedJacksonPropertyReloadTest.java",
-          "source_sha256": "2e03805f2442df49c473fd32e64dab30931fba7437b324e7917909ece21fd156",
           "kind": "watcher",
-          "assertions": "Four saves; alias reads, scalar/generic storage, null skip, ignored secret, private setter/field restoration, malformed scalar400 and added setter reflection and absent virtual fields."
+          "assertions": "Four saves; alias reads, scalar/generic storage, null skip, ignored secret, private setter/field restoration, malformed scalar400 and added setter reflection and absent virtual fields.",
+          "method_sha256": "e34e529a18a5527f3d7dd6c6b2ed653b4685ad1752d0669907c59318f21cf328"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest#addedFieldsReadAndWriteJsonAcrossSaves",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedJacksonPropertyReloadTest.java",
-          "source_sha256": "2e03805f2442df49c473fd32e64dab30931fba7437b324e7917909ece21fd156",
           "kind": "watcher",
-          "assertions": "Four saves; alias reads, scalar/generic storage, null skip, ignored secret, private setter/field restoration, malformed scalar400 and added setter reflection and absent virtual fields."
+          "assertions": "Four saves; alias reads, scalar/generic storage, null skip, ignored secret, private setter/field restoration, malformed scalar400 and added setter reflection and absent virtual fields.",
+          "method_sha256": "e6d967db46b8c2359b42128a6d83171d2cf46e67881a2391c8ce436278e777c1"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedJacksonPropertyReloadTest#addedSettersReadJsonAcrossSaves",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedJacksonPropertyReloadTest.java",
-          "source_sha256": "669eb3ef7411a7e33802f25ce592f0030dcb8526be51e5045a77c9970bbab649",
           "kind": "watcher",
           "assertions": "Four saves; alias reads, scalar/generic storage, null skip, ignored secret, private setter/field restoration, malformed scalar400 and added setter reflection and absent virtual fields.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest#addedSettersReadJsonAcrossSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedJacksonPropertyReloadTest.java",
-            "source_sha256": "2e03805f2442df49c473fd32e64dab30931fba7437b324e7917909ece21fd156"
-          }
+            "method_sha256": "e34e529a18a5527f3d7dd6c6b2ed653b4685ad1752d0669907c59318f21cf328"
+          },
+          "method_sha256": "e34e529a18a5527f3d7dd6c6b2ed653b4685ad1752d0669907c59318f21cf328"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedJacksonPropertyReloadTest#addedFieldsReadAndWriteJsonAcrossSaves",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedJacksonPropertyReloadTest.java",
-          "source_sha256": "669eb3ef7411a7e33802f25ce592f0030dcb8526be51e5045a77c9970bbab649",
           "kind": "watcher",
           "assertions": "Four saves; alias reads, scalar/generic storage, null skip, ignored secret, private setter/field restoration, malformed scalar400 and added setter reflection and absent virtual fields.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest#addedFieldsReadAndWriteJsonAcrossSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedJacksonPropertyReloadTest.java",
-            "source_sha256": "2e03805f2442df49c473fd32e64dab30931fba7437b324e7917909ece21fd156"
-          }
+            "method_sha256": "e6d967db46b8c2359b42128a6d83171d2cf46e67881a2391c8ce436278e777c1"
+          },
+          "method_sha256": "e6d967db46b8c2359b42128a6d83171d2cf46e67881a2391c8ce436278e777c1"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedJacksonGetterReloadTest#addedGettersReachHttpWithMapperPoliciesAcrossSaves",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedJacksonGetterReloadTest.java",
-          "source_sha256": "ce10480eb914e3db13f3c6160f09cca79abde0c00d7f6e9cb65f97712c318c72",
           "kind": "watcher",
-          "assertions": "Four saves; plain/snake policies, old/new DTOs, private annotated getter, nested output, null/empty inclusion, custom serializers and added getter visibility with removal/restoration."
+          "assertions": "Four saves; plain/snake policies, old/new DTOs, private annotated getter, nested output, null/empty inclusion, custom serializers and added getter visibility with removal/restoration.",
+          "method_sha256": "143292e238146b0bea5b8cd2ba46d6723154f2058ff9f2b4e6b708532341cafd"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedJacksonGetterReloadTest#addedGettersReachHttpWithMapperPoliciesAcrossSaves",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedJacksonGetterReloadTest.java",
-          "source_sha256": "08544cd80fb0bbae01df7246081f019accb3d679b234e6f803a491c2f07fa741",
           "kind": "watcher",
           "assertions": "Four saves; plain/snake policies, old/new DTOs, private annotated getter, nested output, null/empty inclusion, custom serializers and added getter visibility with removal/restoration.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedJacksonGetterReloadTest#addedGettersReachHttpWithMapperPoliciesAcrossSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedJacksonGetterReloadTest.java",
-            "source_sha256": "ce10480eb914e3db13f3c6160f09cca79abde0c00d7f6e9cb65f97712c318c72"
-          }
+            "method_sha256": "143292e238146b0bea5b8cd2ba46d6723154f2058ff9f2b4e6b708532341cafd"
+          },
+          "method_sha256": "143292e238146b0bea5b8cd2ba46d6723154f2058ff9f2b4e6b708532341cafd"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1267,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "Jackson still decides which properties to read and write."
+          "quote": "Jackson still decides which properties to read and write.",
+          "block_sha256": "c4723d227daf7c1063a70b1d40e22615cc12c02043ba9869e9825d3d2e074397"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2655,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-JACKSON-CUSTOM"
+          "quote": "### P3B-JACKSON-CUSTOM",
+          "block_sha256": "21638052ff791faa96a1685b9dfc2013609c417884c11a9013ca6ed8c11ba34e"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -2592,30 +2564,28 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AsyncMvcRequestBoundaryReloadTest#heldAsyncResponseKeepsItsCodeUntilNativeCompletion",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AsyncMvcRequestBoundaryReloadTest.java",
-          "source_sha256": "a23a83c48a816b6a5d5e048a45d7492195cff0c0c2c3475e2377c98ccdd929a7",
           "kind": "watcher",
-          "assertions": "Native Tomcat worker/response1:1 until completion, then next request2:2; timeout503 still held until worker exit; immediate-mode control1:2."
+          "assertions": "Native Tomcat worker/response1:1 until completion, then next request2:2; timeout503 still held until worker exit; immediate-mode control1:2.",
+          "method_sha256": "a7824228238cca75ff25092083b830baab557ad19749ea96e457debaa621f4cc"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAsyncMvcRequestBoundaryReloadTest#heldAsyncResponseKeepsItsCodeUntilNativeCompletion",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAsyncMvcRequestBoundaryReloadTest.java",
-          "source_sha256": "7645b98c700492e67422850041782db1ff46730ab52d1a05077836ff78d0e33f",
           "kind": "watcher",
-          "assertions": "Native Tomcat worker/response1:1 until completion, then next request2:2; timeout503 still held until worker exit; immediate-mode control1:2."
+          "assertions": "Native Tomcat worker/response1:1 until completion, then next request2:2; timeout503 still held until worker exit; immediate-mode control1:2.",
+          "method_sha256": "a7824228238cca75ff25092083b830baab557ad19749ea96e457debaa621f4cc"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 3643,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "MVC, `Callable`"
+          "quote": "MVC, `Callable`",
+          "block_sha256": "6323ed9cef21358e7408c79b4bfc6067207032c145be061b4438876cb2e829c7"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2665,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-ASYNC-CALLABLE"
+          "quote": "### P3B-ASYNC-CALLABLE",
+          "block_sha256": "9a75fc8c8707c6cb9698b4c6b52332d9fe34be328f3d9d8f20e8e357d5f19b53"
         }
       ],
       "opt_in": "reloadBoundary=request except explicit default immediate-mode control; startup javaagent.",
@@ -2639,30 +2609,28 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AsyncMvcRequestBoundaryReloadTest#heldAsyncResponseKeepsItsCodeUntilNativeCompletion",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AsyncMvcRequestBoundaryReloadTest.java",
-          "source_sha256": "a23a83c48a816b6a5d5e048a45d7492195cff0c0c2c3475e2377c98ccdd929a7",
           "kind": "watcher",
-          "assertions": "Native Tomcat worker/response1:1 until completion, then next request2:2; timeout503 still held until worker exit; immediate-mode control1:2."
+          "assertions": "Native Tomcat worker/response1:1 until completion, then next request2:2; timeout503 still held until worker exit; immediate-mode control1:2.",
+          "method_sha256": "a7824228238cca75ff25092083b830baab557ad19749ea96e457debaa621f4cc"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAsyncMvcRequestBoundaryReloadTest#heldAsyncResponseKeepsItsCodeUntilNativeCompletion",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAsyncMvcRequestBoundaryReloadTest.java",
-          "source_sha256": "7645b98c700492e67422850041782db1ff46730ab52d1a05077836ff78d0e33f",
           "kind": "watcher",
-          "assertions": "Native Tomcat worker/response1:1 until completion, then next request2:2; timeout503 still held until worker exit; immediate-mode control1:2."
+          "assertions": "Native Tomcat worker/response1:1 until completion, then next request2:2; timeout503 still held until worker exit; immediate-mode control1:2.",
+          "method_sha256": "a7824228238cca75ff25092083b830baab557ad19749ea96e457debaa621f4cc"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 3643,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "MVC, `Callable`"
+          "quote": "MVC, `Callable`",
+          "block_sha256": "6323ed9cef21358e7408c79b4bfc6067207032c145be061b4438876cb2e829c7"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2675,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-ASYNC-DEFERRED"
+          "quote": "### P3B-ASYNC-DEFERRED",
+          "block_sha256": "58ba28f0f42f3851ac2d7111d5df251aa43e2b742ecc235f0883091c8f259b0a"
         }
       ],
       "opt_in": "reloadBoundary=request except explicit default immediate-mode control; startup javaagent.",
@@ -2686,30 +2654,28 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AsyncMvcRequestBoundaryReloadTest#timedOutCallableThatIgnoresCancellationStillOwnsItsCode",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AsyncMvcRequestBoundaryReloadTest.java",
-          "source_sha256": "a23a83c48a816b6a5d5e048a45d7492195cff0c0c2c3475e2377c98ccdd929a7",
           "kind": "watcher",
-          "assertions": "Native Tomcat worker/response1:1 until completion, then next request2:2; timeout503 still held until worker exit; immediate-mode control1:2."
+          "assertions": "Native Tomcat worker/response1:1 until completion, then next request2:2; timeout503 still held until worker exit; immediate-mode control1:2.",
+          "method_sha256": "e676cb224c3875325b19b9f7f3e55671b4a8d8fd179c3ea85ef1246dcc703f56"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAsyncMvcRequestBoundaryReloadTest#timedOutCallableThatIgnoresCancellationStillOwnsItsCode",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAsyncMvcRequestBoundaryReloadTest.java",
-          "source_sha256": "7645b98c700492e67422850041782db1ff46730ab52d1a05077836ff78d0e33f",
           "kind": "watcher",
-          "assertions": "Native Tomcat worker/response1:1 until completion, then next request2:2; timeout503 still held until worker exit; immediate-mode control1:2."
+          "assertions": "Native Tomcat worker/response1:1 until completion, then next request2:2; timeout503 still held until worker exit; immediate-mode control1:2.",
+          "method_sha256": "e676cb224c3875325b19b9f7f3e55671b4a8d8fd179c3ea85ef1246dcc703f56"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 3643,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "MVC, `Callable`"
+          "quote": "MVC, `Callable`",
+          "block_sha256": "6323ed9cef21358e7408c79b4bfc6067207032c145be061b4438876cb2e829c7"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2685,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-ASYNC-TIMEOUT"
+          "quote": "### P3B-ASYNC-TIMEOUT",
+          "block_sha256": "a49f0cd101795c685cc8d86da922ad72d607f966ca5c83cf11a94a7b69c9eeb4"
         }
       ],
       "opt_in": "reloadBoundary=request except explicit default immediate-mode control; startup javaagent.",
@@ -2733,30 +2699,28 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AsyncMvcRequestBoundaryReloadTest#immediateModeStillReloadsWhileTheResponseIsPending",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AsyncMvcRequestBoundaryReloadTest.java",
-          "source_sha256": "a23a83c48a816b6a5d5e048a45d7492195cff0c0c2c3475e2377c98ccdd929a7",
           "kind": "watcher",
-          "assertions": "Native Tomcat worker/response1:1 until completion, then next request2:2; timeout503 still held until worker exit; immediate-mode control1:2."
+          "assertions": "Native Tomcat worker/response1:1 until completion, then next request2:2; timeout503 still held until worker exit; immediate-mode control1:2.",
+          "method_sha256": "e5aac70409953f62d18482cf4e2a22a0987b7ce4f124b8d0f5ceee4ea5fab73d"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAsyncMvcRequestBoundaryReloadTest#immediateModeStillReloadsWhileTheResponseIsPending",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAsyncMvcRequestBoundaryReloadTest.java",
-          "source_sha256": "7645b98c700492e67422850041782db1ff46730ab52d1a05077836ff78d0e33f",
           "kind": "watcher",
-          "assertions": "Native Tomcat worker/response1:1 until completion, then next request2:2; timeout503 still held until worker exit; immediate-mode control1:2."
+          "assertions": "Native Tomcat worker/response1:1 until completion, then next request2:2; timeout503 still held until worker exit; immediate-mode control1:2.",
+          "method_sha256": "e5aac70409953f62d18482cf4e2a22a0987b7ce4f124b8d0f5ceee4ea5fab73d"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 3643,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "MVC, `Callable`"
+          "quote": "MVC, `Callable`",
+          "block_sha256": "6323ed9cef21358e7408c79b4bfc6067207032c145be061b4438876cb2e829c7"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2695,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-ASYNC-IMMEDIATE"
+          "quote": "### P3B-ASYNC-IMMEDIATE",
+          "block_sha256": "22e874fa1a01ddbbe4a6a985a6a57b1b0cc9cb2b09b2f8447f243e8114d8bab9"
         }
       ],
       "opt_in": "reloadBoundary=request except explicit default immediate-mode control; startup javaagent.",
@@ -2780,41 +2744,38 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.MvcInterceptorDependencyReloadTest#requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/MvcInterceptorDependencyReloadTest.java",
-          "source_sha256": "2f06686742ebb7b23f5d1b4f32c0a48bca3c1eb54f7927216d13fa80268c6297",
           "kind": "watcher",
-          "assertions": "Repeated watched body/helper saves: exact current interceptor identity and constructorD2/D3/D4; native path include/exclude, callback order, unrelated identities, source-only no-op and servlet mapping public view equals context mapping."
+          "assertions": "Repeated watched body/helper saves: exact current interceptor identity and constructorD2/D3/D4; native path include/exclude, callback order, unrelated identities, source-only no-op and servlet mapping public view equals context mapping.",
+          "method_sha256": "f4cad2442bc4a5ca17d5b85d29d893343ba3cc5b1e7b784a813d6f127e2d19b7"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaMvcInterceptorDependencyReloadTest#requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaMvcInterceptorDependencyReloadTest.java",
-          "source_sha256": "bb88c39c29d13beee2f349c7e926e887cd38c2ca2e83718f5e35576304909808",
           "kind": "watcher",
           "assertions": "Repeated watched body/helper saves: exact current interceptor identity and constructorD2/D3/D4; native path include/exclude, callback order, unrelated identities, source-only no-op and servlet mapping public view equals context mapping.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.MvcInterceptorDependencyReloadTest#requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/MvcInterceptorDependencyReloadTest.java",
-            "source_sha256": "2f06686742ebb7b23f5d1b4f32c0a48bca3c1eb54f7927216d13fa80268c6297"
-          }
+            "method_sha256": "f4cad2442bc4a5ca17d5b85d29d893343ba3cc5b1e7b784a813d6f127e2d19b7"
+          },
+          "method_sha256": "f4cad2442bc4a5ca17d5b85d29d893343ba3cc5b1e7b784a813d6f127e2d19b7"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1084,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "Method-body saves on registered MVC interceptors"
+          "quote": "Method-body saves on registered MVC interceptors",
+          "block_sha256": "6b6f7fd68dc670d2c83c2703ae4a1bdbcee2e1ad985fbdd6ad0d2de06dd34c61"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2705,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-INTERCEPTOR-LIMIT"
+          "quote": "### P3B-INTERCEPTOR-LIMIT",
+          "block_sha256": "c3df89f5362ecbf4586672ae588a96d2a86bac905ceca428eeb149652c5ce1a6"
         },
         {
           "path": "docs/product-reference.md",
-          "line": 38,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "Registered MVC interceptor dependency state"
+          "quote": "Registered MVC interceptor dependency state",
+          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -2838,23 +2799,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#voidModelMethodWritesIntoSpringsActualModel",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/AddedMvcBindingMethodsTest.java",
-          "source_sha256": "1fc0e9f288d2e534a0ece6cc92013af041d20b2a3979774d9397bdf66855f253",
           "kind": "component",
-          "assertions": "HTTP MockMvc body7:owner:seed and exactly one invocation."
+          "assertions": "HTTP MockMvc body7:owner:seed and exactly one invocation.",
+          "method_sha256": "c00541889a2ffcc5012e939203df7c88a09ea0632d2a2989251a5a26c005acf9"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1136,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "return values and void methods"
+          "quote": "return values and void methods",
+          "block_sha256": "70a4c8566d5d81c2b60981c6f79c3886bb4013afabcb7acc1e62b8ce4441f4e5"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2717,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-MODEL-VOID"
+          "quote": "### P3B-MODEL-VOID",
+          "block_sha256": "298c01d2d8032078f96f79092bb605c8baa5b1f49392df97b3fbc6a1e792ada6"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -2878,23 +2837,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#concreteGenericReturnMetadataAndModelValueArePreserved",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/AddedMvcBindingMethodsTest.java",
-          "source_sha256": "1fc0e9f288d2e534a0ece6cc92013af041d20b2a3979774d9397bdf66855f253",
           "kind": "component",
-          "assertions": "List<String> reflective metadata, actual model[owner,list] and one call."
+          "assertions": "List<String> reflective metadata, actual model[owner,list] and one call.",
+          "method_sha256": "3d0185fd65d13b5ded0ada38d82e4a68783c4ab3981ef91d1dd4cdd396ab2cad"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1136,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "return values and void methods"
+          "quote": "return values and void methods",
+          "block_sha256": "70a4c8566d5d81c2b60981c6f79c3886bb4013afabcb7acc1e62b8ce4441f4e5"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2727,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-MODEL-GENERIC"
+          "quote": "### P3B-MODEL-GENERIC",
+          "block_sha256": "41df5adabf29f69cf660a871903df0b773b5d14fe76ed4a0a519b1435f61a3c6"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -2918,23 +2875,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.AddedExceptionHandlersTest#causeMatchingUsesSpringsResolverAndExposesTheActualCauseArgument",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/AddedExceptionHandlersTest.java",
-          "source_sha256": "de945307679503d987afd6dbedcf3cce773d3a409d56d7aaff779208e70b808a",
           "kind": "component",
-          "assertions": "Mock request output1:cause:/boom."
+          "assertions": "Mock request output1:cause:/boom.",
+          "method_sha256": "9dc7273da00075b2178f632a09377f86239cc01b556fbead396d9c04fea5e581"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1054,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "Spring sees a hidden metadata class"
+          "quote": "Spring sees a hidden metadata class",
+          "block_sha256": "f3712805bae6713f4aa05c633fd8e9c787d2993a0033673e784688ed373b9ee2"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2737,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-EXCEPTION-CAUSE"
+          "quote": "### P3B-EXCEPTION-CAUSE",
+          "block_sha256": "8e245590dc12f9be5dd0fa96f50b40260c6535cdcc07e0e98d1ce7b49983f8ac"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -2958,23 +2913,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.AddedExceptionHandlersTest#realSpringInfersTheExceptionResolvesRequestAndUsesStatusAndBodyAnnotations",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/AddedExceptionHandlersTest.java",
-          "source_sha256": "de945307679503d987afd6dbedcf3cce773d3a409d56d7aaff779208e70b808a",
           "kind": "component",
-          "assertions": "Native resolver422, exact body and one invocation; original method remains absent."
+          "assertions": "Native resolver422, exact body and one invocation; original method remains absent.",
+          "method_sha256": "3d4a3bb41e80b6554d9c9b1bf89772e4ee31cfba83b25c208bbf321f8f2606a3"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1054,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "Spring sees a hidden metadata class"
+          "quote": "Spring sees a hidden metadata class",
+          "block_sha256": "f3712805bae6713f4aa05c633fd8e9c787d2993a0033673e784688ed373b9ee2"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2747,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-EXCEPTION-INFER"
+          "quote": "### P3B-EXCEPTION-INFER",
+          "block_sha256": "85eb2134842a75883ba05023597f08d9011269d7b8a777ffaace67f702fb63ff"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -2998,23 +2951,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.AddedExceptionHandlersTest#concreteGenericResponseEntityKeepsStatusHeadersAndBody",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/AddedExceptionHandlersTest.java",
-          "source_sha256": "de945307679503d987afd6dbedcf3cce773d3a409d56d7aaff779208e70b808a",
           "kind": "component",
-          "assertions": "Native resolver423, X-Selected entity, bodyentity:bad and ResponseEntity<String> metadata."
+          "assertions": "Native resolver423, X-Selected entity, bodyentity:bad and ResponseEntity<String> metadata.",
+          "method_sha256": "d338a9d7df2543f784d155e9d822f3ca2d58bf9d0dce76594dd45c093b66cfbb"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1054,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "Spring sees a hidden metadata class"
+          "quote": "Spring sees a hidden metadata class",
+          "block_sha256": "f3712805bae6713f4aa05c633fd8e9c787d2993a0033673e784688ed373b9ee2"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2757,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-EXCEPTION-ENTITY"
+          "quote": "### P3B-EXCEPTION-ENTITY",
+          "block_sha256": "0392981236cc0e5ed71e4d50cd469603002cbf0ad7ecfe9a252e47e34bdfa58a"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -3038,23 +2989,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.AddedExceptionHandlersTest#classResponseStatusIsAvailableToTheActualReturnValuePipeline",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/AddedExceptionHandlersTest.java",
-          "source_sha256": "de945307679503d987afd6dbedcf3cce773d3a409d56d7aaff779208e70b808a",
           "kind": "component",
-          "assertions": "Removing method status and adding class status yields409."
+          "assertions": "Removing method status and adding class status yields409.",
+          "method_sha256": "73dcb40da593a63bcfb2d46187024880e2879e3b29bb10f5dcd2cca4815d8395"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1054,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "Spring sees a hidden metadata class"
+          "quote": "Spring sees a hidden metadata class",
+          "block_sha256": "f3712805bae6713f4aa05c633fd8e9c787d2993a0033673e784688ed373b9ee2"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2767,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-EXCEPTION-CLASS-STATUS"
+          "quote": "### P3B-EXCEPTION-CLASS-STATUS",
+          "block_sha256": "8ad48325b1bf048021c0fbc02a943530e30cb04ecb778aab7a4662be0eb2ffab"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -3078,23 +3027,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.JacksonAddedGettersTest#mixInsAreAppliedByJacksonToTheAddedMethod",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/JacksonAddedGettersTest.java",
-          "source_sha256": "521f8573eb0bca35537fbaac179ca36467b31d26035a19ccd403c5a470b1592d",
           "kind": "component",
-          "assertions": "Exact JSON from_mixin overrides saved renamed property."
+          "assertions": "Exact JSON from_mixin overrides saved renamed property.",
+          "method_sha256": "fbeb2bc9726c3a4c68fef81a26d075b91ebd96ff5aaf3bd99b6a7cb83130e535"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1270,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "field/method mix-ins"
+          "quote": "field/method mix-ins",
+          "block_sha256": "c4723d227daf7c1063a70b1d40e22615cc12c02043ba9869e9825d3d2e074397"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2777,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-JACKSON-GETTER-MIXIN"
+          "quote": "### P3B-JACKSON-GETTER-MIXIN",
+          "block_sha256": "3423553a56a97a60443d003066bfe3ec9ffd1d3507cc85a38f22a729cff12597"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -3118,23 +3065,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.JacksonAddedPropertiesTest#fieldMixinNamingAndRenameRemovalRestorationUseFreshDiscovery",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/JacksonAddedPropertiesTest.java",
-          "source_sha256": "e23119bd4aa60b6b2cbd2d5c306b7276415eeaf8d9d77881ebd3f97b2d5c5ec5",
           "kind": "component",
-          "assertions": "Fresh JSON mixin_name, removed property throws, restored renamed property keeps storage."
+          "assertions": "Fresh JSON mixin_name, removed property throws, restored renamed property keeps storage.",
+          "method_sha256": "e98cc02a5231837cae41da1e9abf591de7bb5fbd22dd19a5c915b7bcb7c49eba"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1270,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "field/method mix-ins"
+          "quote": "field/method mix-ins",
+          "block_sha256": "c4723d227daf7c1063a70b1d40e22615cc12c02043ba9869e9825d3d2e074397"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2787,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-JACKSON-FIELD-MIXIN"
+          "quote": "### P3B-JACKSON-FIELD-MIXIN",
+          "block_sha256": "0843777151896efd6b643e83e25504ff51cd141c52c0491399d4290f554d056b"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -3158,23 +3103,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.JacksonAddedGettersTest#privateGetterRespectsDisabledAccessOverride",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/JacksonAddedGettersTest.java",
-          "source_sha256": "521f8573eb0bca35537fbaac179ca36467b31d26035a19ccd403c5a470b1592d",
           "kind": "component",
-          "assertions": "Permissive output then restricted mapper IllegalAccessException."
+          "assertions": "Permissive output then restricted mapper IllegalAccessException.",
+          "method_sha256": "96673bc9240bd236a9e4f1b4c0512e08f134a595178baea996490b8aa29aa032"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1272,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "one mapper granting access"
+          "quote": "one mapper granting access",
+          "block_sha256": "c4723d227daf7c1063a70b1d40e22615cc12c02043ba9869e9825d3d2e074397"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2797,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-JACKSON-GETTER-ACCESS"
+          "quote": "### P3B-JACKSON-GETTER-ACCESS",
+          "block_sha256": "43997eea63146eec9d06df7346893dbdf345ef210209b77feff5cc05805a7e26"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -3198,23 +3141,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.JacksonAddedPropertiesTest#privateSettersAndFieldsRespectEachMappersAccessPolicy",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/JacksonAddedPropertiesTest.java",
-          "source_sha256": "e23119bd4aa60b6b2cbd2d5c306b7276415eeaf8d9d77881ebd3f97b2d5c5ec5",
           "kind": "component",
-          "assertions": "Permissive reads then restricted mapper IllegalAccessException."
+          "assertions": "Permissive reads then restricted mapper IllegalAccessException.",
+          "method_sha256": "b2162e6a0065c79f5736192d1f35aa922123f1fb4825bb3458586afb647d8820"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1272,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "one mapper granting access"
+          "quote": "one mapper granting access",
+          "block_sha256": "c4723d227daf7c1063a70b1d40e22615cc12c02043ba9869e9825d3d2e074397"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2807,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-JACKSON-WRITE-ACCESS"
+          "quote": "### P3B-JACKSON-WRITE-ACCESS",
+          "block_sha256": "e94d81a8b37edc339efbc4038c73f0b4bc3b7c83fed03741cc195206e5f20a05"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -3238,23 +3179,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.JacksonAddedPropertiesTest#fieldsUseTheRealStorageAndPreserveJsonAccessPolicies",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/JacksonAddedPropertiesTest.java",
-          "source_sha256": "e23119bd4aa60b6b2cbd2d5c306b7276415eeaf8d9d77881ebd3f97b2d5c5ec5",
           "kind": "component",
-          "assertions": "FieldStore outputnull, JSON input absent; secret/static/transient/injected field absent."
+          "assertions": "FieldStore outputnull, JSON input absent; secret/static/transient/injected field absent.",
+          "method_sha256": "953b61db5bcae2e97f76845147842a9421fb3680aef7beddc28e9b8b41d2b93f"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1269,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "read/write-only"
+          "quote": "read/write-only",
+          "block_sha256": "c4723d227daf7c1063a70b1d40e22615cc12c02043ba9869e9825d3d2e074397"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2817,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-JACKSON-READ-ONLY"
+          "quote": "### P3B-JACKSON-READ-ONLY",
+          "block_sha256": "a8703beb9e42086f12265d66a532d1b37374ebb8f65245a7774e2cc7e612b494"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -3278,23 +3217,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.JacksonAddedPropertiesTest#fieldsUseTheRealStorageAndPreserveJsonAccessPolicies",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/JacksonAddedPropertiesTest.java",
-          "source_sha256": "e23119bd4aa60b6b2cbd2d5c306b7276415eeaf8d9d77881ebd3f97b2d5c5ec5",
           "kind": "component",
-          "assertions": "JSON output has no input key."
+          "assertions": "JSON output has no input key.",
+          "method_sha256": "953b61db5bcae2e97f76845147842a9421fb3680aef7beddc28e9b8b41d2b93f"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1269,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "read/write-only"
+          "quote": "read/write-only",
+          "block_sha256": "c4723d227daf7c1063a70b1d40e22615cc12c02043ba9869e9825d3d2e074397"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2827,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-JACKSON-WRITE-ONLY"
+          "quote": "### P3B-JACKSON-WRITE-ONLY",
+          "block_sha256": "d70449b7657f880e26b2e9d38b0e5bd70ee89227cb6d740f3178250395ab6e04"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -3318,23 +3255,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.JacksonAddedPropertiesTest#setterMetadataUsesAliasNullPolicyAndGenericConversion",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/JacksonAddedPropertiesTest.java",
-          "source_sha256": "e23119bd4aa60b6b2cbd2d5c306b7276415eeaf8d9d77881ebd3f97b2d5c5ec5",
           "kind": "component",
-          "assertions": "Native setter gets List<Integer>, first element Integer, reflective generic parameter preserved."
+          "assertions": "Native setter gets List<Integer>, first element Integer, reflective generic parameter preserved.",
+          "method_sha256": "033d5c28257574a385e9e12985847cb73ce2b0c042e88db6cc0c9213be9aa126"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1271,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "Concrete generic collections"
+          "quote": "Concrete generic collections",
+          "block_sha256": "c4723d227daf7c1063a70b1d40e22615cc12c02043ba9869e9825d3d2e074397"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2837,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-JACKSON-GENERIC-IN"
+          "quote": "### P3B-JACKSON-GENERIC-IN",
+          "block_sha256": "09cf7a1f7244571400b6b8b7fce42ce739a8ee7aa78c53c37a14bf768a408c76"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -3358,23 +3293,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.JacksonAddedPropertiesTest#invalidConversionAndSetterExceptionKeepJacksonErrors",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/JacksonAddedPropertiesTest.java",
-          "source_sha256": "e23119bd4aa60b6b2cbd2d5c306b7276415eeaf8d9d77881ebd3f97b2d5c5ec5",
           "kind": "component",
-          "assertions": "Invalid number path, throwing failure path and IllegalStateException setter-failed root."
+          "assertions": "Invalid number path, throwing failure path and IllegalStateException setter-failed root.",
+          "method_sha256": "a3324bbfa68e36831bcfb9e4e630583af3ba3e14ea58aad62dd4850b36d566a6"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1275,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "mapping-error path"
+          "quote": "mapping-error path",
+          "block_sha256": "c4723d227daf7c1063a70b1d40e22615cc12c02043ba9869e9825d3d2e074397"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2847,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-JACKSON-ERRORS"
+          "quote": "### P3B-JACKSON-ERRORS",
+          "block_sha256": "cd5c0ec6f78dec9f59ed5cdb83e6f80564a855824476bf68bc8184698a83288b"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -3398,23 +3331,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.JacksonAddedGettersTest#getterFailuresKeepJacksonMappingPathAndRootCause",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/JacksonAddedGettersTest.java",
-          "source_sha256": "521f8573eb0bca35537fbaac179ca36467b31d26035a19ccd403c5a470b1592d",
           "kind": "component",
-          "assertions": "failure path and IllegalStateException getter-failed root."
+          "assertions": "failure path and IllegalStateException getter-failed root.",
+          "method_sha256": "b47e65d348878b03cd58e096aba88d5ec6caf8f86de46b0ef70836f57d4a45d3"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1275,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "mapping-error path"
+          "quote": "mapping-error path",
+          "block_sha256": "c4723d227daf7c1063a70b1d40e22615cc12c02043ba9869e9825d3d2e074397"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2857,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-JACKSON-GETTER-ERROR"
+          "quote": "### P3B-JACKSON-GETTER-ERROR",
+          "block_sha256": "001cc3052825946a1f20d5214d57ea53dd311d68b2d2a0676a87a452c8c233c2"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -3438,23 +3369,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.JacksonAddedGettersTest#retainedWriterUsesNewBodiesWhileNewDiscoveryUsesNewMetadata",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/JacksonAddedGettersTest.java",
-          "source_sha256": "521f8573eb0bca35537fbaac179ca36467b31d26035a19ccd403c5a470b1592d",
           "kind": "component",
-          "assertions": "Same writer one->two; fresh mapper removal then restorationthree."
+          "assertions": "Same writer one->two; fresh mapper removal then restorationthree.",
+          "method_sha256": "2290c6f369e8733a8d0ab4beefdfe3883a8dd1b524d8b5d32e5eeaa647530f36"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1292,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "ObjectWriter retained"
+          "quote": "ObjectWriter retained",
+          "block_sha256": "c4723d227daf7c1063a70b1d40e22615cc12c02043ba9869e9825d3d2e074397"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2867,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-JACKSON-HELD-WRITER"
+          "quote": "### P3B-JACKSON-HELD-WRITER",
+          "block_sha256": "53ca69a7deedaf84403aba2d6d711f0d8c28a44985113f11e7d0603ee88885a8"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -3478,23 +3407,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#proxyReceiverIsRefusedBeforeAnyCallbackBodyRuns",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/AddedMvcBindingMethodsTest.java",
-          "source_sha256": "1fc0e9f288d2e534a0ece6cc92013af041d20b2a3979774d9397bdf66855f253",
           "kind": "component",
-          "assertions": "Native CGLIB proxy receiver IllegalStateException and owner.calls0."
+          "assertions": "Native CGLIB proxy receiver IllegalStateException and owner.calls0.",
+          "method_sha256": "872c2a09114cd4ff45a5c1b87f1f63b69a0aac5e058ba846a3e94298c27dd57b"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1156,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "Proxy/subclass receivers are refused"
+          "quote": "Proxy/subclass receivers are refused",
+          "block_sha256": "70a4c8566d5d81c2b60981c6f79c3886bb4013afabcb7acc1e62b8ce4441f4e5"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2877,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-BINDER-PROXY-REFUSAL"
+          "quote": "### P3B-BINDER-PROXY-REFUSAL",
+          "block_sha256": "0b70ddcc76ffebcbf91c9695634042a8171b25f9b3392fd4527d805e0d7c6c5b"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -3518,23 +3445,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.AddedExceptionHandlersTest#proxyReceiverIsNotUnwrappedAndNoBodyRunsWithoutItsAdvice",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/AddedExceptionHandlersTest.java",
-          "source_sha256": "de945307679503d987afd6dbedcf3cce773d3a409d56d7aaff779208e70b808a",
           "kind": "component",
-          "assertions": "Native CGLIB proxy receiver IllegalStateException and owner.calls0."
+          "assertions": "Native CGLIB proxy receiver IllegalStateException and owner.calls0.",
+          "method_sha256": "e2cb1b46c4b4ee38e58f20c288e7df6278473acc44612022110414172f1940c8"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1054,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "Spring sees a hidden metadata class"
+          "quote": "Spring sees a hidden metadata class",
+          "block_sha256": "f3712805bae6713f4aa05c633fd8e9c787d2993a0033673e784688ed373b9ee2"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2887,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-EXCEPTION-PROXY-REFUSAL"
+          "quote": "### P3B-EXCEPTION-PROXY-REFUSAL",
+          "block_sha256": "8489d001167c99cbcf13d93327b97efcd00c85a9009a340a4cda9f7b879780bc"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -3558,23 +3483,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#requestMappedModelAttributesAreNotInvokedAsModelInitializers",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/AddedMvcBindingMethodsTest.java",
-          "source_sha256": "1fc0e9f288d2e534a0ece6cc92013af041d20b2a3979774d9397bdf66855f253",
           "kind": "component",
-          "assertions": "Added mapped method absent from callback metadata; original binder/model response preserved."
+          "assertions": "Added mapped method absent from callback metadata; original binder/model response preserved.",
+          "method_sha256": "bed657a9f8ad6ffd355b6bca20b6333036716945d2c2bff0f9b1196fb258632a"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1137,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "Model-annotated request mappings are excluded"
+          "quote": "Model-annotated request mappings are excluded",
+          "block_sha256": "70a4c8566d5d81c2b60981c6f79c3886bb4013afabcb7acc1e62b8ce4441f4e5"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2897,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-MODEL-MAPPED-EXCLUSION"
+          "quote": "### P3B-MODEL-MAPPED-EXCLUSION",
+          "block_sha256": "5d3d06d8f7e3f33e73355513602dc27410313272a8e3a28806cd7ce5bde459d3"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -3598,23 +3521,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#invalidBinderReturnAndAsyncModelAreRefusedBeforeInvocation",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/AddedMvcBindingMethodsTest.java",
-          "source_sha256": "1fc0e9f288d2e534a0ece6cc92013af041d20b2a3979774d9397bdf66855f253",
           "kind": "component",
-          "assertions": "IllegalStateException must return void."
+          "assertions": "IllegalStateException must return void.",
+          "method_sha256": "909af3861d7e0f0908026b3d0c18788c643a5293b9b5df62d3e85a33925157f5"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1155,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "non-void binders"
+          "quote": "non-void binders",
+          "block_sha256": "70a4c8566d5d81c2b60981c6f79c3886bb4013afabcb7acc1e62b8ce4441f4e5"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2907,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-BINDER-RETURN-REFUSAL"
+          "quote": "### P3B-BINDER-RETURN-REFUSAL",
+          "block_sha256": "accf3c410d35c523c82743dc18ba513c9e126919d9014ebc05fe811ab60c9254"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -3638,23 +3559,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#invalidBinderReturnAndAsyncModelAreRefusedBeforeInvocation",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/AddedMvcBindingMethodsTest.java",
-          "source_sha256": "1fc0e9f288d2e534a0ece6cc92013af041d20b2a3979774d9397bdf66855f253",
           "kind": "component",
-          "assertions": "CompletableFuture model publication throws asynchronous refusal."
+          "assertions": "CompletableFuture model publication throws asynchronous refusal.",
+          "method_sha256": "909af3861d7e0f0908026b3d0c18788c643a5293b9b5df62d3e85a33925157f5"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1155,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "declared async/reactive/streaming model returns"
+          "quote": "declared async/reactive/streaming model returns",
+          "block_sha256": "70a4c8566d5d81c2b60981c6f79c3886bb4013afabcb7acc1e62b8ce4441f4e5"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2917,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-MODEL-ASYNC-REFUSAL"
+          "quote": "### P3B-MODEL-ASYNC-REFUSAL",
+          "block_sha256": "cc7bb5bf4a7ebadd2303e53bd49247ca2e6cef51d74a23c577dbfeb5641ae7f1"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -3678,23 +3597,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#extraAdviceAndStaticCallbacksCannotBypassTheirSemantics",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/AddedMvcBindingMethodsTest.java",
-          "source_sha256": "1fc0e9f288d2e534a0ece6cc92013af041d20b2a3979774d9397bdf66855f253",
           "kind": "component",
-          "assertions": "Transactional binder refused; old callback metadata cleared."
+          "assertions": "Transactional binder refused; old callback metadata cleared.",
+          "method_sha256": "1658f195d57f23c8e952426dd8beb5695397c76e5e6fd6a2aa3473e719002102"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1153,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "Extra callback advice"
+          "quote": "Extra callback advice",
+          "block_sha256": "70a4c8566d5d81c2b60981c6f79c3886bb4013afabcb7acc1e62b8ce4441f4e5"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2927,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-CALLBACK-ADVICE-REFUSAL"
+          "quote": "### P3B-CALLBACK-ADVICE-REFUSAL",
+          "block_sha256": "e5172015bbe6cf5a062fa6e8b45cc1f36f1519567860f8e0c5eed90e4c34e3bf"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -3718,23 +3635,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#extraAdviceAndStaticCallbacksCannotBypassTheirSemantics",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/AddedMvcBindingMethodsTest.java",
-          "source_sha256": "1fc0e9f288d2e534a0ece6cc92013af041d20b2a3979774d9397bdf66855f253",
           "kind": "component",
-          "assertions": "Static binder publication throws."
+          "assertions": "Static binder publication throws.",
+          "method_sha256": "1658f195d57f23c8e952426dd8beb5695397c76e5e6fd6a2aa3473e719002102"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1154,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "static/abstract/native/bridge/synthetic callbacks"
+          "quote": "static/abstract/native/bridge/synthetic callbacks",
+          "block_sha256": "70a4c8566d5d81c2b60981c6f79c3886bb4013afabcb7acc1e62b8ce4441f4e5"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2937,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-CALLBACK-STATIC-REFUSAL"
+          "quote": "### P3B-CALLBACK-STATIC-REFUSAL",
+          "block_sha256": "bcf7d680c344d828d89a894ab1a3ef00cf64cb3d95cff9ab27c5e66ab5778bf1"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -3758,23 +3673,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#typeVariablesInterfacesAndSessionMetadataAreRefused",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/AddedMvcBindingMethodsTest.java",
-          "source_sha256": "1fc0e9f288d2e534a0ece6cc92013af041d20b2a3979774d9397bdf66855f253",
           "kind": "component",
-          "assertions": "Class and method type-variable publication throws; cleared metadata."
+          "assertions": "Class and method type-variable publication throws; cleared metadata.",
+          "method_sha256": "3e963a304c7c91fa1dc0614e143f7ec8563686703200558082780675d20fe2a6"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1155,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "signatures, non-void binders"
+          "quote": "signatures, non-void binders",
+          "block_sha256": "70a4c8566d5d81c2b60981c6f79c3886bb4013afabcb7acc1e62b8ce4441f4e5"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2947,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-CALLBACK-GENERIC-REFUSAL"
+          "quote": "### P3B-CALLBACK-GENERIC-REFUSAL",
+          "block_sha256": "1183c513dd2bd8d0e1a05f94fbfef67d35ae02fff9dca809ed00fdc5b991f6f4"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -3798,23 +3711,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#typeVariablesInterfacesAndSessionMetadataAreRefused",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/AddedMvcBindingMethodsTest.java",
-          "source_sha256": "1fc0e9f288d2e534a0ece6cc92013af041d20b2a3979774d9397bdf66855f253",
           "kind": "component",
-          "assertions": "Runnable interface metadata publication throws."
+          "assertions": "Runnable interface metadata publication throws.",
+          "method_sha256": "3e963a304c7c91fa1dc0614e143f7ec8563686703200558082780675d20fe2a6"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1150,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "interfaces or type variables."
+          "quote": "interfaces or type variables.",
+          "block_sha256": "70a4c8566d5d81c2b60981c6f79c3886bb4013afabcb7acc1e62b8ce4441f4e5"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2957,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-CALLBACK-INTERFACE-REFUSAL"
+          "quote": "### P3B-CALLBACK-INTERFACE-REFUSAL",
+          "block_sha256": "bdd0030bd8a607e4a4e66bfac0e59e70596bc3b9b0fec111e7fd305e8ddc1508"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -3838,23 +3749,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#typeVariablesInterfacesAndSessionMetadataAreRefused",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/AddedMvcBindingMethodsTest.java",
-          "source_sha256": "1fc0e9f288d2e534a0ece6cc92013af041d20b2a3979774d9397bdf66855f253",
           "kind": "component",
-          "assertions": "SessionAttributes publication throws; original metadata restored."
+          "assertions": "SessionAttributes publication throws; original metadata restored.",
+          "method_sha256": "3e963a304c7c91fa1dc0614e143f7ec8563686703200558082780675d20fe2a6"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1157,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "`@SessionAttributes`, composed metadata"
+          "quote": "`@SessionAttributes`, composed metadata",
+          "block_sha256": "70a4c8566d5d81c2b60981c6f79c3886bb4013afabcb7acc1e62b8ce4441f4e5"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2967,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-CALLBACK-SESSION-REFUSAL"
+          "quote": "### P3B-CALLBACK-SESSION-REFUSAL",
+          "block_sha256": "286ae43046a3511ebac045e6d64c40fcb73318b76298c9a8930c3f5da9d4da5c"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -3878,23 +3787,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.AddedExceptionHandlersTest#ambiguousMappingIsRejectedBySpringAndClearsTheOldAdapter",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/AddedExceptionHandlersTest.java",
-          "source_sha256": "de945307679503d987afd6dbedcf3cce773d3a409d56d7aaff779208e70b808a",
           "kind": "component",
-          "assertions": "Actual resolver ambiguous IllegalStateException and old adapter cleared."
+          "assertions": "Actual resolver ambiguous IllegalStateException and old adapter cleared.",
+          "method_sha256": "b4923d72c4a7a401860f4dd20511cfd419ea32daad0941e709926cb2f3b25bc3"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1054,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "Spring sees a hidden metadata class"
+          "quote": "Spring sees a hidden metadata class",
+          "block_sha256": "f3712805bae6713f4aa05c633fd8e9c787d2993a0033673e784688ed373b9ee2"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2977,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-EXCEPTION-AMBIGUITY"
+          "quote": "### P3B-EXCEPTION-AMBIGUITY",
+          "block_sha256": "422cc2bb065b972669201b182204a505382c110b07058752ea83830714140ef3"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -3918,23 +3825,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.AddedExceptionHandlersTest#asynchronousAndExtraAdviceMetadataAreExplicitlyRefused",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/AddedExceptionHandlersTest.java",
-          "source_sha256": "de945307679503d987afd6dbedcf3cce773d3a409d56d7aaff779208e70b808a",
           "kind": "component",
-          "assertions": "CompletableFuture handler publication throws asynchronous refusal."
+          "assertions": "CompletableFuture handler publication throws asynchronous refusal.",
+          "method_sha256": "4ebac57ca70dc30062e9d2910a8ff2db638bb01e7478d0f3a4bc896006d24279"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1054,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "Spring sees a hidden metadata class"
+          "quote": "Spring sees a hidden metadata class",
+          "block_sha256": "f3712805bae6713f4aa05c633fd8e9c787d2993a0033673e784688ed373b9ee2"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2987,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-EXCEPTION-ASYNC-REFUSAL"
+          "quote": "### P3B-EXCEPTION-ASYNC-REFUSAL",
+          "block_sha256": "c99487559113987c64e00564fc3c9cf662493a1b157e5a7d30c988256a85560e"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -3958,23 +3863,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.AddedExceptionHandlersTest#asynchronousAndExtraAdviceMetadataAreExplicitlyRefused",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/AddedExceptionHandlersTest.java",
-          "source_sha256": "de945307679503d987afd6dbedcf3cce773d3a409d56d7aaff779208e70b808a",
           "kind": "component",
-          "assertions": "Transactional handler publication throws unsupported annotation."
+          "assertions": "Transactional handler publication throws unsupported annotation.",
+          "method_sha256": "4ebac57ca70dc30062e9d2910a8ff2db638bb01e7478d0f3a4bc896006d24279"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1054,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "Spring sees a hidden metadata class"
+          "quote": "Spring sees a hidden metadata class",
+          "block_sha256": "f3712805bae6713f4aa05c633fd8e9c787d2993a0033673e784688ed373b9ee2"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2997,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-EXCEPTION-ADVICE-REFUSAL"
+          "quote": "### P3B-EXCEPTION-ADVICE-REFUSAL",
+          "block_sha256": "95cd0d108d9e72ddd8943d5625c5afd1545a7ab05e16f70d837c42bdae474a17"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -3998,23 +3901,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.AddedExceptionHandlersTest#classTypeVariablesAndMethodTypeVariablesAreRefused",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/AddedExceptionHandlersTest.java",
-          "source_sha256": "de945307679503d987afd6dbedcf3cce773d3a409d56d7aaff779208e70b808a",
           "kind": "component",
-          "assertions": "Class generic, method generic and unresolved type-variable publication throw."
+          "assertions": "Class generic, method generic and unresolved type-variable publication throw.",
+          "method_sha256": "21ed1d47ee2475bdeb1336ca42ed7679d268c6a45f21acd25ccef3243bce3f14"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1054,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "Spring sees a hidden metadata class"
+          "quote": "Spring sees a hidden metadata class",
+          "block_sha256": "f3712805bae6713f4aa05c633fd8e9c787d2993a0033673e784688ed373b9ee2"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3007,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-EXCEPTION-GENERIC-REFUSAL"
+          "quote": "### P3B-EXCEPTION-GENERIC-REFUSAL",
+          "block_sha256": "d4e4d6f7e7cd3bf59c7c1533fae9455693a6d82be477335f8341b26c6eaceb31"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -4038,23 +3939,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.AddedExceptionHandlersTest#staticAndInterfaceMetadataAreRefusedBeforePublishing",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/AddedExceptionHandlersTest.java",
-          "source_sha256": "de945307679503d987afd6dbedcf3cce773d3a409d56d7aaff779208e70b808a",
           "kind": "component",
-          "assertions": "Static handler publication throws."
+          "assertions": "Static handler publication throws.",
+          "method_sha256": "edf29d80fd3cdf79efb3deca06695919be3125ead9ec7809416dcaba6a6bbc20"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1054,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "Spring sees a hidden metadata class"
+          "quote": "Spring sees a hidden metadata class",
+          "block_sha256": "f3712805bae6713f4aa05c633fd8e9c787d2993a0033673e784688ed373b9ee2"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3017,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-EXCEPTION-STATIC-REFUSAL"
+          "quote": "### P3B-EXCEPTION-STATIC-REFUSAL",
+          "block_sha256": "ff3402a1103661db924459d454f9bf9c61c2788dc34187133025948d6a805744"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -4078,23 +3977,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.AddedExceptionHandlersTest#staticAndInterfaceMetadataAreRefusedBeforePublishing",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/AddedExceptionHandlersTest.java",
-          "source_sha256": "de945307679503d987afd6dbedcf3cce773d3a409d56d7aaff779208e70b808a",
           "kind": "component",
-          "assertions": "Runnable interface publication throws; original owner metadata remains."
+          "assertions": "Runnable interface publication throws; original owner metadata remains.",
+          "method_sha256": "edf29d80fd3cdf79efb3deca06695919be3125ead9ec7809416dcaba6a6bbc20"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1054,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "Spring sees a hidden metadata class"
+          "quote": "Spring sees a hidden metadata class",
+          "block_sha256": "f3712805bae6713f4aa05c633fd8e9c787d2993a0033673e784688ed373b9ee2"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3027,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-EXCEPTION-INTERFACE-REFUSAL"
+          "quote": "### P3B-EXCEPTION-INTERFACE-REFUSAL",
+          "block_sha256": "4046ad582b7b65b2404eb02a57ae16c0b94478496506b857b22899e60dcbbdc4"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -4118,23 +4015,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.JacksonAddedPropertiesTest#finalAddedFieldsNeverBypassTheReflectionWriteRestriction",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/JacksonAddedPropertiesTest.java",
-          "source_sha256": "e23119bd4aa60b6b2cbd2d5c306b7276415eeaf8d9d77881ebd3f97b2d5c5ec5",
           "kind": "component",
-          "assertions": "Direct bridge IllegalAccessException and ObjectMapper read failure."
+          "assertions": "Direct bridge IllegalAccessException and ObjectMapper read failure.",
+          "method_sha256": "11040f0a9e501d3d96552b1af6a24dbf65b4acc97854bd64530964c9c87accd5"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1283,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "Final added fields can be read"
+          "quote": "Final added fields can be read",
+          "block_sha256": "c4723d227daf7c1063a70b1d40e22615cc12c02043ba9869e9825d3d2e074397"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3037,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-JACKSON-FINAL-REFUSAL"
+          "quote": "### P3B-JACKSON-FINAL-REFUSAL",
+          "block_sha256": "4d2924ba8422f808ffd93416fdc8862f30f1234685d08131a33ce71fe0b1242d"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -4158,15 +4053,13 @@
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 96,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**MVC Re-scan**"
+          "quote": "**MVC Re-scan**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3047,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-ENDPOINT-PUT"
+          "quote": "### P3B-ENDPOINT-PUT",
+          "block_sha256": "2320e59e983e498dabeb08d765259274b4610e735419b1ea555e3ca015f4b826"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -4187,15 +4080,13 @@
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 96,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**MVC Re-scan**"
+          "quote": "**MVC Re-scan**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3057,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-ENDPOINT-PATCH"
+          "quote": "### P3B-ENDPOINT-PATCH",
+          "block_sha256": "56ac22e15339c1a8a73932d105c9b7152d2e3d9df363ac7d918afa0552459d62"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -4216,15 +4107,13 @@
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 96,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**MVC Re-scan**"
+          "quote": "**MVC Re-scan**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3067,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-ENDPOINT-DELETE"
+          "quote": "### P3B-ENDPOINT-DELETE",
+          "block_sha256": "f064c622220b124329e8432fc6a8142a349cdbd5477db859ef5fec518e6c7611"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -4245,15 +4134,13 @@
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 96,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**MVC Re-scan**"
+          "quote": "**MVC Re-scan**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3077,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3B-ENDPOINT-REQUEST-MAPPING"
+          "quote": "### P3B-ENDPOINT-REQUEST-MAPPING",
+          "block_sha256": "b8571426b40d0f61fa2160bc4c588865958958476eb2941914f578b2d1fd7ec2"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",

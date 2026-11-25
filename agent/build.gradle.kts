@@ -627,6 +627,7 @@ val unitTest = tasks.register("unitTest", Test::class) {
     dependsOn(tasks.named("jmsTestClasses"))
     dependsOn(tasks.named("rabbitTestClasses"))
     dependsOn(tasks.named("modernMessagingTestClasses"))
+    dependsOn(tasks.named("hibernateTestClasses"))
     dependsOn(jmsUnitTest)
     dependsOn(hibernateTest)
     group = "verification"
@@ -984,4 +985,12 @@ for (name in listOf("test", "unitTest", "e2eTest", "springSixTest", "springSeven
 tasks.withType<Test>().configureEach {
     for (key in listOf("reclazz.record.stock.java", "reclazz.record.evidenceDir", "reclazz.record.unsafe.deny"))
         providers.systemProperty(key).orNull?.let { systemProperty(key, it) }
+}
+
+tasks.register<Exec>("refreshEvidence") {
+    group = "documentation"
+    description = "Refresh scoped fingerprints for feature evidence."
+    workingDir(rootProject.projectDir)
+    val python = if (System.getProperty("os.name").startsWith("Windows")) "python" else "python3"
+    commandLine(python, "scripts/refresh-evidence.py")
 }

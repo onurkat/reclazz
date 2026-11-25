@@ -343,15 +343,13 @@
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 34,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "A constraint added to a field (`@NotBlank`)"
+          "quote": "A constraint added to a field (`@NotBlank`)",
+          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2375,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3A-VALIDATION-ADD"
+          "quote": "### P3A-VALIDATION-ADD",
+          "block_sha256": "c48fc8c0b368b49b6849da72069a1ef8c336bdcf06caac2055af42b056645965"
         }
       ],
       "opt_in": "Startup javaagent and compiled annotation edits on existing DTO fields; no extra validation flag.",
@@ -360,21 +358,21 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
-          "source_sha256": "34aea7e12910cddbbbf2beae4d4708c43197b65df8f5922afa63320a2f78882b",
           "kind": "watcher",
-          "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves."
+          "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves.",
+          "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaValidationConstraintReloadTest.java",
-          "source_sha256": "fa41b0b7d9e899fb0e9635c34d329edd4ecc52b5b30df9d655103c1142620fbe",
           "kind": "watcher",
           "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
-            "source_sha256": "34aea7e12910cddbbbf2beae4d4708c43197b65df8f5922afa63320a2f78882b"
-          }
+            "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
+          },
+          "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
         }
       ],
       "observable": "An existing DTO field gaining NotBlank/Size rejects invalid HTTP input.",
@@ -395,15 +393,13 @@
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 34,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "A constraint added to a field (`@NotBlank`)"
+          "quote": "A constraint added to a field (`@NotBlank`)",
+          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2391,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3A-VALIDATION-CHANGE"
+          "quote": "### P3A-VALIDATION-CHANGE",
+          "block_sha256": "016908e8a40a4af1192cf01ec70db020f29097374aec2f328f7b9eefc1b83215"
         }
       ],
       "opt_in": "Startup javaagent and compiled annotation edits on existing DTO fields; no extra validation flag.",
@@ -412,21 +408,21 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
-          "source_sha256": "34aea7e12910cddbbbf2beae4d4708c43197b65df8f5922afa63320a2f78882b",
           "kind": "watcher",
-          "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves."
+          "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves.",
+          "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaValidationConstraintReloadTest.java",
-          "source_sha256": "fa41b0b7d9e899fb0e9635c34d329edd4ecc52b5b30df9d655103c1142620fbe",
           "kind": "watcher",
           "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
-            "source_sha256": "34aea7e12910cddbbbf2beae4d4708c43197b65df8f5922afa63320a2f78882b"
-          }
+            "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
+          },
+          "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
         }
       ],
       "observable": "A changed Size minimum is enforced after warmed native metadata.",
@@ -447,15 +443,13 @@
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 34,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "A constraint added to a field (`@NotBlank`)"
+          "quote": "A constraint added to a field (`@NotBlank`)",
+          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2407,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3A-VALIDATION-REMOVE-RESTORE"
+          "quote": "### P3A-VALIDATION-REMOVE-RESTORE",
+          "block_sha256": "99084357f50b278a4fd9a8884ad22345dc963594e459d21f9e092c199a28aaa8"
         }
       ],
       "opt_in": "Startup javaagent and compiled annotation edits on existing DTO fields; no extra validation flag.",
@@ -464,21 +458,21 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
-          "source_sha256": "34aea7e12910cddbbbf2beae4d4708c43197b65df8f5922afa63320a2f78882b",
           "kind": "watcher",
-          "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves."
+          "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves.",
+          "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaValidationConstraintReloadTest.java",
-          "source_sha256": "fa41b0b7d9e899fb0e9635c34d329edd4ecc52b5b30df9d655103c1142620fbe",
           "kind": "watcher",
           "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
-            "source_sha256": "34aea7e12910cddbbbf2beae4d4708c43197b65df8f5922afa63320a2f78882b"
-          }
+            "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
+          },
+          "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
         }
       ],
       "observable": "Removing and restoring constraints changes acceptance without restarting.",
@@ -499,15 +493,13 @@
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 34,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "A constraint added to a field (`@NotBlank`)"
+          "quote": "A constraint added to a field (`@NotBlank`)",
+          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2423,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3A-VALIDATION-HELD"
+          "quote": "### P3A-VALIDATION-HELD",
+          "block_sha256": "e13f0174bb2d0db65b78d9cd8bc9d0d58a591153ea164f6804c678e2d9151bbd"
         }
       ],
       "opt_in": "Startup javaagent and compiled annotation edits on existing DTO fields; no extra validation flag.",
@@ -516,21 +508,21 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
-          "source_sha256": "34aea7e12910cddbbbf2beae4d4708c43197b65df8f5922afa63320a2f78882b",
           "kind": "watcher",
-          "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves."
+          "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves.",
+          "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaValidationConstraintReloadTest.java",
-          "source_sha256": "fa41b0b7d9e899fb0e9635c34d329edd4ecc52b5b30df9d655103c1142620fbe",
           "kind": "watcher",
           "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
-            "source_sha256": "34aea7e12910cddbbbf2beae4d4708c43197b65df8f5922afa63320a2f78882b"
-          }
+            "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
+          },
+          "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
         }
       ],
       "observable": "A validator reference and DTO instance captured before edits use current constraints.",
@@ -551,15 +543,13 @@
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 34,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "A constraint added to a field (`@NotBlank`)"
+          "quote": "A constraint added to a field (`@NotBlank`)",
+          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2439,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3A-VALIDATION-SIDE-EFFECTS"
+          "quote": "### P3A-VALIDATION-SIDE-EFFECTS",
+          "block_sha256": "fcb3e9f5007506f555ecf5196aee331f1a8d2628bc2c369b3364d8bcf908c40e"
         }
       ],
       "opt_in": "Startup javaagent and compiled annotation edits on existing DTO fields; no extra validation flag.",
@@ -568,21 +558,21 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
-          "source_sha256": "34aea7e12910cddbbbf2beae4d4708c43197b65df8f5922afa63320a2f78882b",
           "kind": "watcher",
-          "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves."
+          "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves.",
+          "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaValidationConstraintReloadTest.java",
-          "source_sha256": "fa41b0b7d9e899fb0e9635c34d329edd4ecc52b5b30df9d655103c1142620fbe",
           "kind": "watcher",
           "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
-            "source_sha256": "34aea7e12910cddbbbf2beae4d4708c43197b65df8f5922afa63320a2f78882b"
-          }
+            "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
+          },
+          "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
         }
       ],
       "observable": "Rejected validation/malformed JSON never executes the controller body.",
@@ -603,15 +593,13 @@
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 34,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "A constraint added to a field (`@NotBlank`)"
+          "quote": "A constraint added to a field (`@NotBlank`)",
+          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2455,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3A-VALIDATION-CONTROL"
+          "quote": "### P3A-VALIDATION-CONTROL",
+          "block_sha256": "c1e04c8834b9832a0597c8ccf43d89bdad64e9b65e33bae867a6f172f198ee42"
         }
       ],
       "opt_in": "Startup javaagent and compiled annotation edits on existing DTO fields; no extra validation flag.",
@@ -620,21 +608,21 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
-          "source_sha256": "34aea7e12910cddbbbf2beae4d4708c43197b65df8f5922afa63320a2f78882b",
           "kind": "watcher",
-          "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves."
+          "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves.",
+          "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaValidationConstraintReloadTest.java",
-          "source_sha256": "fa41b0b7d9e899fb0e9635c34d329edd4ecc52b5b30df9d655103c1142620fbe",
           "kind": "watcher",
           "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
-            "source_sha256": "34aea7e12910cddbbbf2beae4d4708c43197b65df8f5922afa63320a2f78882b"
-          }
+            "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
+          },
+          "method_sha256": "aa04002f1e90da7ef592f41973b7e9b0d586d66061a2bd3bf6a59f7b89b13ff8"
         }
       ],
       "observable": "Unedited DTO constraints and context identity remain correct across saves.",
@@ -655,15 +643,13 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 3611,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "MVC request from crossing a class reload."
+          "quote": "MVC request from crossing a class reload.",
+          "block_sha256": "6323ed9cef21358e7408c79b4bfc6067207032c145be061b4438876cb2e829c7"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2471,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3A-REQUEST-COMPLETE"
+          "quote": "### P3A-REQUEST-COMPLETE",
+          "block_sha256": "8652f660f90f59ac9654e73993b026819ca06b270953a08561ba75408aed5399"
         }
       ],
       "opt_in": "Startup javaagent with reloadBoundary=request.",
@@ -672,21 +658,21 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.OverlappingMvcRequestBoundaryReloadTest#oneCompletedRequestCannotReleaseAnotherWorkersCode",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/OverlappingMvcRequestBoundaryReloadTest.java",
-          "source_sha256": "fa6fc1dc7666fb8f5663dd708cf1f4bb3096e56fbd007b05c28b982c88e53112",
           "kind": "watcher",
-          "assertions": "Two held native Callable workers keep 1:1; completion/timeout of one cannot release the other; two saves eventually reach 3:3 with unchanged context nonce."
+          "assertions": "Two held native Callable workers keep 1:1; completion/timeout of one cannot release the other; two saves eventually reach 3:3 with unchanged context nonce.",
+          "method_sha256": "e5e5bdd75529e4cc1152c54299eb9d8e707503ee6bbeafb6511f9d42249379b0"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaOverlappingMvcRequestBoundaryReloadTest#oneCompletedRequestCannotReleaseAnotherWorkersCode",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaOverlappingMvcRequestBoundaryReloadTest.java",
-          "source_sha256": "9b122f97254e049ebc9453aa1286cc69d030c2701bfe10b5bcb4bb8708bed21d",
           "kind": "watcher",
           "assertions": "Two held native Callable workers keep 1:1; completion/timeout of one cannot release the other; two saves eventually reach 3:3 with unchanged context nonce.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.OverlappingMvcRequestBoundaryReloadTest#oneCompletedRequestCannotReleaseAnotherWorkersCode",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/OverlappingMvcRequestBoundaryReloadTest.java",
-            "source_sha256": "fa6fc1dc7666fb8f5663dd708cf1f4bb3096e56fbd007b05c28b982c88e53112"
-          }
+            "method_sha256": "e5e5bdd75529e4cc1152c54299eb9d8e707503ee6bbeafb6511f9d42249379b0"
+          },
+          "method_sha256": "e5e5bdd75529e4cc1152c54299eb9d8e707503ee6bbeafb6511f9d42249379b0"
         }
       ],
       "observable": "Completing one request cannot release a second held worker’s code.",
@@ -707,15 +693,13 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 3611,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "MVC request from crossing a class reload."
+          "quote": "MVC request from crossing a class reload.",
+          "block_sha256": "6323ed9cef21358e7408c79b4bfc6067207032c145be061b4438876cb2e829c7"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2487,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3A-REQUEST-TIMEOUT"
+          "quote": "### P3A-REQUEST-TIMEOUT",
+          "block_sha256": "974c39cd9ff451156410e5347237d1436a1cef4e4c6a8133e361e95bc7ab461c"
         }
       ],
       "opt_in": "Startup javaagent with reloadBoundary=request.",
@@ -724,21 +708,21 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.OverlappingMvcRequestBoundaryReloadTest#timedOutWorkerCannotReleaseAnotherWorkersCode",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/OverlappingMvcRequestBoundaryReloadTest.java",
-          "source_sha256": "fa6fc1dc7666fb8f5663dd708cf1f4bb3096e56fbd007b05c28b982c88e53112",
           "kind": "watcher",
-          "assertions": "Two held native Callable workers keep 1:1; completion/timeout of one cannot release the other; two saves eventually reach 3:3 with unchanged context nonce."
+          "assertions": "Two held native Callable workers keep 1:1; completion/timeout of one cannot release the other; two saves eventually reach 3:3 with unchanged context nonce.",
+          "method_sha256": "6eee120328530eda979719aedb3281d1dc54826811c8a374435d671013e1f104"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaOverlappingMvcRequestBoundaryReloadTest#timedOutWorkerCannotReleaseAnotherWorkersCode",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaOverlappingMvcRequestBoundaryReloadTest.java",
-          "source_sha256": "9b122f97254e049ebc9453aa1286cc69d030c2701bfe10b5bcb4bb8708bed21d",
           "kind": "watcher",
           "assertions": "Two held native Callable workers keep 1:1; completion/timeout of one cannot release the other; two saves eventually reach 3:3 with unchanged context nonce.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.OverlappingMvcRequestBoundaryReloadTest#timedOutWorkerCannotReleaseAnotherWorkersCode",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/OverlappingMvcRequestBoundaryReloadTest.java",
-            "source_sha256": "fa6fc1dc7666fb8f5663dd708cf1f4bb3096e56fbd007b05c28b982c88e53112"
-          }
+            "method_sha256": "6eee120328530eda979719aedb3281d1dc54826811c8a374435d671013e1f104"
+          },
+          "method_sha256": "6eee120328530eda979719aedb3281d1dc54826811c8a374435d671013e1f104"
         }
       ],
       "observable": "A timeout503 and another completed request cannot release an interrupt-ignoring worker’s code.",
@@ -759,15 +743,13 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 3611,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "MVC request from crossing a class reload."
+          "quote": "MVC request from crossing a class reload.",
+          "block_sha256": "6323ed9cef21358e7408c79b4bfc6067207032c145be061b4438876cb2e829c7"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2503,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3A-REQUEST-LATEST"
+          "quote": "### P3A-REQUEST-LATEST",
+          "block_sha256": "084fd3585f224b15f28dcd1e5d6d8e54076af874d491f708280a1a5aeef36ca5"
         }
       ],
       "opt_in": "Startup javaagent with reloadBoundary=request.",
@@ -776,40 +758,40 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.OverlappingMvcRequestBoundaryReloadTest#oneCompletedRequestCannotReleaseAnotherWorkersCode",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/OverlappingMvcRequestBoundaryReloadTest.java",
-          "source_sha256": "fa6fc1dc7666fb8f5663dd708cf1f4bb3096e56fbd007b05c28b982c88e53112",
           "kind": "watcher",
-          "assertions": "Two held native Callable workers keep 1:1; completion/timeout of one cannot release the other; two saves eventually reach 3:3 with unchanged context nonce."
+          "assertions": "Two held native Callable workers keep 1:1; completion/timeout of one cannot release the other; two saves eventually reach 3:3 with unchanged context nonce.",
+          "method_sha256": "e5e5bdd75529e4cc1152c54299eb9d8e707503ee6bbeafb6511f9d42249379b0"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaOverlappingMvcRequestBoundaryReloadTest#oneCompletedRequestCannotReleaseAnotherWorkersCode",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaOverlappingMvcRequestBoundaryReloadTest.java",
-          "source_sha256": "9b122f97254e049ebc9453aa1286cc69d030c2701bfe10b5bcb4bb8708bed21d",
           "kind": "watcher",
           "assertions": "Two held native Callable workers keep 1:1; completion/timeout of one cannot release the other; two saves eventually reach 3:3 with unchanged context nonce.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.OverlappingMvcRequestBoundaryReloadTest#oneCompletedRequestCannotReleaseAnotherWorkersCode",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/OverlappingMvcRequestBoundaryReloadTest.java",
-            "source_sha256": "fa6fc1dc7666fb8f5663dd708cf1f4bb3096e56fbd007b05c28b982c88e53112"
-          }
+            "method_sha256": "e5e5bdd75529e4cc1152c54299eb9d8e707503ee6bbeafb6511f9d42249379b0"
+          },
+          "method_sha256": "e5e5bdd75529e4cc1152c54299eb9d8e707503ee6bbeafb6511f9d42249379b0"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.OverlappingMvcRequestBoundaryReloadTest#timedOutWorkerCannotReleaseAnotherWorkersCode",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/OverlappingMvcRequestBoundaryReloadTest.java",
-          "source_sha256": "fa6fc1dc7666fb8f5663dd708cf1f4bb3096e56fbd007b05c28b982c88e53112",
           "kind": "watcher",
-          "assertions": "Two held native Callable workers keep 1:1; completion/timeout of one cannot release the other; two saves eventually reach 3:3 with unchanged context nonce."
+          "assertions": "Two held native Callable workers keep 1:1; completion/timeout of one cannot release the other; two saves eventually reach 3:3 with unchanged context nonce.",
+          "method_sha256": "6eee120328530eda979719aedb3281d1dc54826811c8a374435d671013e1f104"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaOverlappingMvcRequestBoundaryReloadTest#timedOutWorkerCannotReleaseAnotherWorkersCode",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaOverlappingMvcRequestBoundaryReloadTest.java",
-          "source_sha256": "9b122f97254e049ebc9453aa1286cc69d030c2701bfe10b5bcb4bb8708bed21d",
           "kind": "watcher",
           "assertions": "Two held native Callable workers keep 1:1; completion/timeout of one cannot release the other; two saves eventually reach 3:3 with unchanged context nonce.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.OverlappingMvcRequestBoundaryReloadTest#timedOutWorkerCannotReleaseAnotherWorkersCode",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/OverlappingMvcRequestBoundaryReloadTest.java",
-            "source_sha256": "fa6fc1dc7666fb8f5663dd708cf1f4bb3096e56fbd007b05c28b982c88e53112"
-          }
+            "method_sha256": "6eee120328530eda979719aedb3281d1dc54826811c8a374435d671013e1f104"
+          },
+          "method_sha256": "6eee120328530eda979719aedb3281d1dc54826811c8a374435d671013e1f104"
         }
       ],
       "observable": "Overlapping requests drain on old consistent code; two queued saves eventually serve latest consistent code.",

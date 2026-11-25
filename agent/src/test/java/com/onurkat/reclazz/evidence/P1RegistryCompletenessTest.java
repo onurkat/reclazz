@@ -14,9 +14,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.MessageDigest;
 import java.util.HashSet;
-import java.util.HexFormat;
 import java.util.List;
 import java.util.Set;
 
@@ -24,12 +22,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /** Rejects omitted, stale or falsely promoted evidence, rather than counting test filenames. */
 class P1RegistryCompletenessTest {
+    private static final String REGISTRY = "p1-core.json";
     private static final ObjectMapper JSON = new ObjectMapper();
     private static final Set<String> VERDICTS = Set.of("PROVEN_WITH_SCOPE", "PARTIAL", "UNVERIFIED", "EXPECTED", "FAILED");
     private static final Path REPO = AgentSources.root().getParent().getParent().getParent().getParent();
 
     private static JsonNode registry() throws Exception {
-        return JSON.readTree(Files.readString(REPO.resolve("docs/feature-evidence/p1-core.json")));
+        return JSON.readTree(Files.readString(REPO.resolve("docs/feature-evidence").resolve(REGISTRY)));
     }
 
     @Test
@@ -79,7 +78,7 @@ class P1RegistryCompletenessTest {
     void changedSurfaceDigestIsRejected() throws Exception {
         JsonNode changed = registry().deepCopy();
         ((ObjectNode) changed.path("claims").get(0).path("shipped_surfaces").get(0))
-                .put("sha256", "0".repeat(64));
+                .put("block_sha256", "0".repeat(64));
         AssertionError error = assertThrows(AssertionError.class, () -> validate(changed));
         assertTrue(error.getMessage().contains("surface drift"), error.getMessage());
     }
@@ -115,12 +114,7 @@ class P1RegistryCompletenessTest {
             assertTrue(VERDICTS.contains(verdict), "unknown verdict " + id);
             assertTrue(claim.path("shipped_surfaces").isArray() && !claim.path("shipped_surfaces").isEmpty());
             for (JsonNode surface : claim.path("shipped_surfaces")) {
-                Path file = localFile(text(surface, "path"));
-                assertEquals(sha256(file), text(surface, "sha256"), "surface drift: " + file);
-                List<String> lines = Files.readAllLines(file);
-                int line = surface.path("line").asInt();
-                assertTrue(line > 0 && line <= lines.size(), "invalid surface line " + id);
-                assertTrue(lines.get(line - 1).contains(text(surface, "quote")), "surface location drift " + id);
+                ScopedEvidence.surface(REPO, REGISTRY, id, surface);
             }
             JsonNode tests = claim.path("tests");
             assertTrue(tests.isArray(), "tests must be explicit, including an empty UNVERIFIED mapping");
@@ -128,8 +122,6 @@ class P1RegistryCompletenessTest {
                 String symbol = text(test, "symbol");
                 String[] parts = symbol.split("#", -1);
                 assertEquals(2, parts.length, "test symbol requires class#method");
-                Path file = localFile(text(test, "path"));
-                assertEquals(sha256(file), text(test, "source_sha256"), "test source drift: " + symbol);
                 text(test, "assertions");
                 String kind = text(test, "kind");
                 assertTrue(Set.of("watcher", "component").contains(kind));
@@ -138,6 +130,7 @@ class P1RegistryCompletenessTest {
                         method.getName().equals(parts[1]) && (method.isAnnotationPresent(Test.class)
                                 || method.isAnnotationPresent(ParameterizedTest.class)));
                 assertTrue(exists, "not a real test method: " + symbol);
+                ScopedEvidence.method(REPO, REGISTRY, id, test);
             }
             if (!verdict.equals("UNVERIFIED")) {
                 assertFalse(tests.isEmpty(), "observed claim needs observing test methods");
@@ -179,13 +172,5 @@ class P1RegistryCompletenessTest {
     private static String text(JsonNode node, String field) {
         assertTrue(node.path(field).isTextual() && !node.path(field).asText().isBlank(), "missing/empty " + field);
         return node.path(field).asText();
-    }
-    private static Path localFile(String relative) {
-        Path path = REPO.resolve(relative).normalize();
-        assertTrue(path.startsWith(REPO) && Files.isRegularFile(path), "missing/escaping source " + relative);
-        return path;
-    }
-    private static String sha256(Path file) throws Exception {
-        return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(file)));
     }
 }

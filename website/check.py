@@ -208,17 +208,7 @@ def check_site(output, revision='main'):
             check(doc.canonical[0] not in locations, '404 must not appear in sitemap')
             check(not any(record['url'].startswith('/404') for record in index), '404 must not appear in search')
         else: check(doc.canonical[0] in locations, 'Missing sitemap page: ' + doc.canonical[0])
-    # Existing feature evidence remains a checked source contract after README relocation.
-    for path in (build.REPO/'docs/feature-evidence').glob('*.json'):
-        registry = json.loads(path.read_text())
-        for claim in registry.get('claims',[]):
-            for surface in claim.get('shipped_surfaces',[]):
-                source = build.REPO/surface['path']
-                check(source.is_file(), 'Missing evidence surface: ' + surface['path'])
-                if source.is_file():
-                    check(hashlib.sha256(source.read_bytes()).hexdigest() == surface['sha256'], 'Evidence surface digest drift: ' + surface['path'])
-                    lines = source.read_text().splitlines(); n = surface['line']
-                    check(0 < n <= len(lines) and surface['quote'] in lines[n-1], 'Evidence surface location drift: ' + claim['id'])
+
     # Runtime contracts must retain local canonical text; do not replace them with stubs.
     check('## Commands' in (build.REPO/'docs/protocol.md').read_text(), 'Protocol was replaced with a link stub')
     check('### Agent Arguments' in (build.REPO/'docs/usage.md').read_text(), 'Argument reference was replaced with a link stub')

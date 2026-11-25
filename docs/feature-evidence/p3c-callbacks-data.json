@@ -2968,35 +2968,33 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedScheduledMethodReloadTest#addedTaskRunsOncePerRegistrationFollowsEditsAndStopsOnRemoval",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedScheduledMethodReloadTest.java",
-          "source_sha256": "eb5599ee822f4df4007d176dc7badaf7f12796e95c0370e5292ab7bdf26131e2",
           "kind": "watcher",
-          "assertions": "PROBE0..7 exact task count/body generation and original-ok; stopped means counter unchanged across 150ms after settle."
+          "assertions": "PROBE0..7 exact task count/body generation and original-ok; stopped means counter unchanged across 150ms after settle.",
+          "method_sha256": "353543996f23dbfeb1314c58cd95b9effea46c1a6d37b01c81c9b33c0869c7f1"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedScheduledMethodReloadTest#addedTaskRunsOncePerRegistrationFollowsEditsAndStopsOnRemoval",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedScheduledMethodReloadTest.java",
-          "source_sha256": "4475d9268868105710dc8238ad02e8b1e62155885506eb4e9f932081ee4eb224",
           "kind": "watcher",
           "assertions": "PROBE0..7 exact task count/body generation and original-ok; stopped means counter unchanged across 150ms after settle.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedScheduledMethodReloadTest#addedTaskRunsOncePerRegistrationFollowsEditsAndStopsOnRemoval",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedScheduledMethodReloadTest.java",
-            "source_sha256": "eb5599ee822f4df4007d176dc7badaf7f12796e95c0370e5292ab7bdf26131e2"
-          }
+            "method_sha256": "353543996f23dbfeb1314c58cd95b9effea46c1a6d37b01c81c9b33c0869c7f1"
+          },
+          "method_sha256": "353543996f23dbfeb1314c58cd95b9effea46c1a6d37b01c81c9b33c0869c7f1"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 98,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Scheduler Reload**"
+          "quote": "**Scheduler Reload**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3093,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-SCHEDULED-TIMER"
+          "quote": "### P3C-SCHEDULED-TIMER",
+          "block_sha256": "59ab486ec6fa999d8f751fac9b658ab1aea3b060510831ca6dc3b9999cefcb63"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -3020,35 +3018,33 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedScheduledMethodReloadTest#addedTaskRunsOncePerRegistrationFollowsEditsAndStopsOnRemoval",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedScheduledMethodReloadTest.java",
-          "source_sha256": "eb5599ee822f4df4007d176dc7badaf7f12796e95c0370e5292ab7bdf26131e2",
           "kind": "watcher",
-          "assertions": "BEAN-REPLACED, no STALE-BEAN at any stage; CLOSED=0:stable; existing original timer remains active."
+          "assertions": "BEAN-REPLACED, no STALE-BEAN at any stage; CLOSED=0:stable; existing original timer remains active.",
+          "method_sha256": "353543996f23dbfeb1314c58cd95b9effea46c1a6d37b01c81c9b33c0869c7f1"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedScheduledMethodReloadTest#addedTaskRunsOncePerRegistrationFollowsEditsAndStopsOnRemoval",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedScheduledMethodReloadTest.java",
-          "source_sha256": "4475d9268868105710dc8238ad02e8b1e62155885506eb4e9f932081ee4eb224",
           "kind": "watcher",
           "assertions": "BEAN-REPLACED, no STALE-BEAN at any stage; CLOSED=0:stable; existing original timer remains active.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedScheduledMethodReloadTest#addedTaskRunsOncePerRegistrationFollowsEditsAndStopsOnRemoval",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedScheduledMethodReloadTest.java",
-            "source_sha256": "eb5599ee822f4df4007d176dc7badaf7f12796e95c0370e5292ab7bdf26131e2"
-          }
+            "method_sha256": "353543996f23dbfeb1314c58cd95b9effea46c1a6d37b01c81c9b33c0869c7f1"
+          },
+          "method_sha256": "353543996f23dbfeb1314c58cd95b9effea46c1a6d37b01c81c9b33c0869c7f1"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 98,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Scheduler Reload**"
+          "quote": "**Scheduler Reload**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3117,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-SCHEDULED-CURRENT"
+          "quote": "### P3C-SCHEDULED-CURRENT",
+          "block_sha256": "060c3a2ae21749a905e1ca3f34666b98e44fa5e6133b2f2e2f8f8db3ce7c28b7"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -3072,35 +3068,33 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedScheduledOnProxyReloadTest#scheduledMethodAddedToACacheProxiedSingletonRunsOnTheRealTarget",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedScheduledOnProxyReloadTest.java",
-          "source_sha256": "cb6cff30728f31d9a0b1b25bcc2debd65fec201200e670d1ba7f652af9c37b41",
           "kind": "watcher",
-          "assertions": "R0 ticks=0; R1 ticks=growing and cache=ok; R2 ticks=stopped; both normal and child loaders."
+          "assertions": "R0 ticks=0; R1 ticks=growing and cache=ok; R2 ticks=stopped; both normal and child loaders.",
+          "method_sha256": "475d9d79b979a077a5ec2000d1af1cce6a790d21d3dcc455755f0dae34b3184f"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedScheduledOnProxyReloadTest#scheduledMethodAddedToACacheProxiedSingletonRunsOnTheRealTarget",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedScheduledOnProxyReloadTest.java",
-          "source_sha256": "0b9fff8a875fad319269417fffdd48e20ac3b06c7c4b7d5468e1bda3900f4683",
           "kind": "watcher",
           "assertions": "R0 ticks=0; R1 ticks=growing and cache=ok; R2 ticks=stopped; both normal and child loaders.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedScheduledOnProxyReloadTest#scheduledMethodAddedToACacheProxiedSingletonRunsOnTheRealTarget",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedScheduledOnProxyReloadTest.java",
-            "source_sha256": "cb6cff30728f31d9a0b1b25bcc2debd65fec201200e670d1ba7f652af9c37b41"
-          }
+            "method_sha256": "475d9d79b979a077a5ec2000d1af1cce6a790d21d3dcc455755f0dae34b3184f"
+          },
+          "method_sha256": "475d9d79b979a077a5ec2000d1af1cce6a790d21d3dcc455755f0dae34b3184f"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 98,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Scheduler Reload**"
+          "quote": "**Scheduler Reload**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3141,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-SCHEDULED-PROXY"
+          "quote": "### P3C-SCHEDULED-PROXY",
+          "block_sha256": "2d3d35b960925c5f2ba121b23736e2f5fac1a4cd3c6c475a203e0f4999ecdb41"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -3124,23 +3118,21 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringSchedulerReloaderTest#aRepeatableScheduleKeepsBothDeclarationsAndTheirUnits",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringSchedulerReloaderTest.java",
-          "source_sha256": "7911c50e7c7ecde39439fc8c06ad8aa6e2101f9ad6a291633092668a70bce149",
           "kind": "component",
-          "assertions": "Two native tasks, FixedRateTask interval=2000. Does not observe both timers firing."
+          "assertions": "Two native tasks, FixedRateTask interval=2000. Does not observe both timers firing.",
+          "method_sha256": "f9cbe1ad0c9c0e947882fcbffc55e4500d2df3be104dd3432094a6f52db7a9fb"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 98,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Scheduler Reload**"
+          "quote": "**Scheduler Reload**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3165,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-SCHEDULES-REPEATABLE"
+          "quote": "### P3C-SCHEDULES-REPEATABLE",
+          "block_sha256": "27c4ef78ed0c0971c79212849c605944e168ac037f78aaf02e982d291aa1d95d"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -3164,23 +3156,21 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringSchedulerReloaderTest#partialRegistrationIsCancelledAndTheNextValidSaveRecovers",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringSchedulerReloaderTest.java",
-          "source_sha256": "7911c50e7c7ecde39439fc8c06ad8aa6e2101f9ad6a291633092668a70bce149",
           "kind": "component",
-          "assertions": "Invalid cron => false and zero tasks; valid retry => true and one task."
+          "assertions": "Invalid cron => false and zero tasks; valid retry => true and one task.",
+          "method_sha256": "60936b651ef7ed00b3e60b6ad69ac677f0baaab12e54226f29de37c48cde71e5"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 98,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Scheduler Reload**"
+          "quote": "**Scheduler Reload**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3189,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-SCHEDULED-ROLLBACK-PREPARATION"
+          "quote": "### P3C-SCHEDULED-ROLLBACK-PREPARATION",
+          "block_sha256": "670514c6a002da0915c52453a64e94207b7ee8dc99bccec3f275a887fd808273"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -3204,23 +3194,21 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringSchedulerReloaderTest#unsupportedSignaturesAndAdviceAreExplained",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringSchedulerReloaderTest.java",
-          "source_sha256": "7911c50e7c7ecde39439fc8c06ad8aa6e2101f9ad6a291633092668a70bce149",
           "kind": "component",
-          "assertions": "Inspect methods empty, refused size1; extra callback annotation named."
+          "assertions": "Inspect methods empty, refused size1; extra callback annotation named.",
+          "method_sha256": "3eaab3129f4b19c6f63aab2349d37057628428c71fa2b41e0e79d357c8830fc3"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 98,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Scheduler Reload**"
+          "quote": "**Scheduler Reload**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3213,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-SCHEDULED-REFUSAL"
+          "quote": "### P3C-SCHEDULED-REFUSAL",
+          "block_sha256": "bcdf2cde3b4bd9ec167cf717efb55268489e263119f4760f5375b40e6773bd94"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -3244,23 +3232,21 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringSchedulerReloaderTest#prototypeIsNotCreatedToScheduleAnAddedMethod",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringSchedulerReloaderTest.java",
-          "source_sha256": "7911c50e7c7ecde39439fc8c06ad8aa6e2101f9ad6a291633092668a70bce149",
           "kind": "component",
-          "assertions": "False reload, zero tasks, RestartLedger contains singleton."
+          "assertions": "False reload, zero tasks, RestartLedger contains singleton.",
+          "method_sha256": "1f21c80910dbe8d1f7e8837616ebbd685e3bdf3d5e23a0a04b1bd996789ecd73"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 98,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Scheduler Reload**"
+          "quote": "**Scheduler Reload**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3237,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-SCHEDULED-PROTOTYPE"
+          "quote": "### P3C-SCHEDULED-PROTOTYPE",
+          "block_sha256": "23e91bbc152ea281f1e5c92ab83d76eeb99e9d5494c2f92b6d0670e601038769"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -3284,35 +3270,33 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedEventListenerMethodReloadTest#addedListenerFiltersRunsOnceFollowsReplacementAndStopsOnRemoval",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedEventListenerMethodReloadTest.java",
-          "source_sha256": "57fbacdccd6e75823376caecdaeebb3535352f1ef86aa9f787827b1ba7544f05",
           "kind": "watcher",
-          "assertions": "PROBE0..8 exact added counts/value; go/no/integer/go publications; three unrelated deliveries remain; annotation and method removal."
+          "assertions": "PROBE0..8 exact added counts/value; go/no/integer/go publications; three unrelated deliveries remain; annotation and method removal.",
+          "method_sha256": "03209eaffd03bfa98011b540733ed9a01d8ef6d07f33bb64fc53ae2ec6d86b52"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedEventListenerMethodReloadTest#addedListenerFiltersRunsOnceFollowsReplacementAndStopsOnRemoval",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedEventListenerMethodReloadTest.java",
-          "source_sha256": "080eefffec0018cbeb84e883ece3e4f1491c2eba5f7e6e68ef29208d45f0e126",
           "kind": "watcher",
           "assertions": "PROBE0..8 exact added counts/value; go/no/integer/go publications; three unrelated deliveries remain; annotation and method removal.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedEventListenerMethodReloadTest#addedListenerFiltersRunsOnceFollowsReplacementAndStopsOnRemoval",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedEventListenerMethodReloadTest.java",
-            "source_sha256": "57fbacdccd6e75823376caecdaeebb3535352f1ef86aa9f787827b1ba7544f05"
-          }
+            "method_sha256": "03209eaffd03bfa98011b540733ed9a01d8ef6d07f33bb64fc53ae2ec6d86b52"
+          },
+          "method_sha256": "03209eaffd03bfa98011b540733ed9a01d8ef6d07f33bb64fc53ae2ec6d86b52"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 99,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Event Listener Refresh**"
+          "quote": "**Event Listener Refresh**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3261,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-EVENT-DELIVERY"
+          "quote": "### P3C-EVENT-DELIVERY",
+          "block_sha256": "3cb91aa37928ae503207b45b6e2dbc3c59844a1269e2b0015f713c680a26d9a5"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -3336,35 +3320,33 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedEventListenerMethodReloadTest#addedListenerFiltersRunsOnceFollowsReplacementAndStopsOnRemoval",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedEventListenerMethodReloadTest.java",
-          "source_sha256": "57fbacdccd6e75823376caecdaeebb3535352f1ef86aa9f787827b1ba7544f05",
           "kind": "watcher",
-          "assertions": "BEAN-REPLACED and every PROBE=current, exact original counts 3 or0."
+          "assertions": "BEAN-REPLACED and every PROBE=current, exact original counts 3 or0.",
+          "method_sha256": "03209eaffd03bfa98011b540733ed9a01d8ef6d07f33bb64fc53ae2ec6d86b52"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedEventListenerMethodReloadTest#addedListenerFiltersRunsOnceFollowsReplacementAndStopsOnRemoval",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedEventListenerMethodReloadTest.java",
-          "source_sha256": "080eefffec0018cbeb84e883ece3e4f1491c2eba5f7e6e68ef29208d45f0e126",
           "kind": "watcher",
           "assertions": "BEAN-REPLACED and every PROBE=current, exact original counts 3 or0.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedEventListenerMethodReloadTest#addedListenerFiltersRunsOnceFollowsReplacementAndStopsOnRemoval",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedEventListenerMethodReloadTest.java",
-            "source_sha256": "57fbacdccd6e75823376caecdaeebb3535352f1ef86aa9f787827b1ba7544f05"
-          }
+            "method_sha256": "03209eaffd03bfa98011b540733ed9a01d8ef6d07f33bb64fc53ae2ec6d86b52"
+          },
+          "method_sha256": "03209eaffd03bfa98011b540733ed9a01d8ef6d07f33bb64fc53ae2ec6d86b52"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 99,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Event Listener Refresh**"
+          "quote": "**Event Listener Refresh**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3285,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-EVENT-CURRENT"
+          "quote": "### P3C-EVENT-CURRENT",
+          "block_sha256": "ee272b475acb0c7dba5a21fb05b856db661b1c10855bff612c0915d08ca1286b"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -3388,35 +3370,33 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedEventListenerOnProxyReloadTest#eventListenerAddedToACacheProxiedSingletonRunsOnTheRealTarget",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedEventListenerOnProxyReloadTest.java",
-          "source_sha256": "800dd853ff73b2d432347805f782a5325a1ce3c933e7a595009f84654919d43e",
           "kind": "watcher",
-          "assertions": "events0 -> fired -> silent, proxied=true and cache=ok in ordinary/child loaders."
+          "assertions": "events0 -> fired -> silent, proxied=true and cache=ok in ordinary/child loaders.",
+          "method_sha256": "58a1c06e2b565f7b331f627cfb0b35d2d87d336051ec8cc190c3832314bc88d9"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedEventListenerOnProxyReloadTest#eventListenerAddedToACacheProxiedSingletonRunsOnTheRealTarget",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedEventListenerOnProxyReloadTest.java",
-          "source_sha256": "5f8db1518872fbdfe31a3fa7ad4571a37495b299c967423048968bbb94da26e8",
           "kind": "watcher",
           "assertions": "events0 -> fired -> silent, proxied=true and cache=ok in ordinary/child loaders.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedEventListenerOnProxyReloadTest#eventListenerAddedToACacheProxiedSingletonRunsOnTheRealTarget",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedEventListenerOnProxyReloadTest.java",
-            "source_sha256": "800dd853ff73b2d432347805f782a5325a1ce3c933e7a595009f84654919d43e"
-          }
+            "method_sha256": "58a1c06e2b565f7b331f627cfb0b35d2d87d336051ec8cc190c3832314bc88d9"
+          },
+          "method_sha256": "58a1c06e2b565f7b331f627cfb0b35d2d87d336051ec8cc190c3832314bc88d9"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 99,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Event Listener Refresh**"
+          "quote": "**Event Listener Refresh**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3309,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-EVENT-PROXY"
+          "quote": "### P3C-EVENT-PROXY",
+          "block_sha256": "236e113aa66798f62b3eb774c97964b62bfadc0d78d6ac4256bd333899b2a44f"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -3440,35 +3420,33 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedEventListenerResultReloadTest#returnedEventsFollowBodyConditionAndRemovalEdits",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedEventListenerResultReloadTest.java",
-          "source_sha256": "eb7a397f64fd8b8ed645ff1d1172da79d77b933432c4128bc0d10c2c15305e5d",
           "kind": "watcher",
-          "assertions": "RESULT0..9 exact calls:received:value:failures:2:identity-ok; null/failure/condition suppress publication; replacement and restore."
+          "assertions": "RESULT0..9 exact calls:received:value:failures:2:identity-ok; null/failure/condition suppress publication; replacement and restore.",
+          "method_sha256": "53bfbd9965b51df4c62431ec62441397334db9607a6317120b5426eee08ddc2f"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedEventListenerResultReloadTest#returnedEventsFollowBodyConditionAndRemovalEdits",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedEventListenerResultReloadTest.java",
-          "source_sha256": "c78f8cd09bbde53bc0a744f16baacbf419d29d49952529c0c3454add763cd145",
           "kind": "watcher",
           "assertions": "RESULT0..9 exact calls:received:value:failures:2:identity-ok; null/failure/condition suppress publication; replacement and restore.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedEventListenerResultReloadTest#returnedEventsFollowBodyConditionAndRemovalEdits",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedEventListenerResultReloadTest.java",
-            "source_sha256": "eb7a397f64fd8b8ed645ff1d1172da79d77b933432c4128bc0d10c2c15305e5d"
-          }
+            "method_sha256": "53bfbd9965b51df4c62431ec62441397334db9607a6317120b5426eee08ddc2f"
+          },
+          "method_sha256": "53bfbd9965b51df4c62431ec62441397334db9607a6317120b5426eee08ddc2f"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 99,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Event Listener Refresh**"
+          "quote": "**Event Listener Refresh**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3333,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-EVENT-RESULT"
+          "quote": "### P3C-EVENT-RESULT",
+          "block_sha256": "f15c6cde608cea4d9b4f5a6abbd2eede57bfa06f6bc4154c674e97eb8e7dad36"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -3492,23 +3470,21 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringAddedEventListenerTest#namedConditionsBeanReferencesAndOrderAreHandledBySpring",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringAddedEventListenerTest.java",
-          "source_sha256": "0f22a83768ee0855b06d0be79d087012d74ac45c38a8e0fa61b5f06d1f3505b1",
           "kind": "component",
-          "assertions": "no yields no calls; yes yields second:yes then first:yes."
+          "assertions": "no yields no calls; yes yields second:yes then first:yes.",
+          "method_sha256": "ef23a8fcf921b54ad310f97552a1928a745c3487d2276df16dee5b0ccc059440"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 99,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Event Listener Refresh**"
+          "quote": "**Event Listener Refresh**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3357,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-EVENT-ORDER-NAMES"
+          "quote": "### P3C-EVENT-ORDER-NAMES",
+          "block_sha256": "7b790c97d4cc8fc56ef7a0be4e5986bfe69d550888a5e2168e5084e173710c78"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -3532,23 +3508,21 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringAddedEventListenerTest#debugParameterNamesAreCarriedWhenMethodParametersAreAbsent",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringAddedEventListenerTest.java",
-          "source_sha256": "0f22a83768ee0855b06d0be79d087012d74ac45c38a8e0fa61b5f06d1f3505b1",
           "kind": "component",
-          "assertions": "Fixture really carries LVT message, MethodParameters null, yes delivers first:yes."
+          "assertions": "Fixture really carries LVT message, MethodParameters null, yes delivers first:yes.",
+          "method_sha256": "849c7e8aab2e50a2a398195a9128cb1385e6703356b0c62e16ea3b0cee89d38e"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 99,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Event Listener Refresh**"
+          "quote": "**Event Listener Refresh**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3381,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-EVENT-DEBUG-NAMES"
+          "quote": "### P3C-EVENT-DEBUG-NAMES",
+          "block_sha256": "7e13d401349374f7953bf416b8e69b5edf9ed04f0fd9779c8aea960162b969d8"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -3572,23 +3546,21 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringAddedEventListenerTest#proxiesAndPrototypesAreRefusedAndPreviousRegistrationIsRemoved",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringAddedEventListenerTest.java",
-          "source_sha256": "0f22a83768ee0855b06d0be79d087012d74ac45c38a8e0fa61b5f06d1f3505b1",
           "kind": "component",
-          "assertions": "Old calls empty, digest advisor/singleton; prototype not instantiated."
+          "assertions": "Old calls empty, digest advisor/singleton; prototype not instantiated.",
+          "method_sha256": "e46d7f64dd64d44eff53ab5d3ab142c8337c0e1e7e4accd343834df6d7f93173"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 99,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Event Listener Refresh**"
+          "quote": "**Event Listener Refresh**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3405,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-EVENT-PROTOTYPE-PROXY-REFUSAL"
+          "quote": "### P3C-EVENT-PROTOTYPE-PROXY-REFUSAL",
+          "block_sha256": "45a333c32a5a31365242ae4ace90b66595526e5291d1acadd8a79dde3a9345ee"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -3612,23 +3584,21 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringAddedEventListenerTest#customFactoryIsNotSilentlyBypassed",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringAddedEventListenerTest.java",
-          "source_sha256": "0f22a83768ee0855b06d0be79d087012d74ac45c38a8e0fa61b5f06d1f3505b1",
           "kind": "component",
-          "assertions": "No calls, RestartLedger custom event listener factories."
+          "assertions": "No calls, RestartLedger custom event listener factories.",
+          "method_sha256": "2736d52e1a003c61cba4a039a834e8db38a8ed2440bb777a9b5a5e9cbb3595b1"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 99,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Event Listener Refresh**"
+          "quote": "**Event Listener Refresh**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3429,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-EVENT-CUSTOM-FACTORY-REFUSAL"
+          "quote": "### P3C-EVENT-CUSTOM-FACTORY-REFUSAL",
+          "block_sha256": "ddf337f7bfb5112afc942645de2d5f5acd64f3aff2332aea480a8a616dac75e3"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -3652,23 +3622,21 @@
         {
           "symbol": "com.onurkat.reclazz.spring.AddedEventListenerResultTest#unsupportedDeclaredResultsAreRefusedBeforeInvocation",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/AddedEventListenerResultTest.java",
-          "source_sha256": "fa6105b8de6f899dbbe9a6985a93add4d6ac9d539927806edcd26703e4ea9e48",
           "kind": "component",
-          "assertions": "Ten declared shapes: false reload, named ledger, zero body calls/results."
+          "assertions": "Ten declared shapes: false reload, named ledger, zero body calls/results.",
+          "method_sha256": "23769dd853e5b34abf0986946341d246ae9b90b72d98b91950c1fa2dcf181133"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 99,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Event Listener Refresh**"
+          "quote": "**Event Listener Refresh**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3453,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-EVENT-RESULT-REFUSAL"
+          "quote": "### P3C-EVENT-RESULT-REFUSAL",
+          "block_sha256": "9b49f59150f4bdfcb555c7945e982b5664628f9dd0d6522278b4a52baa3e7d1a"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -3692,23 +3660,21 @@
         {
           "symbol": "com.onurkat.reclazz.spring.AddedEventListenerResultTest#unsupportedActualResultsHiddenBehindObjectAreNotPublished",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/AddedEventListenerResultTest.java",
-          "source_sha256": "fa6105b8de6f899dbbe9a6985a93add4d6ac9d539927806edcd26703e4ea9e48",
           "kind": "component",
-          "assertions": "Nine actual shapes throw single-event error; no results/receiver entries; supported Reply then passes."
+          "assertions": "Nine actual shapes throw single-event error; no results/receiver entries; supported Reply then passes.",
+          "method_sha256": "248d6342610c1f78ea8bbc960489b40b7501b0c15fa51fec6f0e16d03d78d0d4"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 99,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Event Listener Refresh**"
+          "quote": "**Event Listener Refresh**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3477,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-EVENT-ACTUAL-RESULT-REFUSAL"
+          "quote": "### P3C-EVENT-ACTUAL-RESULT-REFUSAL",
+          "block_sha256": "90b8bf7534a988a0a3b6db50d38005fb1271bf537b728e28226d588f570ec979"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -3732,35 +3698,33 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedTransactionalEventListenerReloadTest.java",
-          "source_sha256": "a9f8987a85a9519816942c4425d62b2a3898fe1f8311bbd3bc1447ded3f1dcff",
           "kind": "watcher",
-          "assertions": "MATRIX1/4 exact ordered tape: before callback appears only after transaction boundary and only on commit; row counts1/4; no callback runs early inside transaction."
+          "assertions": "MATRIX1/4 exact ordered tape: before callback appears only after transaction boundary and only on commit; row counts1/4; no callback runs early inside transaction.",
+          "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedTransactionalEventListenerReloadTest.java",
-          "source_sha256": "9a341dbc50fb892a05cffadf34d88a9586372b8beeda5cc8802460deab936c8d",
           "kind": "watcher",
           "assertions": "MATRIX1/4 exact ordered tape: before callback appears only after transaction boundary and only on commit; row counts1/4; no callback runs early inside transaction.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedTransactionalEventListenerReloadTest.java",
-            "source_sha256": "a9f8987a85a9519816942c4425d62b2a3898fe1f8311bbd3bc1447ded3f1dcff"
-          }
+            "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
+          },
+          "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 99,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Event Listener Refresh**"
+          "quote": "**Event Listener Refresh**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3501,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-TXEVENT-BEFORE-COMMIT"
+          "quote": "### P3C-TXEVENT-BEFORE-COMMIT",
+          "block_sha256": "e73ca143a9131cb97c5bbdaab7d3ba7211e16e8307d5dfb91426c6f80ede7fbd"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -3784,35 +3748,33 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedTransactionalEventListenerReloadTest.java",
-          "source_sha256": "a9f8987a85a9519816942c4425d62b2a3898fe1f8311bbd3bc1447ded3f1dcff",
           "kind": "watcher",
-          "assertions": "MATRIX1/4 exact ordered tape: after callback appears on commit and not rollback; row counts1/4; no callback runs early inside transaction."
+          "assertions": "MATRIX1/4 exact ordered tape: after callback appears on commit and not rollback; row counts1/4; no callback runs early inside transaction.",
+          "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedTransactionalEventListenerReloadTest.java",
-          "source_sha256": "9a341dbc50fb892a05cffadf34d88a9586372b8beeda5cc8802460deab936c8d",
           "kind": "watcher",
           "assertions": "MATRIX1/4 exact ordered tape: after callback appears on commit and not rollback; row counts1/4; no callback runs early inside transaction.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedTransactionalEventListenerReloadTest.java",
-            "source_sha256": "a9f8987a85a9519816942c4425d62b2a3898fe1f8311bbd3bc1447ded3f1dcff"
-          }
+            "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
+          },
+          "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 99,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Event Listener Refresh**"
+          "quote": "**Event Listener Refresh**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3525,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-TXEVENT-AFTER-COMMIT"
+          "quote": "### P3C-TXEVENT-AFTER-COMMIT",
+          "block_sha256": "d6b736f3214659a12d90eeaf59f9432a5572429c6ef790469e8e5844637e73ae"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -3836,35 +3798,33 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedTransactionalEventListenerReloadTest.java",
-          "source_sha256": "a9f8987a85a9519816942c4425d62b2a3898fe1f8311bbd3bc1447ded3f1dcff",
           "kind": "watcher",
-          "assertions": "MATRIX1/4 exact ordered tape: rollback callback appears only on rollback; row counts1/4; no callback runs early inside transaction."
+          "assertions": "MATRIX1/4 exact ordered tape: rollback callback appears only on rollback; row counts1/4; no callback runs early inside transaction.",
+          "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedTransactionalEventListenerReloadTest.java",
-          "source_sha256": "9a341dbc50fb892a05cffadf34d88a9586372b8beeda5cc8802460deab936c8d",
           "kind": "watcher",
           "assertions": "MATRIX1/4 exact ordered tape: rollback callback appears only on rollback; row counts1/4; no callback runs early inside transaction.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedTransactionalEventListenerReloadTest.java",
-            "source_sha256": "a9f8987a85a9519816942c4425d62b2a3898fe1f8311bbd3bc1447ded3f1dcff"
-          }
+            "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
+          },
+          "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 99,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Event Listener Refresh**"
+          "quote": "**Event Listener Refresh**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3549,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-TXEVENT-AFTER-ROLLBACK"
+          "quote": "### P3C-TXEVENT-AFTER-ROLLBACK",
+          "block_sha256": "e05bc26b02303a3ccaf618a36fc3b1fe1a92e7ac1aaf9684a075eb70584807c7"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -3888,35 +3848,33 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedTransactionalEventListenerReloadTest.java",
-          "source_sha256": "a9f8987a85a9519816942c4425d62b2a3898fe1f8311bbd3bc1447ded3f1dcff",
           "kind": "watcher",
-          "assertions": "MATRIX1/4 exact ordered tape: complete callback appears once on each commit and rollback; row counts1/4; no callback runs early inside transaction."
+          "assertions": "MATRIX1/4 exact ordered tape: complete callback appears once on each commit and rollback; row counts1/4; no callback runs early inside transaction.",
+          "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedTransactionalEventListenerReloadTest.java",
-          "source_sha256": "9a341dbc50fb892a05cffadf34d88a9586372b8beeda5cc8802460deab936c8d",
           "kind": "watcher",
           "assertions": "MATRIX1/4 exact ordered tape: complete callback appears once on each commit and rollback; row counts1/4; no callback runs early inside transaction.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedTransactionalEventListenerReloadTest.java",
-            "source_sha256": "a9f8987a85a9519816942c4425d62b2a3898fe1f8311bbd3bc1447ded3f1dcff"
-          }
+            "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
+          },
+          "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 99,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Event Listener Refresh**"
+          "quote": "**Event Listener Refresh**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3573,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-TXEVENT-AFTER-COMPLETION"
+          "quote": "### P3C-TXEVENT-AFTER-COMPLETION",
+          "block_sha256": "e16cd7d4e45acf2361aed67a39fe87ffdd9299ab450727634350f44db8d728fb"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -3940,35 +3898,33 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedTransactionalEventListenerReloadTest.java",
-          "source_sha256": "a9f8987a85a9519816942c4425d62b2a3898fe1f8311bbd3bc1447ded3f1dcff",
           "kind": "watcher",
-          "assertions": "QUEUED2 before reload; HELD2 contains only ok-new generation2; HELD3 empty after removal; MATRIX4 restored."
+          "assertions": "QUEUED2 before reload; HELD2 contains only ok-new generation2; HELD3 empty after removal; MATRIX4 restored.",
+          "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedTransactionalEventListenerReloadTest.java",
-          "source_sha256": "9a341dbc50fb892a05cffadf34d88a9586372b8beeda5cc8802460deab936c8d",
           "kind": "watcher",
           "assertions": "QUEUED2 before reload; HELD2 contains only ok-new generation2; HELD3 empty after removal; MATRIX4 restored.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedTransactionalEventListenerReloadTest.java",
-            "source_sha256": "a9f8987a85a9519816942c4425d62b2a3898fe1f8311bbd3bc1447ded3f1dcff"
-          }
+            "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
+          },
+          "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 99,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Event Listener Refresh**"
+          "quote": "**Event Listener Refresh**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3597,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-TXEVENT-RETIRE"
+          "quote": "### P3C-TXEVENT-RETIRE",
+          "block_sha256": "af8e59a365d8ea8d42a9a4bc4d4bece9055ac0110450046fb8b6d7ad00c9e335"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -3992,35 +3948,33 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedTransactionalEventListenerReloadTest.java",
-          "source_sha256": "a9f8987a85a9519816942c4425d62b2a3898fe1f8311bbd3bc1447ded3f1dcff",
           "kind": "watcher",
-          "assertions": "First tape entry fallback1/4:outside; other phases absent outside; ok condition gates transactional delivery."
+          "assertions": "First tape entry fallback1/4:outside; other phases absent outside; ok condition gates transactional delivery.",
+          "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedTransactionalEventListenerReloadTest.java",
-          "source_sha256": "9a341dbc50fb892a05cffadf34d88a9586372b8beeda5cc8802460deab936c8d",
           "kind": "watcher",
           "assertions": "First tape entry fallback1/4:outside; other phases absent outside; ok condition gates transactional delivery.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedTransactionalEventListenerReloadTest.java",
-            "source_sha256": "a9f8987a85a9519816942c4425d62b2a3898fe1f8311bbd3bc1447ded3f1dcff"
-          }
+            "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
+          },
+          "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 99,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Event Listener Refresh**"
+          "quote": "**Event Listener Refresh**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3621,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-TXEVENT-FALLBACK"
+          "quote": "### P3C-TXEVENT-FALLBACK",
+          "block_sha256": "bf72821d2dec7d12adc3dcf19d0f01fb0c9caa7746ff41114a4db64d5ed5afa8"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -4044,23 +3998,21 @@
         {
           "symbol": "com.onurkat.reclazz.spring.AddedTransactionalEventListenerTest#beforeCommitExceptionRollsBackTheActualDatabase",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/AddedTransactionalEventListenerTest.java",
-          "source_sha256": "adf45f9970449e0a13d54506c5ee1f57122c25090f85e967d88d9a5f7f238be3",
           "kind": "component",
-          "assertions": "IllegalStateException listener refused, rows0."
+          "assertions": "IllegalStateException listener refused, rows0.",
+          "method_sha256": "ba529156ab15367f619ea4c7bf2c8ddc3bf52f63efc5ab8768224f1be967db27"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 99,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Event Listener Refresh**"
+          "quote": "**Event Listener Refresh**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3645,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-TXEVENT-BEFORE-FAILURE"
+          "quote": "### P3C-TXEVENT-BEFORE-FAILURE",
+          "block_sha256": "6187482e6958e764ea8f04d96af9d23640d9b3fc5f4a7bad8d08f01bf81ac609"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -4084,23 +4036,21 @@
         {
           "symbol": "com.onurkat.reclazz.spring.AddedTransactionalEventListenerTest#afterCommitFailureCannotUndoCommittedDataOrPreventOtherCompletionListeners",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/AddedTransactionalEventListenerTest.java",
-          "source_sha256": "adf45f9970449e0a13d54506c5ee1f57122c25090f85e967d88d9a5f7f238be3",
           "kind": "component",
-          "assertions": "Rows1, sorted complete:committed/fail:committed."
+          "assertions": "Rows1, sorted complete:committed/fail:committed.",
+          "method_sha256": "cd939557a0974ede91dbb063d0df3d3331a664fa3dae0fb22e0b99fca4383b4e"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 99,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Event Listener Refresh**"
+          "quote": "**Event Listener Refresh**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3669,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-TXEVENT-AFTER-FAILURE"
+          "quote": "### P3C-TXEVENT-AFTER-FAILURE",
+          "block_sha256": "8cdd9823e8ab99419e84b37ebf34bfcce0ef41ddabf6e576b366d4dd8188339f"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -4124,23 +4074,21 @@
         {
           "symbol": "com.onurkat.reclazz.spring.AddedTransactionalEventListenerTest#missingOrCustomTransactionalFactoryIsNotBypassed",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/AddedTransactionalEventListenerTest.java",
-          "source_sha256": "adf45f9970449e0a13d54506c5ee1f57122c25090f85e967d88d9a5f7f238be3",
           "kind": "component",
-          "assertions": "Both missing and custom contexts have zero calls and specific ledger."
+          "assertions": "Both missing and custom contexts have zero calls and specific ledger.",
+          "method_sha256": "3bef1453250225268069461874f36928da90e3a6f617e676e72caef402342408"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 99,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Event Listener Refresh**"
+          "quote": "**Event Listener Refresh**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3693,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-TXEVENT-CONTEXT-REFUSAL"
+          "quote": "### P3C-TXEVENT-CONTEXT-REFUSAL",
+          "block_sha256": "58a528d280754cdea8e1ea03455c23d69e133d722038c3783e9d9b75a2573a9a"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -4164,23 +4112,21 @@
         {
           "symbol": "com.onurkat.reclazz.spring.AddedTransactionalEventListenerTest#replacingAPhaseWhileTransactionIsOpenCancelsItsOldQueuedCallback",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/AddedTransactionalEventListenerTest.java",
-          "source_sha256": "adf45f9970449e0a13d54506c5ee1f57122c25090f85e967d88d9a5f7f238be3",
           "kind": "component",
-          "assertions": "Publish old, replace phase, publish new; no early calls; only after:new after completion."
+          "assertions": "Publish old, replace phase, publish new; no early calls; only after:new after completion.",
+          "method_sha256": "617c21bf421026f4c76150e5f7f4b969057b0b53f23d6e48b78cac4935beeb32"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 99,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Event Listener Refresh**"
+          "quote": "**Event Listener Refresh**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3717,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-TXEVENT-PHASE-EDIT"
+          "quote": "### P3C-TXEVENT-PHASE-EDIT",
+          "block_sha256": "88ff3ab992325acbfdd6b77571acabb8be0643b05e9dfea198221013011d8b8e"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -4204,35 +4150,33 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedAsyncServiceReloadTest#heldCallsGetNativeFuturesAcrossExecutorChangesRemovalAndRestore",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedAsyncServiceReloadTest.java",
-          "source_sha256": "78e775c9a4b94310beda27284105876cd9928db8adf2740369f8cfca2d0d9860",
           "kind": "watcher",
-          "assertions": "R1 pending=true calls0; R2 captured/old/current true across one->two; nativeSlot=false; normal/child loaders."
+          "assertions": "R1 pending=true calls0; R2 captured/old/current true across one->two; nativeSlot=false; normal/child loaders.",
+          "method_sha256": "9bec8a8ae894739f2c6ad671249caaaedbc29065491e37d43fc3e47837338d15"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedAsyncServiceReloadTest#heldCallsGetNativeFuturesAcrossExecutorChangesRemovalAndRestore",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedAsyncServiceReloadTest.java",
-          "source_sha256": "308c2cfe78415b4c502706e768f5ab6f9148e16c6dc1ae2f060472c836e2f33f",
           "kind": "watcher",
           "assertions": "R1 pending=true calls0; R2 captured/old/current true across one->two; nativeSlot=false; normal/child loaders.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedAsyncServiceReloadTest#heldCallsGetNativeFuturesAcrossExecutorChangesRemovalAndRestore",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedAsyncServiceReloadTest.java",
-            "source_sha256": "78e775c9a4b94310beda27284105876cd9928db8adf2740369f8cfca2d0d9860"
-          }
+            "method_sha256": "9bec8a8ae894739f2c6ad671249caaaedbc29065491e37d43fc3e47837338d15"
+          },
+          "method_sha256": "9bec8a8ae894739f2c6ad671249caaaedbc29065491e37d43fc3e47837338d15"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 102,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Async Re-processing**"
+          "quote": "**Async Re-processing**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3741,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-ASYNC-SERVICE-COMPLETABLE"
+          "quote": "### P3C-ASYNC-SERVICE-COMPLETABLE",
+          "block_sha256": "8ee186f8ee13f635e940ced23c68bc0a3bdc3bab5dc37ca8176eefd6808c68ec"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -4256,35 +4200,33 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedAsyncServiceReloadTest#heldCallsGetNativeFuturesAcrossExecutorChangesRemovalAndRestore",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedAsyncServiceReloadTest.java",
-          "source_sha256": "78e775c9a4b94310beda27284105876cd9928db8adf2740369f8cfca2d0d9860",
           "kind": "watcher",
-          "assertions": "R2 failed=true verifies rows unchanged and no void error handler; cancelled=true verifies no added calls."
+          "assertions": "R2 failed=true verifies rows unchanged and no void error handler; cancelled=true verifies no added calls.",
+          "method_sha256": "9bec8a8ae894739f2c6ad671249caaaedbc29065491e37d43fc3e47837338d15"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedAsyncServiceReloadTest#heldCallsGetNativeFuturesAcrossExecutorChangesRemovalAndRestore",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedAsyncServiceReloadTest.java",
-          "source_sha256": "308c2cfe78415b4c502706e768f5ab6f9148e16c6dc1ae2f060472c836e2f33f",
           "kind": "watcher",
           "assertions": "R2 failed=true verifies rows unchanged and no void error handler; cancelled=true verifies no added calls.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedAsyncServiceReloadTest#heldCallsGetNativeFuturesAcrossExecutorChangesRemovalAndRestore",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedAsyncServiceReloadTest.java",
-            "source_sha256": "78e775c9a4b94310beda27284105876cd9928db8adf2740369f8cfca2d0d9860"
-          }
+            "method_sha256": "9bec8a8ae894739f2c6ad671249caaaedbc29065491e37d43fc3e47837338d15"
+          },
+          "method_sha256": "9bec8a8ae894739f2c6ad671249caaaedbc29065491e37d43fc3e47837338d15"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 102,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Async Re-processing**"
+          "quote": "**Async Re-processing**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3765,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-ASYNC-SERVICE-CANCEL-ROLLBACK"
+          "quote": "### P3C-ASYNC-SERVICE-CANCEL-ROLLBACK",
+          "block_sha256": "8498fe4a970bcda03cde1ee5be0dab12ffe45ae52240bb329c5d76fa320791c3"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -4308,35 +4250,33 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedAsyncServiceReloadTest#heldCallsGetNativeFuturesAcrossExecutorChangesRemovalAndRestore",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedAsyncServiceReloadTest.java",
-          "source_sha256": "78e775c9a4b94310beda27284105876cd9928db8adf2740369f8cfca2d0d9860",
           "kind": "watcher",
-          "assertions": "R3 sync=true, R4 removed=true, R5 restored/self/original true; old callsites retained."
+          "assertions": "R3 sync=true, R4 removed=true, R5 restored/self/original true; old callsites retained.",
+          "method_sha256": "9bec8a8ae894739f2c6ad671249caaaedbc29065491e37d43fc3e47837338d15"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedAsyncServiceReloadTest#heldCallsGetNativeFuturesAcrossExecutorChangesRemovalAndRestore",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedAsyncServiceReloadTest.java",
-          "source_sha256": "308c2cfe78415b4c502706e768f5ab6f9148e16c6dc1ae2f060472c836e2f33f",
           "kind": "watcher",
           "assertions": "R3 sync=true, R4 removed=true, R5 restored/self/original true; old callsites retained.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedAsyncServiceReloadTest#heldCallsGetNativeFuturesAcrossExecutorChangesRemovalAndRestore",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedAsyncServiceReloadTest.java",
-            "source_sha256": "78e775c9a4b94310beda27284105876cd9928db8adf2740369f8cfca2d0d9860"
-          }
+            "method_sha256": "9bec8a8ae894739f2c6ad671249caaaedbc29065491e37d43fc3e47837338d15"
+          },
+          "method_sha256": "9bec8a8ae894739f2c6ad671249caaaedbc29065491e37d43fc3e47837338d15"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 102,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Async Re-processing**"
+          "quote": "**Async Re-processing**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3789,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-ASYNC-SERVICE-REMOVE"
+          "quote": "### P3C-ASYNC-SERVICE-REMOVE",
+          "block_sha256": "837069886f61cb21f425dd64821fff2d70ce4cd6eaf7ddebfe31ae84a2175c36"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -4360,23 +4300,21 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringAddedAsyncServiceTest#standaloneVoidUsesTheDefaultExecutorAndUncaughtHandler",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringAddedAsyncServiceTest.java",
-          "source_sha256": "659e92304c97397c95c72bdfaa6be734fd3a190b301b6715d9bb3c458c987364",
           "kind": "component",
-          "assertions": "Plain/proxy: no immediate calls; one worker call and exact receive:fail:failure handler."
+          "assertions": "Plain/proxy: no immediate calls; one worker call and exact receive:fail:failure handler.",
+          "method_sha256": "bedf78cf37ea9324930a44b5fc32c4f1cc8e347548e767d110abc1fa09414246"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 102,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Async Re-processing**"
+          "quote": "**Async Re-processing**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3813,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-ASYNC-SERVICE-VOID"
+          "quote": "### P3C-ASYNC-SERVICE-VOID",
+          "block_sha256": "3d13860ee30ae434ae6b04308c6eb07e9c977968c688aba2e86ccbe895adb26d"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -4400,23 +4338,21 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringAddedAsyncServiceTest#futuresReturnImmediatelyAndPreserveNativeResultAndErrorBehavior",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringAddedAsyncServiceTest.java",
-          "source_sha256": "659e92304c97397c95c72bdfaa6be734fd3a190b301b6715d9bb3c458c987364",
           "kind": "component",
-          "assertions": "Plain/proxy, ok/throw/exceptional/null native comparison; Future result future:two."
+          "assertions": "Plain/proxy, ok/throw/exceptional/null native comparison; Future result future:two.",
+          "method_sha256": "90d905b6f466e73c78bcb59837886c26221cb1d59bc35cc140745f6643fd15f5"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 102,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Async Re-processing**"
+          "quote": "**Async Re-processing**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3837,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-ASYNC-SERVICE-FUTURE"
+          "quote": "### P3C-ASYNC-SERVICE-FUTURE",
+          "block_sha256": "9d99b35d35e4c047c5d92c0e101feef0eda1ed954e09263da99f59252f2a5191"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -4440,23 +4376,21 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringAddedAsyncServiceTest#concreteNestedGenericMetadataIsPreservedForNativeConsumers",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringAddedAsyncServiceTest.java",
-          "source_sha256": "659e92304c97397c95c72bdfaa6be734fd3a190b301b6715d9bb3c458c987364",
           "kind": "component",
-          "assertions": "Exact nested generic type names and List a,b,two result."
+          "assertions": "Exact nested generic type names and List a,b,two result.",
+          "method_sha256": "4adec77e02df05c9705b9943fcb7b1c5b1af7f53e8aa166539c5a7f049778adb"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 102,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Async Re-processing**"
+          "quote": "**Async Re-processing**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3861,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-ASYNC-SERVICE-GENERICS"
+          "quote": "### P3C-ASYNC-SERVICE-GENERICS",
+          "block_sha256": "4cc07ef7f1d9a2f7057cf9d3d2206a11502e354343158888395006ec40e554b6"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -4480,23 +4414,21 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringAddedAsyncServiceTest#invalidReturnTypesAndUnresolvedGenericMetadataAreRefusedBeforeSubmission",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringAddedAsyncServiceTest.java",
-          "source_sha256": "659e92304c97397c95c72bdfaa6be734fd3a190b301b6715d9bb3c458c987364",
           "kind": "component",
-          "assertions": "Six unsupported types, covered empty, errors, queues/calls empty; missing qualifier refuses."
+          "assertions": "Six unsupported types, covered empty, errors, queues/calls empty; missing qualifier refuses.",
+          "method_sha256": "bc8f806e8f27f791d87daf288d43ae595cde9ef6292e654e5925dd612dc22303"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 102,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Async Re-processing**"
+          "quote": "**Async Re-processing**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3885,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-ASYNC-SERVICE-REFUSAL"
+          "quote": "### P3C-ASYNC-SERVICE-REFUSAL",
+          "block_sha256": "9b38619e99121275b6a1500b967a596f5285f837b75d8f061acaa5ec6994719f"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -4520,23 +4452,21 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringAddedAsyncServiceTest#checkedThrowRollsBackButAnExceptionalReturnedFutureDoesNotRetroactivelyRollback",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringAddedAsyncServiceTest.java",
-          "source_sha256": "659e92304c97397c95c72bdfaa6be734fd3a190b301b6715d9bb3c458c987364",
           "kind": "component",
-          "assertions": "Rows ok and exceptional persist; throw does not; all worker tx=true; no void errors."
+          "assertions": "Rows ok and exceptional persist; throw does not; all worker tx=true; no void errors.",
+          "method_sha256": "7320f08c24ab2fa4aaccc392d7a3b527ca88792d9e840ea58df8f554274c0040"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 102,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Async Re-processing**"
+          "quote": "**Async Re-processing**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3909,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-ASYNC-SERVICE-EXCEPTIONAL-FUTURE"
+          "quote": "### P3C-ASYNC-SERVICE-EXCEPTIONAL-FUTURE",
+          "block_sha256": "56b6cbba4ecd0ee3453d493bb894ad3dbdb1467748d5753242e7e7c23259d6fc"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -4560,23 +4490,21 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringAddedAsyncServiceTest#nativeCacheStoresTheInnerFutureAndEachCallGetsItsOwnOuterFuture",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringAddedAsyncServiceTest.java",
-          "source_sha256": "659e92304c97397c95c72bdfaa6be734fd3a190b301b6715d9bb3c458c987364",
           "kind": "component",
-          "assertions": "Two outer Futures notSame, same result, body once, stored CompletableFuture notSame first."
+          "assertions": "Two outer Futures notSame, same result, body once, stored CompletableFuture notSame first.",
+          "method_sha256": "b929a6873dce4a49117b262f39496228491a9d5b221a2082146fbe44e2fef5e4"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 102,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Async Re-processing**"
+          "quote": "**Async Re-processing**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3933,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-ASYNC-SERVICE-CACHE"
+          "quote": "### P3C-ASYNC-SERVICE-CACHE",
+          "block_sha256": "c6b7b228f2fe35f509950bde42fba2228a8b773d324eb6285215f0fd2a764868"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -4600,35 +4528,33 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedAsyncEventReloadTest#asyncEventsUseNativeExecutorAndKeepAdmittedBodyAcrossReloadAndRemoval",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedAsyncEventReloadTest.java",
-          "source_sha256": "48ba7fe31db8bdf2bc65df9445ca4cbcbe6d5c347437819111c9fea6f626f5c9",
           "kind": "watcher",
-          "assertions": "R1..5 exact queue/captured/rerouted/original/refused/rollback/handler/removed checks; nativeSlot=false."
+          "assertions": "R1..5 exact queue/captured/rerouted/original/refused/rollback/handler/removed checks; nativeSlot=false.",
+          "method_sha256": "3551ff04275fd71a37fce3c60c2221b3a6c856c680807662892064f7f2e008a8"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedAsyncEventReloadTest#asyncEventsUseNativeExecutorAndKeepAdmittedBodyAcrossReloadAndRemoval",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedAsyncEventReloadTest.java",
-          "source_sha256": "6b965cea85ed04869230f6a2579eb8a8a11bb1942b143a2b5ce97257504601bd",
           "kind": "watcher",
           "assertions": "R1..5 exact queue/captured/rerouted/original/refused/rollback/handler/removed checks; nativeSlot=false.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedAsyncEventReloadTest#asyncEventsUseNativeExecutorAndKeepAdmittedBodyAcrossReloadAndRemoval",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedAsyncEventReloadTest.java",
-            "source_sha256": "48ba7fe31db8bdf2bc65df9445ca4cbcbe6d5c347437819111c9fea6f626f5c9"
-          }
+            "method_sha256": "3551ff04275fd71a37fce3c60c2221b3a6c856c680807662892064f7f2e008a8"
+          },
+          "method_sha256": "3551ff04275fd71a37fce3c60c2221b3a6c856c680807662892064f7f2e008a8"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 102,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Async Re-processing**"
+          "quote": "**Async Re-processing**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3957,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-ASYNC-EVENT"
+          "quote": "### P3C-ASYNC-EVENT",
+          "block_sha256": "615161cf55ed300175efd51d770f26ce92ff155d919c4ce63a1040cf0eedf94b"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -4652,35 +4578,33 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedAsyncScheduledReloadTest#asyncSchedulesKeepAcceptedWorkAndRefreshFutureTicks",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedAsyncScheduledReloadTest.java",
-          "source_sha256": "8f56169d5ff04cb3b6a2ed57b7b57b9bd96ecb84daee66f81e04f0df1fb05a55",
           "kind": "watcher",
-          "assertions": "R1..7 exact queue/captured/rerouted/refusal/rollback/error/sync/remove/restore/close checks; registered Runnable explicitly fired, no actual timer claim."
+          "assertions": "R1..7 exact queue/captured/rerouted/refusal/rollback/error/sync/remove/restore/close checks; registered Runnable explicitly fired, no actual timer claim.",
+          "method_sha256": "8dd387e01ea8404c474ed1a333ce9f8334ba6f40280efb56e7825e222afb4d2a"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedAsyncScheduledReloadTest#asyncSchedulesKeepAcceptedWorkAndRefreshFutureTicks",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedAsyncScheduledReloadTest.java",
-          "source_sha256": "ae89bfc375f5b811e61aca86598461c21025c2933bedb46774e77807fe0d43b3",
           "kind": "watcher",
           "assertions": "R1..7 exact queue/captured/rerouted/refusal/rollback/error/sync/remove/restore/close checks; registered Runnable explicitly fired, no actual timer claim.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedAsyncScheduledReloadTest#asyncSchedulesKeepAcceptedWorkAndRefreshFutureTicks",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedAsyncScheduledReloadTest.java",
-            "source_sha256": "8f56169d5ff04cb3b6a2ed57b7b57b9bd96ecb84daee66f81e04f0df1fb05a55"
-          }
+            "method_sha256": "8dd387e01ea8404c474ed1a333ce9f8334ba6f40280efb56e7825e222afb4d2a"
+          },
+          "method_sha256": "8dd387e01ea8404c474ed1a333ce9f8334ba6f40280efb56e7825e222afb4d2a"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 98,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Scheduler Reload**"
+          "quote": "**Scheduler Reload**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3981,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-ASYNC-SCHEDULED"
+          "quote": "### P3C-ASYNC-SCHEDULED",
+          "block_sha256": "95175aa7abcc4b01c675b158364e0a29bebbb81e4e203b7714801af38c2d8c06"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -4704,23 +4628,21 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringAddedAsyncEventTest#defaultAndQualifiedExecutorsMatchNativeSpringOnTheOriginalTarget",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringAddedAsyncEventTest.java",
-          "source_sha256": "cf48e5423cb4e9d09f5bd13ec2c30cd36e23d0a1ba572884bc80bc0cbf9772b2",
           "kind": "component",
-          "assertions": "Plain/proxy no inline call; one then two queues; exact worker thread targets plus nativeControl."
+          "assertions": "Plain/proxy no inline call; one then two queues; exact worker thread targets plus nativeControl.",
+          "method_sha256": "80b8a57c14cb280c96a65d38723ec6962e90ff2de4665eed73ea3a1e72fc859e"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 102,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Async Re-processing**"
+          "quote": "**Async Re-processing**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4005,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-ASYNC-DEFAULT-EXECUTOR"
+          "quote": "### P3C-ASYNC-DEFAULT-EXECUTOR",
+          "block_sha256": "b547737165690b0e0a07fe32b92a19faf6e8326c2ca65b82d7fea6377fa2c70e"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -4744,23 +4666,21 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringAddedAsyncEventTest#nativeNamedDefaultExecutorIsUsedWithoutAnExplicitConfigurer",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringAddedAsyncEventTest.java",
-          "source_sha256": "cf48e5423cb4e9d09f5bd13ec2c30cd36e23d0a1ba572884bc80bc0cbf9772b2",
           "kind": "component",
-          "assertions": "Worker one chosen; queue two empty."
+          "assertions": "Worker one chosen; queue two empty.",
+          "method_sha256": "d534ae6bb1fd82b4d40dd1be44d11f4c1cc14dce2626cfcf2bf134a17fad941e"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 102,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Async Re-processing**"
+          "quote": "**Async Re-processing**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4029,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-ASYNC-NAMED-DEFAULT"
+          "quote": "### P3C-ASYNC-NAMED-DEFAULT",
+          "block_sha256": "9d08fea63228b9b8e65f7fbb3bad5198a21ee1736f7de5825073c89aae9613f4"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -4784,23 +4704,21 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringAddedAsyncEventTest#absentDuplicateCustomAndReorderedInfrastructureRefuseBeforeBody",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringAddedAsyncEventTest.java",
-          "source_sha256": "cf48e5423cb4e9d09f5bd13ec2c30cd36e23d0a1ba572884bc80bc0cbf9772b2",
           "kind": "component",
-          "assertions": "Each invalid configuration throws; queues/calls remain empty."
+          "assertions": "Each invalid configuration throws; queues/calls remain empty.",
+          "method_sha256": "2528be0b1bbf5ed5bc5c88857865d20efec2949f96d1f98d7ad84b803da454c7"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 102,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Async Re-processing**"
+          "quote": "**Async Re-processing**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4053,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-ASYNC-INFRASTRUCTURE-REFUSAL"
+          "quote": "### P3C-ASYNC-INFRASTRUCTURE-REFUSAL",
+          "block_sha256": "c0d2fdd4c909b8ba06db65ca53c90fab576fede300bb54169197cc65cde2eb44"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -4824,23 +4742,21 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringAddedAsyncEventTest#customAnnotationForeignAndDuplicateAsyncAdvisorsAreNotSilentlyBypassed",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringAddedAsyncEventTest.java",
-          "source_sha256": "cf48e5423cb4e9d09f5bd13ec2c30cd36e23d0a1ba572884bc80bc0cbf9772b2",
           "kind": "component",
-          "assertions": "Three advisor mutations throw; no submission/body."
+          "assertions": "Three advisor mutations throw; no submission/body.",
+          "method_sha256": "4c5d1989a489010085925db270c90ebadc62e1b18c8b6188170ea866d868db55"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 102,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Async Re-processing**"
+          "quote": "**Async Re-processing**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4077,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-ASYNC-ADVISOR-REFUSAL"
+          "quote": "### P3C-ASYNC-ADVISOR-REFUSAL",
+          "block_sha256": "60863056adb7de976312055d3d9069e7fc1f0797db69224b62f092dfb05433ff"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -4864,35 +4780,33 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedCallbackOperationsReloadTest#callbacksUseNativeTransactionsAndCachesAcrossSaves",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedCallbackOperationsReloadTest.java",
-          "source_sha256": "88603ef8bb631ce5f11c363b2a183a0aee47c1cd7e18d0d87228c1d8f8fb5a44",
           "kind": "watcher",
-          "assertions": "R1/4 rows2 txtrue, R2 rows4 txfalse, R3 removed rows0; actual H2 writes; registered scheduled Runnable invoked explicitly."
+          "assertions": "R1/4 rows2 txtrue, R2 rows4 txfalse, R3 removed rows0; actual H2 writes; registered scheduled Runnable invoked explicitly.",
+          "method_sha256": "dff53decf5604801c39c6246070bff96d91f17d0d05cb19b20d0947e7513e9c3"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedCallbackOperationsReloadTest#callbacksUseNativeTransactionsAndCachesAcrossSaves",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedCallbackOperationsReloadTest.java",
-          "source_sha256": "5ea12dc959b2ad20933de2728a6cd32effa4c4c4a15bf19e1bdcf4504345b180",
           "kind": "watcher",
           "assertions": "R1/4 rows2 txtrue, R2 rows4 txfalse, R3 removed rows0; actual H2 writes; registered scheduled Runnable invoked explicitly.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedCallbackOperationsReloadTest#callbacksUseNativeTransactionsAndCachesAcrossSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedCallbackOperationsReloadTest.java",
-            "source_sha256": "88603ef8bb631ce5f11c363b2a183a0aee47c1cd7e18d0d87228c1d8f8fb5a44"
-          }
+            "method_sha256": "dff53decf5604801c39c6246070bff96d91f17d0d05cb19b20d0947e7513e9c3"
+          },
+          "method_sha256": "dff53decf5604801c39c6246070bff96d91f17d0d05cb19b20d0947e7513e9c3"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1902,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "### Transaction and cache advice on added callbacks"
+          "quote": "### Transaction and cache advice on added callbacks",
+          "block_sha256": "7c1da4f3f9aa0e844ca006ce3f21cff28fd1d55d8b15bf6fd213f952b91dba14"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4101,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-CALLBACK-TRANSACTIONS"
+          "quote": "### P3C-CALLBACK-TRANSACTIONS",
+          "block_sha256": "d0e3afb022b51e22f25fc4754e09f33f703f8af8e2553093b57d5f12c144858d"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -4916,35 +4830,33 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedCallbackOperationsReloadTest#callbacksUseNativeTransactionsAndCachesAcrossSaves",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedCallbackOperationsReloadTest.java",
-          "source_sha256": "88603ef8bb631ce5f11c363b2a183a0aee47c1cd7e18d0d87228c1d8f8fb5a44",
           "kind": "watcher",
-          "assertions": "R1/4 cacheevicted lookups1 receipts2; R2 cacheretained lookups2; failed callback leaves after-success cache entry."
+          "assertions": "R1/4 cacheevicted lookups1 receipts2; R2 cacheretained lookups2; failed callback leaves after-success cache entry.",
+          "method_sha256": "dff53decf5604801c39c6246070bff96d91f17d0d05cb19b20d0947e7513e9c3"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedCallbackOperationsReloadTest#callbacksUseNativeTransactionsAndCachesAcrossSaves",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedCallbackOperationsReloadTest.java",
-          "source_sha256": "5ea12dc959b2ad20933de2728a6cd32effa4c4c4a15bf19e1bdcf4504345b180",
           "kind": "watcher",
           "assertions": "R1/4 cacheevicted lookups1 receipts2; R2 cacheretained lookups2; failed callback leaves after-success cache entry.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedCallbackOperationsReloadTest#callbacksUseNativeTransactionsAndCachesAcrossSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedCallbackOperationsReloadTest.java",
-            "source_sha256": "88603ef8bb631ce5f11c363b2a183a0aee47c1cd7e18d0d87228c1d8f8fb5a44"
-          }
+            "method_sha256": "dff53decf5604801c39c6246070bff96d91f17d0d05cb19b20d0947e7513e9c3"
+          },
+          "method_sha256": "dff53decf5604801c39c6246070bff96d91f17d0d05cb19b20d0947e7513e9c3"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1902,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "### Transaction and cache advice on added callbacks"
+          "quote": "### Transaction and cache advice on added callbacks",
+          "block_sha256": "7c1da4f3f9aa0e844ca006ce3f21cff28fd1d55d8b15bf6fd213f952b91dba14"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4125,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-CALLBACK-CACHE"
+          "quote": "### P3C-CALLBACK-CACHE",
+          "block_sha256": "3254bb61b744d03988a75fe7d47e185021019c54d8fc398595f8cba55b61b176"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -4968,23 +4880,21 @@
         {
           "symbol": "com.onurkat.reclazz.spring.AddedCallbackAdviceTest#advisedPrivateFinalAndGenericCallbacksAreRefused",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/AddedCallbackAdviceTest.java",
-          "source_sha256": "2c0ba0989853ecd4965ce034775d76e62ece5f274265e266c756a4f7e0cb49c7",
           "kind": "component",
-          "assertions": "Public/private/final/generic/owner inheritance/interface matrix accepted0; only metadata scanner, no watcher."
+          "assertions": "Public/private/final/generic/owner inheritance/interface matrix accepted0; only metadata scanner, no watcher.",
+          "method_sha256": "3f47df7f060c8bcbd4a71a587a8d25fbfc8d5ad7eba86fa68a4cc5668daf896e"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1902,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "### Transaction and cache advice on added callbacks"
+          "quote": "### Transaction and cache advice on added callbacks",
+          "block_sha256": "7c1da4f3f9aa0e844ca006ce3f21cff28fd1d55d8b15bf6fd213f952b91dba14"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4149,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-CALLBACK-INSPECT-REFUSAL"
+          "quote": "### P3C-CALLBACK-INSPECT-REFUSAL",
+          "block_sha256": "464033d7de70cbae276694ff780a341b4df65abe1a6156840ad6371947251a21"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -5008,15 +4918,13 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1902,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "### Transaction and cache advice on added callbacks"
+          "quote": "### Transaction and cache advice on added callbacks",
+          "block_sha256": "7c1da4f3f9aa0e844ca006ce3f21cff28fd1d55d8b15bf6fd213f952b91dba14"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4173,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-CALLBACK-COMPOSED"
+          "quote": "### P3C-CALLBACK-COMPOSED",
+          "block_sha256": "fcc2f78cb5924d553b4ce29c85adf8116605d2f267f69d4cc3636a82d7af12e5"
         }
       ],
       "opt_in": "Outside advertised supported callback-operation subset; no expansion authorized.",
@@ -5038,23 +4946,21 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.NewEntityPreparedSchemaReloadTest#newEntityUsesPreparedSchemaAndFailedValidationCanRetry",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/NewEntityPreparedSchemaReloadTest.java",
-          "source_sha256": "ae7d42ee805ba4320dd9d70840d848562582d2d750b110845745b973e577c5bf",
           "kind": "watcher",
-          "assertions": "Six loader/retry/autocompile variants; P=false:true:kept before retry then true:false:kept, ROUNDTRIP=new:kept; later body edit does not rebuild."
+          "assertions": "Six loader/retry/autocompile variants; P=false:true:kept before retry then true:false:kept, ROUNDTRIP=new:kept; later body edit does not rebuild.",
+          "method_sha256": "328814c57b5cd1a47f29e1a31a4c0cae43bb84149cd9e4de396c30811695ab6f"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 56,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "| New `@Entity` class picks up a mapping"
+          "quote": "| New `@Entity` class picks up a mapping",
+          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4197,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-JPA-NEW-ENTITY"
+          "quote": "### P3C-JPA-NEW-ENTITY",
+          "block_sha256": "794ee3b7e9d11c9b9e597721ac1c860e515d5e7e5feddb230f50d6fe39a69fd4"
         }
       ],
       "opt_in": "jpaRefresh=true; sole standard Spring ORM/Hibernate unit with prepared validate schema; autoCompile varied explicitly.",
@@ -5078,23 +4984,21 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.NewEntityPreparedSchemaReloadTest#changedPendingMappingMustBeRestoredBeforeRetry",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/NewEntityPreparedSchemaReloadTest.java",
-          "source_sha256": "ae7d42ee805ba4320dd9d70840d848562582d2d750b110845745b973e577c5bf",
           "kind": "watcher",
-          "assertions": "Three field/annotation/autocompile cases; pending entity metadata changed warning, live factory retained, restored mapping roundtrip."
+          "assertions": "Three field/annotation/autocompile cases; pending entity metadata changed warning, live factory retained, restored mapping roundtrip.",
+          "method_sha256": "a571a3b5efb9a09bb64211046ab1409ec4191b48986a98772cd71b7515b7b919"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 56,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "| New `@Entity` class picks up a mapping"
+          "quote": "| New `@Entity` class picks up a mapping",
+          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4221,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-JPA-PENDING-METADATA"
+          "quote": "### P3C-JPA-PENDING-METADATA",
+          "block_sha256": "13b34eff20351a684e58537242827e3ff6ec7ab79cbdccc5f9f19e796b13481d"
         }
       ],
       "opt_in": "jpaRefresh=true; supported validate mode and original pending mapping.",
@@ -5118,23 +5022,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.JpaPreparedSchemaTest#validationFailureKeepsLiveFactoryAndManagedNamesThenCanRetry",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/reload/JpaPreparedSchemaTest.java",
-          "source_sha256": "4452d8c468c28683d2597c96694ed0729fc83fbae4555f96bad9aece6964e9d4",
           "kind": "component",
-          "assertions": "Three validation problems; factory same/open, managed list same, kept row; retry installs and preserves separate structural concern."
+          "assertions": "Three validation problems; factory same/open, managed list same, kept row; retry installs and preserves separate structural concern.",
+          "method_sha256": "0d42aa293cfde031260f59c9be543c373de034178bce5a4ddf1e51851c14533c"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 56,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "| New `@Entity` class picks up a mapping"
+          "quote": "| New `@Entity` class picks up a mapping",
+          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4245,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-JPA-VALIDATION-FAILURE"
+          "quote": "### P3C-JPA-VALIDATION-FAILURE",
+          "block_sha256": "a09f5ddc6dd41b17122ced6f415d692e23e0326538bdb48f53e88c9ebc388eee"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -5158,23 +5060,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.JpaPreparedSchemaTest#preparedTableMapsThroughTheAlreadyInjectedClientAndSharedEntityManager",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/reload/JpaPreparedSchemaTest.java",
-          "source_sha256": "4452d8c468c28683d2597c96694ed0729fc83fbae4555f96bad9aece6964e9d4",
           "kind": "component",
-          "assertions": "Native factory notSame, old closed, new/kept rows; second identical entity does not rebuild."
+          "assertions": "Native factory notSame, old closed, new/kept rows; second identical entity does not rebuild.",
+          "method_sha256": "cda07805722b5a907194700fec053e6522094115f898c84d259d728c11ef5066"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 56,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "| New `@Entity` class picks up a mapping"
+          "quote": "| New `@Entity` class picks up a mapping",
+          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4269,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-JPA-PREPARED-SCHEMA"
+          "quote": "### P3C-JPA-PREPARED-SCHEMA",
+          "block_sha256": "e5479350462a0b963b0bda6422c0c9fa75d00347481a6d64f7092a192b2e49c4"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -5198,23 +5098,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.JpaPreparedSchemaTest#schemaOverridesCannotTurnValidationIntoDdlOrSkipIt",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/reload/JpaPreparedSchemaTest.java",
-          "source_sha256": "4452d8c468c28683d2597c96694ed0729fc83fbae4555f96bad9aece6964e9d4",
           "kind": "component",
-          "assertions": "Eight override keys in both property maps retain old factory/open and unmodified managed names."
+          "assertions": "Eight override keys in both property maps retain old factory/open and unmodified managed names.",
+          "method_sha256": "be68bd86a20ce28a3dfaa90061571ee797f5b571a0c5849f7495f04cfad98b14"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 56,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "| New `@Entity` class picks up a mapping"
+          "quote": "| New `@Entity` class picks up a mapping",
+          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4293,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-JPA-SCHEMA-OVERRIDES"
+          "quote": "### P3C-JPA-SCHEMA-OVERRIDES",
+          "block_sha256": "e1d912cdb35dcded26dadb183c74aedee50f0586b167e5137bdb28e09df4560d"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -5238,23 +5136,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.JpaPreparedSchemaTest#absentOptInAndAmbiguousUnitsKeepTheirIdentityAndData",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/reload/JpaPreparedSchemaTest.java",
-          "source_sha256": "4452d8c468c28683d2597c96694ed0729fc83fbae4555f96bad9aece6964e9d4",
           "kind": "component",
-          "assertions": "Opt-in false and two units remain same/open."
+          "assertions": "Opt-in false and two units remain same/open.",
+          "method_sha256": "d56c3d8228545aeaa80f15be20fa3e3f048d512767a068791de41853e4d03967"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 56,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "| New `@Entity` class picks up a mapping"
+          "quote": "| New `@Entity` class picks up a mapping",
+          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4317,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-JPA-OPTIN-AMBIGUITY"
+          "quote": "### P3C-JPA-OPTIN-AMBIGUITY",
+          "block_sha256": "9b71059a13de454b0cf6435a51b7f46f81c42dcea13015df33f243c282471db3"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -5278,23 +5174,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.JpaPreparedSchemaTest#closeFailureAfterSwapIsReportedWithoutClaimingTheOldFactoryWasRetained",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/reload/JpaPreparedSchemaTest.java",
-          "source_sha256": "4452d8c468c28683d2597c96694ed0729fc83fbae4555f96bad9aece6964e9d4",
           "kind": "component",
-          "assertions": "Fresh factory same/open; warning contains mapping installed and retiring."
+          "assertions": "Fresh factory same/open; warning contains mapping installed and retiring.",
+          "method_sha256": "ae507df2dfd6f6f1604ddc8e5f6b215bb54eea67903ea520e8f13a9404318318"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 56,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "| New `@Entity` class picks up a mapping"
+          "quote": "| New `@Entity` class picks up a mapping",
+          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4341,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-JPA-CLOSE-REPORT"
+          "quote": "### P3C-JPA-CLOSE-REPORT",
+          "block_sha256": "72d5c19e774c9094975f3b424cea3e158cee9fad9a3e68941ad61d67dd5236a9"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -5318,23 +5212,21 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.SpringDataRepositoryReloadTest#watchedQueryEditReachesExistingHolderWithoutRestart",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/SpringDataRepositoryReloadTest.java",
-          "source_sha256": "aa8fd1214f6327d79e0bbe93dc7ecc1dc271223c83c096dcfd620acf8b812dc5",
           "kind": "watcher",
-          "assertions": "Four annotated/normal/child combinations; same PID/nonce/holder identity; before/after alternated three saves over native local HTTP."
+          "assertions": "Four annotated/normal/child combinations; same PID/nonce/holder identity; before/after alternated three saves over native local HTTP.",
+          "method_sha256": "26bbbb2a6a75482871648856ebc2d085e5283a1cea9a19652989a9c1092b2a39"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 3732,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "Native query edits and repeated saves are tested"
+          "quote": "Native query edits and repeated saves are tested",
+          "block_sha256": "7f5ba76f7b1face804d07917623d56aa3c08e9bf9222ea37261a73470a6e08fd"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4365,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-JPA-QUERY-WATCHER"
+          "quote": "### P3C-JPA-QUERY-WATCHER",
+          "block_sha256": "d9127317fd42cf6b5bcb834839623db377f825cbeebaa4e3b079e2a0c3e86528"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -5358,23 +5250,21 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringDataNativeQueryTest#changedNativeQueryReachesExistingManuallyWiredHolderAndTrackedDependent",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/spring/SpringDataNativeQueryTest.java",
-          "source_sha256": "2610565fc4ee0d35fc609f9e03251cd3dd0cbdbd64aeb9fc43a63373fbf66b05",
           "kind": "component",
-          "assertions": "Redefine alone leaves cached old query; orchestrator changes product identity, keeps holder identity, both holders get before/after."
+          "assertions": "Redefine alone leaves cached old query; orchestrator changes product identity, keeps holder identity, both holders get before/after.",
+          "method_sha256": "1d56dcc591a6777bef74c58a8a5421474e8d6e82dc11c7c764f4ef88e78e2f29"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 3732,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "Native query edits and repeated saves are tested"
+          "quote": "Native query edits and repeated saves are tested",
+          "block_sha256": "7f5ba76f7b1face804d07917623d56aa3c08e9bf9222ea37261a73470a6e08fd"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4389,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-JPA-QUERY-COMPONENT"
+          "quote": "### P3C-JPA-QUERY-COMPONENT",
+          "block_sha256": "48c4b9d9b84252da764f1c9bd27084232bad880706e267a96cdf08573cc0e976"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -5398,30 +5288,28 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.RepositoryAfterPreparedEntityFactorySwapReloadTest#heldRepositoryReadsAndWritesAfterPreparedSwapAndValidationRetry",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/RepositoryAfterPreparedEntityFactorySwapReloadTest.java",
-          "source_sha256": "18e8469628c0030ad245e1a8850a08277a75984220b32d0a46b66f81a9d2cde2",
           "kind": "watcher",
-          "assertions": "Four prepared/missing-table-retry normal/child cases. Warm original JpaRepository<Existing,Long> find/count/cached JPQL and original shared-EntityManager custom fragment; same held repo writes/reads Existing and fragment queries Added after actual watched validate-only new-entity swap. Exact expected results/fresh agentless oracle; original repo/holder/injected-client/shared identities, old native factory different/closed, unrelated anchor retained; body-only mapped save does not rebuild."
+          "assertions": "Four prepared/missing-table-retry normal/child cases. Warm original JpaRepository<Existing,Long> find/count/cached JPQL and original shared-EntityManager custom fragment; same held repo writes/reads Existing and fragment queries Added after actual watched validate-only new-entity swap. Exact expected results/fresh agentless oracle; original repo/holder/injected-client/shared identities, old native factory different/closed, unrelated anchor retained; body-only mapped save does not rebuild.",
+          "method_sha256": "e6b2e47f8880d4cf11db54b3266c1255db0d57d19617253bc52de6ebb8c8f86b"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.RepositoryAfterPreparedEntityFactorySwapReloadTest#optOutAndTwoUnitsNeverSwapHeldRepositoryInfrastructure",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/RepositoryAfterPreparedEntityFactorySwapReloadTest.java",
-          "source_sha256": "18e8469628c0030ad245e1a8850a08277a75984220b32d0a46b66f81a9d2cde2",
           "kind": "watcher",
-          "assertions": "Four opt-out/two-unit ambiguity normal/child cases. Added remains UNMAPPED, existing rows/native identity/open state retained, held injected repository/holder/EMF-client/shared identities and unrelated context anchor retained; original second native factory stays open. Explicit opt-in/ambiguity log checks, no second-unit ownership inference."
+          "assertions": "Four opt-out/two-unit ambiguity normal/child cases. Added remains UNMAPPED, existing rows/native identity/open state retained, held injected repository/holder/EMF-client/shared identities and unrelated context anchor retained; original second native factory stays open. Explicit opt-in/ambiguity log checks, no second-unit ownership inference.",
+          "method_sha256": "d1548279d39d0449f3c3e0effba742400ecd8ade49d63bcb834979b89242383e"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 3468,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "### Held repositories after a prepared mapping refresh"
+          "quote": "### Held repositories after a prepared mapping refresh",
+          "block_sha256": "bba67cc76f58b479eb020b7496426127e837fefc5b23e6b332c13c938e977fb8"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4413,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-JPA-REPOSITORY-AFTER-EMF-SWAP"
+          "quote": "### P3C-JPA-REPOSITORY-AFTER-EMF-SWAP",
+          "block_sha256": "d283ceadd55d9517bdc5825b3efcf25176bc3edfbe0fa770d92fc4e5a0a0a1c5"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -5445,51 +5333,49 @@
         {
           "symbol": "com.onurkat.reclazz.reload.JpaEntityChangeTest#aNewPersistentFieldOnAnEntityIsReported",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/JpaEntityChangeTest.java",
-          "source_sha256": "aa370ad0a0f3adcc697cc19c57d2792d463a3d20939cf3f4095c485040d48b6f",
           "kind": "component",
-          "assertions": "Currency added and gained text; bytecode scanner only, no DB roundtrip."
+          "assertions": "Currency added and gained text; bytecode scanner only, no DB roundtrip.",
+          "method_sha256": "b3db7760cedbe49be380dcf3f8d6c62e303cc193059930aafe062a76ae0624b8"
         },
         {
           "symbol": "com.onurkat.reclazz.reload.JpaEntityChangeTest#aRemovedPersistentFieldIsReportedToo",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/JpaEntityChangeTest.java",
-          "source_sha256": "aa370ad0a0f3adcc697cc19c57d2792d463a3d20939cf3f4095c485040d48b6f",
           "kind": "component",
-          "assertions": "Currency removed list and lost text."
+          "assertions": "Currency removed list and lost text.",
+          "method_sha256": "1dcdf04fac81506fd6ab01adeb3319bff7d02c85cc5282ec28e6b26120adb52f"
         },
         {
           "symbol": "com.onurkat.reclazz.reload.JpaEntityChangeTest#fieldsOutsideTheMappingDoNotCount",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/JpaEntityChangeTest.java",
-          "source_sha256": "aa370ad0a0f3adcc697cc19c57d2792d463a3d20939cf3f4095c485040d48b6f",
           "kind": "component",
-          "assertions": "Static/transient/@Transient changes do not count."
+          "assertions": "Static/transient/@Transient changes do not count.",
+          "method_sha256": "a189b9eac727f5451816dc79939471839060e1edfcec216b6b1eeec833d7e098"
         },
         {
           "symbol": "com.onurkat.reclazz.reload.JpaEntityChangeTest#theInjectedMembersAreNotMistakenForMapping",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/JpaEntityChangeTest.java",
-          "source_sha256": "aa370ad0a0f3adcc697cc19c57d2792d463a3d20939cf3f4095c485040d48b6f",
           "kind": "component",
-          "assertions": "Injected __reclazz$ext not falsely treated as removal."
+          "assertions": "Injected __reclazz$ext not falsely treated as removal.",
+          "method_sha256": "80f5aec75949d7aa33f00c060e1e310fe85f0f45a6ca9e93f1f229061cf67e75"
         },
         {
           "symbol": "com.onurkat.reclazz.reload.JpaEntityChangeTest#theReloadEngineComparesBeforeRedefining",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/JpaEntityChangeTest.java",
-          "source_sha256": "aa370ad0a0f3adcc697cc19c57d2792d463a3d20939cf3f4095c485040d48b6f",
           "kind": "component",
-          "assertions": "Source guard checks comparison precedes actual redefine call; no live enhanced VM proof."
+          "assertions": "Source guard checks comparison precedes actual redefine call; no live enhanced VM proof.",
+          "method_sha256": "382fe6a544a11d32c58fcb457347cb688f794a0a2a5a14cf29f0d7b0355192c9"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 56,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "| New `@Entity` class picks up a mapping"
+          "quote": "| New `@Entity` class picks up a mapping",
+          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4437,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-JPA-FIELD-DETECTION"
+          "quote": "### P3C-JPA-FIELD-DETECTION",
+          "block_sha256": "e92b729e3d05f4af8ebf0cd4b444b4e8243f5b630f05ec412eac232391b97ebc"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -5513,23 +5399,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.JpaSchemaAdviceTest#withUpdateARestartIsTheWholeFix",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/JpaSchemaAdviceTest.java",
-          "source_sha256": "dcd1dc1310408e4f8d17ce3dac2b9e06f831a07b089f31627ada2c61be288386",
           "kind": "component",
-          "assertions": "Advice contains restart enough and excludes add column; text contract only."
+          "assertions": "Advice contains restart enough and excludes add column; text contract only.",
+          "method_sha256": "997d800bbc21ef797ae9b194ce6434fe4f8b7477cbc32cdc272afdf2fbdb611f"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 56,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "| New `@Entity` class picks up a mapping"
+          "quote": "| New `@Entity` class picks up a mapping",
+          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4461,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-JPA-UPDATE-ADVICE"
+          "quote": "### P3C-JPA-UPDATE-ADVICE",
+          "block_sha256": "5126393cf1fda917bc503e718bc3395a45e71687583b17d37606323565e54344"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -5553,23 +5437,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.JpaSchemaAdviceTest#withValidateTheColumnHasToComeFirst",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/JpaSchemaAdviceTest.java",
-          "source_sha256": "dcd1dc1310408e4f8d17ce3dac2b9e06f831a07b089f31627ada2c61be288386",
           "kind": "component",
-          "assertions": "Advice contains Add column first and refuse to start; text contract only."
+          "assertions": "Advice contains Add column first and refuse to start; text contract only.",
+          "method_sha256": "8b2862d8eebe66530121920c0805f9814e61653c72a96ae5cf05c8abf233694b"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 56,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "| New `@Entity` class picks up a mapping"
+          "quote": "| New `@Entity` class picks up a mapping",
+          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4485,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-JPA-VALIDATE-ADVICE"
+          "quote": "### P3C-JPA-VALIDATE-ADVICE",
+          "block_sha256": "1a3b3539f29e6c71a12bd16a60b7185987780dbc20f80ddae2e902c4e0e4cf6f"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -5593,23 +5475,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.JpaMappingRefreshTest#withoutEnhancedRedefinitionTheDeclineIsSilent",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/JpaMappingRefreshTest.java",
-          "source_sha256": "f69a95229c48c1779eb12e9d9490b577f4d606a1ead1185b0ce982773ad548f2",
           "kind": "component",
-          "assertions": "Refreshed=false and empty appendix; no JBR/DCEVM run or DB mapping refresh."
+          "assertions": "Refreshed=false and empty appendix; no JBR/DCEVM run or DB mapping refresh.",
+          "method_sha256": "88037e14a0807c0f5ae1d7713349efb3f7be13ece42fc63988a37e373e3cbba2"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 56,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "| New `@Entity` class picks up a mapping"
+          "quote": "| New `@Entity` class picks up a mapping",
+          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4509,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-JPA-FIELD-REFRESH-GATE"
+          "quote": "### P3C-JPA-FIELD-REFRESH-GATE",
+          "block_sha256": "ccc005c74f050b6965a190ba736a87526965e04ef0d7844c7ffc0e4b7f161a8c"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -5633,23 +5513,21 @@
         {
           "symbol": "com.onurkat.reclazz.reload.JpaMappingRefreshTest#onlyTheSchemaCreatingSettingsQualify",
           "path": "agent/src/test/java/com/onurkat/reclazz/reload/JpaMappingRefreshTest.java",
-          "source_sha256": "f69a95229c48c1779eb12e9d9490b577f4d606a1ead1185b0ce982773ad548f2",
           "kind": "component",
-          "assertions": "Exact true/false policy assertions; distinct from new-entity prepared validate path."
+          "assertions": "Exact true/false policy assertions; distinct from new-entity prepared validate path.",
+          "method_sha256": "04f8433d712f7159471e2920864eb1e048ef01ddfa8dd1bb2fd085bd2ace2fca"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 56,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "| New `@Entity` class picks up a mapping"
+          "quote": "| New `@Entity` class picks up a mapping",
+          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4533,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-JPA-DDL-GATE"
+          "quote": "### P3C-JPA-DDL-GATE",
+          "block_sha256": "511be6586eafe236adef5683caeb3c8d411fab3c0ffd55dd17b9b471e13e6cc6"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -5673,15 +5551,13 @@
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 56,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "| New `@Entity` class picks up a mapping"
+          "quote": "| New `@Entity` class picks up a mapping",
+          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4557,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-JPA-ENHANCED-FIELD"
+          "quote": "### P3C-JPA-ENHANCED-FIELD",
+          "block_sha256": "d625c3ffbf6761e3e29cd448525710ee677a9654b045958012d155b8e663c4bf"
         }
       ],
       "opt_in": "jpaRefresh=true plus enhanced structural redefinition and supported schema-creating setting.",
@@ -5703,15 +5579,13 @@
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 56,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "| New `@Entity` class picks up a mapping"
+          "quote": "| New `@Entity` class picks up a mapping",
+          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4581,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-JPA-SPRING5"
+          "quote": "### P3C-JPA-SPRING5",
+          "block_sha256": "0840f52baae703edec6fd904afbb7cb24af13bed554a7d8f427769616eb497dd"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -5733,23 +5607,21 @@
         {
           "symbol": "com.onurkat.reclazz.hybris.hibernate.HibernateL2CacheTest#daoReloadEvictsRealEntityAndQueryCaches",
           "path": "agent/src/hibernateTest/java/com/onurkat/reclazz/hybris/hibernate/HibernateL2CacheTest.java",
-          "source_sha256": "5aef12b0f7acd40502729e606de908ed2c070e603d798803945c6e4c511a4080",
           "kind": "component",
-          "assertions": "Real L2 entry and cache hits; SQL update still reads old until invalidator, then new."
+          "assertions": "Real L2 entry and cache hits; SQL update still reads old until invalidator, then new.",
+          "method_sha256": "dcb6c7983be6f88d573c590dd7119a91836171b719657d730afcac3dce88d018"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "agent/src/main/java/com/onurkat/reclazz/platform/HibernateCacheInvalidator.java",
-          "line": 16,
-          "sha256": "a8e7242c4429c923454365c8cfd8b7657bcac082d7b7cf0a2ab0971978414d6b",
-          "quote": "class HibernateCacheInvalidator"
+          "quote": "class HibernateCacheInvalidator",
+          "block_sha256": "1bc3f58a30e2fb597e47c9fbe3980d3da726c3c63c80d17baead47302192fe16"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4605,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-HIBERNATE-L2-ENTITY"
+          "quote": "### P3C-HIBERNATE-L2-ENTITY",
+          "block_sha256": "79c34c4f2c7004a9d747c3d8eceb1577e4a4165d928f45f8ce33d5940a4d3a66"
         }
       ],
       "opt_in": "Optional Hibernate ORM with L2/query caching as the fixture enables; direct invalidator invocation only. Startup-agent DAO watcher behavior remains unverified.",
@@ -5773,23 +5645,21 @@
         {
           "symbol": "com.onurkat.reclazz.hybris.hibernate.HibernateL2CacheTest#daoReloadEvictsRealEntityAndQueryCaches",
           "path": "agent/src/hibernateTest/java/com/onurkat/reclazz/hybris/hibernate/HibernateL2CacheTest.java",
-          "source_sha256": "5aef12b0f7acd40502729e606de908ed2c070e603d798803945c6e4c511a4080",
           "kind": "component",
-          "assertions": "Real query hits, old result after SQL update before invalidation, new after."
+          "assertions": "Real query hits, old result after SQL update before invalidation, new after.",
+          "method_sha256": "dcb6c7983be6f88d573c590dd7119a91836171b719657d730afcac3dce88d018"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "agent/src/main/java/com/onurkat/reclazz/platform/HibernateCacheInvalidator.java",
-          "line": 16,
-          "sha256": "a8e7242c4429c923454365c8cfd8b7657bcac082d7b7cf0a2ab0971978414d6b",
-          "quote": "class HibernateCacheInvalidator"
+          "quote": "class HibernateCacheInvalidator",
+          "block_sha256": "1bc3f58a30e2fb597e47c9fbe3980d3da726c3c63c80d17baead47302192fe16"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4629,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-HIBERNATE-L2-QUERY"
+          "quote": "### P3C-HIBERNATE-L2-QUERY",
+          "block_sha256": "8adb5ba03b58da18297137362efccd5ca67daa8d7accdc35af96fc5ea67e984f"
         }
       ],
       "opt_in": "Optional Hibernate ORM with L2/query caching as the fixture enables; direct invalidator invocation only. Startup-agent DAO watcher behavior remains unverified.",
@@ -5813,23 +5683,21 @@
         {
           "symbol": "com.onurkat.reclazz.hybris.hibernate.HibernateL2CacheTest#aliasesAndRepeatedContextsEvictAFactoryOnlyOnce",
           "path": "agent/src/hibernateTest/java/com/onurkat/reclazz/hybris/hibernate/HibernateL2CacheTest.java",
-          "source_sha256": "5aef12b0f7acd40502729e606de908ed2c070e603d798803945c6e4c511a4080",
           "kind": "component",
-          "assertions": "Two names same factory, repeated same context; invalidated count1, no cached entity."
+          "assertions": "Two names same factory, repeated same context; invalidated count1, no cached entity.",
+          "method_sha256": "af300c91d7408186a143c1d663cb557487a3d04eac7608a1e292390a3fb2fc37"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "agent/src/main/java/com/onurkat/reclazz/platform/HibernateCacheInvalidator.java",
-          "line": 16,
-          "sha256": "a8e7242c4429c923454365c8cfd8b7657bcac082d7b7cf0a2ab0971978414d6b",
-          "quote": "class HibernateCacheInvalidator"
+          "quote": "class HibernateCacheInvalidator",
+          "block_sha256": "1bc3f58a30e2fb597e47c9fbe3980d3da726c3c63c80d17baead47302192fe16"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4653,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-HIBERNATE-L2-ALIASES"
+          "quote": "### P3C-HIBERNATE-L2-ALIASES",
+          "block_sha256": "04381e17d1f0e98d84c9be5f5176726b480e3c4009b88cc58abfd642091af58f"
         }
       ],
       "opt_in": "Optional Hibernate ORM with L2/query caching as the fixture enables; direct invalidator invocation only. Startup-agent DAO watcher behavior remains unverified.",
@@ -5853,23 +5721,21 @@
         {
           "symbol": "com.onurkat.reclazz.hybris.hibernate.HibernateL2CacheTest#disabledL2IsNotReportedAsAnEviction",
           "path": "agent/src/hibernateTest/java/com/onurkat/reclazz/hybris/hibernate/HibernateL2CacheTest.java",
-          "source_sha256": "5aef12b0f7acd40502729e606de908ed2c070e603d798803945c6e4c511a4080",
           "kind": "component",
-          "assertions": "Direct invalidator returns0 when L2/query caches disabled."
+          "assertions": "Direct invalidator returns0 when L2/query caches disabled.",
+          "method_sha256": "a1d4d6dab0c5af479f61c40a9665ab094fb7c318f3f8dc41ee82324f4f65b2c4"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "agent/src/main/java/com/onurkat/reclazz/platform/HibernateCacheInvalidator.java",
-          "line": 16,
-          "sha256": "a8e7242c4429c923454365c8cfd8b7657bcac082d7b7cf0a2ab0971978414d6b",
-          "quote": "class HibernateCacheInvalidator"
+          "quote": "class HibernateCacheInvalidator",
+          "block_sha256": "1bc3f58a30e2fb597e47c9fbe3980d3da726c3c63c80d17baead47302192fe16"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4677,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-HIBERNATE-L2-DISABLED"
+          "quote": "### P3C-HIBERNATE-L2-DISABLED",
+          "block_sha256": "b81046af24f53e394935850b4975d5c51faeb7467d83e5bf028135c892c7a7e7"
         }
       ],
       "opt_in": "Optional Hibernate ORM with L2/query caching as the fixture enables; direct invalidator invocation only. Startup-agent DAO watcher behavior remains unverified.",
@@ -5893,15 +5759,13 @@
       "shipped_surfaces": [
         {
           "path": "agent/src/main/java/com/onurkat/reclazz/platform/HibernateCacheInvalidator.java",
-          "line": 16,
-          "sha256": "a8e7242c4429c923454365c8cfd8b7657bcac082d7b7cf0a2ab0971978414d6b",
-          "quote": "class HibernateCacheInvalidator"
+          "quote": "class HibernateCacheInvalidator",
+          "block_sha256": "1bc3f58a30e2fb597e47c9fbe3980d3da726c3c63c80d17baead47302192fe16"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4701,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-HIBERNATE-L2-WATCHER"
+          "quote": "### P3C-HIBERNATE-L2-WATCHER",
+          "block_sha256": "376bcefdee8a719bd81392dcd200215e0e95c9f5b44b3dcfc0007a0a496c9de9"
         }
       ],
       "opt_in": "Optional Hibernate ORM with L2/query caching as the fixture enables; direct invalidator invocation only. Startup-agent DAO watcher behavior remains unverified.",
@@ -5923,40 +5787,38 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedAsyncEventReloadTest#asyncEventsUseNativeExecutorAndKeepAdmittedBodyAcrossReloadAndRemoval",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedAsyncEventReloadTest.java",
-          "source_sha256": "6b965cea85ed04869230f6a2579eb8a8a11bb1942b143a2b5ce97257504601bd",
           "kind": "watcher",
           "assertions": "R1..5 exact queue/captured/rerouted/original/refused/rollback/handler/removed checks; nativeSlot=false.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedAsyncEventReloadTest#asyncEventsUseNativeExecutorAndKeepAdmittedBodyAcrossReloadAndRemoval",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedAsyncEventReloadTest.java",
-            "source_sha256": "48ba7fe31db8bdf2bc65df9445ca4cbcbe6d5c347437819111c9fea6f626f5c9"
-          }
+            "method_sha256": "3551ff04275fd71a37fce3c60c2221b3a6c856c680807662892064f7f2e008a8"
+          },
+          "method_sha256": "3551ff04275fd71a37fce3c60c2221b3a6c856c680807662892064f7f2e008a8"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedCallbackOperationsReloadTest#callbacksUseNativeTransactionsAndCachesAcrossSaves",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedCallbackOperationsReloadTest.java",
-          "source_sha256": "5ea12dc959b2ad20933de2728a6cd32effa4c4c4a15bf19e1bdcf4504345b180",
           "kind": "watcher",
           "assertions": "R1/4 rows2 txtrue, R2 rows4 txfalse, R3 removed rows0; actual H2 writes; registered scheduled Runnable invoked explicitly.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedCallbackOperationsReloadTest#callbacksUseNativeTransactionsAndCachesAcrossSaves",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedCallbackOperationsReloadTest.java",
-            "source_sha256": "88603ef8bb631ce5f11c363b2a183a0aee47c1cd7e18d0d87228c1d8f8fb5a44"
-          }
+            "method_sha256": "dff53decf5604801c39c6246070bff96d91f17d0d05cb19b20d0947e7513e9c3"
+          },
+          "method_sha256": "dff53decf5604801c39c6246070bff96d91f17d0d05cb19b20d0947e7513e9c3"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 99,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Event Listener Refresh**"
+          "quote": "**Event Listener Refresh**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4725,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-SPRING6-NATIVE-EVENT-FAILURE"
+          "quote": "### P3C-SPRING6-NATIVE-EVENT-FAILURE",
+          "block_sha256": "b080fe8c518716bd47709662973469cc6fcebaf5174b747c8e681b2b8fe0eff5"
         }
       ],
       "opt_in": "Native @EnableTransactionManagement, plus EnableAsync or EnableCaching where the observing fixture uses it; startup javaagent and compiled watched saves. No new agent option.",
@@ -5980,28 +5842,26 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAddedTransactionalEventListenerReloadTest.java",
-          "source_sha256": "9a341dbc50fb892a05cffadf34d88a9586372b8beeda5cc8802460deab936c8d",
           "kind": "watcher",
           "assertions": "QUEUED2 before reload; HELD2 contains only ok-new generation2; HELD3 empty after removal; MATRIX4 restored.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedTransactionalEventListenerReloadTest.java",
-            "source_sha256": "a9f8987a85a9519816942c4425d62b2a3898fe1f8311bbd3bc1447ded3f1dcff"
-          }
+            "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
+          },
+          "method_sha256": "46d7c0d82bc560dca9f3f68163e61cf5670c78bf4fb746900416af3f4b15bac1"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 99,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Event Listener Refresh**"
+          "quote": "**Event Listener Refresh**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4749,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-SPRING6-NATIVE-TXEVENT-FAILURE"
+          "quote": "### P3C-SPRING6-NATIVE-TXEVENT-FAILURE",
+          "block_sha256": "2b3f93e8de5dcebe0eb995cd93a15bf35549e5b42285c2f1306b804f1047374b"
         }
       ],
       "opt_in": "Native @EnableTransactionManagement, plus EnableAsync or EnableCaching where the observing fixture uses it; startup javaagent and compiled watched saves. No new agent option.",
@@ -6025,35 +5885,33 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.ExistingScheduledMetadataReloadTest#existingTimerUsesSavedIntervalAndCurrentSingletonWithoutRetiredTicks",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ExistingScheduledMetadataReloadTest.java",
-          "source_sha256": "e575a993afb6dc898cd020915086ae00b76d5161bcf72e526a47b49e8a93795d",
           "kind": "watcher",
-          "assertions": "One real native task with intervals25/40/60/25; body values1/2/3/4; current receiver ticks, all retired instance counters remain stable; context close cancels future ticks."
+          "assertions": "One real native task with intervals25/40/60/25; body values1/2/3/4; current receiver ticks, all retired instance counters remain stable; context close cancels future ticks.",
+          "method_sha256": "0b6b82550f9208fbcbb41601b26887edaf204b2fe1ceca6c0d33c56ee0a462c2"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.JakartaExistingScheduledMetadataReloadTest#existingTimerUsesSavedIntervalAndCurrentSingletonWithoutRetiredTicks",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaExistingScheduledMetadataReloadTest.java",
-          "source_sha256": "026236b226ab26ed5db599fc8468a86715dd93291057699a239185d2968d8b38",
           "kind": "watcher",
           "assertions": "One real native task with intervals25/40/60/25; body values1/2/3/4; current receiver ticks, all retired instance counters remain stable; context close cancels future ticks.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.ExistingScheduledMetadataReloadTest#existingTimerUsesSavedIntervalAndCurrentSingletonWithoutRetiredTicks",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ExistingScheduledMetadataReloadTest.java",
-            "source_sha256": "e575a993afb6dc898cd020915086ae00b76d5161bcf72e526a47b49e8a93795d"
-          }
+            "method_sha256": "0b6b82550f9208fbcbb41601b26887edaf204b2fe1ceca6c0d33c56ee0a462c2"
+          },
+          "method_sha256": "0b6b82550f9208fbcbb41601b26887edaf204b2fe1ceca6c0d33c56ee0a462c2"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 98,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Scheduler Reload**"
+          "quote": "**Scheduler Reload**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4773,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-SCHEDULED-REREGISTER"
+          "quote": "### P3C-SCHEDULED-REREGISTER",
+          "block_sha256": "0a44fd3ec42680e7e83d220bcab41520e6602c336fe6f1fab6cfddcbde40809f"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -6077,23 +5935,21 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringEventReloaderTest#reloadingOneClassDoesNotMultiplyUnrelatedListeners",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringEventReloaderTest.java",
-          "source_sha256": "fefa1eb25c79486372947fca459436dbaca2c2acc0087621e1f5652edfa9fb0d",
           "kind": "component",
-          "assertions": "Four refresh cycles: First/Second/manual counters advance once each; native context registry size unchanged."
+          "assertions": "Four refresh cycles: First/Second/manual counters advance once each; native context registry size unchanged.",
+          "method_sha256": "6a12d53db7a46d30d010bc07b9a0e7275e64f81dc9e6d4d5bf39084ca6099485"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 99,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Event Listener Refresh**"
+          "quote": "**Event Listener Refresh**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4797,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-EVENT-EXISTING-COMPONENT"
+          "quote": "### P3C-EVENT-EXISTING-COMPONENT",
+          "block_sha256": "5689140d18490abc3568051dabfa344c2eafe75c5180ed0a2419bd3d5644ae31"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -6117,23 +5973,21 @@
         {
           "symbol": "com.onurkat.reclazz.spring.SpringAddedAsyncEventTest#repeatedAsyncRefreshDoesNotInstallTheSameAdvisorTwice",
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringAddedAsyncEventTest.java",
-          "source_sha256": "cf48e5423cb4e9d09f5bd13ec2c30cd36e23d0a1ba572884bc80bc0cbf9772b2",
           "kind": "component",
-          "assertions": "Three direct reloader calls; proxy advisors length1; native callback count advances once; executor queue empty."
+          "assertions": "Three direct reloader calls; proxy advisors length1; native callback count advances once; executor queue empty.",
+          "method_sha256": "9d17339ad483e7e0088088a241e05ef11e9aa95eacb5b805e887f040adaa58ad"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
-          "line": 102,
-          "sha256": "b8898141ce0771d3503738aeef4d5ebf7919ed326f7e5c57f6e577d2ea689e3e",
-          "quote": "**Async Re-processing**"
+          "quote": "**Async Re-processing**",
+          "block_sha256": "cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4821,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-ASYNC-EXISTING-COMPONENT"
+          "quote": "### P3C-ASYNC-EXISTING-COMPONENT",
+          "block_sha256": "d5ca17510996704118b0e3679bad77e28fb6fe9325cae4bf455d0d652bc8a699"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -6157,23 +6011,21 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.SpringDataSqlNativeQueryReloadTest#currentTrackedDependentAndRetainedManualHolderMatchNative",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/SpringDataSqlNativeQueryReloadTest.java",
-          "source_sha256": "96710a5123d74bd0dce018242823593e8ade97bc9f15dd33628ba65a13218a6a",
           "kind": "watcher",
-          "assertions": "Four normal/child loader x plain/Repository interfaces; six compiled SQL-native saves: predicate, UPPER scalar expression, missing-column SQL_ERROR:42122, valid recovery, CONCAT scalar expression, revert. Exact expected result and fresh agentless native JVM per version. Retained managed manual-holder identity, current tracked owner distinct from startup holder/current injected-product identity; unrelated and other-context repository identities, both EMF identities/open state,3 rows."
+          "assertions": "Four normal/child loader x plain/Repository interfaces; six compiled SQL-native saves: predicate, UPPER scalar expression, missing-column SQL_ERROR:42122, valid recovery, CONCAT scalar expression, revert. Exact expected result and fresh agentless native JVM per version. Retained managed manual-holder identity, current tracked owner distinct from startup holder/current injected-product identity; unrelated and other-context repository identities, both EMF identities/open state,3 rows.",
+          "method_sha256": "d0856328eeb4bd733bb35b33a40cb44c99bb5c3be6b88821cf85fcab11be647d"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 3732,
-          "sha256": "f8fdea2b6d2378a9dac81debe8542cb6b8afc189730d28300ce8b508ba3ed6ba",
-          "quote": "Native query edits and repeated saves are tested"
+          "quote": "Native query edits and repeated saves are tested",
+          "block_sha256": "7f5ba76f7b1face804d07917623d56aa3c08e9bf9222ea37261a73470a6e08fd"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 4845,
-          "sha256": "e2cba77d1fd3b5ccc59647b21f84c1af6344519a4a8b3357f57b500933e3083a",
-          "quote": "### P3C-JPA-SQL-NATIVE-QUERY"
+          "quote": "### P3C-JPA-SQL-NATIVE-QUERY",
+          "block_sha256": "71d704e4abdb01e68bc110dfc81ba46742904324050b5faff90230e9aba277b9"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
