@@ -415,7 +415,10 @@ public class StatusServer implements StatusReporter.StatusListener {
     private void checkWatcherHealth() {
         var watcher=doctorWatcher;
         if(watcher==null)return;
-        var snapshot=watcher.health();
+        reportWatcherHealth(watcher.checkHealth());
+    }
+
+    void reportWatcherHealth(com.onurkat.reclazz.watcher.WatcherHealth snapshot) {
         if(snapshot.state().equals(lastWatcherState))return;
         String previous=lastWatcherState;lastWatcherState=snapshot.state();
         if(snapshot.unhealthy()) {

@@ -198,6 +198,7 @@ public class FileWatcher {
             new java.util.concurrent.ConcurrentLinkedQueue<>();
 
     private final Object scanBarrierLock = new Object();
+    private final WatcherTiming timing = new WatcherTiming(System::nanoTime);
     private final java.util.Set<java.util.concurrent.CompletableFuture<Integer>> outstandingScans =
             java.util.concurrent.ConcurrentHashMap.newKeySet();
 
@@ -215,7 +216,7 @@ public class FileWatcher {
             scanBarriers.add(done);
         }
         try {
-            return done.get(10, TimeUnit.SECONDS);
+            return timing.awaitScan(done);
         } catch (InterruptedException interrupted) {
             Thread.currentThread().interrupt();
             throw new IllegalStateException("Build scan interrupted; build remains held", interrupted);
@@ -260,7 +261,12 @@ public class FileWatcher {
     private volatile String watchFailure;
 
     public WatcherHealth health() {
-        return WatcherHealth.observe(watchThread,watchState,completedPoll,System.nanoTime(),IDLE_WAIT_MS,watchFailure);
+        return timing.health(watchThread, watchState, completedPoll, IDLE_WAIT_MS, watchFailure, false);
+    }
+
+    /** Called only by the independently scheduled status-server health checker. */
+    public WatcherHealth checkHealth() {
+        return timing.health(watchThread, watchState, completedPoll, IDLE_WAIT_MS, watchFailure, true);
     }
     private Consumer<ChangeEvent> changeHandler;
     private Consumer<List<ChangeEvent>> batchHandler;

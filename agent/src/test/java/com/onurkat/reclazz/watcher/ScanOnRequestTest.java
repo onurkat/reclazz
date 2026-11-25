@@ -131,6 +131,29 @@ class ScanOnRequestTest {
         var queue=(java.util.Queue<?>)field.get(watcher);long until=System.nanoTime()+java.util.concurrent.TimeUnit.SECONDS.toNanos(3);
         while(queue.size()<count){assertTrue(System.nanoTime()<until,"scan admission deadline");Thread.yield();}
     }
+    @Test void interruptedWaiterKeepsTheBuildHeld() throws Exception {
+        countedWatcher();
+        var result = new java.util.concurrent.CompletableFuture<Boolean>();
+        var waiter = new Thread(() -> {
+            try {
+                watcher.scanNowAndCount();
+                result.complete(false);
+            } catch (IllegalStateException failure) {
+                result.complete(Thread.currentThread().isInterrupted()
+                        && failure.getCause() instanceof InterruptedException);
+            }
+        });
+        waiter.start();
+        try {
+            queued(1);
+            waiter.interrupt();
+            assertTrue(result.get(3, java.util.concurrent.TimeUnit.SECONDS));
+        } finally {
+            waiter.interrupt();
+            waiter.join(2000);
+        }
+    }
+
     @Test void countedEmptyScanRepliesZero() throws Exception {
         countedWatcher();var request=java.util.concurrent.CompletableFuture.supplyAsync(watcher::scanNowAndCount);queued(1);var thread=startCounted();
         try{assertEquals(0,request.get(3,java.util.concurrent.TimeUnit.SECONDS));}finally{watcher.stopWatching();thread.join(2000);}

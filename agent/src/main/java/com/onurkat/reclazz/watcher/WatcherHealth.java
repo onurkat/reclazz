@@ -7,7 +7,7 @@ public record WatcherHealth(String state, long quietMillis, String cause) {
         long quiet=Math.max(0,(now-beat)/1_000_000);
         String result=state.equals("stopped") || (thread!=null && !thread.isAlive()) ? "stopped"
                 : thread==null || state.equals("starting") ? "starting"
-                : quiet>Math.max(5000,3*pollMillis) ? "stalled" : "watching";
+                : quiet>=Math.max(30_000,3*pollMillis) ? "stalled" : "watching";
         return new WatcherHealth(result,quiet,cause==null ? "unknown" : cause);
     }
     public String line() {
