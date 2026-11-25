@@ -1679,13 +1679,14 @@ public class ReclazzAgent {
             long startTime = System.currentTimeMillis();
             ReloadEffects.begin(className);
 
+            Class<?> owner = findLoadedClass(className);
             if (!nativeCohortMember(className)) chaseChangedConstants(internalName, className, bytecode);
 
             // A class the JVM has never loaded is exactly the case where the
             // stock-JDK wall does not stand: everything about it is real. If
             // it carries a Spring stereotype it becomes a live bean here, and
             // the ordinary reload machinery has nothing left to do for it.
-            boolean wasLoaded = alreadyLoaded(className);
+            boolean wasLoaded = owner != null;
             if (!wasLoaded) {
                 var registration = springOrchestrator.registerNewBeanClass(className, bytecode);
                 if (registration.isHandled()) {
@@ -1695,11 +1696,12 @@ public class ReclazzAgent {
                 }
                 JpaMappingRefresh.maybeMapNewEntity(
                         className, bytecode, platformContext.getAllApplicationContexts());
+                owner = findLoadedClass(className);
             }
 
             var keepInput = new com.onurkat.reclazz.transform.KeepBaseline.Input(
-                    com.onurkat.reclazz.transform.KeepBaseline.get(findLoadedClass(className)), bytecode);
-            reloadResult = reloadWithCacheBoundary(className, internalName, bytecode, reloader);
+                    com.onurkat.reclazz.transform.KeepBaseline.get(owner), bytecode);
+            reloadResult = reloadWithCacheBoundary(className, internalName, bytecode, reloader, owner);
 
             long elapsed = System.currentTimeMillis() - startTime;
 
@@ -1708,7 +1710,7 @@ public class ReclazzAgent {
 
             if (reloadResult.isSuccess()) {
                 if (nativeCohortMember(className)) chaseChangedConstants(internalName, className, bytecode);
-                deferOrComplete(new FrameworkReload(className, reloadResult, bytecode, wasLoaded,
+                deferOrComplete(new FrameworkReload(className, owner, reloadResult, bytecode, wasLoaded,
                         source, startTime, true, springOrchestrator, modules, keepInput));
             } else {
                 ReloadEffects.end();
@@ -1779,7 +1781,7 @@ public class ReclazzAgent {
      *                as a whole
      * @param source  the class file, or the source file that was compiled
      */
-    private static void reloadLanded(String className, boolean structural, long elapsed,
+    private static void reloadLanded(String className, Class<?> owner, boolean structural, long elapsed,
                                      String shape, String source, String effects) {
         SessionReport.reloaded(structural, elapsed);
         if (structural) {
@@ -1788,7 +1790,7 @@ public class ReclazzAgent {
             StatusReporter.reload(displayName(className), elapsed, effects);
         }
         ReloadEvents.reloaded(className, structural, elapsed, shape, source);
-        SapIndexingGuidance.afterReload(findLoadedClass(className),
+        SapIndexingGuidance.afterReload(owner,
                 agentConfig != null && agentConfig.isAutoSolrReindex(), premiumModules::reindex);
     }
 
@@ -1942,6 +1944,7 @@ public class ReclazzAgent {
 
     private static final class FrameworkReload {
         final String className;
+        final Class<?> owner;
         final ClassReloader.ReloadResult result;
         final byte[] bytes;
         final com.onurkat.reclazz.transform.KeepBaseline.Input keepInput;
@@ -1955,10 +1958,11 @@ public class ReclazzAgent {
         String effects;
         boolean frameworkCompleted, frameworkFailed, nativeRepair;
 
-        FrameworkReload(String className, ClassReloader.ReloadResult result, byte[] bytes,
+        FrameworkReload(String className, Class<?> owner, ClassReloader.ReloadResult result, byte[] bytes,
                         boolean wasLoaded, String source, long started, boolean timed,
                         SpringReloadOrchestrator spring, PremiumModules modules,
                         com.onurkat.reclazz.transform.KeepBaseline.Input keepInput) {
+            this.owner = owner;
             this.keepInput = keepInput;
             this.className = className; this.result = result; this.bytes = bytes;
             this.wasLoaded = wasLoaded; this.source = source; this.started = started;
@@ -1992,7 +1996,7 @@ public class ReclazzAgent {
                     // even when a child is completed before its changed ancestor.
                     StructuralReloader completedStructural = structuralReloader;
                     for (FrameworkReload work : ready) {
-                        Class<?> type = findLoadedClass(work.className);
+                        Class<?> type = work.owner;
                         if (SwitchMapRefresh.failure(type) == null && (completedStructural == null || completedStructural.nativeOutcome(type)
                                 != StructuralReloader.NativeOutcome.FAILED)) {
                             com.onurkat.reclazz.transform.KeepBaseline.advance(type, work.bytes);
@@ -2013,7 +2017,7 @@ public class ReclazzAgent {
                         for (FrameworkReload work : ready) {
                             work.success = false; work.frameworkCompleted = false;
                             boolean installed = nativeSave.batch.names().contains(work.className);
-                            if(installed)nativeFrameworkFailure(findLoadedClass(work.className),"Spring batch completion "+work.className,why);
+                            if(installed)nativeFrameworkFailure(work.owner,"Spring batch completion "+work.className,why);
                             recordOutcome(work.className, installed, installed
                                     ? "record shape changes are installed; Spring batch completion did not finish: " + why
                                     : "framework batch completion did not finish: " + why, work.source);
@@ -2047,7 +2051,7 @@ public class ReclazzAgent {
     private static void completeFramework(FrameworkReload work, boolean deferred) {
         if (deferred) ReloadEffects.begin(work.className);
         try {
-            Class<?> type = findLoadedClass(work.className);
+            Class<?> type = work.owner;
             StructuralReloader structural = structuralReloader;
             String switchFailure = SwitchMapRefresh.failure(type);
             if (switchFailure != null || (deferred && structural != null
@@ -2107,7 +2111,7 @@ public class ReclazzAgent {
             NativeRecordSave nativeSave = nativeRecordSave.get();
             if (nativeSave != null && nativeSave.batch.names().contains(work.className))
                 nativeSave.failure("framework refresh " + work.className, why);
-            else if(work.nativeRepair)nativeFrameworkFailure(findLoadedClass(work.className),"framework refresh "+work.className,why);
+            else if(work.nativeRepair)nativeFrameworkFailure(work.owner,"framework refresh "+work.className,why);
             StatusReporter.error("Reload of " + work.className + " did not finish: " + why);
             recordOutcome(work.className, true, kindOf(work.result)
                     + "; the framework refresh after it did not finish: " + why, work.source);
@@ -2119,14 +2123,14 @@ public class ReclazzAgent {
 
     private static void publishFramework(FrameworkReload work) {
         try {
-            Class<?> type=findLoadedClass(work.className);
+            Class<?> type=work.owner;
             nativeFrameworkCompleted(type,false);
             NativeRecordSave save=nativeRecordSave.get();
             if(save!=null&&save.batch.names().contains(work.className)&&!save.repairFailures.isEmpty()) {
                 String reason="native changes are installed; post-native repairs did not finish: "+String.join(", ",save.repairFailures.keySet());
                 StatusReporter.warn(reason);recordOutcome(work.className,true,reason,work.source);return;
             }
-            reloadLanded(work.className, work.result.isStructuralReload(),
+            reloadLanded(work.className, work.owner, work.result.isStructuralReload(),
                     work.timed ? System.currentTimeMillis() - work.started : -1,
                     work.result.getShape(), work.source, work.effects);
             nativeFrameworkCompleted(type,true);
@@ -2138,7 +2142,7 @@ public class ReclazzAgent {
             NativeRecordSave nativeSave = nativeRecordSave.get();
             if (nativeSave != null && nativeSave.batch.names().contains(work.className))
                 nativeSave.failure("receipt publication " + work.className, why);
-            else if(work.nativeRepair)nativeFrameworkFailure(findLoadedClass(work.className),"receipt publication "+work.className,why);
+            else if(work.nativeRepair)nativeFrameworkFailure(work.owner,"receipt publication "+work.className,why);
             StatusReporter.error("Reload of " + work.className + " did not finish: " + why);
             recordOutcome(work.className, true, kindOf(work.result)
                     + "; the reload receipt did not finish: " + why, work.source);
@@ -2146,8 +2150,7 @@ public class ReclazzAgent {
     }
 
     private static ClassReloader.ReloadResult reloadWithCacheBoundary(String className, String internalName,
-                                                                     byte[] bytecode, ClassReloader reloader) {
-        Class<?> owner = findLoadedClass(className);
+                                                                     byte[] bytecode, ClassReloader reloader, Class<?> owner) {
         NativeRecordSave nativeSave = nativeRecordSave.get();
         if (nativeSave != null && nativeSave.batch.names().contains(className)) {
             if (cacheTrackingInstalled) CacheDependencyLedger.beginMutation();
@@ -2166,9 +2169,9 @@ public class ReclazzAgent {
         if (cacheTrackingInstalled) CacheDependencyLedger.beginMutation();
         try {
             ClassReloader.ReloadResult result = structuralReloader != null && transformContext != null
-                    && transformContext.isWatched(internalName) ? structuralReloader.reload(className, bytecode)
-                    : reloader.reload(className, bytecode);
-            SwitchMapRefresh.result(findLoadedClass(className), result.isSuccess());
+                    && transformContext.isWatched(internalName) ? structuralReloader.reload(className, bytecode, owner)
+                    : reloader.reload(className, bytecode, owner);
+            SwitchMapRefresh.result(owner, result.isSuccess());
             if (frameworkBatchDepth == 0) SwitchMapRefresh.complete(structuralReloader);
             return result;
         } catch (RuntimeException | Error failure) {
@@ -2206,29 +2209,38 @@ public class ReclazzAgent {
             // Per-class isolation: one class failing (possibly with an Error,
             // e.g. VerifyError from companion generation on a nested class)
             // must not abort the rest of the batch.
-            if (!nativeCohortMember(className)) chaseChangedConstants(internalName, className, bytecode);
-
-            // Same as the single-file path: a never-loaded stereotype class
-            // becomes a live bean and is done.
-            boolean wasLoaded = alreadyLoaded(className);
-            if (!wasLoaded) {
-                var registration = springOrchestrator.registerNewBeanClass(className, bytecode);
-                if (registration.isHandled()) {
-                    recordOutcome(className, registration.isSuccess(), registration.description(), sources.get(className));
-                    if (registration.isSuccess()) successCount++;
-                    else failCount++;
-                    continue;
+            Class<?> owner;
+            boolean wasLoaded;
+            try {
+                owner = findLoadedClass(className);
+                wasLoaded = owner != null;
+                if (!nativeCohortMember(className)) chaseChangedConstants(internalName, className, bytecode);
+                if (!wasLoaded) {
+                    var registration = springOrchestrator.registerNewBeanClass(className, bytecode);
+                    if (registration.isHandled()) {
+                        recordOutcome(className, registration.isSuccess(), registration.description(), sources.get(className));
+                        if (registration.isSuccess()) successCount++;
+                        else failCount++;
+                        continue;
+                    }
+                    JpaMappingRefresh.maybeMapNewEntity(className, bytecode, platformContext.getAllApplicationContexts());
+                    owner = findLoadedClass(className);
                 }
-                JpaMappingRefresh.maybeMapNewEntity(
-                        className, bytecode, platformContext.getAllApplicationContexts());
+            } catch (IllegalStateException unavailable) {
+                String reason = Failures.describe(unavailable);
+                StatusReporter.error(reason);
+                recordOutcome(className, false, reason, sources.get(className));
+                ReloadEvents.failed(className, reason, sources.get(className));
+                failCount++;
+                continue;
             }
 
             var keepInput = new com.onurkat.reclazz.transform.KeepBaseline.Input(
-                    com.onurkat.reclazz.transform.KeepBaseline.get(findLoadedClass(className)), bytecode);
+                    com.onurkat.reclazz.transform.KeepBaseline.get(owner), bytecode);
             ClassReloader.ReloadResult reloadResult;
             ReloadEffects.begin(className);
             try {
-                reloadResult = reloadWithCacheBoundary(className, internalName, bytecode, reloader);
+                reloadResult = reloadWithCacheBoundary(className, internalName, bytecode, reloader, owner);
             } catch (Throwable t) {
                 reloadResult = ClassReloader.ReloadResult.failure(
                         "Unexpected " + t.getClass().getSimpleName() + ": " + t.getMessage(), false);
@@ -2241,7 +2253,7 @@ public class ReclazzAgent {
             if (reloadResult.isSuccess()) {
                 if (nativeCohortMember(className)) chaseChangedConstants(internalName, className, bytecode);
                 successCount++;
-                FrameworkReload work = new FrameworkReload(className, reloadResult, bytecode, wasLoaded,
+                FrameworkReload work = new FrameworkReload(className, owner, reloadResult, bytecode, wasLoaded,
                         sources.get(className), startTime, compiledClasses.size() == 1, springOrchestrator, modules, keepInput);
                 frameworkResults.add(work);
                 deferOrComplete(work);
@@ -2548,15 +2560,7 @@ public class ReclazzAgent {
 
 
 
-    /**
-     * Whether the JVM has ALREADY loaded a class of this name, asked without
-     * loading it. {@code ClassLookup.findLoadedClass} answers a different
-     * question despite its name: it resolves through {@code Class.forName}
-     * and thereby loads the class it is asked about, which is fine for the
-     * reload paths (their classes are loaded by definition) and exactly wrong
-     * for "is this file a brand-new class", where the asking must not change
-     * the answer.
-     */
+    /** Presence alone is sufficient for constant-dependency admission. */
     private static boolean alreadyLoaded(String className) {
         for (Class<?> loaded : instrumentation.getAllLoadedClasses()) {
             if (className.equals(loaded.getName())) return true;
@@ -2565,7 +2569,14 @@ public class ReclazzAgent {
     }
 
     private static Class<?> findLoadedClass(String className) {
-        return ClassLookup.findLoadedClass(className, instrumentation);
+        try {
+            TransformContext context = transformContext;
+            return ClassLookup.findLoadedClass(className, instrumentation,
+                    context == null ? null : context::recordedLoaders);
+        } catch (ClassLookup.AmbiguousDefinition ambiguity) {
+            RestartLedger.note(className, ambiguity.getMessage());
+            throw ambiguity;
+        }
     }
 
     private static void reportCapabilities() {

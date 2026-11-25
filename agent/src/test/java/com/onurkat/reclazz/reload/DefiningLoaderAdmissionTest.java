@@ -10,6 +10,51 @@ import java.io.*;
 import static org.junit.jupiter.api.Assertions.*;
 class DefiningLoaderAdmissionTest extends TransformTestBase {
     static final java.util.concurrent.atomic.AtomicInteger IDS=new java.util.concurrent.atomic.AtomicInteger();
+    @Test void lookupNeverDefinesAnUnusedCopyAndAnAmbiguousSaveChangesNeitherDefinition() throws Exception {
+        String name = "ControllerLoaderProbe" + IDS.incrementAndGet();
+        String source = "public class %s { public String body() { return \"%s\"; } }";
+        byte[] first = compile(new SourceFile(name, source.formatted(name, "before"))).get(name);
+        byte[] second = compile(new SourceFile(name, source.formatted(name, "after"))).get(name);
+        class FixtureLoader extends ClassLoader {
+            int definitions;
+            FixtureLoader() { super(DefiningLoaderAdmissionTest.class.getClassLoader()); }
+            @Override protected Class<?> findClass(String requested) throws ClassNotFoundException {
+                if (!requested.equals(name)) throw new ClassNotFoundException(requested);
+                definitions++;
+                return defineClass(name, first, 0, first.length);
+            }
+        }
+        var worker = new FixtureLoader();
+        var previous = Thread.currentThread().getContextClassLoader();
+        var instrumentation = ByteBuddyAgent.install();
+        Thread.currentThread().setContextClassLoader(worker);
+        try {
+            assertNull(ClassLookup.findLoadedClass(name, instrumentation));
+            var live = new FixtureLoader().loadClass(name);
+            Object bean = live.getConstructor().newInstance();
+            var engine = new com.onurkat.reclazz.agent.ClassReloader(instrumentation);
+            assertSame(live, ClassLookup.findLoadedClass(name, instrumentation));
+            var observed = new TransformContext();
+            observed.markTransformed(live.getClassLoader(), name);
+            observed.markRaw(worker, name);
+            assertSame(live, ClassLookup.findLoadedClass(name, instrumentation, observed::recordedLoaders));
+            assertEquals(0, worker.definitions);
+            assertTrue(engine.reload(name, second).isSuccess());
+            assertEquals("after", live.getMethod("body").invoke(bean));
+            assertEquals(0, worker.definitions);
+            var other = worker.loadClass(name);
+            assertThrows(ClassLookup.AmbiguousDefinition.class,
+                    () -> ClassLookup.findLoadedClass(name, instrumentation, observed::recordedLoaders));
+            var refused = engine.reload(name, first);
+            assertFalse(refused.isSuccess());
+            assertTrue(refused.getError().contains("multiple defining class loaders"));
+            assertEquals("after", live.getMethod("body").invoke(bean));
+            assertEquals("before", other.getMethod("body").invoke(other.getConstructor().newInstance()));
+        } finally {
+            Thread.currentThread().setContextClassLoader(previous);
+        }
+    }
+
     @Test void liveInstrumentedOwnerStillReloadsWithStaleRawDuplicate()throws Exception {
         String name="DuplicateLive"+IDS.incrementAndGet();byte[] first=compile(new SourceFile(name,"public class "+name+" {public String value(){return \"one\";}}")).get(name);
         byte[] next=compile(new SourceFile(name,"public class "+name+" {public String value(){return \"two\";}}")).get(name);
@@ -20,7 +65,8 @@ class DefiningLoaderAdmissionTest extends TransformTestBase {
         var previous=Thread.currentThread().getContextClassLoader();Thread.currentThread().setContextClassLoader(owner.getClassLoader());
         SwitchMapRefresh.begin(Map.of(name,next),Map.of(),ClassLookup.loadedClasses(new Class<?>[]{stale,owner}));
         try{var reloader=new StructuralReloader(ByteBuddyAgent.install(),context,AgentConfig.parse(null),null);reloader.setTransformer(transformer);
-            var result=reloader.reload(name,next);assertTrue(result.isSuccess(),result.getError());assertEquals("two",owner.getMethod("value").invoke(held));
+            assertFalse(reloader.reload(name,next).isSuccess(), "an instrumented duplicate alone cannot establish which instance is live");
+            var result=reloader.reload(name,next,held.getClass());assertTrue(result.isSuccess(),result.getError());assertEquals("two",owner.getMethod("value").invoke(held));
             assertEquals("one",stale.getMethod("value").invoke(stale.getConstructor().newInstance()));
         }finally{SwitchMapRefresh.end();Thread.currentThread().setContextClassLoader(previous);com.onurkat.reclazz.ui.RestartLedger.clear();}
     }

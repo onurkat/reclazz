@@ -194,6 +194,19 @@ public class StructuralReloader {
      * re-adding synthetic fields (which redefineClasses cannot do on standard JVMs).
      */
     public ClassReloader.ReloadResult reload(String className, byte[] newBytecode) {
+        var census = SwitchMapRefresh.loadedClasses();
+        try {
+            Class<?> owner = census == null ? findLoadedClass(className) : census.reloadTarget(className, context == null ? null : context::recordedLoaders);
+            return reload(className, newBytecode, owner);
+        } catch (ClassLookup.AmbiguousDefinition ambiguity) {
+            RestartLedger.note(className, ambiguity.getMessage());
+            return ClassReloader.ReloadResult.failure(ambiguity.getMessage(), false);
+        } catch (IllegalStateException unavailable) {
+            return ClassReloader.ReloadResult.failure(unavailable.getMessage(), false);
+        }
+    }
+
+    public ClassReloader.ReloadResult reload(String className, byte[] newBytecode, Class<?> definingClass) {
         String internalName = className.replace('.', '/');
 
         // Before anything is generated or swapped: the JVM cannot load a class
@@ -205,21 +218,10 @@ public class StructuralReloader {
         }
 
         try {
-            var census=SwitchMapRefresh.loadedClasses();
-            // Preserve the existing owner choice (including prepared Backoffice owners).
-            // Only a raw definition without such proof needs D4's ambiguity refusal.
-            Class<?> definingClass=census==null?findLoadedClass(className):census.find(className);
             TransformContext.ClassMetadata oldMetadata = context.getMetadata(internalName);
             boolean instrumented=instrumentedIdentity(definingClass);
 
             if (oldMetadata == null || !instrumented) {
-                boolean preparedOwner=definingClass!=null
-                        && com.onurkat.reclazz.util.BackofficePreparedOwners.contains(internalName)
-                        && com.onurkat.reclazz.util.BackofficePreparedOwners.matches(internalName,definingClass.getClassLoader());
-                if(!preparedOwner && census!=null && census.definitions(className).size()>1) {
-                    RestartLedger.note(className,"multiple defining class loaders; restart to apply");
-                    return ClassReloader.ReloadResult.failure(className+" has multiple defining class loaders; restart to apply",false);
-                }
                 // Watched, but never instrumented: there is no companion to
                 // dispatch to, so the structural path has nothing to work with
                 // and this used to fall straight through to a redefine the JVM
@@ -277,7 +279,7 @@ public class StructuralReloader {
                             newBytecode, context::isWatched, java.util.Set.of());
                     return reloadInterfaceBodies(loaded, definition, newBytecode);
                 }
-                return standardReload(className, newBytecode);
+                return standardReload(className, newBytecode, newBytecode, definingClass);
             }
 
             // Analyze structural changes
@@ -293,7 +295,7 @@ public class StructuralReloader {
                 // Reclazz does not apply this superclass change. The rest
                 // of the file still can be, and refusing the whole save threw
                 // away method bodies edited alongside the extends clause.
-                Class<?> loadedForRevert = findLoadedClass(className);
+                Class<?> loadedForRevert = definingClass;
                 HierarchyRevert.Result reverted = HierarchyRevert.toLoadedSuperclass(
                         newBytecode, oldMetadata.getSuperName(),
                         loadedForRevert == null ? null : loadedForRevert.getSuperclass());
@@ -376,7 +378,7 @@ public class StructuralReloader {
             // Same gap on this engine as on the enhanced one, and for the same
             // reason: the mapping is Hibernate's, built once, and a class
             // redefinition is not something it listens for.
-            JpaEntityChange.reportIfChanged(className, findLoadedClass(className), newBytecode);
+            JpaEntityChange.reportIfChanged(className, definingClass, newBytecode);
 
             // Removed methods are reported at the redefinition site below,
             // because what happens to their existing callers depends on
@@ -387,7 +389,7 @@ public class StructuralReloader {
             // Always use companion class pattern for watched classes.
             // Even body-only changes go through this path to avoid re-adding
             // __reclazz$ext and __reclazz$lookup fields via redefineClasses.
-            return structuralReload(className, internalName, newBytecode, diff,
+            return structuralReload(className, internalName, definingClass, newBytecode, diff,
                     pinnedMethods, pinnedRedefinePayload);
 
         } catch (Exception e) {
@@ -1124,7 +1126,7 @@ public class StructuralReloader {
     private ClassReloader.ReloadResult reloadInterfaceBodies(Class<?> owner, byte[] definition, byte[] source) {
         String className = owner.getName();
         var init = StaticInitializerReset.interfaceInitialization(owner, source);
-        var result = standardReload(className, definition, source);
+        var result = standardReload(className, definition, source, owner);
         if (result.isSuccess()) {
             if (init != StaticInitializerReset.InterfaceInit.UNCHANGED) {
                 String reason = init == StaticInitializerReset.InterfaceInit.CHANGED
@@ -1146,12 +1148,9 @@ public class StructuralReloader {
     private final java.util.Set<String> uninstrumentedReported =
             java.util.concurrent.ConcurrentHashMap.newKeySet();
 
-    private ClassReloader.ReloadResult standardReload(String className, byte[] newBytecode) {
-        return standardReload(className,newBytecode,newBytecode);
-    }
-    private ClassReloader.ReloadResult standardReload(String className,byte[] newBytecode,byte[] rawAdmission) {
+    private ClassReloader.ReloadResult standardReload(String className, byte[] newBytecode, byte[] rawAdmission,
+                                                      Class<?> existingClass) {
         try {
-            Class<?> existingClass = findLoadedClass(className);
             if (existingClass == null) {
                 StatusReporter.info("New class detected: " + className);
                 return ClassReloader.ReloadResult.success(false, false);
@@ -1185,7 +1184,7 @@ public class StructuralReloader {
      *                              payload carrying the pinned methods' old
      *                              bodies, or null outside that path
      */
-    private ClassReloader.ReloadResult structuralReload(String className, String internalName,
+    private ClassReloader.ReloadResult structuralReload(String className, String internalName, Class<?> targetClass,
                                                          byte[] newBytecode,
                                                          StructuralAnalyzer.StructuralDiff diff,
                                                          java.util.Map<String, String> pinnedMethods,
@@ -1201,7 +1200,7 @@ public class StructuralReloader {
             // check both need the loaded class, and the storage is now keyed
             // by it. Null means "not loaded", handled by each callee and by
             // the explicit guard a few lines down.
-            Class<?> loadedClass = findLoadedClass(className);
+            Class<?> loadedClass = targetClass;
             java.util.Set<String> staticsNeedingValue =
                     uninitialisedStatics(diff, newBytecode, loadedClass);
             // Taken before anything is redefined, for the same reason as every
@@ -1220,7 +1219,6 @@ public class StructuralReloader {
                     pinnedMethods.keySet(), context,reflectionConstructors,loadedClass.getClassLoader()));
 
             // Get Lookup from the target class's __reclazz$lookup field
-            Class<?> targetClass = findLoadedClass(className);
             if (targetClass == null) {
                 return ClassReloader.ReloadResult.failure(
                         "Class not loaded, cannot perform structural reload", false);
@@ -1245,7 +1243,7 @@ public class StructuralReloader {
                     // redefinition; structural changes genuinely need the agent
                     // present at class-load time.
                     if (!diff.isStructural()) {
-                        return standardReload(className, newBytecode);
+                        return standardReload(className, newBytecode, newBytecode, targetClass);
                     }
                     return ClassReloader.ReloadResult.failure(
                             "Class " + className + " was loaded before Reclazz attached; " +
@@ -1515,7 +1513,7 @@ public class StructuralReloader {
                 // reloader is switched off, the JVM accepts the redefinition,
                 // and the constant is still unusable.
                 if (isEnum(newBytecode) && !addedStatics.isEmpty()) {
-                    EnumConstantAppender.applyOrExplain(className, findLoadedClass(className),
+                    EnumConstantAppender.applyOrExplain(className, targetClass,
                             newBytecode, enumChange, instrumentation);
                 } else if (!addedStatics.isEmpty()) {
                     initialiseAddedStatics(className, targetClass, companion,
@@ -1531,7 +1529,7 @@ public class StructuralReloader {
             // sentences the other engine uses.
             afterSwitch(className, "applying the enum change", () -> {
             if (isEnum(newBytecode) && enumChange != null && diff.getAddedFields().isEmpty()) {
-                EnumConstantAppender.applyOrExplain(className, findLoadedClass(className),
+                EnumConstantAppender.applyOrExplain(className, targetClass,
                         newBytecode, enumChange, instrumentation);
             }
             });
@@ -1656,7 +1654,7 @@ public class StructuralReloader {
                 if (pinnedRedefinePayload == null && diff.isStructural()
                         && !removableMethodKeys(diff).isEmpty()) {
                     kept = prepareRemovalPayload(internalName, diff, newBytecode,
-                            findLoadedClass(className));
+                            targetClass);
                     if (kept.payload() != null) {
                         redefinePayload = kept.payload();
                         removedBodiesKept = true;
@@ -1759,7 +1757,7 @@ public class StructuralReloader {
                 // exactly the crash back that the splice exists to prevent.
                 // The spliced payload is the one that is safe to redefine.
                 return standardReload(className,
-                        pinnedRedefinePayload != null ? pinnedRedefinePayload : newBytecode,newBytecode);
+                        pinnedRedefinePayload != null ? pinnedRedefinePayload : newBytecode, newBytecode, targetClass);
             }
             return ClassReloader.ReloadResult.failure(
                     "Structural reload failed: " + e.getMessage(), true);
@@ -1975,7 +1973,8 @@ public class StructuralReloader {
     }
 
     private Class<?> findLoadedClass(String className) {
-        return ClassLookup.findLoadedClass(className, instrumentation);
+        return ClassLookup.findLoadedClass(className, instrumentation,
+                context == null ? null : context::recordedLoaders);
     }
 
     /**

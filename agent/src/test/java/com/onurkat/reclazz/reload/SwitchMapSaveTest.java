@@ -234,12 +234,12 @@ class SwitchMapSaveTest extends TransformTestBase {
             var plan = f.prepare(5, true, false, false);
             Class<?> channel = Class.forName(f.pkg + ".Channel", false, f.loader);
             SwitchMapRefresh.result(channel, false);
-            Method method = ReclazzAgent.class.getDeclaredMethod("reloadWithCacheBoundary", String.class, String.class, byte[].class, ClassReloader.class);
+            Method method = ReclazzAgent.class.getDeclaredMethod("reloadWithCacheBoundary", String.class, String.class, byte[].class, ClassReloader.class, Class.class);
             method.setAccessible(true);
             for (Class<?> target : List.of(f.holder, f.outer)) {
                 byte[] bytes = plan.apply().stream().filter(event -> new ClassReader(event.getBytes()).getClassName().equals(target.getName().replace('.', '/')))
                         .findFirst().orElseThrow().getBytes();
-                var result = (ClassReloader.ReloadResult) method.invoke(null, target.getName(), target.getName().replace('.', '/'), bytes, null);
+                var result = (ClassReloader.ReloadResult) method.invoke(null, target.getName(), target.getName().replace('.', '/'), bytes, null, target);
                 assertFalse(result.isSuccess()); assertTrue(result.getError().contains("dependency failed"));
             }
             assertEquals(0, f.nativeCalls.get()); assertEquals("bank-v1|card-v1|other-v1", f.all());

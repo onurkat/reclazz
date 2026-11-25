@@ -37,7 +37,7 @@ class FrameworkBatchCompletionTest {
         var workType = Class.forName(ReclazzAgent.class.getName() + "$FrameworkReload");
         var constructor = workType.getDeclaredConstructors()[0]; constructor.setAccessible(true);
         // A null Spring collaborator proves that the failed terminal outcome returns before framework work.
-        Object work = constructor.newInstance(type.getName(), ClassReloader.ReloadResult.success(true, false),
+        Object work = constructor.newInstance(type.getName(), type, ClassReloader.ReloadResult.success(true, false),
                 changed, false, "FrameworkBatchCompletionTest.java", 0L, false, null, null, null);
         var complete = ReclazzAgent.class.getDeclaredMethod("completeFramework", workType, boolean.class);
         complete.setAccessible(true);
@@ -76,7 +76,7 @@ class FrameworkBatchCompletionTest {
         var workType = Class.forName(ReclazzAgent.class.getName() + "$FrameworkReload");
         var constructor = workType.getDeclaredConstructors()[0];
         constructor.setAccessible(true);
-        Object work = constructor.newInstance(name, ClassReloader.ReloadResult.success(true, false),
+        Object work = constructor.newInstance(name, getClass(), ClassReloader.ReloadResult.success(true, false),
                 getClass().getResourceAsStream("FrameworkBatchCompletionTest.class").readAllBytes(), false, "FrameworkBatchCompletionTest.java", 0L, false, spring, null, null);
         var begin = ReclazzAgent.class.getDeclaredMethod("beginReloadBatch", SpringReloadOrchestrator.class);
         var defer = ReclazzAgent.class.getDeclaredMethod("deferOrComplete", workType);
@@ -86,7 +86,7 @@ class FrameworkBatchCompletionTest {
         try {
             begin.invoke(null, spring);
             defer.invoke(null, work);
-            if (failingReceipt) defer.invoke(null, constructor.newInstance("java.lang.String",
+            if (failingReceipt) defer.invoke(null, constructor.newInstance("java.lang.String", String.class,
                     ClassReloader.ReloadResult.success(true, false), new byte[0], false,
                     "String.java", 0L, false, spring, null, null));
             end.invoke(null, spring);

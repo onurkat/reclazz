@@ -112,7 +112,7 @@ public class TransformContext {
     }
 
     /** Record a pending/raw definition before another class can generate an unsafe call to it. */
-    public void markRaw(ClassLoader loader,String name) {
+    public synchronized void markRaw(ClassLoader loader,String name) {
         synchronized(rawOwners){rawOwners.computeIfAbsent(loader,key->new HashSet<>()).add(name);}
         synchronized(transformedOwners){var owners=transformedOwners.get(loader);if(owners!=null)owners.remove(name);}
     }
@@ -191,10 +191,32 @@ public class TransformContext {
             java.util.concurrent.ConcurrentHashMap.newKeySet();
 
     private final Map<ClassLoader,Set<String>> transformedOwners = Collections.synchronizedMap(new WeakHashMap<>());
-    public void markTransformed(ClassLoader loader,String internalName) {
+    public synchronized void markTransformed(ClassLoader loader,String internalName) {
         markTransformed(internalName);
         synchronized(rawOwners){var owners=rawOwners.get(loader);if(owners!=null){owners.remove(internalName);if(owners.isEmpty())rawOwners.remove(loader);}}
         synchronized(transformedOwners){transformedOwners.computeIfAbsent(loader,key->new HashSet<>()).add(internalName);}
+    }
+    /** A transform callback records the defining loader before the VM publishes the Class. */
+    public synchronized com.onurkat.reclazz.util.ClassLookup.LoaderCandidates recordedLoaders(String internalName) {
+        Set<ClassLoader> result = Collections.newSetFromMap(new IdentityHashMap<>());
+        synchronized (transformedOwners) {
+            transformedOwners.forEach((loader, names) -> {
+                if (names.contains(internalName)) result.add(loader);
+            });
+        }
+        synchronized (rawOwners) {
+            rawOwners.forEach((loader, names) -> {
+                if (names.contains(internalName)) result.add(loader);
+            });
+        }
+        WatchInventory scope = currentInventory();
+        if (scope != null) {
+            for (var reference : scope.rawDefinitions().getOrDefault(internalName, List.of())) {
+                Class<?> type = reference.get();
+                if (type != null) result.add(type.getClassLoader());
+            }
+        }
+        return new com.onurkat.reclazz.util.ClassLookup.LoaderCandidates(result, seen.contains(internalName));
     }
     public boolean isTransformed(Class<?> type) {
         if(type==null)return false;

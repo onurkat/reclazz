@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 - Spring Boot applications report an active DevTools restart watcher and name added application-class bean factories that need a restart.
 - Spring Boot resource edits in Gradle runs use the project's resource processing. Runtime output changes refresh loaded properties and invalidate template caches.
+- Reloading a class uses its loaded definition throughout the save. Spring Boot DevTools applications with restart disabled in application properties can update a live controller body. Ambiguous definitions report a restart requirement.
 
 - When SAP Commerce regenerates DTOs or models, Java callers saved alongside the XML compile after generation finishes. A failed generation still surfaces genuine Java compilation errors.
 

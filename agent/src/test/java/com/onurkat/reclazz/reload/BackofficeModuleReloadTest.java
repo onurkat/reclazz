@@ -103,7 +103,8 @@ class BackofficeModuleReloadTest extends TransformTestBase {
         assertInstanceOf(NoClassDefFoundError.class,failure.getCause());
     }
     @Test void ordinaryClassLookupUnchanged() {
-        assertSame(String.class,ClassLookup.findLoadedClass("java.lang.String",null));
+        assertSame(String.class, ClassLookup.findLoadedClass("java.lang.String", ByteBuddyAgent.install()));
+        assertNull(ClassLookup.findLoadedClass("java.lang.String", null), "no loaded-class census is available");
     }
     @Test void newlyCompiledBackofficeClassIsAdmitted() throws Exception {
         byte[] initial=bytes("before",false);var platform=platform(initial,false);

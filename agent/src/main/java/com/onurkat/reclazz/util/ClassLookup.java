@@ -5,7 +5,9 @@
 package com.onurkat.reclazz.util;
 
 import java.lang.instrument.Instrumentation;
+import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * Shared utility for finding loaded classes across different classloaders.
@@ -57,6 +59,18 @@ public final class ClassLookup {
             if (found==null) found=find(name,ClassLoader.getSystemClassLoader());
             return found!=null?found:matches.isEmpty()?null:matches.get(0);
         }
+        public Class<?> reloadTarget(String name, Function<String, LoaderCandidates> recordedLoaders) {
+            if (instrumentation != null && snapshot == null) {
+                return findLoadedClass(name, instrumentation, recordedLoaders);
+            }
+            return reloadTarget(name);
+        }
+        public Class<?> reloadTarget(String name) {
+            if (BackofficePreparedOwners.contains(name.replace('.', '/'))) return find(name);
+            List<Class<?>> matches = snapshot().names().getOrDefault(name, List.of());
+            if (matches.size() > 1) throw new AmbiguousDefinition(name);
+            return matches.isEmpty() ? null : matches.get(0);
+        }
         /** Only a loaded definition visible through this initiating loader's parent chain. */
         public Class<?> find(String name,ClassLoader loader) {
             List<Class<?>> matches=snapshot().names().getOrDefault(name,List.of());
@@ -67,35 +81,85 @@ public final class ClassLookup {
         }
     }
 
-    /**
-     * Find a class that has already been loaded by any classloader.
-     * Uses Class.forName with the context classloader first (fast path),
-     * falls back to system classloader, then scans all loaded classes
-     * via Instrumentation to cover custom classloader hierarchies.
-     */
-    public static Class<?> findLoadedClass(String className, Instrumentation instrumentation) {
-        String internalName = className.replace('.', '/');
-        if (com.onurkat.reclazz.util.BackofficePreparedOwners.contains(internalName)) {
-            return com.onurkat.reclazz.util.BackofficePreparedOwners.resolve(internalName, instrumentation);
+    /** A name-only observation has no defining loader and leaves the index incomplete. */
+    public record LoaderCandidates(Set<ClassLoader> loaders, boolean hasUnlocatedDefinition) { }
+
+    private static final Method LOADED_IN_LOADER = lookupMethod();
+
+    private static Method lookupMethod() {
+        try {
+            return ClassLoader.class.getDeclaredMethod("findLoadedClass", String.class);
+        } catch (NoSuchMethodException | SecurityException unavailable) {
+            return null;
         }
-        // Fast path: try context classloader
-        try {
-            ClassLoader cl = Thread.currentThread().getContextClassLoader();
-            if (cl != null) return Class.forName(className, false, cl);
-        } catch (ClassNotFoundException ignored) {}
+    }
 
-        // Fallback: try system classloader
-        try {
-            return Class.forName(className, false, ClassLoader.getSystemClassLoader());
-        } catch (ClassNotFoundException ignored) {}
-
-        // Final fallback: scan all loaded classes via Instrumentation
-        if (instrumentation != null) {
-            for (Class<?> loaded : instrumentation.getAllLoadedClasses()) {
-                if (className.equals(loaded.getName())) return loaded;
+    private static Class<?> recordedDefinition(String name, ClassLoader loader, Instrumentation inst) {
+        // ReflectionRootFilter already opens java.lang to the agent at startup.
+        // An embedded reloader without that opening queries only this loader's initiated classes.
+        if (loader != null && LOADED_IN_LOADER != null) {
+            try {
+                if (LOADED_IN_LOADER.canAccess(loader) || LOADED_IN_LOADER.trySetAccessible()) {
+                    Class<?> type = (Class<?>) LOADED_IN_LOADER.invoke(loader, name);
+                    return type != null && type.getClassLoader() == loader ? type : null;
+                }
+            } catch (ReflectiveOperationException | SecurityException unavailable) {
+                // Use the supported instrumentation query below.
             }
         }
-
+        for (Class<?> type : inst.getInitiatedClasses(loader)) {
+            if (type.getClassLoader() == loader && type.getName().equals(name)) return type;
+        }
         return null;
+    }
+
+    public static Class<?> findLoadedClass(String name, Instrumentation inst,
+                                           Function<String, LoaderCandidates> recordedLoaders) {
+        String internal = name.replace('.', '/');
+        if (recordedLoaders == null || inst == null || BackofficePreparedOwners.contains(internal)) {
+            return findLoadedClass(name, inst);
+        }
+        LoaderCandidates recorded = recordedLoaders.apply(internal);
+        if (recorded.loaders().isEmpty()) return findLoadedClass(name, inst);
+        Set<ClassLoader> loaders = recorded.loaders();
+        if (recorded.hasUnlocatedDefinition()) {
+            // A raw class may predate observation. Probe the live context loader chain
+            // without defining anything before paying for a VM-wide fallback.
+            loaders = Collections.newSetFromMap(new IdentityHashMap<>());
+            loaders.addAll(recorded.loaders());
+            for (ClassLoader loader = Thread.currentThread().getContextClassLoader();
+                 loader != null; loader = loader.getParent()) {
+                loaders.add(loader);
+            }
+        }
+        Class<?> found = null;
+        for (ClassLoader loader : loaders) {
+            Class<?> candidate = recordedDefinition(name, loader, inst);
+            if (candidate == null) continue;
+            if (found != null && candidate != found) throw new AmbiguousDefinition(name);
+            found = candidate;
+        }
+        return recorded.hasUnlocatedDefinition() ? findLoadedClass(name, inst) : found;
+    }
+
+    /** This query must never cause the VM to define the class it is looking for. */
+    public static Class<?> findLoadedClass(String className, Instrumentation instrumentation) {
+        String internal = className.replace('.', '/');
+        if (BackofficePreparedOwners.contains(internal)) return BackofficePreparedOwners.resolve(internal, instrumentation);
+        Class<?> found = null;
+        if (instrumentation != null) {
+            for (Class<?> type : instrumentation.getAllLoadedClasses()) {
+                if (!className.equals(type.getName())) continue;
+                if (found != null && found != type) throw new AmbiguousDefinition(className);
+                found = type;
+            }
+        }
+        return found;
+    }
+
+    public static final class AmbiguousDefinition extends IllegalStateException {
+        public AmbiguousDefinition(String name) {
+            super(name + " has multiple defining class loaders; restart to apply");
+        }
     }
 }

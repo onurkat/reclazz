@@ -89,15 +89,20 @@ public class ClassReloader {
     }
 
     public ReloadResult reload(String className, byte[] newBytecode) {
+        try {
+            return reload(className, newBytecode, findLoadedClass(className));
+        } catch (IllegalStateException unavailable) {
+            return ReloadResult.failure(unavailable.getMessage(), false);
+        }
+    }
+
+    public ReloadResult reload(String className, byte[] newBytecode, Class<?> existingClass) {
         String tooNew = BytecodeVersion.rejectionReason(newBytecode);
         if (tooNew != null) {
             return ReloadResult.failure(className + " " + tooNew, false);
         }
 
         try {
-            // Find the already-loaded class in the JVM
-            Class<?> existingClass = findLoadedClass(className);
-
             if (existingClass == null) {
                 // Class not loaded yet - this is a new class
                 return handleNewClass(className, newBytecode);

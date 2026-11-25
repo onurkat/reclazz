@@ -52,6 +52,7 @@ class LoadedUninstrumentedReloadTest extends TransformTestBase {
         final Class<?> owner;final Object held;
         final Instrumentation real=ByteBuddyAgent.install();
         final AtomicInteger captures=new AtomicInteger(),redefines=new AtomicInteger(),adds=new AtomicInteger(),removes=new AtomicInteger();
+        final AtomicInteger censuses = new AtomicInteger();
         final java.util.concurrent.atomic.AtomicBoolean failCapture=new java.util.concurrent.atomic.AtomicBoolean();
         final TransformContext context=new TransformContext();
         final com.onurkat.reclazz.transform.ReclazzTransformer transformer=new com.onurkat.reclazz.transform.ReclazzTransformer(context,AgentConfig.parse(null));
@@ -60,6 +61,7 @@ class LoadedUninstrumentedReloadTest extends TransformTestBase {
             owner=raw(original);held=owner.getConstructor().newInstance();context.addWatched(name);context.markSeen(name);
             counted=(Instrumentation)Proxy.newProxyInstance(getClass().getClassLoader(),new Class<?>[]{Instrumentation.class},(proxy,method,args)->{
                 switch(method.getName()){
+                    case "getAllLoadedClasses" -> censuses.incrementAndGet();
                     case "retransformClasses" -> {captures.incrementAndGet();if(failCapture.get())throw new java.lang.instrument.UnmodifiableClassException("forced capture failure");}
                     case "redefineClasses" -> redefines.incrementAndGet();
                     case "addTransformer" -> adds.incrementAndGet();
@@ -100,7 +102,10 @@ class LoadedUninstrumentedReloadTest extends TransformTestBase {
                 Class<?> define()throws Exception {byte[] bytes=f.transformer.transform(this,f.name,null,null,f.original);assertNotNull(bytes);return defineClass(f.name,bytes,0,bytes.length);}
             }.define();
             Object other=foreign.getConstructor().newInstance();var metadata=f.context.getMetadata(f.name);assertNotNull(metadata);assertTrue(f.context.isTransformed(foreign));
-            var result=f.reloader.reload(f.name,f.bytes("+1"));assertTrue(result.isSuccess(),result.getError());
+            int beforeLookup = f.censuses.get();
+            assertFalse(f.reloader.reload(f.name,f.bytes("+1")).isSuccess(), "an ambiguous raw name is insufficient");
+            assertEquals(beforeLookup, f.censuses.get(), "two visible definitions prove ambiguity without a VM census");
+            var result=f.reloader.reload(f.name,f.bytes("+1"),f.held.getClass());assertTrue(result.isSuccess(),result.getError());
             assertEquals(2,f.value());assertEquals(1,foreign.getMethod("value").invoke(other));
             assertSame(metadata,f.context.getMetadata(f.name));assertFalse(f.context.isTransformed(f.owner));
             assertEquals(1,f.captures.get());assertEquals(1,f.redefines.get());
