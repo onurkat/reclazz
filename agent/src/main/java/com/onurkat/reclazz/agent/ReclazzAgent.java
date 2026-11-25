@@ -558,6 +558,7 @@ public class ReclazzAgent {
 
             // Install before native lazy definition loads. Already loaded classes stay unobserved.
             instrumentation.addTransformer(new com.onurkat.reclazz.transform.SapProcessDefinitionTransformer(), false);
+            if (isHybris) instrumentation.addTransformer(new com.onurkat.reclazz.spring.xml.SapListDirectiveTransformer(), false);
 
             // Register SpringContextInterceptTransformer for ALL platforms,
             // it instruments AbstractApplicationContext.refresh() to register

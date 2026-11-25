@@ -26,9 +26,9 @@ final class SapListMergeDirectives {
         List<Object> list=target(factory,previous,live);requireWritable(list);uniqueAddition(list,call(live,"getAdd"));
         Object add=SpringReflection.getExistingSingleton(factory,(String)call(rawValue(next,"add"),"getBeanName"));
         if(add!=null)for(Object item:list)if(item!=call(live,"getAdd")&&Objects.equals(item,add))return false;
-        return sharedDirective(factory,name,previous,live)==null;
+        return SapSharedDirectives.refusal(factory,name,previous,live)==null;
     }
-    private static List<String> names(Object raw)throws Exception {
+    static List<String> names(Object raw)throws Exception {
         if(raw==null)return null; // The SDK distinguishes absent positions from an explicitly empty list.
         var result=new ArrayList<String>();
         if(!(raw instanceof List<?> values))throw new IllegalArgumentException("bean-name positions require a literal list");
@@ -64,7 +64,12 @@ final class SapListMergeDirectives {
 
     /** A single insert has no restart-equivalent inverse when another directive owns this list. */
     static String sharedDirective(Object factory,String name,Object definition,Object live)throws Exception {
-        Object targetOwner=owner(factory,definition);List<Object> targetList=target(factory,definition,live);
+        return sharedDirective(factory,name,definition,live,Set.of());
+    }
+    static String sharedDirective(Object factory,String name,Object definition,Object live,Set<String> observed)throws Exception {
+        boolean modify=MODIFY.equals(live.getClass().getName());
+        Object targetOwner=modify?call(live,"getList"):owner(factory,definition);
+        List<Object> targetList=modify?populators(targetOwner):target(factory,definition,live);
         var factories=Collections.newSetFromMap(new IdentityHashMap<Object,Boolean>());factories.add(factory);
         for(Object ctx:com.onurkat.reclazz.platform.ApplicationContextHolder.getAllContexts()) {
             try{factories.add(call(ctx,"getBeanFactory"));}catch(Exception closed){/* A closed context has no live ownership. */}
@@ -74,7 +79,7 @@ final class SapListMergeDirectives {
             while(parent!=null){factories.add(parent);parent=call(parent,"getParentBeanFactory");}
         }
         for(Object otherFactory:factories)for(String other:(String[])call(otherFactory,"getBeanDefinitionNames")) {
-            if(otherFactory==factory&&other.equals(name))continue;
+            if(otherFactory==factory&&(other.equals(name)||observed.contains(other)))continue;
             Object raw=call(otherFactory,"getBeanDefinition",other);
             if(Boolean.TRUE.equals(call(raw,"isAbstract")))continue;
             Class<?> type=(Class<?>)otherFactory.getClass().getMethod("getType",String.class,boolean.class).invoke(otherFactory,other,false);String kind=null;
@@ -134,7 +139,7 @@ final class SapListMergeDirectives {
         if(shared!=null)throw new IllegalStateException("SAP list directive edit requires restart; shared target with directive "+shared);
         publish(factory,edit,live,properties,snapshot,copy);
     }
-    private static void replay(Object factory,Object directive,List<Object> copy,String name)throws Exception {
+    static void replay(Object factory,Object directive,List<Object> copy,String name)throws Exception {
         ClassLoader loader=directive.getClass().getClassLoader();String prefix="de.hybris.platform.spring.config.";
         Class<?> contract=Class.forName(prefix+"ListMergeDirectiveBeanPostProcessor$ListMergeDirectiveProcessor",false,loader);
         Method process=contract.getMethod("processDirective",directive.getClass(),List.class,String.class,String.class);

@@ -39,7 +39,8 @@ final class SapPopulatorDirectives {
             }
             XmlRawValueComparator comparator = new XmlRawValueComparator(next.getClass().getClassLoader());
             return comparator.verifiedStandardDefinition(withEditable(previous, next))
-                    .equals(comparator.verifiedStandardDefinition(withEditable(next,next)));
+                    .equals(comparator.verifiedStandardDefinition(withEditable(next,next)))
+                    && SapSharedDirectives.refusal(factory,name,previous,live)==null;
         } catch (Exception | LinkageError unverifiable) {
             return false;
         }
@@ -49,6 +50,7 @@ final class SapPopulatorDirectives {
     static void apply(Object factory, Edit edit) throws Exception {
         Object directive = SpringReflection.getExistingSingleton(factory, edit.beanName());
         if (directive == null) throw new IllegalStateException("directive is not created");
+        if (SapSharedDirectives.apply(factory, edit, directive)) return;
         if (SapListMergeDirectives.TYPE.equals(directive.getClass().getName())) {SapListMergeDirectives.apply(factory,edit,directive);return;}
         TargetSnapshot snapshot=new TargetSnapshot(()->call(directive,"getList"),false);
         Object oldAdd=call(directive,"getAdd"),oldRemove=call(directive,"getRemove");

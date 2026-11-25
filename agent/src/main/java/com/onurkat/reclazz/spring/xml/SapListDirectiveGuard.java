@@ -33,7 +33,13 @@ final class SapListDirectiveGuard {
             if (!normalized(previous).equals(normalized(candidate))) {
                 String reason="SAP list directive edit requires restart; effective target lists were not refreshed";
                 Object live=SpringReflection.getExistingSingleton(factory,name);
-                if(live!=null&&SapListMergeDirectives.TYPE.equals(live.getClass().getName())) {
+                if (live != null && (SapListMergeDirectives.TYPE.equals(live.getClass().getName())
+                        || SapPopulatorDirectives.MODIFY.equals(live.getClass().getName()))) {
+                    String sharedRefusal = SapSharedDirectives.refusal(factory, name, previous, live);
+                    if (sharedRefusal != null) {
+                        diff.unsafe.add(new BeanDefinitionDiff.UnsafeChange(name, sharedRefusal));
+                        return true;
+                    }
                     try {
                         String other=SapListMergeDirectives.sharedDirective(factory,name,previous,live);
                         if(other!=null)reason+="; shared target with directive "+other;

@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   with class or interface proxies. Existing HTTP sessions retain their targets
   across a factory edit and run their destruction callbacks at session end.
 - SAP Commerce schema guidance links to the configured HAC location. Applied property receipts clarify which readers see the new values.
+- SAP Commerce can reload an edit to an earlier directive on a shared list while preserving startup order. The agent must have observed all directives on that list in one bean factory and through one processor kind.
 
 - Reordering enum constants keeps their running ordinals, including when the same save adds new constants. Reload reports the running order. With Hibernate 6.5.3.Final, startup-tracked factories can reload inserts and reorders when their mappings store enum names. Ordinal or opaque mappings still require a restart. Direct enum switches whose case keys would change also require restart. A newly opened Hibernate factory with incompatible storage raises a warning, and a Reclazz-managed rebuild keeps the previous factory. Managed rebuilds refuse destructive schema actions while enum order diverges. Other create/create-drop rebuilds follow Hibernate’s configured startup policy. Retiring a create-drop factory preserves the replacement’s tables and shutdown action. Enum order checks also cover converted wrappers, embedded properties, composite keys, registered XML listeners and recognized numeric serializers and compiler switch tables.
 

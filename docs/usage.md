@@ -3576,9 +3576,7 @@ Changing which populator an existing `ModifyPopulatorList` adds or removes
 (its `add` or `remove` reference) applies to the running converter: Reclazz takes
 the old `add` out of the target list, puts the old `remove` back, then removes the
 new `remove` and appends the new `add`, the same way SAP Commerce applies a directive at
-startup. A populator bean added in the same save can be the new `add`. A populator
-that comes back this way is appended, so when several directives touch one list
-its order can differ from a fresh start. If the edit cannot be applied, the list
+startup. A populator bean added in the same save can be the new `add`. With a single directive, a restored populator is appended. If the edit cannot be applied, the list
 and the directive stay as they were and the save reports a restart.
 
 Changing a `ModifyPopulatorList` target still requires restart. SAP removes one
@@ -3590,11 +3588,13 @@ For an exact, eager `ListMergeDirective` with literal local bean references, edi
 `afterBeanNames` can be replayed for one fixed `depends-on` list target: either an already-created
 List singleton or a converter's `populators` property. The old addition must be uniquely
 present, and the new addition must not already occur elsewhere in that list.
-No other list-merge or modify directive may target the same list: otherwise the save
-reports a restart and names the other directive, because replaying one directive
-can change the order compared with a fresh start.
-Reclazz removes the old addition and follows the installed SDK's own ordering
-rules for the edited addition. Failure preserves the prior list, directive and
+For a shared list, the agent records the original elements and the order in which
+the native processor applied the directives at startup. When all directives belong
+to one bean factory and use the same processor kind, reload rebuilds a detached
+list in that order and publishes it through the original owner. A late attach,
+mixed processor kinds, or changes to the list outside its directives require a
+restart. For a single merge directive, reload removes the old addition and follows
+the installed SDK's ordering rules for the edited addition. Failure preserves the prior list, directive and
 raw definition and reports a restart concern. If resolving the edited beans changes
 that live list, the reload leaves the intervening change intact and reports a restart.
 Converter readers retain a complete old or new list during publication. A direct
