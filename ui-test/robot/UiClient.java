@@ -39,6 +39,7 @@ public class UiClient {
                     check(act("wizardManual").equals("invoked"), "Tools action failed");
                     await("wizardSame", "true"::equals);
                     wizardPages(args[0]);
+                    await("wizardOpenAgain", "invoked"::equals);
                     await("wizardDismiss", "clicked"::equals);
                     await("wizardClick:Close", "clicked"::equals);
                     await("wizardCount", "0"::equals);
@@ -125,9 +126,25 @@ public class UiClient {
             await("wizardControls", s -> s.contains("action=Run ant server"));
             capture("sap-2-run");
             await("wizardClick:Run ant server", "clicked"::equals);
+            await("wizardControls", s -> s.contains("Your SAP Commerce server is running.") && s.contains("action=Retry"));
+            check(Files.notExists(Path.of("/tmp/fixture-ant-launches")), "Ant started while the server was running");
+            capture("sap-running-retry");
+            long serverPid = Long.parseLong(Files.readString(Path.of("/tmp/fixture/hybris/data/hybristomcat.java.pid")).trim());
+            ProcessHandle server = ProcessHandle.of(serverPid).orElseThrow();
+            server.destroy();
+            server.onExit().get(15, java.util.concurrent.TimeUnit.SECONDS);
+            await("wizardClick:Retry", "clicked"::equals);
             await("wizardControls", s -> s.contains("action=Stop ant server") && s.contains("Generating the fixture server configuration"));
             capture("sap-2-live-output");
             Files.createFile(Path.of("/tmp/continue-fixture-ant"));
+            await("wizardControls", s -> s.contains("Ant failed (BUILD FAILED)") && s.contains("fixture wrapper diagnostic")
+                    && s.contains("action=Retry") && !s.contains("action=Next"));
+            capture("sap-failed-retry");
+            await("wizardClick:Copy output", "clicked"::equals);
+            String copied = (String) Toolkit.getDefaultToolkit().getSystemClipboard()
+                    .getData(java.awt.datatransfer.DataFlavor.stringFlavor);
+            check(copied.contains("BUILD FAILED") && copied.contains("fixture wrapper diagnostic"), "wrong copied Ant output");
+            await("wizardClick:Retry", "clicked"::equals);
             await("wizardClick:Next", "clicked"::equals);
             await("wizardStep", "Step 3 of 3"::equals);
         }
@@ -138,10 +155,13 @@ public class UiClient {
             await("wizardClick:Skip", "clicked"::equals);
         }
         await("wizardControls", s -> s.contains("label=Skipped"));
-        await("wizardClick:" + (sap ? "Finish" : "Next"), "clicked"::equals);
-        await("wizardControls", s -> s.contains("label=All set") && s.contains("action=Close"));
+        await("wizardClick:Next", "clicked"::equals);
+        await("wizardControls", s -> s.contains("label=All set") && s.contains("action=Finish"));
         capture(kind + "-all-set");
-        await("wizardClick:Back", "clicked"::equals);
+        await("wizardClick:Finish", "clicked"::equals);
+        await("wizardCount", "0"::equals);
+        check(act("wizardCompleted").equals("true"), "Finish did not record completion");
+        if (sap) check(Files.readAllLines(Path.of("/tmp/fixture-ant-launches")).size() == 2, "wrong retry count");
     }
 
     static void capture(String name) throws Exception {

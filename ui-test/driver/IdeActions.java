@@ -74,6 +74,16 @@ public final class IdeActions {
                 SwingUtilities.invokeLater(() -> com.intellij.openapi.application.ex.ApplicationManagerEx.getApplicationEx().exit(true, true));
                 return "exiting";
             }
+            if (command.equals("wizardCompleted")) {
+                var state = project.getService(com.onurkat.reclazz.plugin.settings.ReclazzSettings.class).getState();
+                return String.valueOf(state.getCompletedSetupGeneration() != null);
+            }
+            if (command.equals("wizardOpenAgain")) {
+                var action = ActionManager.getInstance().getAction("Reclazz.SetupWizard");
+                var data = com.intellij.openapi.actionSystem.impl.SimpleDataContext.getProjectContext(project);
+                action.actionPerformed(com.intellij.openapi.actionSystem.AnActionEvent.createFromAnAction(action, null, "MainMenu", data));
+                return "invoked";
+            }
             if (dialogs.size() != 1) return "count=" + dialogs.size();
             var dialog = dialogs.get(0);
             var parts = new ArrayList<Component>();

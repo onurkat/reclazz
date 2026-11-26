@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+- The IntelliJ setup wizard warns when this SAP Commerce server is running, shows failed Ant output with a retry, and closes with Finish after setup.
+
 ## [1.10.1] - 2026-11-26
 
 ### Changed

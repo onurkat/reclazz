@@ -108,8 +108,6 @@ internal class SetupPanel(private val project: Project, private val wizard: Bool
         refresh()
     }
 
-    private fun refreshLater() = ApplicationManager.getApplication().invokeLater({ refresh() }, ModalityState.any())
-
     fun refresh() {
         if (!refreshing.compareAndSet(false, true)) { rerun.set(true); return }
         val snapshot = observed
@@ -117,7 +115,7 @@ internal class SetupPanel(private val project: Project, private val wizard: Bool
             val result = try { SetupFactsCollector.collect(project, snapshot) } catch (_: Throwable) { null }
             ApplicationManager.getApplication().invokeLater({
                 refreshing.set(false)
-                if (result != null && !project.isDisposed) show(result)
+                if (result != null && !project.isDisposed && snapshot == observed) show(result)
                 if (rerun.getAndSet(false) && !project.isDisposed) refresh()
             }, ModalityState.any())
         }
@@ -163,8 +161,8 @@ internal class SetupPanel(private val project: Project, private val wizard: Bool
                 com.onurkat.reclazz.plugin.settings.ReclazzSettings.getInstance(project).state.dismissedSetupGeneration = null
             }
             val forward = when {
+                step == null && complete -> "Finish"
                 step?.status?.finished != true -> null
-                f.sapCommerce && pageIndex == evaluated.lastIndex -> "Finish"
                 else -> "Next"
             }
             onNavigation?.invoke(pageIndex > 0, forward, step?.step?.optional == true && !step.status.finished)
@@ -235,7 +233,9 @@ internal class SetupPanel(private val project: Project, private val wizard: Bool
                 is StepStatus.NeedsAction -> {
                     if (step.step.id == "assistant") assistants(body, s.actions) else {
                         if (s.problem != "Not installed yet." && s.problem != "Not run since the install.")
-                            body.add(Banner(Tone.WARNING, AllIcons.General.Warning, s.problem))
+                            body.add(if (step.step.id == "ant" && f.antFailure != null)
+                                Banner(Tone.ERROR, AllIcons.General.Error, s.problem)
+                            else Banner(Tone.WARNING, AllIcons.General.Warning, s.problem))
                         actions(body, s.actions)
                     }
                 }
@@ -247,7 +247,7 @@ internal class SetupPanel(private val project: Project, private val wizard: Bool
                     s.summary))
                 is StepStatus.Skipped -> body.add(Banner(Tone.NEUTRAL, AllIcons.General.InspectionsOK, s.why))
             }
-            if (step.step.id == "ant" && antLog.text.isNotEmpty()) body.add(code(null, antLog, JBUI.scale(200)))
+            if (step.step.id == "ant" && antLog.text.isNotEmpty()) body.add(code("Ant output", antLog, JBUI.scale(200)))
             busy?.let { body.add(Banner(Tone.INFO, AnimatedIcon.Default(), it)) }
             message?.let { (text, ok) -> body.add(Banner(if (ok) Tone.SUCCESS else Tone.ERROR,
                 if (ok) AllIcons.General.InspectionsOK else AllIcons.General.Error, text)) }
@@ -331,7 +331,7 @@ internal class SetupPanel(private val project: Project, private val wizard: Bool
         }
     }
 
-    private fun button(action: SetupAction, primary: Boolean): JButton = JButton(action.label).apply {
+    private fun button(action: SetupAction, primary: Boolean): JButton = JButton(if (action == SetupAction.RunAntServer && observed.antFailure != null) "Retry" else action.label).apply {
         if (primary) putClientProperty(DarculaButtonUI.DEFAULT_STYLE_KEY, true)
         isEnabled = busy == null
         addActionListener { perform(action) }
@@ -359,7 +359,7 @@ internal class SetupPanel(private val project: Project, private val wizard: Bool
             isOpaque = false
             border = JBUI.Borders.compound(JBUI.Borders.customLineBottom(Colors.CARD_BORDER), JBUI.Borders.empty(7, 12))
             add(JBLabel(title, AllIcons.FileTypes.Properties, SwingConstants.LEFT).apply { foreground = Colors.MUTED; font = JBFont.small() }, BorderLayout.CENTER)
-            add(ActionLink("Copy") { CopyPasteManager.getInstance().setContents(StringSelection(area.text)) }.apply { font = JBFont.small() }, BorderLayout.EAST)
+            add(ActionLink(if (area === antLog) "Copy output" else "Copy") { CopyPasteManager.getInstance().setContents(StringSelection(area.text)) }.apply { font = JBFont.small() }, BorderLayout.EAST)
         }, BorderLayout.NORTH)
         if (maxHeight == null) panel.add(area, BorderLayout.CENTER)
         else panel.add(JBScrollPane(area).apply {
@@ -405,15 +405,25 @@ internal class SetupPanel(private val project: Project, private val wizard: Bool
         observed = observed.copy(antRunning = true, antFailure = null, antRan = false)
         // Show "running" with Stop at once, so a second click cannot start another ant.
         facts?.let { show(it.copy(antRunning = true, antFailure = null)) }
-        try {
-            ant.start(onLine = { line -> ApplicationManager.getApplication().invokeLater({
-                antLog.append(line + "\n"); antLog.caretPosition = antLog.document.length }, ModalityState.any()) },
-                onExit = { code ->
-                    observed = observed.copy(antRunning = false, antFailure = if (code == 0) null else "exit code $code", antRan = code == 0)
-                    refreshLater()
-                })
-        } catch (failure: Exception) {
-            observed = observed.copy(antRunning = false, antFailure = failure.message ?: "could not start")
+        val app = ApplicationManager.getApplication()
+        app.executeOnPooledThread {
+            fun finish(failure: String?) = app.invokeLater({
+                if (!project.isDisposed && antRunner === ant) {
+                    antRunner = null
+                    observed = observed.copy(antRunning = false, antFailure = failure, antRan = failure == null)
+                    refresh()
+                }
+            }, ModalityState.any())
+            try {
+                ant.start(onText = { text -> app.invokeLater({
+                    if (!project.isDisposed && antRunner === ant) {
+                        antLog.append(text)
+                        antLog.caretPosition = antLog.document.length
+                    }
+                }, ModalityState.any()) }, onExit = ::finish)
+            } catch (failure: Exception) {
+                finish(failure.message ?: "Could not start ant server.")
+            }
         }
     }
 
@@ -430,6 +440,7 @@ internal class SetupPanel(private val project: Project, private val wizard: Bool
     override fun dispose() {
         timer.stop()
         antRunner?.cancel()
+        antRunner = null
     }
 
     companion object {

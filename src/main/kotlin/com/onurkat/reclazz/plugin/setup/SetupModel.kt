@@ -92,12 +92,12 @@ internal object SetupFlow {
             val restart = "Restart your SAP Commerce server and Reclazz starts with it."
             when {
                 f.antRunning -> StepStatus.Waiting("ant server is running.", listOf(SetupAction.CancelAntServer))
+                f.antFailure != null -> StepStatus.NeedsAction(f.antFailure, listOf(SetupAction.RunAntServer))
                 ant?.level == SetupCheck.Level.OK -> StepStatus.Done("Done. $restart")
                 // A hand-made setup (placeholders, own paths) cannot always be compared; the user's own run is trusted.
                 ant?.level == SetupCheck.Level.WARN && f.antRan -> StepStatus.Done("ant server finished. $restart")
                 ant?.level == SetupCheck.Level.WARN && manual(f) ->
                     StepStatus.Done("Your own setup cannot be compared with the generated configuration. Run `ant server` after you change it. $restart")
-                f.antFailure != null -> StepStatus.NeedsAction("The last run failed (${f.antFailure}). See the output below.", listOf(SetupAction.RunAntServer))
                 !f.antReady -> StepStatus.NeedsAction("Run `ant server` in bin/platform yourself, then check again.", listOf(SetupAction.CheckAgain))
                 f.antRan -> StepStatus.NeedsAction("ant server finished, but the generated configuration still does not load the Java agent. " +
                     "Check that no other properties file overrides tomcat.javaoptions, then run it again.", listOf(SetupAction.RunAntServer))

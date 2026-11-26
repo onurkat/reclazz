@@ -219,7 +219,10 @@ class SetupWizardLiveSapTest : HeavyPlatformTestCase() {
     private fun ant(): Int {
         val done = java.util.concurrent.CompletableFuture<Int>()
         val output = StringBuilder()
-        AntServerRunner(hybris).start(onLine = { output.append(it).append('\n') }, onExit = { done.complete(it) })
+        AntServerRunner(hybris).start(onText = { output.append(it) }, onExit = { failure ->
+            if (failure != null) output.appendLine(failure)
+            done.complete(if (failure == null) 0 else 1)
+        })
         val code = done.get(20, TimeUnit.MINUTES)
         Files.writeString(shots.resolve("ant-${System.currentTimeMillis()}.log"), output)
         note("ant server exit $code")

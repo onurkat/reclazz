@@ -41,9 +41,21 @@ if [[ "${1:-}" == wizard-sap ]]; then
     platform=/tmp/fixture/hybris/bin/platform
     mkdir -p "$platform" /tmp/fixture/hybris/config
     touch "$platform/build.xml" /tmp/fixture/hybris/config/local.properties
+    # The wrapper PID belongs to this installation. Keep the fixture JVM separate from Ant.
+    mkdir -p /tmp/fixture/hybris/data /tmp/fixture-server
+    cat > /tmp/fixture-server/Bootstrap.java <<'JAVA'
+package org.apache.catalina.startup;
+public class Bootstrap {
+    public static void main(String[] args) throws Exception { Thread.sleep(600000); }
+}
+JAVA
+    javac -d /tmp/fixture-server /tmp/fixture-server/Bootstrap.java
+    java -DHYBRIS_BIN_DIR=/tmp/fixture/hybris/bin -cp /tmp/fixture-server org.apache.catalina.startup.Bootstrap &
+    echo $! > /tmp/fixture/hybris/data/hybristomcat.java.pid
     cat > "$platform/setantenv.sh" <<'FIXTURE'
 ant() {
     [[ "$1" == server ]] || return 1
+    echo attempt >> /tmp/fixture-ant-launches
     echo 'Generating the fixture server configuration'
     for ((n=0; n<120; n++)); do
         [[ -f /tmp/continue-fixture-ant ]] && break
@@ -58,6 +70,11 @@ ant() {
         [[ -n "$value" ]] || return 3
         echo "wrapper.java.additional.1=$value" > "tomcat/conf/$file"
     done
+    if [[ $(wc -l < /tmp/fixture-ant-launches) -eq 1 ]]; then
+        echo 'BUILD FAILED' >&2
+        echo 'fixture wrapper diagnostic' >&2
+        return 0
+    fi
     echo 'Fixture server configuration ready'
 }
 FIXTURE

@@ -80,7 +80,13 @@ object SetupWizard {
             override fun actionPerformed(event: ActionEvent) = run()
         }
         private val back = action("Back") { view.move(-1) }
-        private val next = action("Next") { view.move(1) }
+        private var finishAvailable = false
+        private val next = action("Next") {
+            if (finishAvailable) {
+                ReclazzSettings.getInstance(session.project).state.completedSetupGeneration = ReclazzAppState.getInstance().state.setupGeneration
+                close(OK_EXIT_CODE)
+            } else view.move(1)
+        }
         private val skip = action("Skip") { view.skipOptional() }
 
         init {
@@ -90,6 +96,7 @@ object SetupWizard {
             listOf(back, next, skip).forEach { it.isEnabled = false }
             view.onNavigation = { canGoBack, forward, canSkip ->
                 back.isEnabled = canGoBack
+                finishAvailable = forward == "Finish"
                 next.putValue(Action.NAME, forward ?: "Next")
                 next.isEnabled = forward != null
                 skip.isEnabled = canSkip

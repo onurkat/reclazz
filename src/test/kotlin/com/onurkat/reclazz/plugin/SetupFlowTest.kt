@@ -87,6 +87,18 @@ class SetupFlowTest {
         assertEquals(SetupAction.RunAntServer, failed.actions.single())
     }
 
+    @Test fun latestAntFailureSurvivesAnAlreadyMatchingWrapperOrManualConfiguration() {
+        val manual = SetupCheck.Finding("agent-line", Level.WARN, "Manual agent")
+        val unverifiable = SetupCheck.Finding("ant-server", Level.WARN, "Manual wrapper")
+        for (ready in listOf(sap(line, jar, antOk), sap(manual, jar, unverifiable))) {
+            val failed = ready.copy(antFailure = "Ant failed (BUILD FAILED).", antRan = false)
+            val step = status(failed, "ant") as StepStatus.NeedsAction
+            assertTrue(step.problem.contains("BUILD FAILED"))
+            assertEquals(listOf(SetupAction.RunAntServer), step.actions)
+            assertTrue(status(failed.copy(antFailure = null, antRan = true), "ant") is StepStatus.Done)
+        }
+    }
+
     @Test fun withoutSetantenvTheUserRunsAntServerThemselves() {
         val manual = status(sap(line, jar, antStale, antReady = false), "ant") as StepStatus.NeedsAction
         assertEquals(SetupAction.CheckAgain, manual.actions.single())

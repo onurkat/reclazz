@@ -44,6 +44,8 @@ class SettingsContractTest {
         "supportLineDismissed" to false,
         "setupSkips" to "",
         "dismissedSetupGeneration" to null,
+        // Finish records which installation generation the project completed, across IDE restarts.
+        "completedSetupGeneration" to null,
     )
 
     @Test
