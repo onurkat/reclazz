@@ -36,6 +36,8 @@ internal class SetupActionRunner(private val project: Project, private val conne
             val prepared = connector.prepare(action.client, false, base)
             val config = connector.preview(action.client, prepared)
             val backup = connector.connect(prepared, config)
+            val state = settings()
+            state.setupSkips = state.setupSkips.split(';').filter { it.isNotBlank() && it != "assistant" }.joinToString(";")
             val name = action.client.display.substringBefore(" (")
             "Saved ${config.path}" + (backup?.let { " (backup: ${it.fileName})" } ?: "") + ". Restart $name to load Reclazz." to true
         }

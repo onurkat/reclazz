@@ -116,6 +116,7 @@ internal class SetupPanel(private val project: Project, private val wizard: Bool
             ApplicationManager.getApplication().invokeLater({
                 refreshing.set(false)
                 if (result != null && !project.isDisposed && snapshot == observed) show(result)
+                onFirstRefresh?.also { onFirstRefresh = null }?.invoke()
                 if (rerun.getAndSet(false) && !project.isDisposed) refresh()
             }, ModalityState.any())
         }
@@ -125,6 +126,37 @@ internal class SetupPanel(private val project: Project, private val wizard: Bool
         facts = result
         evaluated = SetupFlow.evaluate(result)
         render()
+    }
+
+    private var onFirstRefresh: (() -> Unit)? = null
+
+    fun prepareDialog(open: () -> Unit) {
+        pageIndex = 0
+        if (facts == null) {
+            onFirstRefresh = open
+            refresh()
+        } else {
+            render()
+            open()
+        }
+    }
+
+    /** Measure the widest column at the width the dialog can actually give it. */
+    fun preferredPageSize(availableWidth: Int): Dimension {
+        val width = minOf(availableWidth, JBUI.scale(MAX_WIDTH + 48))
+        val f = facts ?: return Dimension(width, JBUI.scale(480))
+        val sample = JPanel(VerticalLayout(JBUI.scale(12)))
+        var height = 0
+        for ((index, step) in evaluated.withIndex()) {
+            sample.removeAll()
+            sample.add(header(f))
+            sample.add(JBLabel("Step"))
+            sample.add(StepCard(index + 1, step, true, f, measuring = true))
+            sample.setSize((width - JBUI.scale(48)).coerceAtLeast(1), Short.MAX_VALUE.toInt())
+            sample.doLayout()
+            height = maxOf(height, sample.preferredSize.height)
+        }
+        return Dimension(width, height + JBUI.scale(48))
     }
 
     private var pageIndex = 0
@@ -163,6 +195,7 @@ internal class SetupPanel(private val project: Project, private val wizard: Bool
             val forward = when {
                 step == null && complete -> "Finish"
                 step?.status?.finished != true -> null
+                step.status is StepStatus.Skipped -> "Keep skipped"
                 else -> "Next"
             }
             onNavigation?.invoke(pageIndex > 0, forward, step?.step?.optional == true && !step.status.finished)
@@ -193,7 +226,7 @@ internal class SetupPanel(private val project: Project, private val wizard: Bool
 
     // ---- one step ----
 
-    private inner class StepCard(private val number: Int, private val step: EvaluatedStep, private val open: Boolean, private val f: SetupFacts) :
+    private inner class StepCard(private val number: Int, private val step: EvaluatedStep, private val open: Boolean, private val f: SetupFacts, private val measuring: Boolean = false) :
         JPanel(BorderLayout(JBUI.scale(14), 0)) {
         init {
             isOpaque = false
@@ -243,11 +276,18 @@ internal class SetupPanel(private val project: Project, private val wizard: Bool
                     body.add(Banner(Tone.INFO, AnimatedIcon.Default(), s.what))
                     actions(body, s.actions)
                 }
-                is StepStatus.Done -> body.add(Banner(Tone.SUCCESS, AllIcons.General.InspectionsOK,
-                    s.summary))
-                is StepStatus.Skipped -> body.add(Banner(Tone.NEUTRAL, AllIcons.General.InspectionsOK, s.why))
+                is StepStatus.Done -> {
+                    body.add(Banner(Tone.SUCCESS, AllIcons.General.InspectionsOK, s.summary))
+                    if (s.actions.isNotEmpty()) assistants(body, s.actions)
+                }
+                is StepStatus.Skipped -> {
+                    body.add(Banner(Tone.NEUTRAL, AllIcons.General.InspectionsOK, s.why))
+                    assistants(body, s.actions)
+                }
             }
-            if (step.step.id == "ant" && antLog.text.isNotEmpty()) body.add(code("Ant output", antLog, JBUI.scale(200)))
+            if (step.step.id == "ant" && (measuring || antLog.text.isNotEmpty())) {
+                body.add(code("Ant output", if (measuring) JBTextArea() else antLog, JBUI.scale(160)))
+            }
             busy?.let { body.add(Banner(Tone.INFO, AnimatedIcon.Default(), it)) }
             message?.let { (text, ok) -> body.add(Banner(if (ok) Tone.SUCCESS else Tone.ERROR,
                 if (ok) AllIcons.General.InspectionsOK else AllIcons.General.Error, text)) }
@@ -285,10 +325,8 @@ internal class SetupPanel(private val project: Project, private val wizard: Bool
                 grid.add(AssistantTile(a, fact.detected))
             }
             body.add(grid)
-            if (!wizard) body.add(ActionLink("Skip this step") { perform(SetupAction.SkipAssistant) })
-            message?.takeIf { busy == null }?.let { (text, ok) -> body.add(Banner(if (ok) Tone.SUCCESS else Tone.ERROR,
-                if (ok) AllIcons.General.InspectionsOK else AllIcons.General.Error, text)) }
-            busy?.let { body.add(Banner(Tone.INFO, AnimatedIcon.Default(), it)) }
+            if (!wizard && step.status is StepStatus.NeedsAction)
+                body.add(ActionLink("Skip this step") { perform(SetupAction.SkipAssistant) })
         }
 
         override fun paintComponent(g: Graphics) {

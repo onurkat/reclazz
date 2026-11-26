@@ -109,7 +109,9 @@ cat >> /tmp/profile.vmoptions <<'OPTIONS'
 -Dide.show.tips.on.startup.default.value=false
 OPTIONS
 export IDEA_VM_OPTIONS=/tmp/profile.vmoptions DISPLAY=:73
-Xvfb "$DISPLAY" -screen 0 1280x900x24 -nolisten tcp > /out/xvfb.log 2>&1 &
+screen=1280x900x24
+if [[ "${1:-}" == wizard* ]]; then screen=1366x768x24; fi
+Xvfb "$DISPLAY" -screen 0 "$screen" -nolisten tcp > /out/xvfb.log 2>&1 &
 run_ide() {
     local scenario=$1
 /tmp/ide/bin/idea.sh /tmp/fixture >/out/launcher.log 2>&1 &

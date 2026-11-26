@@ -39,6 +39,27 @@ public class UiClient {
                     check(act("wizardManual").equals("invoked"), "Tools action failed");
                     await("wizardSame", "true"::equals);
                     wizardPages(args[0]);
+                    if (args[0].equals("wizard-java-off") || args[0].equals("wizard-sap")) {
+                        await("wizardOpenAgain", "invoked"::equals);
+                        await("wizardStep", "Step 1 of 3"::equals);
+                        await("wizardClick:Next", "clicked"::equals);
+                        if (args[0].equals("wizard-sap")) await("wizardClick:Next", "clicked"::equals);
+                        await("wizardControls", text -> text.contains("Skipped earlier") && text.contains("action=Connect Claude Code"));
+                        capture("assistant-reopened");
+                        await("wizardClick:Connect Claude Code", "clicked"::equals);
+                        await("wizardControls", text -> text.contains("Connected: Claude Code") && text.contains("action=Connect Cursor"));
+                        await("wizardSkipSaved", "false"::equals);
+                        check(Files.isRegularFile(Path.of("/tmp/fixture/.mcp.json")), "project connection missing");
+                        capture("assistant-connected");
+                        String resized = act("wizardResize");
+                        await("wizardClick:Close", "clicked"::equals);
+                        await("wizardCount", "0"::equals);
+                        await("wizardOpenAgain", "invoked"::equals);
+                        await("wizardViewport", geometry -> geometry.startsWith(resized + " "));
+                        await("wizardClick:Close", "clicked"::equals);
+                        await("wizardCount", "0"::equals);
+                        System.out.println("Restored user size " + resized);
+                    }
                     await("wizardOpenAgain", "invoked"::equals);
                     await("wizardDismiss", "clicked"::equals);
                     await("wizardClick:Close", "clicked"::equals);
@@ -155,7 +176,7 @@ public class UiClient {
             await("wizardClick:Skip", "clicked"::equals);
         }
         await("wizardControls", s -> s.contains("label=Skipped"));
-        await("wizardClick:Next", "clicked"::equals);
+        await("wizardClick:Keep skipped", "clicked"::equals);
         await("wizardControls", s -> s.contains("label=All set") && s.contains("action=Finish"));
         capture(kind + "-all-set");
         await("wizardClick:Finish", "clicked"::equals);
@@ -167,6 +188,11 @@ public class UiClient {
     static void capture(String name) throws Exception {
         ImageIO.write(new Robot().createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize())),
                 "png", output.resolve(name + ".png").toFile());
+        if (name.startsWith("sap") || name.startsWith("java") || name.startsWith("assistant")) {
+            String geometry = act("wizardViewport");
+            System.out.println(name + " " + geometry);
+            check(geometry.endsWith(" fits"), "setup page scrollbar visible at " + name + ": " + geometry);
+        }
     }
 
     static void settingsSetup() throws Exception {

@@ -116,7 +116,12 @@ class SetupFlowTest {
         val steps = SetupFlow.evaluate(sap(line, jar, antOk, assistants = connected))
         assertTrue(SetupFlow.complete(steps))
         assertEquals("Connected: Claude Code.", (steps.last().status as StepStatus.Done).summary)
-        assertTrue(SetupFlow.complete(SetupFlow.evaluate(sap(line, jar, antOk, skipped = true))))
+        val reopened = SetupFlow.evaluate(sap(line, jar, antOk, skipped = true))
+        assertTrue(SetupFlow.complete(reopened))
+        val choices = (reopened.last().status as StepStatus.Skipped).actions.filterIsInstance<SetupAction.ConnectAssistant>()
+        assertEquals(McpClient.CURSOR, choices.first().client)
+        assertEquals(McpClient.entries.toSet(), choices.map { it.client }.toSet())
+        assertFalse((steps.last().status as StepStatus.Done).actions.filterIsInstance<SetupAction.ConnectAssistant>().any { it.client == McpClient.CLAUDE })
         assertFalse(SetupFlow.complete(SetupFlow.evaluate(sap(line, jar, antOk))))
     }
 

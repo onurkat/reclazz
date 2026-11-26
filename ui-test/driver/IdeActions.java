@@ -78,6 +78,10 @@ public final class IdeActions {
                 var state = project.getService(com.onurkat.reclazz.plugin.settings.ReclazzSettings.class).getState();
                 return String.valueOf(state.getCompletedSetupGeneration() != null);
             }
+            if (command.equals("wizardSkipSaved")) {
+                var state = project.getService(com.onurkat.reclazz.plugin.settings.ReclazzSettings.class).getState();
+                return String.valueOf(java.util.Arrays.asList(state.getSetupSkips().split(";")).contains("assistant"));
+            }
             if (command.equals("wizardOpenAgain")) {
                 var action = ActionManager.getInstance().getAction("Reclazz.SetupWizard");
                 var data = com.intellij.openapi.actionSystem.impl.SimpleDataContext.getProjectContext(project);
@@ -88,6 +92,20 @@ public final class IdeActions {
             var dialog = dialogs.get(0);
             var parts = new ArrayList<Component>();
             collect(dialog, parts);
+            if (command.equals("wizardResize")) {
+                dialog.setSize(dialog.getWidth() + 24, dialog.getHeight());
+                return dialog.getWidth() + "x" + dialog.getHeight();
+            }
+            if (command.equals("wizardViewport")) {
+                for (var part : parts) {
+                    if (part instanceof JScrollPane scroll && scroll.isShowing()
+                            && SwingUtilities.getAncestorOfClass(JScrollPane.class, scroll) == null) {
+                        var size = dialog.getSize();
+                        return size.width + "x" + size.height + (scroll.getVerticalScrollBar().isShowing() ? " scroll" : " fits");
+                    }
+                }
+                return "setup viewport missing";
+            }
             if (command.equals("wizardControls")) {
                 var entries = new java.util.ArrayList<String>();
                 for (var part : parts) {

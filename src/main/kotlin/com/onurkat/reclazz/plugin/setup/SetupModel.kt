@@ -54,11 +54,11 @@ internal sealed class SetupAction(val label: String) {
 }
 
 internal sealed class StepStatus {
-    data class Done(val summary: String) : StepStatus()
+    data class Done(val summary: String, val actions: List<SetupAction> = emptyList()) : StepStatus()
     data class NeedsAction(val problem: String, val actions: List<SetupAction>) : StepStatus()
     /** Something is running (ant server); rechecked automatically. */
     data class Waiting(val what: String, val actions: List<SetupAction>) : StepStatus()
-    data class Skipped(val why: String) : StepStatus()
+    data class Skipped(val why: String, val actions: List<SetupAction>) : StepStatus()
 
     val finished: Boolean get() = this is Done || this is Skipped
 }
@@ -115,11 +115,13 @@ internal object SetupFlow {
             "Adds the Reclazz MCP server to your AI assistant, so it can see your reloads and check its own edits " +
                 "without a restart.", optional = true) { f ->
             val connected = f.assistants.filter { it.connected }
+            val choices = f.assistants.filterNot { it.connected }.sortedByDescending { it.detected }
+                .map { SetupAction.ConnectAssistant(it.client) }
             when {
-                connected.isNotEmpty() -> StepStatus.Done("Connected: ${connected.joinToString { it.client.display.substringBefore(" (") }}.")
-                f.assistantSkipped -> StepStatus.Skipped("Skipped. You can connect one later in Settings > Tools > Reclazz.")
+                connected.isNotEmpty() -> StepStatus.Done("Connected: ${connected.joinToString { it.client.display.substringBefore(" (") }}.", choices)
+                f.assistantSkipped -> StepStatus.Skipped("Skipped earlier", choices)
                 else -> StepStatus.NeedsAction("Pick the assistant you use.",
-                    f.assistants.sortedByDescending { it.detected }.map { SetupAction.ConnectAssistant(it.client) } + SetupAction.SkipAssistant)
+                    choices + SetupAction.SkipAssistant)
             }
         },
     )

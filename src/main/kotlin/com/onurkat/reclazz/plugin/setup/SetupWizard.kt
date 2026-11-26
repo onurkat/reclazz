@@ -10,6 +10,9 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Key
+import com.intellij.openapi.wm.WindowManager
+import com.intellij.ui.ScreenUtil
+import com.intellij.util.ui.JBUI
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ModalityState
@@ -54,11 +57,13 @@ object SetupWizard {
             } else if (!session.pending) {
                 session.pending = true
                 DumbService.getInstance(project).smartInvokeLater({
-                    session.pending = false
-                    if (!project.isDisposed) {
-                        val dialog = WizardDialog(session)
-                        session.dialog = dialog
-                        dialog.show()
+                    if (!project.isDisposed) session.panel.prepareDialog {
+                        session.pending = false
+                        if (!project.isDisposed) {
+                            val dialog = WizardDialog(session)
+                            session.dialog = dialog
+                            dialog.show()
+                        }
                     }
                 }, ModalityState.nonModal())
             }
@@ -92,6 +97,7 @@ object SetupWizard {
         init {
             title = "Set Up Reclazz"
             isModal = false
+            isResizable = true
             setCancelButtonText("Close")
             listOf(back, next, skip).forEach { it.isEnabled = false }
             view.onNavigation = { canGoBack, forward, canSkip ->
@@ -106,10 +112,15 @@ object SetupWizard {
         }
 
         override fun createCenterPanel(): JComponent = JPanel(BorderLayout()).apply {
-            preferredSize = Dimension(680, 480)
+            val screen = ScreenUtil.getScreenRectangle(WindowManager.getInstance().getFrame(session.project) ?: view.component)
+            val wanted = view.preferredPageSize((screen.width * 0.85).toInt() - JBUI.scale(32))
+            // Later states add wrapped status messages and an Ant console to the measured cards.
+            val centerHeight = maxOf(wanted.height + dismiss.preferredSize.height, JBUI.scale(600))
+            preferredSize = Dimension(wanted.width, minOf(centerHeight, ((screen.height * 0.85).toInt() - JBUI.scale(54)).coerceAtLeast(1)))
             add(view.component, BorderLayout.CENTER)
             add(dismiss, BorderLayout.SOUTH)
         }
+        override fun getDimensionServiceKey() = "Reclazz.SetupWizard"
         override fun createActions(): Array<Action> = arrayOf(back, next, skip, cancelAction)
         override fun dispose() {
             if (dismiss.isSelected && !session.project.isDisposed) {
