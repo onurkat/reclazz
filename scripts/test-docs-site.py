@@ -465,7 +465,13 @@ class DesignGateTest(unittest.TestCase):
     def test_low_contrast_mutation_is_rejected(self):
         from website.check import contrast_errors
         css=(build.ROOT/'assets/tokens.css').read_text()
-        self.assertTrue(contrast_errors(css.replace('--muted:#b8c3d4','--muted:#1d2635')))
+        self.assertEqual([], contrast_errors(css))
+        # Match the shipped declarations. Each theme's background gives a 1:1 contrast.
+        mutated = re.sub(r'(--muted:\s*)[^;}]+', r'\g<1>var(--bg)', css)
+        errors = contrast_errors(mutated)
+        for theme in ('dark', 'light'):
+            with self.subTest(theme=theme):
+                self.assertIn(f'Contrast below 4.5: {theme} muted/bg', errors)
     def test_preview_nested_missing_route_serves_404_with_working_assets(self):
         from http.server import SimpleHTTPRequestHandler,ThreadingHTTPServer
         from threading import Thread
