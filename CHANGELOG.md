@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [1.11.0] - 2026-11-27
+
 ### Changed
 
 - Spring Boot MVC reloads Jackson customizers for the auto-configured JSON mapper. A custom mapper or converter configuration receives a named restart notice.
@@ -14,16 +16,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 - On a stock JVM, saving a changed persistent entity field or a new entity with its repository keeps the previous batch running and names the change that requires a restart.
 
+- On a stock JVM, adding an abstract service method holds its whole class save and names the affected classes. Existing callers keep working until restart.
+- SAP Commerce waits for new classes referenced by a saved Spring XML file before applying it. The current converter keeps serving requests while classes compile. A warning names any class still missing after ten seconds.
+- Spring Security rule edits in ordinary configuration beans refresh the serving filter chain. When the agent cannot verify publication, it names the configuration that needs a restart.
+
 ## [1.10.2] - 2026-11-26
 
 ### Changed
 
 - The IntelliJ setup wizard warns when this SAP Commerce server is running, shows failed Ant output with a retry, and closes with Finish after setup. On Windows the warning requires the Tomcat process to identify this installation.
-- SAP Commerce waits for new classes referenced by a saved Spring XML file before applying it. The current converter keeps serving requests while classes compile. A warning names any class still missing after ten seconds.
-- Spring Security rule edits in ordinary configuration beans refresh the serving filter chain. When the agent cannot verify publication, it names the configuration that needs a restart.
-
-- The IntelliJ setup wizard warns when this SAP Commerce server is running, shows failed Ant output with a retry, and closes with Finish after setup.
-- On a stock JVM, adding an abstract service method holds its whole class save and names the affected classes. Existing callers keep working until restart.
 - A Spring singleton can gain constructor-injected dependencies on save when the constructor only adds field assignments and each dependency resolves uniquely. Ambiguous or unsupported changes report a restart while the previous endpoint continues serving.
 - An existing XML bean can receive a reference through a setter added in the same edit. In SAP Commerce either file can arrive first.
 

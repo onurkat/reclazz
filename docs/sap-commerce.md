@@ -76,7 +76,7 @@ very regeneration that used to remove it.
 
 1. Get the Java agent jar. It is on Maven Central as
    `com.onurkat.reclazz:reclazz-agent`; resolve or download
-   `reclazz-agent-1.10.2.jar` and note its absolute path.
+   `reclazz-agent-1.11.0.jar` and note its absolute path.
 
 2. Append the Java agent to the last properties layer your project reads, commonly
    `${HYBRIS_HOME}/config/local.properties`. Append, do not replace:
