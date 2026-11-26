@@ -313,7 +313,19 @@ public class SpringReloadOrchestrator {
             beanReloader.refreshPlainProxy(reloadedClass);
             operationSourceReloader.nativeRecreated(reloadedClass,beanReloader.nativeProxyReceipts());
         }
+        JacksonMapperRefresh.NativeCapture nativeJackson = null;
         if (isSpringBean(reloadedClass)) {
+            if (java.util.Arrays.stream(reloadedClass.getDeclaredAnnotations()).anyMatch(a ->
+                    a.annotationType().getName().equals("org.springframework.context.annotation.Configuration"))) {
+                try {
+                    nativeJackson = JacksonMapperRefresh.captureNative(reloadedClass,
+                            newBytecode != null ? newBytecode : keepInput == null ? null : keepInput.newRaw(),
+                            platformContext::getAllApplicationContexts);
+                } catch (Exception | LinkageError refused) {
+                    JacksonMapperRefresh.restart();
+                    return;
+                }
+            }
             schedulerReloader.beforeBeanRefresh(reloadedClass);
             var lifecycle = lifecycleReloader.prepare(reloadedClass, addedMethodSigs, newBytecode);
             if (lifecycle == null) return;
@@ -425,6 +437,7 @@ public class SpringReloadOrchestrator {
         // a class it did not compile against what it has, in an application
         // whose Spring version this agent has never seen. As a bare sequence
         // one of them throwing skipped all the ones after it.
+        if (nativeJackson != null) nativeJackson.finish();
         ReloadSteps.runAll(afterTheBeanIsBack,
                 new ReloadSteps.Reloaded(className, reloadedClass, isStructural, annotationsChanged,
                         addedMethodSigs, newBytecode));

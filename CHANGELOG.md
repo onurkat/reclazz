@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- Spring Boot MVC reloads Jackson customizers for the auto-configured JSON mapper. A custom mapper or converter configuration receives a named restart notice.
+
 - The setup wizard fits its steps to the project screen, remembers its size, and offers assistant connections again when reopened after a skip.
 
 - On a stock JVM, saving a changed persistent entity field or a new entity with its repository keeps the previous batch running and names the change that requires a restart.

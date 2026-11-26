@@ -26,7 +26,8 @@ public final class SpringAddedBeanReloader {
     private final Map<Object, Registry> owned = new WeakHashMap<>();
     private record Owned(WeakReference<Class<?>> owner, WeakReference<Object> definition,
                          AtomicReference<WeakReference<Object>> instance, List<String> aliases,
-                         String targetName, WeakReference<Object> targetDefinition) { }
+                         String targetName, WeakReference<Object> targetDefinition, boolean jacksonCustomizer) { }
+    private final Set<Object> jacksonChanges = Collections.newSetFromMap(new IdentityHashMap<>());
     private static final class Registry {
         final Map<String, Owned> definitions = new ConcurrentHashMap<>();
         final Map<String,String> hierarchyOwners = new HashMap<>();
@@ -44,6 +45,28 @@ public final class SpringAddedBeanReloader {
     }
 
     public synchronized boolean reloadBeanMethods(Class<?> type, Set<String> added, byte[] bytes) {
+        boolean registered = reloadFactories(type, added, bytes);
+        if (batchDepth > 0) {
+            if (!registered && !jacksonChanges.isEmpty()) jacksonRegistrationFailed = true;
+            return registered;
+        }
+        return finishJackson(registered) && registered;
+    }
+
+    private boolean finishJackson(boolean registered) {
+        boolean applied = true;
+        try {
+            for (Object factory : jacksonChanges) {
+                if (!registered || !JacksonMapperRefresh.refresh(factory)) {
+                    if (!registered) JacksonMapperRefresh.restart();
+                    applied = false;
+                }
+            }
+        } finally { jacksonChanges.clear(); }
+        return applied;
+    }
+
+    private boolean reloadFactories(Class<?> type, Set<String> added, byte[] bytes) {
         if (bytes == null) return !hierarchyEdits.containsKey(type) || batchDepth > 0 || finishHierarchy();
         var plan = AddedBeanAdapter.inspect(bytes, added);
         try {
@@ -66,7 +89,7 @@ public final class SpringAddedBeanReloader {
                 // Removal/annotation removal still reaches here with an empty plan.
                 for (var entry : List.copyOf(registrations.entrySet())) {
                     if (entry.getValue().owner().get() != type) continue;
-                    if (removeOwned(factory, entry.getKey(), entry.getValue())) {
+                    if (removeOwned(factory, entry.getKey(), entry.getValue()) && !entry.getValue().jacksonCustomizer()) {
                         ReloadEffects.note("added bean " + entry.getKey() + " removed");
                     }
                     registrations.remove(entry.getKey());
@@ -117,6 +140,7 @@ public final class SpringAddedBeanReloader {
                 for (var method : prepared) {
                     try {
                         if (method.onDemand()) {
+                            if (registrations.get(method.name()).jacksonCustomizer()) continue;
                             ReloadEffects.note("added bean " + method.name()
                                     + " registered (" + (method.lazy() ? "lazy" : method.scope()) + ", created on demand)");
                             StatusReporter.detail("Added @Bean registered: " + method.name()
@@ -215,12 +239,16 @@ public final class SpringAddedBeanReloader {
     }
 
     private int batchDepth;
+    private boolean jacksonRegistrationFailed;
     private final Map<Class<?>,byte[]> hierarchyEdits = new LinkedHashMap<>();
     private final Map<SpringHierarchyBeans.Scope,RawScope> hierarchyScopes = new LinkedHashMap<>();
 
     synchronized void beginBatch() { batchDepth++; }
     synchronized void endBatch() {
-        if (batchDepth > 0 && --batchDepth == 0) finishHierarchy();
+        if (batchDepth > 0 && --batchDepth == 0) {
+            try { finishJackson(finishHierarchy() && !jacksonRegistrationFailed); }
+            finally { jacksonRegistrationFailed = false; }
+        }
     }
 
     synchronized void clearUnbatchedHierarchy() {
@@ -367,7 +395,7 @@ public final class SpringAddedBeanReloader {
         product.registry().hierarchyMethods.put(product.name(), signature);
     }
 
-    private static void discardStaged(Map<Product,Owned> staged, Throwable failure) {
+    private void discardStaged(Map<Product,Owned> staged, Throwable failure) {
         var products = List.copyOf(staged.keySet());
         for (int i = products.size() - 1; i >= 0; i--) {
             Product product = products.get(i);
@@ -666,7 +694,7 @@ public final class SpringAddedBeanReloader {
         definitionType.getMethod("setInstanceSupplier", Supplier.class).invoke(definition, checked);
         SpringAddedFactoryValues.attach(factory, definition, type, configName, method.method().name,
                 full, savedParameters.get(), checked);
-        publishDefinition(type, factory, definition, method, registrations);
+        publishDefinition(type, factory, definition, method, registrations, resultType);
     }
 
     private void registerInherited(SpringHierarchyBeans.Scope scope, SpringHierarchyBeans.Selection selected,
@@ -681,11 +709,11 @@ public final class SpringAddedBeanReloader {
         call(definition, "setUniqueFactoryMethodName", resolved.getName());
         root.getMethod("setResolvedFactoryMethod", java.lang.reflect.Method.class).invoke(definition, resolved);
         root.getMethod("setAutowireMode", int.class).invoke(definition, 3);
-        publishDefinition(selected.declaring(), scope.factory(), definition, method, registry.definitions);
+        publishDefinition(selected.declaring(), scope.factory(), definition, method, registry.definitions, resolved.getReturnType());
     }
 
-    private static void publishDefinition(Class<?> type, Object factory, Object definition,
-            AddedBeanAdapter.Factory method, Map<String,Owned> registrations) throws Throwable {
+    private void publishDefinition(Class<?> type, Object factory, Object definition,
+            AddedBeanAdapter.Factory method, Map<String,Owned> registrations, Class<?> resultType) throws Throwable {
         ClassLoader spring = factory.getClass().getClassLoader();
         Class<?> definitionType = definition.getClass();
         Class<?> definitionInterface = Class.forName("org.springframework.beans.factory.config.BeanDefinition", false, spring);
@@ -725,10 +753,11 @@ public final class SpringAddedBeanReloader {
                 publicDefinition = holder.getMethod("getBeanDefinition").invoke(proxy);
             }
             registration = new Owned(new WeakReference<>(type), new WeakReference<>(publicDefinition),
-                    new AtomicReference<>(new WeakReference<>(null)), method.aliases(), targetName, new WeakReference<>(definition));
+                    new AtomicReference<>(new WeakReference<>(null)), method.aliases(), targetName, new WeakReference<>(definition), JacksonMapperRefresh.isCustomizer(resultType));
             factory.getClass().getMethod("registerBeanDefinition", String.class, definitionInterface)
                     .invoke(factory, name, publicDefinition);
             registrations.put(name, registration);
+            if (registration.jacksonCustomizer()) jacksonChanges.add(factory);
             for (String alias : method.aliases())
                 factory.getClass().getMethod("registerAlias", String.class, String.class).invoke(factory, name, alias);
         } catch (Throwable failure) {
@@ -756,7 +785,7 @@ public final class SpringAddedBeanReloader {
         return true;
     }
 
-    private static void initialize(Object factory, String name, Map<String, Owned> registrations) throws Throwable {
+    private void initialize(Object factory, String name, Map<String, Owned> registrations) throws Throwable {
         Owned registration = registrations.get(name);
         if (registration == null) throw new IllegalStateException("added definition was removed before initialization: " + name);
         try {
@@ -764,6 +793,7 @@ public final class SpringAddedBeanReloader {
                 throw new IllegalStateException("added registration was replaced before initialization: " + name);
             Object product = call(factory, "getBean", name);
             registration.instance().set(new WeakReference<>(product));
+            if (registration.jacksonCustomizer()) return;
             ReloadEffects.note("added bean " + name + " registered");
             StatusReporter.detail("Added @Bean registered: " + name);
         } catch (Throwable failure) {
@@ -774,7 +804,7 @@ public final class SpringAddedBeanReloader {
         }
     }
 
-    private static void discardFailed(Object factory, String name, Owned registration,
+    private void discardFailed(Object factory, String name, Owned registration,
                                       Map<String, Owned> registrations, Throwable failure) {
         try {
             removeOwned(factory, name, registration);
@@ -785,13 +815,14 @@ public final class SpringAddedBeanReloader {
         }
     }
 
-    private static boolean removeOwned(Object factory, String name, Owned registration) throws Exception {
+    private boolean removeOwned(Object factory, String name, Owned registration) throws Exception {
         if (registration.targetName() != null) {
             if (!ownsPublicDefinition(factory, name, registration)) {
                 StatusReporter.detail("Added @Bean keeps externally replaced binding " + name);
                 return removeScopedTarget(factory, registration.targetName(), registration.targetDefinition().get());
             }
         } else if (!stillOwned(factory, name, registration)) return false;
+        if (registration.jacksonCustomizer()) jacksonChanges.add(factory);
         Map<?, ?> bindings = registration.aliases().isEmpty() ? Map.of() : aliasBindings(factory);
         call(factory, "removeBeanDefinition", name);
         if (registration.targetName() != null)

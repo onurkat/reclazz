@@ -395,7 +395,7 @@ public class SpringBeanReloader {
     private static final java.util.Map<Class<?>, java.lang.reflect.Field[]> FIELD_CACHE =
             java.util.Collections.synchronizedMap(new java.util.WeakHashMap<>());
 
-    private static java.lang.reflect.Field[] candidateFields(Class<?> type) {
+    static java.lang.reflect.Field[] candidateFields(Class<?> type) {
         return FIELD_CACHE.computeIfAbsent(type, t -> {
             java.util.List<java.lang.reflect.Field> out = new java.util.ArrayList<>();
             for (Class<?> c = t; c != null && c != Object.class; c = c.getSuperclass()) {

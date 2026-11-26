@@ -199,6 +199,11 @@ public final class SpringPropertyFiles {
                                 .applyLive(plan.changed(), resets.get(plan), false, selections.get(plan));
                         rebound.addAll(result.rebound()); rebuilt.addAll(result.rebuilt());
                         fields += result.valueFields(); failures.addAll(result.findings());
+                        if (result.findings().isEmpty() && plan.changed().keySet().stream().anyMatch(k -> k.startsWith("spring.jackson."))) {
+                            Object factory = SpringBeans.getBeanFactory(plan.context());
+                            if (JacksonMapperRefresh.isBootJackson(factory) && !JacksonMapperRefresh.refresh(factory))
+                                failures.add(JacksonMapperRefresh.RESTART);
+                        }
                     }
                     if (failures.isEmpty())
                         for (Prepared plan : plans) {

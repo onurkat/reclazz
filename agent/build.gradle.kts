@@ -362,6 +362,7 @@ dependencies {
     // First-proxy aspect regression; same existing test-only version, never packaged.
     add(springSixTests.implementationConfigurationName, "org.aspectj:aspectjweaver:1.9.27")
     add(springSixTests.implementationConfigurationName, "org.springframework.boot:spring-boot:3.3.5")
+    add(springSixTests.runtimeOnlyConfigurationName, "org.springframework.boot:spring-boot-autoconfigure:3.3.5")
     // Real Jakarta MVC async lifecycle and local HTTP tests; never packaged.
     add(springSixTests.implementationConfigurationName, "org.springframework:spring-webmvc:6.1.14")
     add(springSixTests.implementationConfigurationName, "org.springframework:spring-test:6.1.14")
