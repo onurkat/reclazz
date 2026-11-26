@@ -318,6 +318,11 @@ public class ReclazzAgent {
             new TemplateReloader();
     private static volatile PlatformContext platformContext;
     private static volatile SpringXmlReloader springXmlReloader;
+
+    private static void retryXmlForClass(String name) {
+        SpringXmlReloader xml = springXmlReloader;
+        if (xml != null) xml.classReady(name);
+    }
     private static volatile PremiumModules premiumModules = new PremiumModules(new AlwaysAdmit());
 
     /**
@@ -1290,7 +1295,13 @@ public class ReclazzAgent {
         }
     }
 
-    private static void refuseRecord(String name, String reason, String source) {
+    private static Map<String,String> prepareConstructorDependencies(Map<String,byte[]> accepted,
+            com.onurkat.reclazz.util.ClassLookup.LoadedClasses loaded) {
+        if (platformContext == null || accepted.isEmpty()) return Map.of();
+        return com.onurkat.reclazz.spring.SpringConstructorSave.apply(accepted, loaded, platformContext::getAllApplicationContexts);
+    }
+
+    private static void refuseSave(String name, String reason, String source) {
         recordOutcome(name, false, reason, source);
         StatusReporter.error("Reload refused for " + name + ": " + reason);
         ReloadEvents.failed(name, reason, source);
@@ -1542,9 +1553,17 @@ public class ReclazzAgent {
             });
             accepted.remove(name); recordRejected.put(name, reason);
         });
+        Map<String,String> dependencies = prepareConstructorDependencies(accepted, loaded);
+        apply.removeIf(event -> {
+            String name = new org.objectweb.asm.ClassReader(event.getBytes()).getClassName().replace('/', '.');
+            if (!dependencies.containsKey(name)) return false;
+            refused.put(event, dependencies.get(name));
+            accepted.remove(name);
+            return true;
+        });
         refused.forEach((event, reason) -> {
             String name = new org.objectweb.asm.ClassReader(event.getBytes()).getClassName().replace('/', '.');
-            if (recordRejected.containsKey(name)) refuseRecord(name, reason, event.getPath().toString());
+            if (dependencies.containsKey(name) || recordRejected.containsKey(name)) refuseSave(name, reason, event.getPath().toString());
             else refuseSwitchMap(name, reason, event.getPath().toString());
         });
         SwitchMapRefresh.begin(accepted, preflight.plans(), loaded);
@@ -1609,9 +1628,12 @@ public class ReclazzAgent {
         finishNativePreflight(nativeSave, accepted.keySet().stream().filter(name -> !refused.containsKey(name))
                 .collect(java.util.stream.Collectors.toSet()));
         if (nativeSave != null) { refused.putAll(nativeSave.refusals()); recordRejected.putAll(nativeSave.refusals()); }
+        refused.keySet().forEach(accepted::remove);
+        Map<String,String> dependencies = prepareConstructorDependencies(accepted, loaded);
+        refused.putAll(dependencies);
         refused.forEach((name, reason) -> {
             accepted.remove(name);
-            if (recordRejected.containsKey(name)) refuseRecord(name, reason, sources.get(name));
+            if (dependencies.containsKey(name) || recordRejected.containsKey(name)) refuseSave(name, reason, sources.get(name));
             else refuseSwitchMap(name, reason, sources.get(name));
         });
         java.util.List<ChangeEvent> events = new java.util.ArrayList<>();
@@ -1695,6 +1717,7 @@ public class ReclazzAgent {
             if (!wasLoaded) {
                 var registration = springOrchestrator.registerNewBeanClass(className, bytecode);
                 if (registration.isHandled()) {
+                    if (registration.isSuccess()) retryXmlForClass(className);
                     recordOutcome(className, registration.isSuccess(), registration.description(), source);
                     ReloadEffects.end();
                     return;
@@ -2037,6 +2060,7 @@ public class ReclazzAgent {
                 } finally {
                     if (frameworkBatchDepth == 0) {
                         pendingFramework.clear();
+                        com.onurkat.reclazz.spring.SpringConstructorSave.endSave();
                         StructuralReloader structural = structuralReloader;
                         if (structural != null) structural.clearNativeOutcomes();
                     }
@@ -2077,6 +2101,7 @@ public class ReclazzAgent {
                 com.onurkat.reclazz.transform.AdmittedBytes.admitted(type, work.bytes);
                 recordRefusals.accepted(type, work.bytes);
             } else com.onurkat.reclazz.transform.AdmittedBytes.invalidate(type);
+            retryXmlForClass(work.className);
             if (work.wasLoaded) JpaMappingRefresh.retryPendingEntity(work.className, work.bytes);
             var interceptor = work.result.isInterceptor() && work.modules != null
                     && platformContext.getPlatformId() == PlatformContext.Platform.HYBRIS
@@ -2223,6 +2248,7 @@ public class ReclazzAgent {
                 if (!wasLoaded) {
                     var registration = springOrchestrator.registerNewBeanClass(className, bytecode);
                     if (registration.isHandled()) {
+                        if (registration.isSuccess()) retryXmlForClass(className);
                         recordOutcome(className, registration.isSuccess(), registration.description(), sources.get(className));
                         if (registration.isSuccess()) successCount++;
                         else failCount++;

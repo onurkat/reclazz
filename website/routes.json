@@ -637,6 +637,8 @@
     "destination": "https://github.com/onurkat/reclazz/blob/{revision}/docs/spring-constructor-dependencies.md",
     "fragments": {
       "constructor-dependency-ownership-during-ordinary-class-refresh": "constructor-dependency-ownership-during-ordinary-class-refresh",
+      "adding-a-constructor-dependency": "adding-a-constructor-dependency",
+      "refreshing-an-unchanged-constructor": "refreshing-an-unchanged-constructor",
       "jms-helper-and-constructor-property-changes": "jms-helper-and-constructor-property-changes",
       "kafka-helper-and-constructor-property-changes": "kafka-helper-and-constructor-property-changes",
       "rabbit-helper-and-constructor-property-changes": "rabbit-helper-and-constructor-property-changes"

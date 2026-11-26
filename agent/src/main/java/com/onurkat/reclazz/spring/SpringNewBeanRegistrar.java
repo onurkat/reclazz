@@ -308,7 +308,7 @@ public final class SpringNewBeanRegistrar {
 
     // ── stereotype detection, through Spring's merged annotations ──────────
 
-    private record Stereotype(String beanName, boolean controller, Object definition) {
+    record Stereotype(String beanName, boolean controller, Object definition) {
     }
 
     /** Any class-level annotation makes the class worth resolving through Spring. */
@@ -331,7 +331,7 @@ public final class SpringNewBeanRegistrar {
     }
 
     /** Resolve merged component metadata without constructing a definition or touching a factory. */
-    private static boolean hasStereotype(Class<?> clazz, ClassLoader springLoader) {
+    static boolean hasStereotype(Class<?> clazz, ClassLoader springLoader) {
         try {
             Class<?> merged = Class.forName("org.springframework.core.annotation.AnnotatedElementUtils", false, springLoader);
             Class<?> component = Class.forName("org.springframework.stereotype.Component", false, springLoader);
@@ -348,7 +348,7 @@ public final class SpringNewBeanRegistrar {
      * resolves custom meta-annotated stereotypes and {@code @AliasFor} names
      * rather than matching a fixed list of descriptors.
      */
-    private static Stereotype resolveStereotype(Class<?> clazz, Object beanFactory, ClassLoader springLoader) {
+    static Stereotype resolveStereotype(Class<?> clazz, Object beanFactory, ClassLoader springLoader) {
         try {
             Class<?> merged = Class.forName("org.springframework.core.annotation.AnnotatedElementUtils", false, springLoader);
             Method hasAnnotation = merged.getMethod("hasAnnotation", java.lang.reflect.AnnotatedElement.class, Class.class);

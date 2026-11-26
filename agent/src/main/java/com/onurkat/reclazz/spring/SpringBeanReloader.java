@@ -130,6 +130,11 @@ public class SpringBeanReloader {
                             : findBeanNamesByClass(appContext, className);
                     for (String beanName : beanNames) {
                         Object current=localFactory.getClass().getMethod("getSingleton",String.class).invoke(localFactory,beanName);
+                        if (SpringConstructorSave.consume(current)) {
+                            totalRefreshed++;
+                            ReloadEffects.note("bean " + beanName + " re-created with its new constructor dependencies");
+                            continue;
+                        }
                         if(nativeHandled.contains(current))continue;
                         if (raw != null && raw.preserves(appContext, beanName,
                                 localFactory.getClass().getMethod("getSingleton", String.class).invoke(localFactory, beanName))) {

@@ -36,6 +36,55 @@ class SpringXmlPropertyFailureReloadTest {
             app.awaitOrFail("RECREATED=true:new:2", "preserved definition cannot recreate after metadata invalidation");
         }
     }
+    @ParameterizedTest @ValueSource(booleans = {false, true})
+    void sameSaveReferenceReachesHeldOwner(boolean xmlFirst) throws Exception {
+        Path xml = tmp.resolve("dependency.xml");
+        String beans = "<beans xmlns='http://www.springframework.org/schema/beans'>";
+        String owner = "<bean id='settings' class='app.Settings'>";
+        Files.writeString(xml, beans + owner + "</bean></beans>");
+        String update = beans + owner + "<property name='dependency' ref='extra'/></bean>"
+                + "<bean id='extra' class='app.Extra'/></beans>";
+        String initial = "package app; public class Settings {public Object value(){return null;}}";
+        String changed = "package app; public class Settings {private Object dependency;"
+                + "public void setDependency(Object v){dependency=v;} public Object value(){return dependency;}}";
+        String appSource = """
+                package app;
+                import org.springframework.context.support.GenericApplicationContext;
+                import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+                import org.springframework.core.io.FileSystemResource;
+                public class App {
+                    public static void main(String[] args) throws Exception {
+                        var c = new GenericApplicationContext();
+                        var r = new XmlBeanDefinitionReader(c);
+                        r.setValidating(false);
+                        r.loadBeanDefinitions(new FileSystemResource(System.getProperty("defs")));
+                        c.refresh();
+                        Settings held = c.getBean(Settings.class);
+                        System.out.println("ORIGINAL=" + (held.value() == null));
+                        while (!c.containsBean("extra") || held.value() == null) Thread.sleep(25);
+                        System.out.println("BOUND=" + (held == c.getBean("settings")) + ":"
+                                + (held.value() == c.getBean("extra")));
+                        while (true) Thread.sleep(100);
+                    }
+                }
+                """;
+        try (var app = WatchedApp.in(tmp).classpath(WatchedApp.springClasspath()).jvmArgs("-Ddefs=" + xml)
+                .with("App", appSource).with("Settings", initial).start()) {
+            app.awaitOrFail("ORIGINAL=true", "original consumer never started");
+            app.awaitWatcherReady();
+            if (xmlFirst) {
+                Files.writeString(xml, update);
+                app.awaitOrFail("Failed to parse dependency.xml", "first XML save did not encounter the missing class");
+            }
+            app.rewriteAll(java.util.Map.of("Settings", changed, "Extra", "package app; public class Extra {}"));
+            if (!xmlFirst) {
+                app.awaitOrFail("Structural reload: app.Settings", "class edit was not applied");
+                Files.writeString(xml, update);
+            }
+            app.awaitOrFail("BOUND=true:true", "held owner did not receive the exact new singleton");
+        }
+    }
+
     private void save(WatchedApp app, Path path, String label, String number, String ref, int count, int failures) throws Exception {
         Files.writeString(path, document(label, number, ref, "after" + count));
         long until = System.nanoTime() + Duration.ofSeconds(20).toNanos();

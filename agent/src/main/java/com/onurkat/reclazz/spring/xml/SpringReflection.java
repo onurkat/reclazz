@@ -70,6 +70,11 @@ final class SpringReflection {
     /** @param documentReader the live context's document reader, null for Spring's default */
     static boolean loadXml(Object tempFactory, File xmlFile, ClassLoader springLoader, Object environment,
                            Class<?> documentReader) {
+        return loadXml(tempFactory, xmlFile, springLoader, environment, documentReader, missing -> {});
+    }
+
+    static boolean loadXml(Object tempFactory, File xmlFile, ClassLoader springLoader, Object environment,
+                           Class<?> documentReader, java.util.function.Consumer<String> missingClass) {
         // Spring finds the handler for a namespace like context: or util: by
         // reading META-INF/spring.handlers from the classpath, through the
         // reader's classloader and, failing that, the thread's. Both default to
@@ -120,10 +125,23 @@ final class SpringReflection {
             clearSources(tempFactory);
             return true;
         } catch (Throwable t) {
+            reportMissingClass(t, missingClass);
             StatusReporter.warn("Failed to parse " + xmlFile.getName() + ": " + rootCause(t));
             return false;
         } finally {
             current.setContextClassLoader(previousContext);
+        }
+    }
+
+    static void reportMissingClass(Throwable failure, java.util.function.Consumer<String> missingClass) {
+        for (Throwable cause = failure; cause != null && cause != cause.getCause(); cause = cause.getCause()) {
+            if (cause instanceof ClassNotFoundException && cause.getMessage() != null) {
+                String missing = cause.getMessage();
+                if (missing.matches("[\\p{javaJavaIdentifierStart}][\\p{javaJavaIdentifierPart}]*(?:\\.[\\p{javaJavaIdentifierStart}][\\p{javaJavaIdentifierPart}]*)+")) {
+                    missingClass.accept(missing);
+                    break;
+                }
+            }
         }
     }
 

@@ -5,6 +5,7 @@
 package com.onurkat.reclazz.spring.xml;
 
 import com.onurkat.reclazz.platform.ApplicationContextHolder;
+import com.onurkat.reclazz.platform.HybrisPlatformContext;
 import com.onurkat.reclazz.platform.PlatformContext;
 import com.onurkat.reclazz.platform.PlatformTenant;
 import com.onurkat.reclazz.platform.SpringXmlResources;
@@ -59,6 +60,30 @@ import com.onurkat.reclazz.util.Reflect;
 public final class SpringXmlReloader {
 
     private final PlatformContext platformContext;
+    private final java.util.Map<Path, java.util.Set<String>> pendingClasses = new java.util.LinkedHashMap<>();
+    private String retryingClass;
+
+    private void awaitClass(Path xml, String className) {
+        if (!className.equals(retryingClass)) {
+            pendingClasses.computeIfAbsent(xml, ignored -> new java.util.LinkedHashSet<>()).add(className);
+        }
+    }
+
+    /** Reparse the current file once the exact missing class or newly added setter is available. */
+    public synchronized void classReady(String className) {
+        var ready = pendingClasses.entrySet().stream().filter(e -> e.getValue().contains(className))
+                .map(java.util.Map.Entry::getKey).toList();
+        String previous = retryingClass;
+        try {
+            retryingClass = className;
+            for (Path path : ready) {
+                pendingClasses.remove(path);
+                if (java.nio.file.Files.isRegularFile(path)) reload(path);
+            }
+        } finally {
+            retryingClass = previous;
+        }
+    }
     private final com.onurkat.reclazz.platform.XmlBeanLifecycle beanLifecycle;
     private final java.util.function.Consumer<java.util.Set<Path>> processRegistrations;
 
@@ -86,7 +111,8 @@ public final class SpringXmlReloader {
     }
 
     /** Entry for filenames recognized by captured resource identity, never by bean names. */
-    public void reloadLoaded(Path xmlPath) {
+    public synchronized void reloadLoaded(Path xmlPath) {
+        pendingClasses.remove(xmlPath);
         List<Object> owners = SpringXmlResources.owners(xmlPath, gatherCandidateContexts());
         if (owners.isEmpty()) {
             StatusReporter.info("Spring XML " + xmlPath.getFileName() + ", no active owner; nothing applied");
@@ -98,6 +124,7 @@ public final class SpringXmlReloader {
             if (factory == null) continue;
             try {
                 ClassLoader loader = (ClassLoader) factory.getClass().getMethod("getBeanClassLoader").invoke(factory);
+                if (awaitReferenceClasses(xmlPath, loader, factory)) continue;
                 Object temporary = SpringReflection.newTempBeanFactory(loader);
                 Object environment = context.getClass().getMethod("getEnvironment").invoke(context);
                 // Parsed the way the context parsed it, or SAP's lazy web beans
@@ -105,7 +132,7 @@ public final class SpringXmlReloader {
                 Class<?> documentReader = SpringXmlResources.documentReader(xmlPath, context);
                 if (documentReader != null) PlatformTenant.ensureActive(loader);
                 if (temporary != null && SpringReflection.loadXml(temporary, xmlPath.toFile(), loader, environment,
-                        documentReader))
+                        documentReader, missing -> awaitClass(xmlPath, missing)))
                     changes.add(new OwnerChange(temporary, context, factory,
                             owners.size() == 1 ? "" : " [context " + (owners.indexOf(context) + 1) + "/" + owners.size() + "]", true,
                             documentReader == null ? null : loader));
@@ -118,7 +145,18 @@ public final class SpringXmlReloader {
         processRegistrations.accept(com.onurkat.reclazz.platform.SapProcessDefinitions.registeredFrom(xmlPath));
     }
 
-    public void reload(Path xmlPath) {
+    private boolean awaitReferenceClasses(Path path, ClassLoader loader, Object factory) {
+        // Only the SAP platform loader needs protection against caching a class miss.
+        if (!(platformContext instanceof HybrisPlatformContext)) return false;
+        var missing = XmlReferenceClasses.missing(path, loader, factory);
+        for (String name : missing) awaitClass(path, name);
+        if (!missing.isEmpty()) StatusReporter.info("Spring XML " + path.getFileName()
+                + " waiting for referenced classes: " + String.join(", ", missing));
+        return !missing.isEmpty();
+    }
+
+    public synchronized void reload(Path xmlPath) {
+        pendingClasses.remove(xmlPath);
         if (!SpringXmlResources.owners(xmlPath, gatherCandidateContexts()).isEmpty()) {
             reloadLoaded(xmlPath);
             return;
@@ -138,9 +176,11 @@ public final class SpringXmlReloader {
         // parent that cannot see application classes. The shared parse path
         // requires candidate contexts using the same Spring classes.
         ClassLoader springCl = null;
+        Object parseFactory = null;
         for (Object ctx : candidates) {
             Object bf = SpringReflection.getBeanFactory(ctx);
             if (bf != null) {
+                parseFactory = bf;
                 try { springCl = (ClassLoader) bf.getClass().getMethod("getBeanClassLoader").invoke(bf); }
                 catch (ReflectiveOperationException failure) {
                     StatusReporter.warn("Spring XML: application bean classloader unavailable");
@@ -155,12 +195,13 @@ public final class SpringXmlReloader {
         }
 
         // Sandbox parse. If this fails, we haven't touched any live context.
+        if (awaitReferenceClasses(xmlPath, springCl, parseFactory)) return;
         Object tempFactory = SpringReflection.newTempBeanFactory(springCl);
         if (tempFactory == null) {
             StatusReporter.warn("Spring XML: DefaultListableBeanFactory not on classpath, skip");
             return;
         }
-        if (!SpringReflection.loadXml(tempFactory, xmlPath.toFile(), springCl)) {
+        if (!SpringReflection.loadXml(tempFactory, xmlPath.toFile(), springCl, null, null, missing -> awaitClass(xmlPath, missing))) {
             // Parse error is already reported by SpringReflection.loadXml.
             return;
         }
@@ -226,7 +267,7 @@ public final class SpringXmlReloader {
             change.applied += change.endpoints.swapped();
             change.diff.unsafe.addAll(change.endpoints.failures());
         }
-        PropertySave save = new PropertySave(owners);
+        PropertySave save = new PropertySave(xmlPath, owners);
         for(var change:changes) {
             change.activate();
             var security=SpringSecurityXmlChains.apply(change.context,change.factory,change.temporary,xmlPath);
@@ -284,6 +325,7 @@ public final class SpringXmlReloader {
             try {
                 for (var change : changes) {
                     change.activate();
+                    addReferencedBeans(xmlPath, change);
                     if (change.hotFolder != null) {
                         var edits = change.hotFolder.edits();
                         try {
@@ -318,17 +360,7 @@ public final class SpringXmlReloader {
         for (var change : changes) {
             change.activate();
             for (BeanDefinitionDiff.NewBean add : change.diff.added) {
-                try {
-                    var listener = change.listeners.get(add.beanName);
-                    if (listener != null && listener.definition() == add.newBeanDefinition)
-                        SapXmlEventListeners.create(add.beanName, listener, beanLifecycle);
-                    else applyNewBean(change.context, change.factory, add);
-                    if (change.observed) com.onurkat.reclazz.platform.SapProcessDefinitions.registered(xmlPath, change.context, add.beanName);
-                    change.applied++;
-                } catch (Exception e) {
-                    change.diff.unsafe.add(new BeanDefinitionDiff.UnsafeChange(add.beanName,
-                            "bean add failed: " + SpringReflection.rootCause(e)));
-                }
+                addBean(xmlPath, change, add);
             }
             for (SapPopulatorDirectives.Edit directive : change.diff.directiveEdits) {
                 try {
@@ -345,6 +377,43 @@ public final class SpringXmlReloader {
             if (!change.diff.hasChanges() && change.applied == 0) StatusReporter.info("Spring XML " + xmlPath.getFileName() + change.label
                     + ", parsed OK, no live-applicable changes detected");
             else reportWithLabel(xmlPath, change.applied, change.diff, change.label);
+        }
+    }
+
+    private void addBean(Path xmlPath, OwnerChange change, BeanDefinitionDiff.NewBean add) {
+        try {
+            var listener = change.listeners.get(add.beanName);
+            if (listener != null && listener.definition() == add.newBeanDefinition)
+                SapXmlEventListeners.create(add.beanName, listener, beanLifecycle);
+            else applyNewBean(change.context, change.factory, add);
+            if (change.observed) com.onurkat.reclazz.platform.SapProcessDefinitions.registered(xmlPath, change.context, add.beanName);
+            change.applied++;
+        } catch (Exception e) {
+            SpringReflection.reportMissingClass(e, missing -> awaitClass(xmlPath, missing));
+            change.diff.unsafe.add(new BeanDefinitionDiff.UnsafeChange(add.beanName,
+                    "bean add failed: " + SpringReflection.rootCause(e)));
+        }
+    }
+
+    /** Resolve direct references to a newly declared bean before invoking its consumer's setter. */
+    private void addReferencedBeans(Path xmlPath, OwnerChange owner) {
+        var references = new java.util.LinkedHashSet<String>();
+        for (var edit : owner.diff.propertyChanges) {
+            Object raw = edit.newRawValue;
+            if (raw == null || !raw.getClass().getName().equals("org.springframework.beans.factory.config.RuntimeBeanReference")) continue;
+            try {
+                collectReferences(owner.factory, raw, references, java.util.Collections.newSetFromMap(
+                        new java.util.IdentityHashMap<>()), 0, new int[]{1});
+            } catch (Exception unavailable) {
+                // The normal property binder reports the unresolved reference.
+            }
+        }
+        for (var it = owner.diff.added.iterator(); it.hasNext();) {
+            var added = it.next();
+            if (references.contains(added.beanName)) {
+                addBean(xmlPath, owner, added);
+                it.remove();
+            }
         }
     }
 
@@ -399,6 +468,8 @@ public final class SpringXmlReloader {
                         if (SapFieldSetRefresher.isMapping(singleton)) changedMappings.add(singleton);
                         applied++;
                     } catch (Exception e) {
+                        if (e instanceof XmlNativePropertyBinding.MissingReferenceSetter missing)
+                            awaitClass(save.xmlPath, missing.owner.getName());
                         successful = false;
                         diff.unsafe.add(new BeanDefinitionDiff.UnsafeChange(
                                 change.beanName + "." + change.propertyName,
@@ -527,7 +598,10 @@ public final class SpringXmlReloader {
         final java.util.Map<Object, java.util.Map<Object, java.util.Set<String>>> earlyNames = new java.util.IdentityHashMap<>();
         final java.util.Map<Object, java.util.Map<String, Mirror>> mirrors = new java.util.IdentityHashMap<>();
         final List<Object> factories = new ArrayList<>();
-        PropertySave(List<Object> owners) {
+        final Path xmlPath;
+
+        PropertySave(Path xmlPath, List<Object> owners) {
+            this.xmlPath = xmlPath;
             for (Object owner : owners) {
                 Object factory = SpringReflection.getBeanFactory(owner);
                 if (factory != null) factories.add(factory);

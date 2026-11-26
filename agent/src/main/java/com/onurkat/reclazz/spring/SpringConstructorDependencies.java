@@ -270,12 +270,16 @@ final class SpringConstructorDependencies {
     }
 
     private static boolean plain(Object definition) throws Exception {
+        return plain(definition, null);
+    }
+
+    static boolean plain(Object definition, Object supplier) throws Exception {
         return Boolean.TRUE.equals(call(definition, "isSingleton"))
                 && !Boolean.TRUE.equals(call(definition, "isAbstract"))
                 && call(definition, "getParentName") == null
                 && call(definition, "getFactoryMethodName") == null
                 && call(definition, "getFactoryBeanName") == null
-                && call(definition, "getInstanceSupplier") == null
+                && call(definition, "getInstanceSupplier") == supplier
                 && Boolean.FALSE.equals(call(definition, "hasConstructorArgumentValues"))
                 && Boolean.FALSE.equals(call(definition, "hasMethodOverrides"))
                 && call(definition, "getQualifiers") instanceof Set<?> qualifiers && qualifiers.isEmpty();

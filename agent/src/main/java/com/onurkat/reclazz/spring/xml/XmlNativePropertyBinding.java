@@ -40,6 +40,26 @@ final class XmlNativePropertyBinding {
         }
     }
 
+    static final class MissingReferenceSetter extends IllegalArgumentException {
+        final Class<?> owner;
+        MissingReferenceSetter(Class<?> owner, String property) {
+            super("no setter for bean reference property '" + property + "' on " + owner.getName());
+            this.owner = owner;
+        }
+    }
+
+    private static Method addedReferenceSetter(Class<?> owner, String property) {
+        String name = "set" + Character.toUpperCase(property.charAt(0)) + property.substring(1);
+        Method found = null;
+        for (Method method : com.onurkat.reclazz.bootstrap.ReflectionBridge.addedMethods(owner)) {
+            if (!method.getName().equals(name) || method.getParameterCount() != 1 || method.getReturnType() != void.class
+                    || !Modifier.isPublic(method.getModifiers()) || Modifier.isStatic(method.getModifiers())) continue;
+            require(found == null, "ambiguous added setter for '" + property + "'");
+            found = method;
+        }
+        return found;
+    }
+
     static Binding prepare(Object factory, Object bean, String property, Object raw) throws Exception {
         require(simpleName(property), "only simple physical XML property names are supported");
         ClassLoader spring = factory.getClass().getClassLoader();
@@ -53,7 +73,12 @@ final class XmlNativePropertyBinding {
             // An absent/non-public physical property retains the bounded legacy fallback.
             // Never infer a type by executing an application getter.
         }
+        boolean reference = raw != null && raw.getClass().getName().equals("org.springframework.beans.factory.config.RuntimeBeanReference");
         if (setter == null) setter = privateSetter(bean.getClass(), property);
+        if (setter == null && reference && !isProxy(bean, spring)) {
+            setter = addedReferenceSetter(bean.getClass(), property);
+            if (setter == null) throw new MissingReferenceSetter(bean.getClass(), property);
+        }
         require(setter != null && setter.getParameterCount() == 1, "no physical setter for property '" + property + "'");
         setter.setAccessible(true);
         Class<?> parameterType = Class.forName("org.springframework.core.MethodParameter", false, spring);
@@ -65,7 +90,6 @@ final class XmlNativePropertyBinding {
         ClassLoader application = (ClassLoader) factory.getClass().getMethod("getBeanClassLoader").invoke(factory);
         rawTypes(raw, application, 0);
         boolean legacy = !Modifier.isPublic(setter.getModifiers()) || isProxy(bean, spring);
-        boolean reference = raw != null && raw.getClass().getName().equals("org.springframework.beans.factory.config.RuntimeBeanReference");
         Object converter = null;
         if (!legacy && !reference && nativeShape(shape, 0)) {
             converter = factory.getClass().getMethod("getTypeConverter").invoke(factory);
