@@ -7,7 +7,9 @@ package com.onurkat.reclazz.reload;
 import com.onurkat.reclazz.agent.*;
 import com.onurkat.reclazz.config.AgentConfig;
 import com.onurkat.reclazz.transform.*;
+import com.onurkat.reclazz.platform.NoopPlatformContext;
 import com.onurkat.reclazz.watcher.ChangeEvent;
+import com.onurkat.reclazz.watcher.FileWatcher;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -107,8 +109,14 @@ class SwitchMapSaveTest extends TransformTestBase {
             List<ChangeEvent> captured = capturedHolder ? (holderFirst ? List.of(holderEvent, outerEvent) : List.of(outerEvent, holderEvent)) : List.of(outerEvent);
             if (shape == 5) Files.write(dir.resolve("Channel.class"), pendingEnumOverride == null
                     ? next.get(pkg + "/Channel") : pendingEnumOverride);
-            Method prepare = ReclazzAgent.class.getDeclaredMethod("prepareSwitchMaps", List.class); prepare.setAccessible(true);
-            return (ReloadQueue.SavePlan) prepare.invoke(null, captured);
+            Method prepare = ReclazzAgent.class.getDeclaredMethod("prepareSwitchMaps", List.class, FileWatcher.class);
+            prepare.setAccessible(true);
+            var watcher = new FileWatcher(new NoopPlatformContext(), AgentConfig.parse(null));
+            try {
+                return (ReloadQueue.SavePlan) prepare.invoke(null, captured, watcher);
+            } finally {
+                watcher.stopWatching();
+            }
         }
         void apply(ReloadQueue.SavePlan plan, boolean bracketed, boolean holderFirst) throws Exception {
             List<ChangeEvent> ordered = new ArrayList<>(plan.apply());

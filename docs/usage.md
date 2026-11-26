@@ -4000,6 +4000,12 @@ follows a body edit and throws `NoSuchMethodError` after removal. Compile
 affected callers together. A direct call from outside watched output still
 requires the method to exist physically, so restart for that caller.
 
+When a save adds an abstract method to a loaded service interface on a stock
+JVM, Reclazz lists the interface method and the classes held in that save.
+Their previous bodies keep serving requests until restart. To continue
+without restarting, revert the interface addition and save the other edits
+again.
+
 Restart on stock JVMs for new default or abstract methods, field changes,
 changes to the superinterface list, and removal or retyping of an original
 method. An added method containing a direct superinterface body call also

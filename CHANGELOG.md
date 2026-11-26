@@ -11,6 +11,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ### Changed
 
 - The IntelliJ setup wizard warns when this SAP Commerce server is running, shows failed Ant output with a retry, and closes with Finish after setup. On Windows the warning requires the Tomcat process to identify this installation.
+- The IntelliJ setup wizard warns when this SAP Commerce server is running, shows failed Ant output with a retry, and closes with Finish after setup.
+- On a stock JVM, adding an abstract service method holds its whole class save and names the affected classes. Existing callers keep working until restart.
 - A Spring singleton can gain constructor-injected dependencies on save when the constructor only adds field assignments and each dependency resolves uniquely. Ambiguous or unsupported changes report a restart while the previous endpoint continues serving.
 - An existing XML bean can receive a reference through a setter added in the same edit. In SAP Commerce either file can arrive first.
 

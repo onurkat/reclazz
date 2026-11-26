@@ -165,6 +165,8 @@ public class FileWatcher {
     private static final class FileState {
         /** CRC32 of the bytes last dispatched or baselined, or -1 for none. */
         long contentHash = -1L;
+        long lastClassWrite;
+        volatile long heldClassHash = -1L;
         /** Source/config disk version already delivered; independent of inventory/scan sightings. */
         long deliveredSourceMtime;
         /** The baseline's mtime, or 0 once consumed or never taken. */
@@ -189,6 +191,15 @@ public class FileWatcher {
         if(before>0 && before==after && value!=-1) {
             state.contentHash=value;state.baselineMtime=before;state.deliveredSourceMtime=before;
         }
+    }
+
+    /** A withheld class has been seen on disk but not installed in the VM. Deliver its next real rewrite. */
+    public void retryHeldClassOnRewrite(ChangeEvent captured) {
+        var state = fileStates.get(captured.getPath());
+        if (state == null) return;
+        CRC32 crc = new CRC32();
+        crc.update(captured.getBytes());
+        state.heldClassHash = crc.getValue();
     }
 
     private FileState stateOf(Path file) {
@@ -1678,11 +1689,15 @@ public class FileWatcher {
             long newHash = computeContentHash(pending.path);
             if (newHash != -1L) {
                 FileState state = stateOf(pending.path);
+                long mtime = lastModifiedMillis(pending.path);
+                boolean retry = state.heldClassHash == newHash && mtime != state.lastClassWrite;
+                if (retry || state.heldClassHash != newHash) state.heldClassHash = -1L;
+                state.lastClassWrite = mtime;
                 long prevHash = state.contentHash;
                 state.contentHash = newHash;
                 long baselineMtime = state.baselineMtime;
                 state.baselineMtime = 0;
-                if (prevHash != -1L && prevHash == newHash) {
+                if (prevHash != -1L && prevHash == newHash && !retry) {
                     // Content matches what we recorded. Only trust that as
                     // "nothing to do" if the file has actually been touched
                     // since the baseline; an unchanged mtime means the write

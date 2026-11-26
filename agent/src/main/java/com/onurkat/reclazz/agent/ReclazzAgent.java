@@ -866,7 +866,7 @@ public class ReclazzAgent {
                     batchBracket, config.isRequestBoundary() ? RequestReloadBoundary::run : Runnable::run,
                     new ReloadQueue.SavePreparer() {
                         public ReloadQueue.SavePlan prepare(java.util.List<ChangeEvent> captured) {
-                            return prepareSwitchMaps(captured);
+                            return prepareSwitchMaps(captured, watcher);
                         }
                         public void complete() { try { SwitchMapRefresh.end(); } finally { closeRecordSave(); } }
                     });
@@ -1467,13 +1467,37 @@ public class ReclazzAgent {
         nativeRecordSave.set(save);
     }
 
-    private static ReloadQueue.SavePlan prepareSwitchMaps(java.util.List<ChangeEvent> captured) {
+    private static com.onurkat.reclazz.reload.InterfaceBatchCheck.Hold interfaceHold(
+            Map<String, byte[]> incoming, com.onurkat.reclazz.util.ClassLookup.LoadedClasses loaded) {
+        if (probeResult != null && probeResult.hasEnhancedRedefinition()) return null;
+        var hold = com.onurkat.reclazz.reload.InterfaceBatchCheck.check(incoming, loaded);
+        if (hold != null) {
+            RestartLedger.note(hold.subject(), hold.reason());
+            StatusReporter.warn(hold.reason());
+            ReloadEvents.failed(hold.subject(), hold.reason(), null);
+            SessionReport.failed();
+        }
+        return hold;
+    }
+
+    private static ReloadQueue.SavePlan prepareSwitchMaps(java.util.List<ChangeEvent> captured, FileWatcher watcher) {
         var loaded = com.onurkat.reclazz.util.ClassLookup.loadedClasses(instrumentation);
         Map<String, byte[]> recordBytes = new java.util.LinkedHashMap<>();
         Map<String, Path> recordPaths = new java.util.LinkedHashMap<>();
         for (ChangeEvent event : captured) {
             String name = new org.objectweb.asm.ClassReader(event.getBytes()).getClassName().replace('/', '.');
             recordBytes.put(name, event.getBytes()); recordPaths.put(name, event.getPath());
+        }
+        var interfaceHold = interfaceHold(recordBytes, loaded);
+        if (interfaceHold != null) {
+            Map<ChangeEvent, String> refused = new java.util.LinkedHashMap<>();
+            for (ChangeEvent event : captured) {
+                String name = new org.objectweb.asm.ClassReader(event.getBytes()).getClassName().replace('/', '.');
+                recordOutcome(name, false, interfaceHold.reason(), event.getPath().toString());
+                watcher.retryHeldClassOnRewrite(event);
+                refused.put(event, interfaceHold.reason());
+            }
+            return new ReloadQueue.SavePlan(List.of(), refused);
         }
         NativeRecordSave nativeSave = prepareNativeRecords(recordBytes, loaded.all());
         Map<String, String> recordRejected = new java.util.LinkedHashMap<>(recordRefusals.preflight(recordBytes, recordPaths,
@@ -1578,6 +1602,16 @@ public class ReclazzAgent {
 
     private static Map<String, byte[]> prepareCompiledSwitchMaps(Map<String, byte[]> candidates, Map<String, String> sources) {
         var loaded = com.onurkat.reclazz.util.ClassLookup.loadedClasses(instrumentation);
+        var interfaceHold = interfaceHold(candidates, loaded);
+        if (interfaceHold != null) {
+            Map<String, String> refused = new java.util.LinkedHashMap<>();
+            for (String name : candidates.keySet()) {
+                recordOutcome(name, false, interfaceHold.reason(), sources.get(name));
+                refused.put(name, interfaceHold.reason());
+            }
+            compiledSaveRefusals.set(refused);
+            return Map.of();
+        }
         Map<String, Path> recordPaths = new java.util.LinkedHashMap<>();
         if (platformContext != null) for (String name : candidates.keySet()) {
             List<Path> matches = new java.util.ArrayList<>();

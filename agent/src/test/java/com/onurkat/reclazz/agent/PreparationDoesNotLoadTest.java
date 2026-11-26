@@ -2,7 +2,10 @@
 package com.onurkat.reclazz.agent;
 
 import com.onurkat.reclazz.reload.SwitchMapRefresh;
+import com.onurkat.reclazz.config.AgentConfig;
+import com.onurkat.reclazz.platform.NoopPlatformContext;
 import com.onurkat.reclazz.watcher.ChangeEvent;
+import com.onurkat.reclazz.watcher.FileWatcher;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -39,9 +42,17 @@ class PreparationDoesNotLoadTest {
                 assertTrue(accepted.containsKey(name));
             }else{
                 Path path=Files.createDirectories(root.resolve("app")).resolve("Fresh.class");Files.write(path,bytes);
-                var method=ReclazzAgent.class.getDeclaredMethod("prepareSwitchMaps",List.class);method.setAccessible(true);
-                var plan=(ReloadQueue.SavePlan)method.invoke(null,List.of(new ChangeEvent(path,ChangeEvent.Type.CREATED,"app","classes").withBytes(bytes)));
-                assertEquals(1,plan.apply().size());assertTrue(plan.refused().isEmpty());
+                var method = ReclazzAgent.class.getDeclaredMethod("prepareSwitchMaps", List.class, FileWatcher.class);
+                method.setAccessible(true);
+                var event = new ChangeEvent(path, ChangeEvent.Type.CREATED, "app", "classes").withBytes(bytes);
+                var watcher = new FileWatcher(new NoopPlatformContext(), AgentConfig.parse(null));
+                try {
+                    var plan = (ReloadQueue.SavePlan) method.invoke(null, List.of(event), watcher);
+                    assertEquals(1, plan.apply().size());
+                    assertTrue(plan.refused().isEmpty());
+                } finally {
+                    watcher.stopWatching();
+                }
             }
             assertEquals(0,loader.attempts,"preparation must not ask the app loader to resolve a first-time save");
             assertNull(loader.defined,"only admission may define/instrument this class");
