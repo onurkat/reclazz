@@ -32,6 +32,23 @@ class RepositoryAfterPreparedEntityFactorySwapReloadTest {
         try(var app=b.start()) {
             app.awaitOrFail("READY="+data(false),"repository startup/warm query failed");app.awaitWatcherReady();
             assertEquals(data(false),nativeFresh(app.classesDir(),cp,mode,false,0));
+            if (mode.equals("optout") || mode.equals("ambiguous")) {
+                for (int stage : new int[]{1, 3}) {
+                    int start = app.output().size();
+                    app.rewrite("Added", added(stage));
+                    String hold = "app.Added is a new entity whose mapping is not installed. Restart to apply it. Held this save: app.Added";
+                    long until = System.nanoTime() + TimeUnit.SECONDS.toNanos(25);
+                    while (System.nanoTime() < until && app.output().stream().skip(start).noneMatch(line -> line.contains(hold))) {
+                        Thread.sleep(25);
+                    }
+                    assertTrue(app.output().stream().skip(start).anyMatch(line -> line.contains(hold)), app.tail());
+                    assertEquals(data(false), nativeFresh(app.classesDir(), cp, mode, false, stage));
+                    probe(app, stage, false, mode);
+                }
+                assertFalse(app.output().stream().anyMatch(line -> reloadedAdded(line)
+                        || line.contains("rebuilt persistence unit")), app.tail());
+                return;
+            }
             app.rewrite("Added",added(1));awaitReload(app,1);
             boolean first=mode.equals("prepared");
             assertEquals(data(first),nativeFresh(app.classesDir(),cp,mode,first,1));
@@ -49,8 +66,6 @@ class RepositoryAfterPreparedEntityFactorySwapReloadTest {
             app.rewrite("Added",added(3));awaitReload(app,++saves);
             assertEquals(data(mapped),nativeFresh(app.classesDir(),cp,mode,mapped,3));probe(app,3,mapped,mode);
             assertEquals(rebuilds,app.output().stream().filter(x->x.contains("rebuilt persistence unit")).count(),"body-only saved mapped entity must not rebuild again");
-            if(mode.equals("optout"))assertTrue(app.output().stream().anyMatch(x->x.contains("jpaRefresh=true")),app.tail());
-            if(mode.equals("ambiguous"))assertTrue(app.output().stream().anyMatch(x->x.contains("not exactly one persistence unit")),app.tail());
         }
     }
     private void probe(WatchedApp app,int stage,boolean mapped,String mode)throws Exception {
@@ -70,10 +85,13 @@ class RepositoryAfterPreparedEntityFactorySwapReloadTest {
         }finally{if(p.isAlive())p.destroyForcibly();}
     }
     private static String data(boolean mapped){String label=mapped?"written":"kept";return "find="+label+":jpql="+label+":count=1:added="+(mapped?"new":"UNMAPPED")+":anchor=anchor";}
+    private static boolean reloadedAdded(String line) {
+        return line.contains("Reloaded app.Added ") || line.contains("Structural reload: app.Added ");
+    }
     private static void awaitReload(WatchedApp app,int count)throws Exception {
         long until=System.nanoTime()+TimeUnit.SECONDS.toNanos(25);
-        while(System.nanoTime()<until&&app.output().stream().filter(x->x.contains("Reloaded app.Added ")||x.contains("Structural reload: app.Added ")).count()<count)Thread.sleep(25);
-        assertEquals(count,app.output().stream().filter(x->x.contains("Reloaded app.Added ")||x.contains("Structural reload: app.Added ")).count(),app.tail());
+        while(System.nanoTime()<until&&app.output().stream().filter(RepositoryAfterPreparedEntityFactorySwapReloadTest::reloadedAdded).count()<count)Thread.sleep(25);
+        assertEquals(count,app.output().stream().filter(RepositoryAfterPreparedEntityFactorySwapReloadTest::reloadedAdded).count(),app.tail());
     }
     private static final String EXISTING="""
         package app;
