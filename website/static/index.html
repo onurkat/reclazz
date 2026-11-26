@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="description" content="Free, open-source hot-reload for SAP Commerce (Hybris) and Spring, and a free alternative to JRebel. Save an items.xml and it regenerates and reloads instead of costing you ant clean all and a restart. Properties, YAML, log levels, locales, backoffice labels, Spring beans and MVC mappings included, and the methods you add after startup are found: endpoints, @Bean factories, listeners, Kafka, JMS and RabbitMQ consumers, Jackson properties. Apache 2.0, supported JDK 17+ paths.">
+    <meta name="description" content="Reload supported Java, Spring and SAP Commerce changes in the running application. Set up the free IntelliJ IDEA plugin and try your first method edit.">
     <meta name="keywords" content="SAP Commerce, Hybris, hybris hot reload, items.xml, impex hot reload, hybris localization reload, backoffice labels reload, hybris properties reload, JRebel alternative, DCEVM alternative, Spring Boot, hot-reload, Java agent, hot-swap, Spring bean refresh, MVC, Kafka listener hot reload, JMS listener, RabbitMQ listener, application.yml reload, @Bean added at runtime, Jackson, Reclazz, IntelliJ plugin">
     <meta name="author" content="Onur Kat">
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#06060a" media="(prefers-color-scheme: dark)">
     <meta name="theme-color" content="#fafaf9" media="(prefers-color-scheme: light)">
     <meta property="og:title" content="Reclazz: Free Hot-Reload for SAP Commerce and Spring">
-    <meta property="og:description" content="Stop restarting SAP Commerce. Edit code, build, and the running server picks up the change in about 50ms. Even an items.xml save regenerates and reloads. Free and open source.">
+    <meta property="og:description" content="Reload supported Java, Spring and SAP Commerce changes in the running application. Set up the free IntelliJ IDEA plugin and try your first method edit.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://reclazz.com">
     <meta property="og:image" content="https://reclazz.com/og-image.png">
@@ -20,7 +20,7 @@
     <meta property="og:site_name" content="Onur Kat">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Reclazz: Free Hot-Reload for SAP Commerce and Spring">
-    <meta name="twitter:description" content="Stop restarting SAP Commerce. Edit code, build, and the running server picks up the change in about 50ms. Even an items.xml save regenerates and reloads. Free and open source.">
+    <meta name="twitter:description" content="Reload supported Java, Spring and SAP Commerce changes in the running application. Set up the free IntelliJ IDEA plugin and try your first method edit.">
     <meta name="twitter:image" content="https://reclazz.com/og-image.png">
     <meta name="twitter:image:alt" content="Reclazz: stop restarting SAP Commerce.">
     <link rel="canonical" href="https://reclazz.com/">
@@ -29,26 +29,93 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <link rel="manifest" href="/site.webmanifest">
+    <link rel="preload" as="image" href="/assets/setup/live-reload-phone.webp" media="(max-width: 640px)" fetchpriority="high">
+    <link rel="preload" as="image" href="/assets/setup/live-reload-poster.webp" media="(min-width: 641px)" fetchpriority="high">
     {{SITE_HEAD}}
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Reclazz", "applicationCategory": "DeveloperApplication", "operatingSystem": "Windows, macOS, Linux", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "softwareVersion": "{{CLAIM:version}}", "description": "Edit Java code, build, and the running JVM picks up the change in about 50ms. Supported Java and Spring changes reload within their documented conditions.", "softwareRequirements": "JDK {{CLAIM:agent_java_min}}+; IntelliJ IDEA {{CLAIM:intellij_builds}}", "license": "https://github.com/onurkat/reclazz/blob/main/LICENSE", "url": "https://reclazz.com"}</script>
+<link rel="stylesheet" href="/assets/stage-a.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Reclazz", "applicationCategory": "DeveloperApplication", "operatingSystem": "Windows, macOS, Linux", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "softwareVersion": "{{CLAIM:version}}", "description": "Reload supported Java, Spring and SAP Commerce changes in the running application. Set up the free IntelliJ IDEA plugin and try your first method edit.", "softwareRequirements": "JDK {{CLAIM:agent_java_min}}+; IntelliJ IDEA {{CLAIM:intellij_builds}}", "license": "https://github.com/onurkat/reclazz/blob/main/LICENSE", "url": "https://reclazz.com"}</script>
 {{HOME_FAQ_SCHEMA}}
 </head>
-<body class="marketing home-page">
+<body class="marketing home-page stage-a">
 {{SITE_HEADER}}
 <main id="main" tabindex="-1">
-<section class="hero" id="home"><div class="hero-inner">
-<p class="hero-badge" data-i18n="hero.badge">FREE &amp; OPEN SOURCE · JAVA {{CLAIM:agent_java_min}}+</p>
-<h1 data-i18n="hero.title">Make the edit.<br><span class="text-gradient">Keep the server warm.</span></h1>
-<p class="hero-subtitle" data-i18n="hero.subtitle">Reload supported Java, Spring and SAP Commerce changes in your running application, with a clear path when a restart is needed.</p>
-<div class="hero-actions"><a class="btn btn-primary" href="https://plugins.jetbrains.com/plugin/33498-reclazz" data-i18n="hero.install">Install from Marketplace</a><a class="btn btn-ghost" href="/docs/quickstart/#install-from-marketplace" data-i18n="hero.start">Get started</a></div>
-<div class="hero-workflow"><p class="section-label" data-i18n="loop.label">YOUR NEXT CHANGE</p><ol><li data-i18n="loop.edit">Edit a method in your application.</li><li data-i18n="loop.build">Build it into a watched output.</li><li data-i18n="loop.verify">Use the changed behaviour in the running app.</li></ol><a href="/docs/quickstart/" data-i18n="loop.link">See your first reload</a></div>
-</div></section>
-<section class="section" id="features"><div class="container"><div class="section-header"><h2 data-i18n="features.title">What you can change<br>without restarting</h2><p data-i18n="features.intro">Start with the edits you make every day. The badges come directly from the reload matrix; each link explains the conditions and next step.</p></div><div class="features-grid">{{HOME_CARDS}}</div><p data-i18n="features.hotswap.desc">Redefines classes in the running JVM via the Instrumentation API. Method body changes apply in ~50ms. Zero downtime.</p><p><a href="/docs/support-matrix/" data-i18n="features.all">Explore all changes and restart boundaries</a></p></div></section>
-<section class="section section-alt" id="sap"><div class="container"><span id="sap-comparison" class="fragment-alias"></span><div class="section-header"><h2 data-i18n="sap.title">Built for the<br>SAP Commerce loop</h2><p data-i18n="sap.intro">Save items.xml or beans.xml to run platform generation and reload the generated classes within the documented scope. Keep schema changes separate: a new database column still needs an update.</p></div><p data-i18n="sap.coverage">The default live suite defines {{CLAIM:sap_scenarios}} required scenarios. The guide explains Java edits, configuration, interceptor refresh and opt-in ImpEx import.</p><a class="btn btn-ghost" href="/docs/sap-commerce/" data-sap-setup lang="en" data-i18n="sap.link">Set up SAP Commerce</a></div></section>
-<section class="section" id="comparison"><div class="container"><div class="section-header"><h2 data-i18n="compare.title">Choose the workflow<br>that fits your project</h2><p data-i18n="compare.intro">An in-place reload and a development restart solve different problems. Compare the common paths, then read the full scope and sources.</p></div>{{COMPARE_SUMMARY}}<p data-i18n="compare.note">Not documented means the reviewed vendor documentation does not establish the capability. It does not mean the product cannot do it.</p><a href="/compare/" data-i18n="compare.link">Read the full comparison and sources</a></div></section>
-<section class="section section-alt" id="how-it-works"><div class="container"><div class="section-header"><h2 data-i18n="how.title">One agent.<br>A shorter feedback loop.</h2><p data-i18n="how.body">A Java agent runs inside your application JVM and watches compiled output. It applies supported class changes and coordinates framework refreshes. Your application stays running while you check the result.</p></div><p id="limitations" data-i18n="how.limits">Method edits keep existing object fields on the JVM-only path. A refreshed bean starts fresh; changing a superclass needs a restart.</p><a href="/docs/java/" data-i18n="how.link">Understand Java and JVM limits</a><p id="jdk" data-i18n="how.jdk">Agent target: Java {{CLAIM:agent_java_min}}+. Baseline tests: {{CLAIM:jdk_tested}}. IntelliJ plugin: {{CLAIM:intellij_builds}}.</p><a href="/docs/reference/installation/#versions-and-requirements" data-i18n="how.versions">Check versions and requirements</a></div></section>
-<section class="section" id="install"><div class="container"><div class="section-header"><h2 data-i18n="install.title">Your first reload<br>in three steps</h2><p data-i18n="install.intro">Use one attachment route for each JVM. Start with IntelliJ, or follow the quickstart for Gradle, Maven and a standalone agent.</p></div><div class="install-steps"><article class="install-step"><span class="step-number">01</span><h3 data-i18n="install.one.title">Install and enable</h3><p data-i18n="install.one.body">Install the Reclazz IntelliJ plugin. Enable Reclazz for your run configuration; for SAP Commerce, follow the platform setup.</p></article><article class="install-step"><span class="step-number">02</span><h3 data-i18n="install.two.title">Start and wait</h3><p data-i18n="install.two.body">Start your application with the agent attached. Wait for the default 30-second startup delay before making your first change.</p></article><article class="install-step"><span class="step-number">03</span><h3 data-i18n="install.three.title">Build and check</h3><p data-i18n="install.three.body">Change a method body and build it into the watched output. Call it again and check the result; the quickstart shows what success looks like.</p></article></div><p><a href="/docs/quickstart/" data-i18n="install.link">Follow the quickstart</a></p></div></section>
-<section class="section section-alt" id="faq"><div class="container"><h2 data-i18n="faq.title">Before your first reload</h2><div class="faq-list">{{HOME_FAQ}}</div><p><a href="/docs/troubleshooting/" data-i18n="faq.help">A change did not reload? Start here.</a></p></div></section>
+<section id="home" class="sa-hero sa-wrap">
+<div class="hero-copy">
+<h1><span data-i18n="hero.title">Stop restarting SAP Commerce to test a code change</span></h1>
+<div class="hero-intro"><p class="sa-lede"><span data-i18n="hero.subtitle">Reclazz loads your changed Java classes into the server that is already running. Change a method, build, refresh the page. No restart, and you stay logged in.</span></p>
+<div class="sa-actions"><a class="sa-primary" href="https://plugins.jetbrains.com/plugin/33498-reclazz"><span data-i18n="hero.install">Install the IntelliJ plugin</span></a><a class="sa-secondary" href="/get-started/"><span data-i18n="hero.start">How to set it up</span></a></div>
+<p class="requirements"><span data-i18n="hero.badge">Free and open source. Java {{CLAIM:agent_java_min}} or newer.</span></p></div></div>
+<div class="product-session">
+<figure class="session-film">
+<div class="player">
+<a class="film-cover" href="/assets/setup/live-reload.webm">
+<picture><source media="(max-width: 640px)" srcset="/assets/setup/live-reload-phone.webp"><img width="1920" height="1080" src="/assets/setup/live-reload-poster.webp" fetchpriority="high" alt=""></picture>
+<span data-i18n="film.play">Play recording</span></a>
+<video id="reload-film" controls muted loop playsinline preload="none" width="1920" height="1080" aria-describedby="film-caption">
+<source src="/assets/setup/live-reload.webm" type="video/webm">
+<track kind="captions" srclang="en" label="English" src="/assets/setup/price-reload.en.vtt">
+<track kind="captions" srclang="tr" label="Türkçe" src="/assets/setup/price-reload.tr.vtt">
+</video></div>
+<figcaption id="film-caption"><span data-i18n="demo.caption">A discount rule is changed from 10% to 15% in DefaultShopPriceService. After a build, the jacket's price on the running server drops from 72.00 to 68.00. Same server process, no restart.</span> <a href="/assets/setup/live-reload.webm" data-i18n="demo.open">Open the video file</a></figcaption>
+</figure>
+<aside class="session-log" aria-labelledby="log-title"><h2 id="log-title"><span data-i18n="demo.log">What happens in the video</span></h2>
+<ol id="recorded-events">
+<li data-seconds="0"><button type="button"><time datetime="PT0S">0:00</time><span data-i18n="film.edit">Change the weekend discount from 10% to 15%.</span></button></li>
+<li data-seconds="5.75"><button type="button"><time datetime="PT5.75S">0:05.75</time><span data-i18n="film.build">Build. Reclazz swaps the class into the running server.</span></button></li>
+<li data-seconds="11.5"><button type="button"><time datetime="PT11.5S">0:11.50</time><span data-i18n="film.refresh">Refresh the product page. The price drops from 72.00 to 68.00 on the same server.</span></button></li>
+</ol></aside>
+</div>
+</section>
+<section id="install" class="sa-section sa-setup">
+<div class="sa-wrap">
+<h2><span data-i18n="install.title">Setup takes a few minutes</span></h2>
+<p class="sa-intro"><span data-i18n="install.intro">The plugin opens a setup window the first time you open your project. For SAP Commerce it adds two lines to local.properties, runs ant server for you, and tells you when to restart once. For a Spring Boot or plain Java project you only switch Reclazz on.</span></p>
+<ol class="wizard-steps">
+<li>
+<figure>
+<a class="screenshot-link" href="/assets/setup/install-light.webp"><picture class="wizard-picture"><source media="(prefers-color-scheme: dark)" srcset="/assets/setup/install-dark.webp"><img src="/assets/setup/install-light.webp" alt="" loading="lazy" decoding="async" width="1408" height="1068"></picture><span class="sr-only" data-i18n="setup.fullsize">Open full-size screenshot</span></a>
+</figure>
+<div class="step-copy">
+<h3><span data-i18n="step.install">1. Add the agent to local.properties</span></h3><p><span data-i18n="step.install.body">The plugin shows the two lines before it writes them. You can remove them again with one click.</span></p></div></li>
+<li>
+<figure>
+<a class="screenshot-link" href="/assets/setup/ant-light.webp"><picture class="wizard-picture"><source media="(prefers-color-scheme: dark)" srcset="/assets/setup/ant-dark.webp"><img src="/assets/setup/ant-light.webp" alt="" loading="lazy" decoding="async" width="1408" height="1068"></picture><span class="sr-only" data-i18n="setup.fullsize">Open full-size screenshot</span></a>
+</figure>
+<div class="step-copy">
+<h3><span data-i18n="step.ant">2. Run ant server</span></h3><p><span data-i18n="step.ant.body">The wizard runs it and shows the output. If your server is still running, it tells you to stop it first.</span></p></div></li>
+<li>
+<figure>
+<a class="screenshot-link" href="/assets/setup/assistant-light.webp"><picture class="wizard-picture"><source media="(prefers-color-scheme: dark)" srcset="/assets/setup/assistant-dark.webp"><img src="/assets/setup/assistant-light.webp" alt="" loading="lazy" decoding="async" width="1408" height="1068"></picture><span class="sr-only" data-i18n="setup.fullsize">Open full-size screenshot</span></a>
+</figure>
+<div class="step-copy">
+<h3><span data-i18n="step.assistant">3. Connect an AI assistant (optional)</span></h3><p><span data-i18n="step.assistant.body">Lets Claude Code, Cursor or Codex see whether a change was reloaded. Skip it if you don't use one.</span></p></div></li></ol><a class="text-link" href="/get-started/"><span data-i18n="install.link">Open the setup guide</span></a></div>
+</section>
+<section id="sap" class="sa-section sa-wrap"><span id="sap-comparison"></span>
+<div class="flow-layout"><div>
+<h2><span data-i18n="sap.title">A restart for every change adds up</span></h2><p><span data-i18n="sap.intro">Every SAP Commerce restart means waiting for the server to start, logging in again and clicking back to the page you were testing. Ten changes a day is a lot of waiting.</span></p></div>
+<div class="routes"><div>
+<h3><span data-i18n="flow.restart">Without Reclazz</span></h3><p><span data-i18n="flow.restart.steps">Build. Restart the server and wait. Log in again. Find your page. Check the change.</span></p></div><div>
+<h3><span data-i18n="flow.reload">With Reclazz</span></h3><p><span data-i18n="flow.reload.steps">Build. Refresh the page. Check the change.</span></p></div></div></div>
+</section>
+<section id="features" class="sa-section sa-features">
+<div class="sa-wrap">
+<h2><span data-i18n="features.title">What you can change without a restart</span></h2>
+<p class="sa-intro"><span data-i18n="features.intro">Method bodies, new methods, Spring beans, configuration, JSP and ImpEx, and more. Some changes, like changing a class's superclass, still need a restart. Reclazz tells you when that happens and which file caused it.</span></p>
+<div class="change-index">{{HOME_CARDS}}</div><a class="text-link" href="/docs/support-matrix/"><span data-i18n="features.all">See the full list</span></a></div>
+</section>
+<section class="sa-section sa-wrap sa-faq" id="faq"><div>
+<h2><span data-i18n="faq.title">Common questions</span></h2><a class="text-link" href="/docs/troubleshooting/"><span data-i18n="faq.help">A change didn't show up?</span></a></div>
+<div class="faq-list">{{HOME_FAQ}}</div>
+</section>
+<section class="sa-section sa-wrap sa-reference" id="how-it-works">
+<h2><span data-i18n="how.title">How it works</span></h2>
+<details id="limitations">
+<summary><span data-i18n="how.limits">What still needs a restart</span></summary><p><span data-i18n="how.body">A Java agent watches compiled output in your application. A method-body edit keeps existing object fields. A refreshed Spring bean can lose its mutable state. Changing a superclass requires a restart.</span></p><a class="" href="/docs/java/"><span data-i18n="how.link">Java reload reference</span></a>
+<p id="jdk"><span data-i18n="how.jdk">Agent: Java {{CLAIM:agent_java_min}}+. Tested: {{CLAIM:jdk_tested}}. IntelliJ IDEA: {{CLAIM:intellij_builds}}.</span></p><a class="" href="/docs/reference/installation/#versions-and-requirements"><span data-i18n="how.versions">Versions and requirements</span></a><p><span data-i18n="sap.coverage">The default live suite defines {{CLAIM:sap_scenarios}} required scenarios.</span></p><a href="/docs/sap-commerce/" data-sap-setup lang="en"><span data-i18n="sap.link">SAP Commerce setup</span></a></details>
+<details id="comparison">
+<summary><span data-i18n="compare.title">Compared with JRebel and other tools</span></summary>{{COMPARE_SUMMARY}}<p><span data-i18n="compare.note">“Not documented” means the reviewed vendor documentation does not establish support.</span></p><a class="" href="/compare/"><span data-i18n="compare.link">Full comparison and sources</span></a></details>
+</section>
 </main>{{SITE_FOOTER}}{{SITE_UTILITIES}}
 <script src="/assets/home.js" defer></script>
+<script src="/assets/setup-preview.js" defer></script>
 </body></html>

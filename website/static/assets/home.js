@@ -3,7 +3,12 @@
 // i18n
 let translations = {tr:{}};
 let translationsReady;
-const loadTranslations = () => translationsReady || (translationsReady = fetch('/assets/i18n/tr.json').then(r => {if(!r.ok) throw new Error('Translations unavailable'); return r.json();}).then(data => {translations.tr=data;}).catch(error => {translationsReady=null; throw error;}));
+const translationFiles = ['/assets/i18n/tr.json'];
+if (document.body.classList.contains('start-page')) translationFiles.push('/assets/i18n/start-tr.json');
+const loadTranslations = () => translationsReady || (translationsReady = Promise.all(translationFiles.map(path => fetch(path).then(response => {
+    if (!response.ok) throw new Error('Translations unavailable');
+    return response.json();
+}))).then(parts => {translations.tr=Object.assign({}, ...parts);}).catch(error => {translationsReady=null; throw error;}));
 let currentLang = 'en';
 try { currentLang = localStorage.getItem('reclazz-lang') === 'tr' ? 'tr' : 'en'; } catch (_) { /* Keep English without storage. */ }
 const langToggle = document.getElementById('langToggle');

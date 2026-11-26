@@ -14,7 +14,8 @@
     describeTheme();
   });
 
-  document.querySelectorAll('.code-block').forEach(block => {
+  document.querySelectorAll('.code-block pre > code').forEach(code => {
+    const block = code.closest('.code-block');
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'copy-button';
@@ -26,7 +27,7 @@
     wrap.addEventListener('click',()=>{const on=block.classList.toggle('is-wrapped');wrap.setAttribute('aria-pressed',String(on));});
     block.append(wrap);
     button.addEventListener('click', async () => {
-      const text = block.querySelector('code').textContent;
+      const text = code.textContent;
       try {
         if (!navigator.clipboard || !window.isSecureContext) throw new Error('Clipboard is unavailable');
         await navigator.clipboard.writeText(text);
@@ -35,7 +36,7 @@
       } catch (_) {
         const selection = getSelection();
         const range = document.createRange();
-        range.selectNodeContents(block.querySelector('code'));
+        range.selectNodeContents(code);
         selection.removeAllRanges();
         selection.addRange(range);
         button.textContent = 'Selected';

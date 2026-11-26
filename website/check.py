@@ -316,6 +316,15 @@ def page_quality_errors(output, page):
     if css>70000:errors.append('Page CSS budget exceeded: '+str(css))
     font_bytes=sum(p.stat().st_size for p in fonts)
     if font_bytes>250000:errors.append('Page font budget exceeded: '+str(font_bytes))
+    for link in ContentTree(text).nodes:
+        if link['tag'] != 'a':
+            continue
+        href = link['attrs'].get('href', '')
+        path = unquote(urlsplit(href).path).lower()
+        if path.endswith(('.json', '.xml')) or '/source-assets/' in path:
+            label = node_text(link).lower()
+            if not re.search(r'\b(download|data)\b', label):
+                errors.append('Content link opens raw data: ' + href)
     d=Document(text)
     for a,b in zip(d.headings,d.headings[1:]):
         if b>a+1:errors.append('Heading level skipped: '+str(a)+' -> '+str(b))
@@ -399,7 +408,7 @@ def rewritten_prose_errors(repo):
 
 
 def rendered_records_errors(text,records,summary=False):
-    from website.content import LABELS,OVERVIEW_IDS
+    from website.content import TABLE_LABELS,OVERVIEW_IDS
     tree=ContentTree(text);key='data-summary-id' if summary else 'data-support-id'
     nodes=[n for n in tree.nodes if key in n['attrs']];ids=[n['attrs'][key] for n in nodes]
     expected={r['id']:r for r in records if not summary or r['id'] in OVERVIEW_IDS};errors=[]
@@ -409,7 +418,7 @@ def rendered_records_errors(text,records,summary=False):
         if row is None:continue
         if not summary and (node['attrs'].get('data-status')!=row['status'] or node['attrs'].get('data-presentation')!=row['presentation']):errors.append('Support presentation/status mismatch: '+row['id'])
         badges=[n for n in descendants(node) if 'badge' in n['attrs'].get('class','').split()]
-        if len(badges)!=1 or row['status'] not in badges[0]['attrs'].get('class','').split() or ' '.join(node_text(badges[0]).split())!=LABELS[row['status']]:errors.append('Support badge mismatch: '+row['id'])
+        if len(badges)!=1 or row['status'] not in badges[0]['attrs'].get('class','').split() or ' '.join(node_text(badges[0]).split())!=TABLE_LABELS[row['status']]:errors.append('Support badge mismatch: '+row['id'])
         if summary and row['conditions'] not in node_text(node):errors.append('Overview conditions drift: '+row['id'])
     return errors
 
@@ -468,7 +477,7 @@ def frozen_fragment_errors(repo,output):
 
 
 def guide_records_errors(records,pages,assignments):
-    from website.content import LABELS
+    from website.content import TABLE_LABELS
     by_id={r['id']:r for r in records};seen=set();errors=[]
     for page,expected in assignments.items():
         tree=ContentTree(pages.get(page,''));nodes=[n for n in tree.nodes if 'data-guide-id' in n['attrs']]
@@ -478,7 +487,7 @@ def guide_records_errors(records,pages,assignments):
             key=node['attrs']['data-guide-id'];row=by_id.get(key)
             if row is None:errors.append('Unknown guide support ID: '+key);continue
             badges=[n for n in descendants(node) if 'badge' in n['attrs'].get('class','').split()]
-            if len(badges)!=1 or row['status'] not in badges[0]['attrs'].get('class','').split() or ' '.join(node_text(badges[0]).split())!=LABELS[row['status']]:errors.append('Guide badge mismatch: '+key)
+            if len(badges)!=1 or row['status'] not in badges[0]['attrs'].get('class','').split() or ' '.join(node_text(badges[0]).split())!=TABLE_LABELS[row['status']]:errors.append('Guide badge mismatch: '+key)
             if node['attrs'].get('data-status')!=row['status'] or node['attrs'].get('data-presentation')!=row['presentation']:errors.append('Guide presentation mismatch: '+key)
             if row['conditions'] not in node_text(node) or row['action'] not in node_text(node):errors.append('Guide conditions drift: '+key)
             if not any(n['attrs'].get('href')=='/docs/support-matrix/#'+key for n in descendants(node)):errors.append('Guide row link missing: '+key)

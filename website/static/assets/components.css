@@ -45,3 +45,36 @@ article>section>h2:first-child{margin-top:0}
 /* Reserve progressive controls at first paint; no-JS keeps the readable page. */
 .js .search-trigger[hidden],.js .theme-button[hidden]{display:flex!important}
 .js .matrix-controls[hidden]{display:grid!important}
+
+/* Shared documentation and public-page typography. */
+.docs-page, .marketing:not(.stage-a), .error-page {font-family:var(--font)}
+.docs-page article h1, .marketing:not(.stage-a) .license-page h1, .error-page h1 {
+    color:var(--text); font-family:var(--font); font-weight:620; letter-spacing:-.04em;
+    line-height:1.1; text-wrap:balance; font-size:clamp(2.2rem,4.8vw,3.9rem)
+}
+.marketing:not(.stage-a) .license-page .text-gradient {background:none;color:var(--text);-webkit-text-fill-color:currentColor}
+.docs-page article .lead, .marketing:not(.stage-a) .license-page .subtitle {max-width:67ch;line-height:1.65}
+.docs-page .sidebar .nav-group p, .docs-page .toc-label {text-transform:none;letter-spacing:normal}
+.docs-page .sidebar a[aria-current="page"] {font-weight:650}
+.docs-page .path-card, .docs-page .page-pager a, .marketing:not(.stage-a) .license-page .summary-box {box-shadow:none;border-radius:5px}
+.setup-shot {margin:1.5rem 0;max-width:34rem}
+.setup-shot img {display:block;width:100%;height:auto;border:1px solid var(--border);border-radius:5px}
+.setup-shot figcaption {margin-top:.55rem;color:var(--muted);font-size:.875rem}
+
+/* Keep table prose readable; wide tables already have their own scroll container. */
+.table-scroll table {overflow-wrap:normal;word-break:normal}
+.table-scroll td:has(> .badge) {min-width:9rem}
+.docs-page .badge {white-space:nowrap;overflow-wrap:normal;word-break:normal}
+.docs-page .badge:before {content:none}
+.docs-page .badge .icon {flex:none}
+.reference-content .table-scroll :is(td, th, p),
+.marketing :is(.cmp-wrap, .table-scroll) :is(td, th, p) {
+    overflow-wrap: normal;
+    word-break: normal;
+}
+.table-scroll :is(td, th) code, .cmp-wrap :is(td, th) code {
+    white-space: nowrap;
+    overflow-wrap: normal;
+    word-break: normal;
+}
+.marketing .cmp-wrap .cmp {table-layout:auto}

@@ -12,6 +12,21 @@ from urllib.parse import urlsplit, urlunsplit, quote, unquote
 from markdown_it import MarkdownIt
 
 
+# Content links open the evidence section in the guide for that topic.
+EVIDENCE_GUIDES = {
+    'p1-core': ('java', 'Core JVM changes'),
+    'p2-ordinary-spring': ('spring', 'Spring components and lifecycle'),
+    'p3a-web-hardening': ('spring', 'HTTP validation and overlapping requests'),
+    'p3b-mvc-web': ('spring', 'Spring MVC request handling'),
+    'p4-messaging': ('spring', 'Message listeners and delivery'),
+    'p5-resources': ('configuration', 'Properties, XML, messages and templates'),
+    'backoffice-socket': ('sap-commerce', 'Backoffice socket listeners'),
+    'backoffice-module': ('sap-commerce', 'Backoffice module classes'),
+    'sap-process-create': ('sap-commerce', 'Process definition registration'),
+    'sap-solr-reindex': ('sap-commerce', 'Local Solr indexing'),
+}
+
+
 def slug(text):
     return re.sub(r'[^\w\- ]', '', text.lower()).replace(' ', '-')
 
@@ -104,6 +119,24 @@ def github_anchor_map(path):
 REFERENCE_TITLES = {'index': 'Reference library', 'installation': 'Installation', 'usage': 'Usage manual', 'gradle-plugin': 'Gradle plugin', 'maven': 'Maven plugin', 'spring-boot-starter': 'Spring Boot starter', 'for-ai-agents': 'IntelliJ + AI assistants', 'mcp-for-coding-agents': 'MCP for AI assistants', 'mcp-server': 'MCP server reference', 'sap-commerce': 'SAP Commerce reference', 'test-guide': 'SAP Commerce test guide', 'reload-support': 'What reloads source table', 'product-reference': 'Product reference', 'protocol': 'Status socket protocol'}
 
 
+REFERENCE_DESCRIPTIONS = {
+    'for-ai-agents': 'When an AI assistant edits a Spring Boot or SAP Commerce project, it can compile the change and verify it against the running JVM. The project-instructions example gives it those steps.',
+    'gradle-plugin': 'Apply the Gradle plugin to attach Reclazz to bootRun and test JVMs. If you launch with the application plugin’s run task, enable that task separately.',
+    'index': 'Choose a reference for the task you are working on. Start with the quickstart for your first reload.',
+    'installation': 'Install the IntelliJ plugin from Marketplace, or choose the Java agent for an application you launch yourself. Check the Java and IDE requirements before you start.',
+    'maven': 'Use a development profile to attach Reclazz to a Spring Boot run with prepare-agent. The profile keeps the agent off the application’s dependency list.',
+    'mcp-for-coding-agents': 'Identify the running JVM, wait for the reload result and check whether it applied the compiled class. The examples show which MCP calls answer each question.',
+    'mcp-server': 'Connect your AI client to the local Reclazz MCP server, then check which tools it can call. The reference gives their inputs, results and error responses.',
+    'product-reference': 'Check how the Java agent, IntelliJ plugin and framework integrations fit together. The compatibility notes distinguish target Java versions from combinations covered by tests.',
+    'protocol': 'Connect a local tool to the Java agent’s status socket to receive reload events and send commands. Find the port file, read the event format and check how the agent reports command completion.',
+    'reload-support': 'Look up a change by name to see its supported scope, required conditions and next action. These rows also feed the interactive reload matrix and its JSON download.',
+    'sap-commerce': 'Attach the agent to a local SAP Commerce server through IntelliJ or the command line. Check its startup configuration before troubleshooting a Java, XML or platform-data change.',
+    'spring-boot-starter': 'The starter reports at startup whether the Java agent is attached. With Spring Boot Actuator present, it also exposes a Reclazz endpoint for checking the running application.',
+    'test-guide': 'Use this checklist on a local SAP Commerce project to verify project detection, Java agent injection and the IntelliJ connection before testing a reload.',
+    'usage': 'Choose how to attach Reclazz when IntelliJ or a shell script launches your application, or connect to a JVM that is already running. The guide also covers optional idle builds.',
+}
+
+
 def reference_pages(repo):
     pages = []; dispositions = source_dispositions(repo)
     for path in sorted((repo / 'docs').glob('*.md')):
@@ -115,7 +148,7 @@ def reference_pages(repo):
         title = REFERENCE_TITLES.get(path.stem, first)
         pages.append({'slug': spec['publish'].removeprefix('/docs/').strip('/'),
                       'title': title,
-                      'description': 'Complete configuration, behavior and scope reference: ' + first + '.',
+                      'description': REFERENCE_DESCRIPTIONS.get(path.stem, first),
                       'group': 'Reference', 'eyebrow': 'Maintaining the project' if path.stem in ('documentation-workflow','publishing') else 'Complete technical reference',
                       'sources': [path.relative_to(repo).as_posix()], 'markdown': path.relative_to(repo).as_posix(),
                       'nav_title': title,
@@ -174,6 +207,10 @@ class MarkdownRenderer:
         if relative == 'README.md':
             route = self.routes.get('docs/product-reference.md', '/docs/') if parsed.fragment else '/docs/'
             return urlunsplit(('', '', route, parsed.query, parsed.fragment))
+        if (not image and target.parent == self.repo / 'docs/feature-evidence'
+                and target.suffix == '.json' and target.stem in EVIDENCE_GUIDES):
+            guide, _ = EVIDENCE_GUIDES[target.stem]
+            return '/docs/' + guide + '/#evidence-' + target.stem
         if image or (relative.startswith('docs/feature-evidence/') and target.suffix in ('.json', '.txt')):
             if not target.is_file():
                 raise ValueError('Missing documentation asset: ' + relative)

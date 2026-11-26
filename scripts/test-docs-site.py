@@ -403,6 +403,17 @@ class DesignGateTest(unittest.TestCase):
         for kind,text in cases:
             with self.subTest(kind=kind,text=text):self.assertTrue(automatic_request_errors(text,kind))
         self.assertEqual([],automatic_request_errors('<a href="https://example.com">External navigation</a>'))
+    def test_raw_record_is_only_reachable_as_explicit_data(self):
+        from website.check import page_quality_errors
+        with tempfile.TemporaryDirectory() as tmp:
+            page = Path(tmp) / 'index.html'
+            for href in ('/records/run.json?rev=1', '/example.xml', '/docs/source-assets/run.txt'):
+                with self.subTest(href=href):
+                    page.write_text(f'<a href="{href}">Read conditions</a>')
+                    self.assertIn('Content link opens raw data: ' + href, page_quality_errors(tmp, page))
+                    page.write_text(f'<a href="{href}" download>Download data</a>')
+                    self.assertEqual([], page_quality_errors(tmp, page))
+
     def test_total_scripts_and_styles_are_budgeted_per_page(self):
         from website.check import page_quality_errors
         with tempfile.TemporaryDirectory() as tmp:

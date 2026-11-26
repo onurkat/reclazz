@@ -4,7 +4,7 @@ from html.parser import HTMLParser
 import re
 from pathlib import Path
 
-PUBLIC_PAGES = {'index.html': 'home', 'compare/index.html': 'compare',
+PUBLIC_PAGES = {'index.html': 'home', 'get-started/index.html': 'start', 'compare/index.html': 'compare',
                 'privacy/index.html': 'privacy', 'license/index.html': 'license', '404.html': '404',
                 'tr/sap-commerce-kurulum/index.html': 'setup-tr'}
 
@@ -17,6 +17,7 @@ def icon(name, css=''):
 
 
 def header(active='docs', bilingual=False):
+    start_href = '/get-started/'
     setup_tr = active == 'setup-tr'
     setup_href = '/tr/sap-commerce-kurulum/' if setup_tr else '/docs/sap-commerce/'
     setup_label = 'SAP Commerce kurulumu' if setup_tr else 'SAP Commerce setup'
@@ -37,8 +38,8 @@ def header(active='docs', bilingual=False):
 <span class="header-divider" aria-hidden="true"></span><nav class="header-links" aria-label="Main navigation">''' + links() + '''</nav>
 <button class="search-trigger" id="search-open" type="button" aria-controls="search-dialog" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search documentation</span><kbd>⌘ K</kbd></button>''' + language + '''
 <button class="theme-button" id="theme-toggle" type="button" aria-label="Switch color theme" hidden><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M20.6 13.1A8.5 8.5 0 0 1 10.9 3.4 8.5 8.5 0 1 0 20.6 13.1Z"/></svg></button>
-<a class="header-install" href="/docs/quickstart/#install-from-marketplace"''' + (' data-i18n="site.start"' if bilingual else '') + '''>Get started <span aria-hidden="true">↗</span></a>
-<details class="site-menu"><summary aria-label="Site navigation"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></summary><nav aria-label="Mobile main navigation">''' + links() + '''<a href="/docs/quickstart/#install-from-marketplace">Get started ↗</a></nav></details>
+<a class="header-install" href="''' + start_href + '''"''' + (' data-i18n="site.start"' if bilingual else '') + '''>Get started <span aria-hidden="true">↗</span></a>
+<details class="site-menu"><summary aria-label="Site navigation"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></summary><nav aria-label="Mobile main navigation">''' + links() + '''<a href="''' + start_href + '''">Get started ↗</a></nav></details>
 </header>'''
 
 
@@ -50,7 +51,7 @@ def footer(year='2026', bilingual=False, version=None, setup_tr=False):
     setup_link = '<a href="' + setup_href + '" data-sap-setup lang="' + ('tr' if setup_tr else 'en') + '"' + label('sapSetup',setup_text) + '</a>'
     version_line = ('<p class="footer-version"><span' + label('docsVersion','Docs for') + '</span> ' + escape(version) + ' · <a href="/docs/evidence/"' + label('evidence','Test coverage &amp; versions') + '</a></p>') if version else ''
     return '''<footer class="site-footer"><div class="site-footer-inner">
-<div class="footer-brand"><a class="brand" href="/" aria-label="Reclazz home"><img src="/favicon.svg" width="28" height="28" alt=""><span>Reclazz</span></a><p''' + label('tagline','Make the next edit count.') + '''</p><span class="footer-license">Apache 2.0 · Built in the open.</span></div>
+<div class="footer-brand"><a class="brand" href="/" aria-label="Reclazz home"><img src="/favicon.svg" width="28" height="28" alt=""><span>Reclazz</span></a><p''' + label('tagline','Hot reload for Java, Spring and SAP Commerce.') + '''</p><span class="footer-license">Apache 2.0 · Built in the open.</span></div>
 <nav aria-label="Product links"><p''' + label('product','Product') + '''</p><a href="/docs/"''' + label('documentation','Documentation') + '''</a>''' + setup_link + '''<a href="/docs/quickstart/#install-from-marketplace"''' + label('quickstart','Quickstart') + '''</a><a href="/docs/support-matrix/"''' + label('support','Reload support') + '''</a><a href="/compare/"''' + label('compare','Compare') + '''</a></nav>
 <nav aria-label="Project links"><p''' + label('project','Project') + '''</p><a href="https://github.com/onurkat/reclazz">GitHub ↗</a><a href="https://github.com/onurkat/reclazz/blob/main/CHANGELOG.md"''' + label('changelog','Changelog ↗') + '''</a><a href="https://github.com/onurkat/reclazz/blob/main/CONTRIBUTING.md"''' + label('contributing','Contributing ↗') + '''</a><a href="https://github.com/onurkat/reclazz/blob/main/SECURITY.md"''' + label('security','Security ↗') + '''</a><a href="https://github.com/onurkat/reclazz/releases"''' + label('releases','Releases ↗') + '''</a><a href="https://github.com/onurkat/reclazz/issues"''' + label('issues','Report an issue ↗') + '''</a></nav>
 <nav aria-label="Legal links"><p''' + label('legal','Legal') + '''</p><a href="/license/"''' + label('license','License') + '''</a><a href="/privacy/"''' + label('privacy','Privacy') + '''</a></nav>
@@ -62,8 +63,7 @@ def utilities():
 
 
 def head(marketing=False):
-    return '''<link rel="preload" href="/assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="/assets/tokens.css">
+    return '''<link rel="stylesheet" href="/assets/tokens.css">
 <script>if(location.pathname.endsWith('/index.html'))location.replace(location.pathname.slice(0,-10)+location.search+location.hash);</script>
 <script src="/docs/assets/theme.js"></script>
 <link rel="stylesheet" href="/docs/assets/docs.css"><link rel="stylesheet" href="/assets/site.css">''' + ('<link rel="stylesheet" href="/assets/marketing.css">' if marketing else '') + '''
@@ -76,8 +76,8 @@ def render_public(text, page, year, version=None):
     for marker in ('SITE_HEAD','SITE_HEADER','SITE_FOOTER','SITE_UTILITIES'):
         if text.count('{{'+marker+'}}') != 1:
             raise ValueError('Public page needs one '+marker+' marker: '+page)
-    bilingual = page == 'home'
-    for marker, value in [('SITE_HEAD',head(marketing=True)),('SITE_HEADER',header(page,bilingual)),
+    bilingual = page in ('home', 'start')
+    for marker, value in [('SITE_HEAD',head(marketing=not bilingual)),('SITE_HEADER',header(page,bilingual)),
                           ('SITE_FOOTER',footer(year,bilingual,version,setup_tr=page == 'setup-tr')),('SITE_UTILITIES',utilities())]:
         text = text.replace('{{'+marker+'}}',value)
     return text

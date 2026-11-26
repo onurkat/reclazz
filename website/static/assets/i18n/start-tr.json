@@ -1,0 +1,15 @@
+{
+  "start.back": "Ana sayfa",
+  "start.title": "Eklentiyi kurup bir Java değişikliği deneyin",
+  "start.lede": "Reclazz’ı JetBrains Marketplace’ten yükleyip üzerinde çalışacağınız projeyi açın. Sihirbaz açıksa adımları oradan izleyin. Daha sonra <b>Tools → Set Up Reclazz</b> menüsünden tekrar açabilirsiniz.",
+  "start.choose": "Sihirbazın adımları projeye göre değişir",
+  "start.java": "Sihirbazda <b>Turn on Reclazz</b> seçeneğini etkinleştirin. Ardından Java uygulamanızı IntelliJ’den çalıştırın veya hata ayıklamayı başlatın. Yapay zekâ asistanı bağlamak isteğe bağlıdır.",
+  "start.test": "Bir metodun döndürdüğü yanıtı değiştirin",
+  "start.wait": "Uygulamayı agent ile başlatıp dosya izleyicisinin hazır olmasını bekleyin.",
+  "start.edit": "Mevcut bir Java metodunun döndürdüğü metni değiştirin. Sınıfı agent’ın izlediği çıktı dizinine derleyin.",
+  "start.call": "Metodu yeniden çağırın veya ilgili sayfayı yenileyin. Yeni metni çalışan uygulamada görmelisiniz.",
+  "start.logs": "Beklenen çıktıyı hızlı başlangıç rehberinde görün",
+  "start.settings": "Sihirbazı yeniden açma ve proje ayarları",
+  "start.settings.body": "Proje ayarlarını görmek için Settings → Tools → Reclazz bölümünü açın. Bir kurulum adımını tekrarlamak için Tools → Set Up Reclazz menüsünü açın.",
+  "start.cli": "Gradle, Maven veya bağımsız agent ile kurulum"
+}

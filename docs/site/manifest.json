@@ -4,8 +4,8 @@
   "pages": [
     {
       "slug": "",
-      "title": "Keep editing the running application",
-      "description": "Choose a setup, make your first change and understand when a restart is needed.",
+      "title": "Reclazz documentation",
+      "description": "Follow the quickstart for your first method edit. If Reclazz is already attached, look up a specific change or find out why a reload had no effect.",
       "group": "Get started",
       "eyebrow": "Reclazz documentation",
       "sources": [
@@ -31,7 +31,7 @@
     {
       "slug": "java",
       "title": "Java changes and JVM limits",
-      "description": "Find your edit and understand the runtime it needs.",
+      "description": "A method-body edit is a simple first check. For changes to fields, methods or the class hierarchy, find what your JVM can apply and what requires a restart.",
       "group": "Guides",
       "eyebrow": "Core JVM",
       "sources": [
@@ -44,7 +44,7 @@
     {
       "slug": "spring",
       "title": "Spring, web and messaging changes",
-      "description": "Check beans, endpoints and listener delivery after a save.",
+      "description": "After you compile a Spring edit, call the same endpoint, bean or message listener again. The examples show how to check which code handled the call and whether it kept its state.",
       "group": "Guides",
       "eyebrow": "Spring integration",
       "sources": [
@@ -58,7 +58,7 @@
     {
       "slug": "configuration",
       "title": "Properties, XML and templates",
-      "description": "Find the runtime resource and verify its current value.",
+      "description": "When a property, Spring XML file or template still has its old value, check which copy the running application reads. Then repeat the operation that uses it.",
       "group": "Guides",
       "eyebrow": "Files & runtime state",
       "sources": [
@@ -72,7 +72,7 @@
     {
       "slug": "sap-commerce",
       "title": "SAP Commerce: your daily edit loop",
-      "description": "Set up once, find your edit and verify the running server.",
+      "description": "Attach Reclazz to your development server and verify a small Java change. For edits to items.xml, ImpEx or Backoffice, check which changes also need generation, import or a platform update.",
       "group": "Guides",
       "eyebrow": "SAP Commerce / Hybris",
       "sources": [
@@ -86,7 +86,7 @@
     {
       "slug": "persistence",
       "title": "Entities, repositories and caches",
-      "description": "Check mappings, schema and cached results separately.",
+      "description": "An entity edit can affect the Java class, its Hibernate mapping and the database schema independently. Check each layer, then repeat the repository call or cached lookup.",
       "group": "Guides",
       "eyebrow": "Data & application state",
       "sources": [
@@ -98,8 +98,8 @@
     },
     {
       "slug": "troubleshooting",
-      "title": "When a change doesn\u2019t reload",
-      "description": "Start with the symptom, check the IDE diagnostic and recover safely.",
+      "title": "When a change doesn’t reload",
+      "description": "Did the log stay empty after compilation, report a reload while the application kept its old behavior, or ask for a restart? Start with that symptom and follow its checks.",
       "group": "When it doesn't work",
       "eyebrow": "Troubleshooting",
       "sources": [
@@ -112,7 +112,7 @@
     {
       "slug": "configuration-reference",
       "title": "Agent options",
-      "description": "Set common options in IntelliJ or the application JVM argument.",
+      "description": "Find each agent option, its default and where to set it. Use the matching control in IntelliJ or pass the option to the application JVM.",
       "group": "Reference",
       "eyebrow": "Reference",
       "sources": [
@@ -124,7 +124,7 @@
     {
       "slug": "evidence",
       "title": "Versions, evidence & contributing",
-      "description": "Read support claims with their exact boundaries, inspect source and help keep the documentation honest.",
+      "description": "Trace a support claim to the version, test and project revision behind it. Use the same evidence when proposing a correction.",
       "group": "Footer",
       "eyebrow": "Open source, explicit scope",
       "sources": [
@@ -138,7 +138,7 @@
     {
       "slug": "support-matrix",
       "title": "What reloads",
-      "description": "Find your edit, its conditions and your next step.",
+      "description": "Look up the change you made, check the conditions in its row and follow the suggested verification in your running application.",
       "group": "Get started",
       "eyebrow": "Reload support matrix",
       "sources": [

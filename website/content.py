@@ -9,10 +9,11 @@ import re
 from urllib.parse import urlsplit, unquote
 
 from markdown_it import MarkdownIt
-from website.markdown import slug
+from website.markdown import EVIDENCE_GUIDES, slug
 
 LABELS = {'works': 'Reloads', 'conditional': 'Reloads, with a condition', 'restart': 'Needs a restart',
           'unverified': 'Not verified yet', 'not-reloaded': 'No change applied'}
+TABLE_LABELS = dict(LABELS, conditional='With conditions', restart='Restart', unverified='Unverified', **{'not-reloaded': 'No reload'})
 NOTE_IDS = {'jdk-new','condition-recheck','serializer','messaging-advanced','unknown-files'}
 OVERVIEW_IDS = ['method-body','added-method','bean','mvc','boot-properties','items']
 COMMON_IDS = ['method-body','added-method','instance-field','bean','component','bean-factory','mvc','boot-properties','value','items','sap-config','backoffice-config']
@@ -91,6 +92,34 @@ def expand_guide(text, renderer, info):
         link = renderer.resolve_link('README.md',match[1])
         return body + '<p class="source-link"><a href="' + escape(link,quote=True) + '">Read the complete reference →</a></p>'
     return re.sub(r'\{\{INCLUDE ([^}]+)\}\}',include,text)
+
+
+def guide_evidence(renderer, guide):
+    """Show the recorded observation and its bounds, with the original data alongside."""
+    sections = []
+    for name, (target, title) in EVIDENCE_GUIDES.items():
+        if target != guide:
+            continue
+        relative = 'docs/feature-evidence/' + name + '.json'
+        data = (renderer.repo / relative).read_bytes()
+        record = json.loads(data)
+        asset = 'docs/source-assets/' + relative
+        renderer.assets[asset] = data
+        if record.get('claims'):
+            example = record['claims'][0]
+            description = example['statement']
+            limit = example['limitation']
+            label = 'Example from the recorded checks'
+        else:
+            description = record.get('scope') or record['existing_behavior']
+            limit = (record.get('limits') or record['limitations'])[0]
+            label = 'What the record covers'
+        sections.append(
+            '<section><h2 id="evidence-' + name + '">' + escape(title) + ' evidence</h2>'
+            '<p><strong>' + label + '.</strong> ' + escape(description) + '</p>'
+            '<p><strong>Scope.</strong> ' + escape(limit) + '</p>'
+            '<p class="source-link"><a download href="/' + asset + '">Download data (JSON)</a></p></section>')
+    return ''.join(sections)
 
 
 def ai_index(repo, pages, info):
@@ -210,16 +239,26 @@ def expand_claims(text, values, locale="en"):
 
 
 HOME_FAQ = [
- ('Which changes can I reload?', 'Start with a method-body edit. Added methods, Spring beans, endpoints, properties and SAP Commerce generated classes have documented conditions. Check the reload matrix before a larger change.',
-  'Hangi değişiklikleri yenileyebilirim?', 'Bir metot gövdesi değişikliğiyle başlayın. Eklenen metotların, Spring bean ve endpoint değişikliklerinin, property dosyalarının ve SAP Commerce sınıflarının belgelenmiş koşulları vardır. Daha büyük bir değişiklikten önce reload tablosuna bakın.'),
- ('Will my application state survive?', 'Method-body edits keep existing object fields on the JVM-only path. A refreshed Spring bean is destroyed and recreated, so its mutable state can reset.',
-  'Uygulama durumum korunur mu?', 'Yalnız JVM yolundaki metot gövdesi değişiklikleri mevcut nesne alanlarını korur. Yenilenen Spring bean yok edilip yeniden oluşturulur; değişebilir durumu sıfırlanabilir.'),
- ('Do I need a special JVM?', 'Supported structural changes work on stock JDK {{CLAIM:agent_java_min}}+ through hot-compiled callers. Plain reflection cannot see added members on that path. JetBrains Runtime or DCEVM provides enhanced redefinition; a superclass change still needs a restart.',
-  'Özel bir JVM gerekli mi?', 'Desteklenen yapısal değişiklikler standart JDK {{CLAIM:agent_java_min}}+ üzerinde yeniden derlenen çağıranlar üzerinden çalışır. Bu yolda sıradan reflection eklenen üyeleri göremez. JetBrains Runtime veya DCEVM gelişmiş yeniden tanımlama sağlar; üst sınıf değişikliği yine restart gerektirir.'),
- ('What happens after an items.xml save?', 'Reclazz runs platform generation and reloads the generated classes within the documented SAP Commerce scope. A new database column still needs a schema update. Follow the SAP Commerce guide for setup and opt-ins.',
-  'items.xml kaydından sonra ne olur?', 'Reclazz belgelenmiş SAP Commerce kapsamı içinde platform kod üretimini çalıştırır ve üretilen sınıfları yeniler. Yeni bir veritabanı sütunu hâlâ şema güncellemesi gerektirir. Kurulum ve isteğe bağlı ayarlar için SAP Commerce rehberini izleyin.'),
- ('Can I use Gradle or Maven instead of IntelliJ?', 'Yes. Attach the agent through one launcher: IntelliJ, the Gradle plugin, Maven or a standalone Java command. Build your edit into a watched output and verify the changed application behaviour.',
-  'IntelliJ yerine Gradle veya Maven kullanabilir miyim?', 'Evet. Agent için tek başlatma yolu seçin: IntelliJ, Gradle eklentisi, Maven veya bağımsız Java komutu. Değişikliği izlenen çıktıya derleyin ve uygulamanın değişen davranışını doğrulayın.'),
+    ('Which changes can I reload?',
+     'Try changing the text returned by a method. For a new endpoint, Spring configuration or a generated SAP Commerce type, check the conditions in its guide.',
+     'Hangi değişiklikleri yenileyebilirim?',
+     'Bir metodun döndürdüğü metni değiştirmeyi deneyin. Yeni bir endpoint, Spring yapılandırması veya üretilen bir SAP Commerce tipi için ilgili rehberdeki koşullara bakın.'),
+    ('Will I keep my application state?',
+     'Changing a method body alone keeps existing object fields. If Spring recreates a bean as part of the edit, that bean starts with fresh state.',
+     'Uygulamamın durumu korunur mu?',
+     'Yalnızca bir metot gövdesini değiştirdiğinizde nesnelerin mevcut alanları korunur. Spring değişiklik sırasında bir bean’i yeniden oluşturursa o bean başlangıç durumuna döner.'),
+    ('Is everything free?',
+     'Yes. The agent, the IntelliJ plugin and all reload features are free and open source under Apache 2.0.',
+     'Tüm özellikler ücretsiz mi?',
+     'Evet. Agent, IntelliJ eklentisi ve tüm yenileme özellikleri Apache 2.0 lisansıyla ücretsiz ve açık kaynaklıdır.'),
+    ('What happens when I save items.xml?',
+     'Reclazz runs SAP Commerce code generation and reloads supported generated classes. If you add a database column, you still need to update the schema.',
+     'items.xml dosyasını kaydedince ne olur?',
+     'Reclazz, SAP Commerce kod üretimini çalıştırıp desteklenen sınıfları yeniler. Veritabanına sütun eklediyseniz şemayı da güncellemeniz gerekir.'),
+    ('Can I use Gradle or Maven?',
+     'Yes. Choose one way to attach the agent to each JVM. The quickstart covers IntelliJ, Gradle, Maven and the standalone agent.',
+     'Gradle veya Maven kullanabilir miyim?',
+     'Evet. Her JVM için agent’ı bağlamanın tek bir yolunu seçin. Hızlı başlangıç rehberinde IntelliJ, Gradle, Maven ve bağımsız agent seçenekleri var.'),
 ]
 
 
@@ -233,12 +272,37 @@ def marketing_faq(values):
     return ''.join(visible), '<script type="application/ld+json">'+json.dumps({'@context':'https://schema.org','@type':'FAQPage','mainEntity':schema},ensure_ascii=False).replace('<','\\u003c')+'</script>'
 
 
+HOME_CARD_COPY = {
+    'method-body': ('Change a method',
+        'Build the edited class and call the method again to see the new result.'),
+    'added-method': ('Add a method',
+        'Use your new method from a caller compiled with the change.'),
+    'bean': ('Refresh a Spring bean',
+        'Try a supported bean change in the running Spring application.'),
+    'mvc': ('Update a web route',
+        'Try the changed Spring MVC mapping with a new request.'),
+    'boot-properties': ('Change a Boot setting',
+        'Edit a supported property and check how your app responds.'),
+    'items': ('Edit a Commerce type',
+        'Save items.xml to regenerate and reload supported SAP Commerce classes.'),
+}
+
+
 def marketing_cards(records, renderer):
-    by_id={x['id']:x for x in records}; result=[]
+    by_id = {row['id']: row for row in records}
+    cards = []
     for key in OVERVIEW_IDS:
-        row=by_id[key];href=renderer.resolve_link('README.md',row['source'])
-        result.append('<article class="feature-card" data-support-id="'+key+'" data-support-status="'+row['status']+'"><span class="status status-'+row['status']+'" data-i18n="card.'+key+'.status">'+LABELS[row['status']]+'</span><h3 data-i18n="card.'+key+'.title">'+escape(row['title'])+'</h3><p data-i18n="card.'+key+'.body">'+escape(row['conditions'])+'</p><a href="'+escape(href,quote=True)+'" data-i18n="card.'+key+'.link">Conditions and next step</a></article>')
-    return ''.join(result)
+        row = by_id[key]
+        status = row['status']
+        href = escape(renderer.resolve_link('README.md', row['source']), quote=True)
+        title, body = HOME_CARD_COPY[key]
+        cards.append(
+            f'<article class="change-row" data-support-id="{key}" data-support-status="{status}">'
+            f'<h3 data-i18n="card.{key}.title">{escape(title)}</h3>'
+            f'<p data-i18n="card.{key}.body">{escape(body)}</p>'
+            f'<span class="status status-{status}" data-i18n="card.{key}.status">{LABELS[status]}</span> '
+            f'<a href="{href}" data-i18n="card.{key}.link">Details</a></article>')
+    return ''.join(cards)
 
 
 def compare_source_key(source):

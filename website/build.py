@@ -11,7 +11,7 @@ from urllib.parse import urlsplit, unquote, quote
 
 from website import layout
 from website.markdown import MarkdownRenderer, reference_pages, source_dispositions, github_anchor_map
-from website.content import NOTE_IDS, OVERVIEW_IDS, COMMON_IDS, LABELS, metadata, support_records, expand_guide, ai_index, marketing_claims, expand_claims, marketing_cards, marketing_faq, comparison_table
+from website.content import NOTE_IDS, OVERVIEW_IDS, COMMON_IDS, LABELS, TABLE_LABELS, metadata, support_records, guide_evidence, expand_guide, ai_index, marketing_claims, expand_claims, marketing_cards, marketing_faq, comparison_table
 
 REPO = Path(__file__).resolve().parents[1]
 ROOT = REPO / 'website' / 'static'
@@ -127,7 +127,14 @@ def link_chrome(document):
 
 
 def support_badge(row):
-    return '<span class="badge '+row['status']+'">'+LABELS[row['status']]+'</span>'
+    return '<span class="badge '+row['status']+'">'+TABLE_LABELS[row['status']]+'</span>'
+
+
+def support_detail(row):
+    action = escape(row['action'])
+    if row['id'] == 'occ':
+        action = 'Repeat the OCC request and check that the response contains your edit. ' + action
+    return '<p class="next-action">' + action + '</p><p>' + escape(row['conditions']) + '</p>'
 
 
 def support_summary(records, renderer):
@@ -136,17 +143,17 @@ def support_summary(records, renderer):
     for key in OVERVIEW_IDS:
         if key not in by_id:continue # small source fixtures need not contain every production row
         row=by_id[key]
-        body+='<tr data-summary-id="'+key+'"><th scope="row"><a href="/docs/support-matrix/#'+key+'">'+escape(row['title'])+'</a></th><td>'+support_badge(row)+'</td><td>'+escape(row['conditions'])+'</td></tr>'
+        body+='<tr data-summary-id="'+key+'"><th scope="row"><a href="/docs/support-matrix/#'+key+'">'+escape(row['title'])+'</a></th><td>'+support_badge(row)+'</td><td>'+support_detail(row)+'</td></tr>'
     return body+'</tbody></table></div>'
 
 
 def support_matrix(records,renderer):
     cats=sorted({r['category'] for r in records})
-    form='<form class="matrix-controls" hidden role="search" aria-label="Filter reload changes"><label class="matrix-query">Search changes<input id="matrix-query" type="search" placeholder="Try method, properties, endpoint" autocomplete="off"></label><label>Area<select id="matrix-category"><option value="">All areas</option>'+''.join('<option>'+escape(c)+'</option>' for c in cats)+'</select></label><label>Outcome<select id="matrix-status"><option value="">All outcomes</option>'+''.join('<option value="'+k+'">'+v+'</option>' for k,v in LABELS.items())+'</select></label><button class="reset-filter" type="reset">Reset</button></form><p class="matrix-count" id="matrix-count" role="status" aria-live="polite">Showing '+str(len(records))+' of '+str(len(records))+' changes and scope notes</p>'
+    form='<form class="matrix-controls" hidden role="search" aria-label="Filter reload changes"><label class="matrix-query">Search changes<input id="matrix-query" type="search" placeholder="Try method, properties, endpoint" autocomplete="off"></label><label>Area<select id="matrix-category"><option value="">All areas</option>'+''.join('<option>'+escape(c)+'</option>' for c in cats)+'</select></label><label>Outcome<select id="matrix-status"><option value="">All outcomes</option>'+''.join('<option value="'+k+'">'+v+'</option>' for k,v in TABLE_LABELS.items())+'</select></label><button class="reset-filter" type="reset">Reset</button></form><p class="matrix-count" id="matrix-count" role="status" aria-live="polite">Showing '+str(len(records))+' of '+str(len(records))+' changes and scope notes</p>'
     def attributes(row):
         return ' id="'+row['id']+'" data-support-id="'+row['id']+'" data-category="'+escape(row['category'],quote=True)+'" data-status="'+row['status']+'" data-presentation="'+row['presentation']+'"'
     def scope(row):
-        return '<p>'+escape(row['conditions'])+'</p><p class="next-action"><strong>Next:</strong> '+escape(row['action'])+'</p><a class="matrix-source" href="'+escape(renderer.resolve_link('README.md',row['source']),quote=True)+'">Read conditions</a>'
+        return support_detail(row)+'<a class="matrix-source" href="'+escape(renderer.resolve_link('README.md',row['source']),quote=True)+'">Read conditions</a>'
     notes='<details class="matrix-notes"><summary id="scope-notes">Scope notes ('+str(sum(r["presentation"]=="note" for r in records))+')</summary><p>These expectations describe limits, rather than an edit you can make. The filters include them.</p>'
     for row in records:
         if row['presentation']=='note':notes+='<div class="callout"'+attributes(row)+'><p class="callout-label"><strong>'+escape(row['title'])+'</strong></p>'+support_badge(row)+scope(row)+'</div>'
@@ -169,7 +176,7 @@ def guide_rows(keys, records, renderer):
     for row in selected:
         key=row['id'];attrs=' data-guide-id="'+key+'" data-status="'+row['status']+'" data-presentation="'+row['presentation']+'"'
         title='<a href="/docs/support-matrix/#'+key+'">'+escape(row['title'])+'</a>'
-        detail='<p>'+escape(row['conditions'])+'</p><p><strong>Next:</strong> '+escape(row['action'])+'</p>'
+        detail=support_detail(row)
         if row['presentation']=='note':
             notes+='<aside class="callout"'+attrs+'><p><strong>'+title+'</strong></p>'+support_badge(row)+detail+'</aside>'
         else:rows+='<tr'+attrs+'><th scope="row">'+title+'</th><td>'+support_badge(row)+'</td><td>'+detail+'</td></tr>'
@@ -233,17 +240,24 @@ def generate(revision='main'):
         slug = page['slug']
         nav = ''
         for group in GROUPS:
-            links = ''.join('<a' + (' aria-current="page"' if p['slug'] == slug else '') + ' href="' + url(p['slug']) + '">' + ('<span class="nav-icon" aria-hidden="true">↳</span>' if p['slug'] != slug else '<span class="nav-icon" aria-hidden="true">◈</span>') + escape(p['nav_title']) + '</a>' for p in pages if p['group'] == group)
+            links = ''.join('<a' + (' aria-current="page"' if p['slug'] == slug else '') + ' href="' + url(p['slug']) + '">' + escape(p['nav_title']) + '</a>' for p in pages if p['group'] == group)
             if links: nav += '<div class="nav-group"><p>' + escape(group) + '</p>' + links + '</div>'
         body = renderer.render(page['markdown']) if page.get('markdown') else expand_guide((SOURCE / ((slug or 'overview') + '.html')).read_text(encoding='utf-8'), renderer, manifest)
         body=body.replace('{{SUPPORT_SUMMARY}}',support_summary(support,renderer)) if '{{SUPPORT_SUMMARY}}' in body else body
         body=re.sub(r'\{\{ROWS:([^}]+)\}\}',lambda m:guide_rows([x.strip() for x in m[1].split(',')],support,renderer),body)
+        if '{{GUIDE_EVIDENCE}}' in body:
+            body = body.replace('{{GUIDE_EVIDENCE}}', guide_evidence(renderer, slug))
         if '{{MATRIX}}' in body:
             body=body.replace('{{MATRIX}}',support_matrix(support,renderer))
             for row in support:
                 index.append({'title':row['title'],'section':row['category']+' · '+LABELS[row['status']],'url':url(slug)+'#'+row['id'],'text':row['conditions']+' '+row['action']})
         if '{{OPTIONS}}' in body:
             body=body.replace('{{OPTIONS}}',grouped_options(options,renderer))
+        if page.get('markdown'):
+            if body.startswith('<p>') and page['slug'] not in ('reference/installation', 'reference/sap-commerce', 'reference/test-guide'):
+                body = body.replace('<p>', '<p class="lead">', 1)
+            else:
+                body = '<p class="lead">' + escape(page['description']) + '</p>' + body
         parser = ContentParser()
         parser.feed(body)
         toc = '<p class="toc-label">On this page</p>' + ''.join('<a href="#' + str(id) + '">' + escape(title) + '</a>' for id, title in parser.headings)
@@ -275,8 +289,8 @@ def generate(revision='main'):
 <body class="docs-page''' + (' matrix-page' if slug == 'support-matrix' else '') + '''">
 ''' + layout.header('setup' if slug == 'sap-commerce' else 'docs') + '''
 ''' + layout.mobile_navigation(nav) + '''
-<div class="docs-shell"><aside class="sidebar"><nav aria-label="Documentation">''' + nav + '''</nav><a class="sidebar-source" href="https://github.com/onurkat/reclazz"><span>Built in the open.</span><strong>Explore the source ↗</strong></a></aside>
-<main id="main" tabindex="-1"><div class="breadcrumb"><a href="/docs/">Documentation</a><span aria-hidden="true">/</span><span>''' + escape(page['group'] if page['group'] != 'Footer' else 'Project') + '''</span><span aria-hidden="true">/</span><span>''' + escape(page['title'] if slug else 'Overview') + '''</span></div><article><div class="article-eyebrow">''' + escape(page['eyebrow']) + '''</div>''' + heading + body + sources + pager + '''</article></main><aside class="page-toc"><nav aria-label="On this page">''' + toc + '''</nav><div class="toc-help"><span>Choosing an edit?</span><a href="/docs/support-matrix/">Check the reload matrix ↗</a></div></aside></div>
+<div class="docs-shell"><aside class="sidebar"><nav aria-label="Documentation">''' + nav + '''</nav><a class="sidebar-source" href="https://github.com/onurkat/reclazz"><strong>Source on GitHub ↗</strong></a></aside>
+<main id="main" tabindex="-1"><div class="breadcrumb"><a href="/docs/">Documentation</a><span aria-hidden="true">/</span><span>''' + escape(page['group'] if page['group'] != 'Footer' else 'Project') + '''</span><span aria-hidden="true">/</span><span>''' + escape(page['title'] if slug else 'Overview') + '''</span></div><article>''' + heading + body + sources + pager + '''</article></main><aside class="page-toc"><nav aria-label="On this page">''' + toc + '''</nav><div class="toc-help"><span>Choosing an edit?</span><a href="/docs/support-matrix/">Check the reload matrix ↗</a></div></aside></div>
 ''' + layout.footer(manifest['reviewed'][:4],version=manifest['source_version']) + layout.utilities() + '''
 </body></html>
 '''
