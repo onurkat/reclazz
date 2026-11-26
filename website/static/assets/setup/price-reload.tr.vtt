@@ -1,13 +1,17 @@
 WEBVTT
 
 1
-00:00:00.000 --> 00:00:05.750
-Hafta sonu indirimini %10’dan %15’e çıkarın.
+00:00:00.000 --> 00:00:02.000
+Büyük bir SAP Commerce projesi, sunucu açık
 
 2
-00:00:05.750 --> 00:00:11.500
-Derleyin. Reclazz sınıfı çalışan sunucuda değiştirir.
+00:00:02.000 --> 00:00:07.750
+Hafta sonu indirimini %10’dan %15’e çıkarın.
 
 3
-00:00:11.500 --> 00:00:18.000
+00:00:07.750 --> 00:00:13.500
+Derleyin. Reclazz sınıfı çalışan sunucuda değiştirir.
+
+4
+00:00:13.500 --> 00:00:20.000
 Ürün sayfasını yenileyin: 72,00 → 68,00. Aynı sunucu. Yeniden başlatma yok.
