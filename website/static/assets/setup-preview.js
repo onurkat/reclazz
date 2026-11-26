@@ -45,25 +45,37 @@
 
     const film = document.getElementById('reload-film');
     if (!film) return;
-    // A responsive still also gives reduced-motion users an explicit play control.
-    const cover = document.querySelector('.film-cover');
+    const player = film.closest('button.player');
+    const cover = player.querySelector('.film-poster');
     const poster = cover.querySelector('img');
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+    let manuallyPaused = false;
     const usePoster = () => { if (poster.currentSrc) film.poster = poster.currentSrc; };
     poster.addEventListener('load', usePoster);
     usePoster();
-    film.tabIndex = -1;
-    function revealFilm() {
-        const transferFocus = document.activeElement === cover;
-        cover.hidden = true;
-        film.removeAttribute('tabindex');
-        if (transferFocus) film.focus({preventScroll: true});
+    function updateLabel() {
+        const tr = document.documentElement.lang === 'tr';
+        player.setAttribute('aria-label', film.paused
+            ? (tr ? 'Demo videosu, oynatmak için tıklayın' : 'Demo video, click to play')
+            : (tr ? 'Demo videosu, duraklatmak için tıklayın' : 'Demo video, click to pause'));
     }
-    cover.addEventListener('click', event => {
-        event.preventDefault();
-        film.play().catch(revealFilm);
+    function attachMovie() {
+        if (!film.hasAttribute('src')) film.src = film.dataset.src;
+    }
+    function playMovie() {
+        attachMovie();
+        return film.play();
+    }
+    function revealFilm() { cover.hidden = true; }
+    player.addEventListener('click', () => {
+        manuallyPaused = !film.paused;
+        if (manuallyPaused) film.pause();
+        else playMovie().catch(updateLabel);
+        updateLabel();
     });
-    film.addEventListener('playing', revealFilm, {once: true});
-    film.addEventListener('seeked', revealFilm, {once: true});
+    film.addEventListener('playing', revealFilm);
+    film.addEventListener('play', updateLabel);
+    film.addEventListener('pause', updateLabel);
     const cues = Array.from(document.querySelectorAll('#recorded-events [data-seconds]'));
     function syncLog() {
         const current = cues.filter(cue => Number(cue.dataset.seconds) <= film.currentTime).pop();
@@ -86,7 +98,8 @@
     }
     async function seekTo(seconds) {
         const sequence = ++seekSequence;
-        const url = film.querySelector('source').src;
+        const url = film.dataset.src;
+        attachMovie();
         if (film.readyState < HTMLMediaElement.HAVE_METADATA) {
             const ready = new Promise(resolve => film.addEventListener('loadedmetadata', resolve, {once: true}));
             film.preload = 'auto';
@@ -110,7 +123,7 @@
                 film.src = objectUrl;
                 await ready;
                 if (sequence !== seekSequence) return;
-                if (playing) film.play().catch(() => {});
+                if (playing) playMovie().catch(() => {});
             }
         }
         film.currentTime = seconds;
@@ -119,12 +132,11 @@
     }
     for (const cue of cues) {
         cue.querySelector('button').addEventListener('click', () => {
-            seekTo(Number(cue.dataset.seconds)).catch(revealFilm);
+            seekTo(Number(cue.dataset.seconds)).catch(updateLabel);
         });
     }
     syncLog();
     film.addEventListener('timeupdate', syncLog);
-    const reduced = matchMedia('(prefers-reduced-motion: reduce)');
     // Start downloading the movie after the high-priority still has painted.
     let posterPainted = false;
     function posterReady() {
@@ -136,41 +148,40 @@
     if (document.readyState === 'complete') posterReady();
     else window.addEventListener('load', posterReady, {once: true});
     let onScreen = false;
-    let manuallyPaused = false;
     function playIfVisible() {
-        if (posterPainted && onScreen && !reduced.matches && !manuallyPaused) film.play().catch(() => {});
+        if (posterPainted && onScreen && !reduced.matches && !manuallyPaused) playMovie().catch(() => {});
         else if (!onScreen || reduced.matches) film.pause();
     }
-    film.addEventListener('pause', () => { if (onScreen && !reduced.matches) manuallyPaused = true; });
-    film.addEventListener('play', () => { manuallyPaused = false; });
     new IntersectionObserver(entries => {
         onScreen = entries[0].isIntersecting;
         playIfVisible();
     }).observe(film);
-    reduced.addEventListener('change', playIfVisible);
+    reduced.addEventListener('change', () => {
+        if (reduced.matches) cover.hidden = false;
+        playIfVisible();
+    });
 
     function syncFilmLanguage() {
+        updateLabel();
         const lang = document.documentElement.lang === 'tr' ? 'tr' : 'en';
         const suffix = lang === 'tr' ? '-tr' : '';
         const url = '/assets/setup/live-reload' + suffix + '.webm';
-        const source = film.querySelector('source');
-        if (source.getAttribute('src') === url) return;
+        if (film.dataset.src === url) return;
         const position = film.currentTime;
         const resume = !film.paused;
         releaseMovie();
         const base = '/assets/setup/live-reload-';
-        cover.href = url;
         document.querySelector('#film-caption a').href = url;
-        cover.querySelector('picture source').srcset = base + 'phone' + suffix + '.webp';
+        cover.querySelector('source').srcset = base + 'phone' + suffix + '.webp';
         poster.src = base + 'poster' + suffix + '.webp';
-        source.src = url;
-        film.load();
+        film.dataset.src = url;
+        if (film.currentSrc) film.load();
         if (position || resume) {
             seekTo(position).then(() => {
-                if (resume && film.querySelector('source').getAttribute('src') === url) {
-                    film.play().catch(() => {});
+                if (resume && film.dataset.src === url) {
+                    playMovie().catch(() => {});
                 }
-            }).catch(revealFilm);
+            }).catch(updateLabel);
         } else {
             playIfVisible();
         }

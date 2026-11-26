@@ -125,7 +125,6 @@
   "demo.log": "Videoda olanlar",
   "setup.fullsize": "Ekran görüntüsünü tam boyutta aç",
   "film.build": "Build alın. Reclazz değişen sınıfı çalışan sunucuya yükler.",
-  "film.play": "Kaydı oynat",
   "film.edit": "Hafta sonu indirimini %10'dan %15'e çıkarın.",
   "film.refresh": "Ürün sayfasını yenileyin. Aynı sunucuda fiyat 72.00'den 68.00'e düşer."
 }

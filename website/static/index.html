@@ -47,15 +47,12 @@
 <p class="requirements"><span data-i18n="hero.badge">Free and open source. Java {{CLAIM:agent_java_min}} or newer.</span></p></div></div>
 <div class="product-session">
 <figure class="session-film">
-<div class="player">
-<a class="film-cover" href="/assets/setup/live-reload.webm">
-<picture><source media="(max-width: 640px)" srcset="/assets/setup/live-reload-phone.webp"><img width="1920" height="1080" src="/assets/setup/live-reload-poster.webp" fetchpriority="high" alt=""></picture>
-<span data-i18n="film.play">Play recording</span></a>
-<video id="reload-film" controls muted loop playsinline preload="none" width="1920" height="1080" aria-describedby="film-caption">
-<source src="/assets/setup/live-reload.webm" type="video/webm">
+<button type="button" class="player" aria-label="Demo video, click to play" aria-describedby="film-caption">
+<picture class="film-poster"><source media="(max-width: 640px)" srcset="/assets/setup/live-reload-phone.webp"><img width="1920" height="1080" src="/assets/setup/live-reload-poster.webp" fetchpriority="high" alt=""></picture>
+<video id="reload-film" data-src="/assets/setup/live-reload.webm" muted loop playsinline preload="none" width="1920" height="1080">
 <track kind="captions" srclang="en" label="English" src="/assets/setup/price-reload.en.vtt">
 <track kind="captions" srclang="tr" label="Türkçe" src="/assets/setup/price-reload.tr.vtt">
-</video></div>
+</video></button>
 <figcaption id="film-caption"><span data-i18n="demo.caption">A discount rule is changed from 10% to 15% in DefaultShopPriceService. After a build, the jacket's price on the running server drops from 72.00 to 68.00. Same server process, no restart.</span> <a href="/assets/setup/live-reload.webm" data-i18n="demo.open">Open the video file</a></figcaption>
 </figure>
 <aside class="session-log" aria-labelledby="log-title"><h2 id="log-title"><span data-i18n="demo.log">What happens in the video</span></h2>

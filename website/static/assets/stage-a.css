@@ -139,10 +139,8 @@
   .change-index,.faq-list,.settings-row figure { margin-block: 20px !important; }
   .session-log li { padding-left: 8px; }
 }
-.player { display: grid; }
-.player > video, .player > .film-cover { grid-area: 1 / 1; align-self: start; }
-.film-cover { display: block; position: relative; width: 100%; z-index: 1; padding: 0; border: 0; color: #fff; background: #202124; cursor: pointer; text-align: start; }
-.film-cover[hidden] { display: none; }
-.film-cover img { display: block; width: 100%; height: auto; }
-.film-cover span { display: inline-block; margin: 6px 10px; border: 1px solid #a0a1ac; border-radius: 4px; padding: 8px 12px; font: 550 .85rem/1.4 var(--font); background: #161619; }
-.film-cover span::before { content: '▶'; margin-inline-end: 8px; font-size: .75em; }
+.player { display: grid; width: 100%; padding: 0; border: 0; background: transparent; cursor: pointer; }
+.player > * { grid-area: 1 / 1; align-self: start; }
+.film-poster { position: relative; z-index: 1; pointer-events: none; }
+.film-poster[hidden] { display: none; }
+.film-poster img { display: block; width: 100%; height: auto; }
