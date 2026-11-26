@@ -111,6 +111,10 @@ final class JpaPreparedSchemaRefresh {
         return configured ? null : "no explicit validate action in the factory or persistence unit";
     }
 
+    static boolean isPending(Class<?> entity) {
+        return PENDING.containsKey(entity);
+    }
+
     static void retry(String name, byte[] bytecode) {
         List<Map.Entry<Class<?>, Pending>> candidates = new ArrayList<>();
         synchronized (PENDING) { PENDING.forEach((type, pending) -> candidates.add(Map.entry(type, pending))); }

@@ -228,7 +228,7 @@ class ReclazzConfigurable internal constructor(
                 }
                 row {
                     checkBox("Refresh JPA mappings when an entity changes").bindSelected(::jpaRefreshCheckbox)
-                        .comment("Rebuilds the persistence unit and closes open persistence contexts. Off by default.")
+                        .comment("Off by default. Rebuilds eligible mappings and closes the previous persistence contexts. On a stock JVM, changes to persistent fields require a restart.")
                 }
             }
             group("Tests") {

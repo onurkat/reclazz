@@ -199,7 +199,19 @@ public final class JpaMappingRefresh {
         JpaPreparedSchemaRefresh.retry(className, bytecode);
     }
 
-    private static boolean carriesEntityAnnotation(byte[] bytecode) {
+    static boolean canMapStandaloneEntity() {
+        if (!optedIn()) return false;
+        try {
+            Object bean = soleFactoryBean();
+            if (bean == null) return false;
+            String ddl = JpaSchemaAdvice.settingOf(nativeFactoryField(bean).get(bean));
+            return "validate".equals(ddl) || ddlAutoQualifies(ddl);
+        } catch (ReflectiveOperationException | RuntimeException unavailable) {
+            return false;
+        }
+    }
+
+    static boolean carriesEntityAnnotation(byte[] bytecode) {
         final boolean[] found = new boolean[1];
         try {
             new org.objectweb.asm.ClassReader(bytecode).accept(

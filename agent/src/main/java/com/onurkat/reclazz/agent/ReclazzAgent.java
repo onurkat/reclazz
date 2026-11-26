@@ -1470,10 +1470,11 @@ public class ReclazzAgent {
         nativeRecordSave.set(save);
     }
 
-    private static com.onurkat.reclazz.reload.InterfaceBatchCheck.Hold interfaceHold(
+    private static com.onurkat.reclazz.reload.InterfaceBatchCheck.Hold capturedSaveHold(
             Map<String, byte[]> incoming, com.onurkat.reclazz.util.ClassLookup.LoadedClasses loaded) {
         if (probeResult != null && probeResult.hasEnhancedRedefinition()) return null;
-        var hold = com.onurkat.reclazz.reload.InterfaceBatchCheck.check(incoming, loaded);
+        var hold = com.onurkat.reclazz.reload.JpaBatchCheck.check(incoming, loaded);
+        if (hold == null) hold = com.onurkat.reclazz.reload.InterfaceBatchCheck.check(incoming, loaded);
         if (hold != null) {
             RestartLedger.note(hold.subject(), hold.reason());
             StatusReporter.warn(hold.reason());
@@ -1491,14 +1492,14 @@ public class ReclazzAgent {
             String name = new org.objectweb.asm.ClassReader(event.getBytes()).getClassName().replace('/', '.');
             recordBytes.put(name, event.getBytes()); recordPaths.put(name, event.getPath());
         }
-        var interfaceHold = interfaceHold(recordBytes, loaded);
-        if (interfaceHold != null) {
+        var batchHold = capturedSaveHold(recordBytes, loaded);
+        if (batchHold != null) {
             Map<ChangeEvent, String> refused = new java.util.LinkedHashMap<>();
             for (ChangeEvent event : captured) {
                 String name = new org.objectweb.asm.ClassReader(event.getBytes()).getClassName().replace('/', '.');
-                recordOutcome(name, false, interfaceHold.reason(), event.getPath().toString());
+                recordOutcome(name, false, batchHold.reason(), event.getPath().toString());
                 watcher.retryHeldClassOnRewrite(event);
-                refused.put(event, interfaceHold.reason());
+                refused.put(event, batchHold.reason());
             }
             return new ReloadQueue.SavePlan(List.of(), refused);
         }
@@ -1605,12 +1606,12 @@ public class ReclazzAgent {
 
     private static Map<String, byte[]> prepareCompiledSwitchMaps(Map<String, byte[]> candidates, Map<String, String> sources) {
         var loaded = com.onurkat.reclazz.util.ClassLookup.loadedClasses(instrumentation);
-        var interfaceHold = interfaceHold(candidates, loaded);
-        if (interfaceHold != null) {
+        var batchHold = capturedSaveHold(candidates, loaded);
+        if (batchHold != null) {
             Map<String, String> refused = new java.util.LinkedHashMap<>();
             for (String name : candidates.keySet()) {
-                recordOutcome(name, false, interfaceHold.reason(), sources.get(name));
-                refused.put(name, interfaceHold.reason());
+                recordOutcome(name, false, batchHold.reason(), sources.get(name));
+                refused.put(name, batchHold.reason());
             }
             compiledSaveRefusals.set(refused);
             return Map.of();

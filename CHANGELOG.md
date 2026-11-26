@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed
+
+- On a stock JVM, saving a changed persistent entity field or a new entity with its repository keeps the previous batch running and names the change that requires a restart.
+
 ## [1.10.2] - 2026-11-26
 
 ### Changed
