@@ -4471,7 +4471,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringSecurityReloaderSwapTest.java",
           "kind": "component",
           "assertions": "Direct duck-typed proxy swap replaces the stale fake chain with the rebuilt fake chain identity.",
-          "method_sha256": "304e2f15106960263dd6ef508e90d933a449a10ee142aeb5d1fc9cb3ba5fb46a"
+          "method_sha256": "a63f031c07b804ddff70b2ff6dd3142aec35b165a25f36f0f39412a3f27c6a30"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.HttpSecurityPolicyReloadTest#realOrderedServletRulesAndIgnoredRouteFollowFourSaves",

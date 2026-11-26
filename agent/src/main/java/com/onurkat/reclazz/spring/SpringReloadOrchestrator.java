@@ -303,6 +303,11 @@ public class SpringReloadOrchestrator {
             String reason = "Added @Bean needs a restart: " + com.onurkat.reclazz.ui.Failures.describe(failure);
             RestartLedger.note(className, reason); StatusReporter.warn(reason); return;
         }
+        var security = securityReloader.prepare(reloadedClass);
+        if (security != null && security.restart()) {
+            securityReloader.publish(reloadedClass, security);
+            return;
+        }
         if(!isSpringBean(reloadedClass)) {
             if((isStructural||annotationsChanged)&&SpringProxyRecreation.annotated(reloadedClass))injectionMetadataReloader.reload();
             beanReloader.refreshPlainProxy(reloadedClass);
@@ -341,7 +346,7 @@ public class SpringReloadOrchestrator {
             // Repository products have one refresh owner, including when their
             // interface also carries the ordinary Spring @Repository stereotype.
             if (!SpringDataReloader.isRepository(reloadedClass)) {
-                beanReloader.refreshBean(className, reloadedClass, raw, keepInput, listenerOwner);
+                beanReloader.refreshBean(className, reloadedClass, raw, keepInput, listenerOwner, security == null);
                 operationSourceReloader.nativeRecreated(reloadedClass,beanReloader.nativeProxyReceipts());
             }
 
@@ -412,6 +417,8 @@ public class SpringReloadOrchestrator {
                 }
             }
         }
+
+        securityReloader.publish(reloadedClass, security);
 
         // Steps 3 to 9, each on its own. They share a shape (a class went in,
         // a framework was told) and they share a failure mode: every one asks
@@ -507,9 +514,7 @@ public class SpringReloadOrchestrator {
             new ReloadSteps.Step("Async re-processing",
                     r -> asyncReloader.reloadAsyncMethods(r.type())),
             new ReloadSteps.Step("Data repository refresh",
-                    r -> dataReloader.reloadRepository(r.type())),
-            new ReloadSteps.Step("Security configuration",
-                    r -> securityReloader.reloadSecurityConfig(r.type())));
+                    r -> dataReloader.reloadRepository(r.type())));
     }
 
     /**

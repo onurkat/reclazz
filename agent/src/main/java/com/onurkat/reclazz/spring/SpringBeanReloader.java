@@ -97,6 +97,11 @@ public class SpringBeanReloader {
 
     void refreshBean(String className, Class<?> reloadedClass, SpringAddedBeanReloader.PreparedRawConfigs raw,
                      KeepBaseline.Input keepInput, boolean listenerOwner) {
+        refreshBean(className, reloadedClass, raw, keepInput, listenerOwner, true);
+    }
+
+    void refreshBean(String className, Class<?> reloadedClass, SpringAddedBeanReloader.PreparedRawConfigs raw,
+                     KeepBaseline.Input keepInput, boolean listenerOwner, boolean reportBeanRefresh) {
         nativeProxyReceipts.clear();
         try {
             // Iterate every live context (global + web contexts): the bean
@@ -132,7 +137,7 @@ public class SpringBeanReloader {
                         Object current=localFactory.getClass().getMethod("getSingleton",String.class).invoke(localFactory,beanName);
                         if (SpringConstructorSave.consume(current)) {
                             totalRefreshed++;
-                            ReloadEffects.note("bean " + beanName + " re-created with its new constructor dependencies");
+                            if (reportBeanRefresh) ReloadEffects.note("bean " + beanName + " re-created with its new constructor dependencies");
                             continue;
                         }
                         if(nativeHandled.contains(current))continue;
@@ -183,8 +188,8 @@ public class SpringBeanReloader {
                         }
                         // This transaction already rebuilt all leaf owners. Do not destroy them again in phase 2.
                         if (jms == null && kafka == null && rabbit == null) refreshedNames.add(beanName);
-                        ReloadEffects.note("bean " + beanName + " re-created (" + decision.reason() + ")");
-                        StatusReporter.detail("Spring bean refreshed: " + beanName);
+                        if (reportBeanRefresh) ReloadEffects.note("bean " + beanName + " re-created (" + decision.reason() + ")");
+                        if (reportBeanRefresh) StatusReporter.detail("Spring bean refreshed: " + beanName);
                         totalRefreshed++;
                     }
                 } catch (Exception | LinkageError e) {

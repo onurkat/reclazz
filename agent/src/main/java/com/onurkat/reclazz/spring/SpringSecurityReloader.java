@@ -65,209 +65,155 @@ public class SpringSecurityReloader {
         this.platformContext = platformContext;
     }
 
-    /**
-     * Rebuild the filter chains if the reloaded class is security
-     * configuration.
-     */
-    public boolean reloadSecurityConfig(Class<?> reloadedClass) {
-        if (!isSecurityConfigClass(reloadedClass)) return false;
+    enum Result { NOT_APPLICABLE, PUBLISHED, RESTART }
 
-        boolean handled = false;
-        // Security beans may live in any context (typically a web context).
-        for (Object appContext : platformContext.getAllApplicationContexts()) {
-            handled |= reloadSecurityConfigIn(appContext, reloadedClass);
+    private static final String CHAIN = "org.springframework.security.web.SecurityFilterChain";
+
+    record ProxyList(Object proxy, Field field, List<?> original) {
+        void verify(List<?> expected) throws ReflectiveOperationException {
+            Object view = proxy.getClass().getMethod("getFilterChains").invoke(proxy);
+            if (!(view instanceof List<?> live) || live.size() != expected.size())
+                throw new IllegalStateException("serving list could not be verified");
+            for (int i = 0; i < live.size(); i++)
+                if (live.get(i) != expected.get(i)) throw new IllegalStateException("serving chain differs");
         }
-        return handled;
+    }
+    record Edit(ProxyList target, List<Object> next) { }
+    record Owner(Object context, String[] chains, Map<String, Object> owned,
+                 List<Object> originals, List<ProxyList> proxies) { }
+    record Pending(List<Owner> owners, boolean restart) { }
+
+    public boolean reloadSecurityConfig(Class<?> type) {
+        return publish(type, prepare(type)) != Result.NOT_APPLICABLE;
     }
 
-    private boolean reloadSecurityConfigIn(Object appContext, Class<?> reloadedClass) {
+    /** Capture the actual serving objects before generic bean refresh can replace bean identities. */
+    Pending prepare(Class<?> type) {
+        boolean mapped = declaresChain(type);
+        if (!mapped && !isSecurityConfigClass(type) && !possibleFactory(type)) return null;
+        List<Owner> owners = new java.util.ArrayList<>();
         try {
-            String[] filterChainNames = SpringBeans.beanNamesForType(appContext,
-                    "org.springframework.security.web.SecurityFilterChain");
-            if (filterChainNames != null && filterChainNames.length > 0) {
-                return rebuildFilterChains(appContext, reloadedClass, filterChainNames);
+            for (Object context : platformContext.getAllApplicationContexts()) {
+                var names = SpringBeans.beanNamesForType(context, CHAIN);
+                var configNames = java.util.Set.of(SpringBeans.beanNamesForType(context, type));
+                if (configNames.isEmpty()) continue;
+                Object factory = SpringBeans.getBeanFactory(context);
+                Map<String, Object> owned = new java.util.LinkedHashMap<>();
+                for (String name : names) {
+                    Object definition = factory.getClass().getMethod("getMergedBeanDefinition", String.class).invoke(factory, name);
+                    Object factoryName = definition.getClass().getMethod("getFactoryBeanName").invoke(definition);
+                    var method = (java.lang.reflect.Method) definition.getClass().getMethod("getResolvedFactoryMethod").invoke(definition);
+                    if ((factoryName != null && configNames.contains(factoryName))
+                            || (method != null && method.getDeclaringClass() == type)) {
+                        Object existing = SpringBeans.getBean(context, name);
+                        if (existing == null) throw new IllegalStateException("chain bean unavailable");
+                        owned.put(name, existing);
+                    }
+                }
+                if (owned.isEmpty()) {
+                    if (mapped || extendsAdapter(type)) return new Pending(List.of(), true);
+                    continue;
+                }
+                mapped = true;
+                List<Object> originals = orderedChainBeans(context, names);
+                List<ProxyList> targets = servingLists(context);
+                if (targets.isEmpty()) throw new IllegalStateException("serving chain list unavailable");
+                for (ProxyList target : targets) replaceSlots(target.original(), originals, originals);
+                owners.add(new Owner(context, names, owned, originals, targets));
             }
-
-            // Also try with WebSecurityConfigurerAdapter (legacy)
-            String[] configurerNames = SpringBeans.beanNamesForType(appContext,
-                    "org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter");
-            if (configurerNames != null && configurerNames.length > 0) {
-                // Deliberately not rebuilt, and worth saying why rather than
-                // leaving it looking like an oversight. An adapter does not
-                // produce a chain bean to destroy and re-create: WebSecurity
-                // builds the chains from the adapter internally, once, and the
-                // only way in is to take that builder apart. Security is the
-                // one area where a half-applied change is worse than none, and
-                // this path could not be measured against anything: the API
-                // was removed in Spring Security 6, so there is no version of
-                // it left to be sure against. Refusing to guess here keeps the
-                // rules that are running the rules that were reviewed.
-                //
-                // What the old sentence got wrong was the scope. Only the
-                // filter chain waits for a restart; method security on this
-                // generation is re-read like any other, by refreshMethodSecurity.
-                StatusReporter.warn("Security rules changed in a WebSecurityConfigurerAdapter, "
-                        + "which builds its chains inside WebSecurity rather than as beans "
-                        + "Reclazz can rebuild, so the URL rules keep enforcing what they "
-                        + "enforced until a restart. Method security (@PreAuthorize and "
-                        + "friends) is re-read and is live. Moving to a SecurityFilterChain "
-                        + "bean, which is what Spring Security 6 requires anyway, is what "
-                        + "makes the URL rules reloadable too.");
-                RestartLedger.note(reloadedClass.getName(),
-                        "URL rules in a WebSecurityConfigurerAdapter, which has no chain bean "
-                                + "to rebuild");
-                return true;
-            }
-
-        } catch (Exception e) {
-            StatusReporter.warn("Spring Security reload check failed: " + Failures.describe(e));
+            if (!owners.isEmpty()) return new Pending(owners, false);
+        } catch (ReflectiveOperationException | RuntimeException | LinkageError unsupported) {
+            if (mapped) return new Pending(List.of(), true);
         }
-        return false;
+        return mapped ? new Pending(List.of(), true) : null;
     }
 
-    /**
-     * Destroy and re-create each chain bean, then swap the current bean chains
-     * over the stale ones inside the live proxy. Both halves have to land for
-     * the reload to be real, and each failure mode is reported as itself.
-     *
-     * <p>Staleness is decided against the container, not against a
-     * before-and-after pair: by the time this runs, the bean-refresh cascade
-     * has usually already rebuilt the chain beans once (the chain depends on
-     * the configuration bean that was refreshed), so an instance captured
-     * "before" here was never the one the proxy holds. The proxy's list is
-     * instead compared with what the container currently serves: an element
-     * that is a current bean stays, an element with no filters is an
-     * {@code ignoring()} chain and stays, and the rest are the startup-era
-     * chains, replaced in order by the rebuilt beans.
-     */
-    private boolean rebuildFilterChains(Object appContext, Class<?> reloadedClass,
-                                        String[] chainNames) {
-        // 1. Re-create the chain beans. The @Bean method re-runs here with the
-        // reloaded configuration code; when the cascade already did this, the
-        // second run is one more build of the same current code.
-        List<Object> current;
-        try {
-            for (String name : chainNames) {
-                SpringBeanReloader.destroyAndRefreshBean(appContext, name);
-            }
-            current = orderedChainBeans(appContext, chainNames);
-        } catch (Throwable t) {
-            // The old chains are still what the proxy serves, so the failure
-            // is a stale ruleset, not an open door. Say exactly that.
-            StatusReporter.warn("Security filter chain rebuild failed ("
-                    + t.getClass().getSimpleName()
-                    + (Failures.describe(t) == null ? "" : ": " + Failures.describe(t))
-                    + "). The previous security rules are still enforced; "
-                    + "a restart applies the new ones.");
-            RestartLedger.note(reloadedClass.getName(),
-                    "a security configuration change whose chain rebuild failed");
-            return true;
+    /** Collect exactly the chain slots backed by the old beans. Inline chains remain at their original positions. */
+    static List<Object> replaceSlots(List<?> before, List<Object> originals, List<Object> replacements) {
+        var remaining = java.util.Collections.newSetFromMap(new IdentityHashMap<Object, Boolean>());
+        remaining.addAll(originals);
+        if (remaining.size() != originals.size() || replacements.size() != originals.size())
+            throw new IllegalStateException("ambiguous chain beans");
+        List<Object> after = new java.util.ArrayList<>(before);
+        int slot = 0;
+        for (int i = 0; i < before.size(); i++) {
+            Object entry = before.get(i);
+            if (remaining.remove(entry)) after.set(i, replacements.get(slot++));
+            else if (originals.stream().anyMatch(bean -> bean == entry))
+                throw new IllegalStateException("duplicate chain slot");
         }
-        if (current.isEmpty()) {
-            return false;                     // nothing was actually rebuilt here
-        }
+        if (!remaining.isEmpty()) throw new IllegalStateException("serving proxy does not contain every chain bean");
+        return List.copyOf(after);
+    }
 
-        // 2. Rebuild the proxy bean too, so the factory's answer is a proxy
-        // built from the current chains rather than the startup ones. The
-        // proxy's factory method runs on WebSecurityConfiguration's builder,
-        // which throws AlreadyBuiltException the second time (measured), so
-        // that configuration is rebuilt first: a fresh instance gets a fresh
-        // builder and the current chain beans autowired into it.
-        String[] webSecurityConfigs = SpringBeans.beanNamesForType(appContext,
-                "org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration");
-        if (webSecurityConfigs != null) {
-            for (String name : webSecurityConfigs) {
-                try {
-                    SpringBeanReloader.destroyAndRefreshBean(appContext, name);
-                } catch (Throwable keepOld) {
-                    // Without a fresh builder the proxy recreation below fails
-                    // and is reported there.
+    Result publish(Class<?> type, Pending pending) {
+        if (pending == null) return Result.NOT_APPLICABLE;
+        if (pending.restart()) return needsRestart(type);
+        List<Edit> edits = new java.util.ArrayList<>();
+        try {
+            for (Owner owner : pending.owners()) {
+                for (var entry : owner.owned().entrySet()) {
+                    if (SpringBeans.getBean(owner.context(), entry.getKey()) == entry.getValue())
+                        SpringBeanReloader.destroyAndRefreshBean(owner.context(), entry.getKey());
+                    Object rebuilt = SpringBeans.getBean(owner.context(), entry.getKey());
+                    if (rebuilt == null || rebuilt == entry.getValue()) throw new IllegalStateException("chain was not rebuilt");
+                }
+                List<Object> current = orderedChainBeans(owner.context(), owner.chains());
+                for (ProxyList target : owner.proxies()) {
+                    if (target.field().get(target.proxy()) != target.original())
+                        throw new IllegalStateException("serving list changed during refresh");
+                    edits.add(new Edit(target, replaceSlots(target.original(), owner.originals(), current)));
                 }
             }
+            publishLists(edits);
+            ReloadEffects.note(Plural.of(edits.size(), "security chain list") + " rebuilt");
+            StatusReporter.detail("Security filter chain rebuilt and verified.");
+            return Result.PUBLISHED;
+        } catch (Exception | LinkageError failure) {
+            return needsRestart(type);
         }
-        for (String proxyName : proxyBeanNames(appContext)) {
-            try {
-                SpringBeanReloader.destroyAndRefreshBean(appContext, proxyName);
-            } catch (Throwable keepOld) {
-                // The factory keeps the proxy it had; the steps below still
-                // try to make the servlet layer consult it afresh.
-            }
-        }
-
-        // 3. The servlet container holds its own reference: Boot registers a
-        // DelegatingFilterProxy whose delegate field caches the proxy instance
-        // from startup, unreachable through any bean. Reset that cache so the
-        // next request resolves the rebuilt bean; where the container is not
-        // Tomcat, fall back to swapping chains inside whatever proxy the
-        // factory still serves.
-        int swapped = resetServletDelegates(appContext);
-        swapped += swapIntoLiveProxies(appContext, current);
-
-        if (swapped > 0) {
-            ReloadEffects.note(Plural.of(swapped, "security chain") + " rebuilt");
-            StatusReporter.detail("Security filter chain rebuilt: " + Plural.of(swapped, "chain")
-                    + Plural.word(swapped, " now enforces", " now enforce")
-                    + " the reloaded configuration.");
-            // Method security is not part of the chain and is not rebuilt
-            // here. It is refreshed for every reloaded class, before this
-            // runs, by refreshMethodSecurity; saying anything about it here
-            // would either repeat that or contradict it.
-            return true;
-        }
-
-        // Rebuilt beans but swapped nothing: either no live proxy was found,
-        // or its list could not be safely matched to the current beans. The
-        // running rules are the old ones either way; say so.
-        StatusReporter.warn("Security filter chain beans were rebuilt but the live "
-                + "FilterChainProxy did not take them. "
-                + "A full restart may be needed for security changes to take effect.");
-        RestartLedger.note(reloadedClass.getName(),
-                "a security configuration change the filter chain cannot rebuild");
-        return true;
     }
 
-    /**
-     * The current chain beans in the container's own order:
-     * {@code getBeanProvider(...).orderedStream()} is what Boot itself sorts
-     * the chains with at startup, and the by-name fallback keeps definition
-     * order, which is the same thing for the single-chain majority.
-     */
-    private static List<Object> orderedChainBeans(Object appContext, String[] chainNames)
-            throws Exception {
+    static void publishLists(List<Edit> edits) throws ReflectiveOperationException {
+        int published = 0;
         try {
-            Class<?> chainType = Class.forName("org.springframework.security.web.SecurityFilterChain",
-                    false, appContext.getClass().getClassLoader());
-            Object provider = appContext.getClass().getMethod("getBeanProvider", Class.class)
-                    .invoke(appContext, chainType);
-            java.util.stream.Stream<?> stream = (java.util.stream.Stream<?>) provider.getClass()
-                    .getMethod("orderedStream").invoke(provider);
-            List<Object> ordered = new java.util.ArrayList<>(stream.toList());
-            if (!ordered.isEmpty()) return ordered;
-        } catch (Throwable fallBackBelow) {
-            // orderedStream is Spring 5.1+; anything older answers by name.
+            for (Edit edit : edits) {
+                ProxyList target = edit.target();
+                if (target.field().get(target.proxy()) != target.original())
+                    throw new IllegalStateException("serving list changed before publication");
+                target.field().set(target.proxy(), edit.next());
+                published++;
+                target.verify(edit.next());
+            }
+        } catch (ReflectiveOperationException | RuntimeException | LinkageError failure) {
+            for (int i = published - 1; i >= 0; i--) {
+                ProxyList target = edits.get(i).target();
+                target.field().set(target.proxy(), target.original());
+            }
+            throw failure;
         }
-        java.lang.reflect.Method getBean = appContext.getClass().getMethod("getBean", String.class);
-        List<Object> byName = new java.util.ArrayList<>();
-        for (String name : chainNames) {
-            byName.add(getBean.invoke(appContext, name));
-        }
-        return byName;
     }
 
-    /**
-     * Replace old chain instances with new ones inside each live proxy's
-     * {@code filterChains} list, keeping the proxy and every non-bean chain
-     * (the {@code ignoring()} ones) untouched. Falls back to writing a fresh
-     * list into the field when the captured list refuses {@code set}.
-     *
-     * <p>The proxy bean is not always the proxy that holds the chains: Spring
-     * Boot 3.3's {@code WebMvcSecurityConfiguration$CompositeFilterChainProxy}
-     * extends FilterChainProxy but keeps its inherited chain list null and
-     * carries the real FilterChainProxy in a field of its own (measured: the
-     * bean's own list held nothing to swap while the nested proxy held the old
-     * chains). So each proxy's fields are searched one level deep for nested
-     * FilterChainProxy instances, and every proxy found is swapped.
-     */
+    private static Result needsRestart(Class<?> type) {
+        String reason = "Security rules changed in " + type.getName() + "; restart to enforce them";
+        RestartLedger.note(type.getName(), reason);
+        StatusReporter.warn(reason);
+        return Result.RESTART;
+    }
+
+    private static List<Object> orderedChainBeans(Object context, String[] names) throws ReflectiveOperationException {
+        if (names.length == 1) return List.of(SpringBeans.getBean(context, names[0]));
+        ClassLoader loader = context.getClass().getClassLoader();
+        Class<?> chainType = Class.forName(CHAIN, false, loader);
+        Object provider = context.getClass().getMethod("getBeanProvider", Class.class).invoke(context, chainType);
+        var api = Class.forName("org.springframework.beans.factory.ObjectProvider", false, loader);
+        try (var stream = (java.util.stream.Stream<?>) api.getMethod("orderedStream").invoke(provider)) {
+            List<Object> ordered = new java.util.ArrayList<>(stream.toList());
+            if (ordered.size() != names.length) throw new IllegalStateException("chain ordering not verified");
+            return ordered;
+        }
+    }
+
     /** The names the live proxy answers to, with Boot's default as fallback. */
     private static String[] proxyBeanNames(Object appContext) {
         String[] proxyNames = SpringBeans.beanNamesForType(appContext,
@@ -280,73 +226,62 @@ public class SpringSecurityReloader {
         return proxyNames;
     }
 
-    /**
-     * Drop the servlet layer's cached delegate so the next request resolves
-     * the rebuilt proxy bean.
-     *
-     * <p>Boot wires security into the container as a
-     * {@code DelegatingFilterProxy} created inside the registration bean's
-     * {@code onStartup} and handed straight to the servlet context: no bean
-     * holds it, and once its {@code delegate} field caches the startup proxy,
-     * every bean rebuild in the world changes nothing the container consults.
-     * On Tomcat (which is what SAP Commerce and default Boot run) the filter
-     * is reachable through the servlet context's internals:
-     * facade &rarr; ApplicationContext &rarr; StandardContext &rarr;
-     * {@code filterConfigs} &rarr; each config's {@code filter}. Every
-     * DelegatingFilterProxy targeting one of the proxy bean names gets its
-     * delegate cleared, which is the class's own lazy-init state, re-filled
-     * from the factory on the next request. A different container makes this
-     * a quiet zero and the chain-list swap below is the fallback.
-     */
-    private int resetServletDelegates(Object appContext) {
-        java.util.Set<String> names = java.util.Set.of(proxyBeanNames(appContext));
-        int reset = 0;
-        try {
-            Object servletContext = appContext.getClass()
-                    .getMethod("getServletContext").invoke(appContext);
-            if (servletContext == null) return 0;
-
-            // Tomcat: ApplicationContextFacade.context -> ApplicationContext.context -> StandardContext
-            Object inner = fieldValue(servletContext, "context");
-            Object standardContext = inner == null ? null : fieldValue(inner, "context");
-            Object filterConfigs = standardContext == null
-                    ? null : fieldValue(standardContext, "filterConfigs");
-            if (!(filterConfigs instanceof java.util.Map<?, ?> configs)) return 0;
-
+    /** Include the proxy already cached by the servlet container, which may outlive its factory bean. */
+    private static List<ProxyList> servingLists(Object context) throws ReflectiveOperationException {
+        var roots = new java.util.ArrayList<Object>();
+        var names = java.util.Set.of(proxyBeanNames(context));
+        for (String name : names) {
+            Object proxy = SpringBeans.getBean(context, name);
+            if (proxy != null) roots.add(proxy);
+        }
+        Object servlet = null;
+        try { servlet = context.getClass().getMethod("getServletContext").invoke(context); }
+        catch (NoSuchMethodException nonWeb) { /* directly managed proxy */ }
+        if (servlet != null) {
+            Object facade = fieldValue(servlet, "context");
+            Object standard = facade == null ? null : fieldValue(facade, "context");
+            if (standard == null || !(fieldValue(standard, "filterConfigs") instanceof Map<?, ?> configs))
+                throw new IllegalStateException("unknown servlet registration");
+            boolean registered = false;
             for (Object config : configs.values()) {
                 Object filter = fieldValue(config, "filter");
                 if (filter == null || !isDelegatingFilterProxy(filter.getClass())) continue;
                 Object target = fieldValue(filter, "targetBeanName");
-                if (target != null && !names.contains(String.valueOf(target))) continue;
-                if (clearDelegate(filter)) reset++;
+                if (target == null) target = config.getClass().getMethod("getFilterName").invoke(config);
+                if (target == null || !names.contains(target)) continue;
+                registered = true;
+                Object delegate = fieldValue(filter, "delegate");
+                if (delegate == null) throw new IllegalStateException("servlet has not resolved its delegate");
+                roots.add(delegate);
             }
-        } catch (Throwable notTomcatShaped) {
-            return reset;
+            if (!registered) throw new IllegalStateException("no matching servlet registration");
         }
-        return reset;
+        var seen = java.util.Collections.newSetFromMap(new IdentityHashMap<>());
+        List<ProxyList> result = new java.util.ArrayList<>();
+        for (Object root : roots) {
+            boolean found = false;
+            for (Object proxy : withNestedProxies(root)) {
+                if (!isFilterChainProxy(proxy.getClass())) continue;
+                Field field = chainListField(proxy.getClass());
+                if (field == null) continue;
+                field.setAccessible(true);
+                if (!(field.get(proxy) instanceof List<?> list) || list.isEmpty()) continue;
+                found = true;
+                if (seen.add(proxy)) {
+                    var target = new ProxyList(proxy, field, list);
+                    target.verify(list);
+                    result.add(target);
+                }
+            }
+            if (!found) throw new IllegalStateException("unsupported filter proxy");
+        }
+        return result;
     }
 
     private static boolean isDelegatingFilterProxy(Class<?> type) {
         for (Class<?> c = type; c != null && c != Object.class; c = c.getSuperclass()) {
             if (c.getName().equals("org.springframework.web.filter.DelegatingFilterProxy")) {
                 return true;
-            }
-        }
-        return false;
-    }
-
-    /** Null the {@code delegate} field declared on DelegatingFilterProxy itself. */
-    private static boolean clearDelegate(Object filterProxy) {
-        for (Class<?> c = filterProxy.getClass(); c != null && c != Object.class; c = c.getSuperclass()) {
-            if (!c.getName().equals("org.springframework.web.filter.DelegatingFilterProxy")) continue;
-            try {
-                Field delegate = c.getDeclaredField("delegate");
-                delegate.setAccessible(true);
-                if (delegate.get(filterProxy) == null) return false;   // nothing cached yet
-                delegate.set(filterProxy, null);
-                return true;
-            } catch (Throwable t) {
-                return false;
             }
         }
         return false;
@@ -366,28 +301,6 @@ public class SpringSecurityReloader {
             }
         }
         return null;
-    }
-
-    private int swapIntoLiveProxies(Object appContext, List<Object> current) {
-        String[] proxyNames = proxyBeanNames(appContext);
-
-        int swapped = 0;
-        for (String proxyName : proxyNames) {
-            Object proxy;
-            try {
-                proxy = appContext.getClass().getMethod("getBean", String.class)
-                        .invoke(appContext, proxyName);
-            } catch (Throwable missing) {
-                continue;
-            }
-            if (proxy == null || !isFilterChainProxy(proxy.getClass())) {
-                continue;
-            }
-            for (Object each : withNestedProxies(proxy)) {
-                swapped += swapChains(each, current);
-            }
-        }
-        return swapped;
     }
 
     /**
@@ -414,85 +327,6 @@ public class SpringSecurityReloader {
             }
         }
         return proxies;
-    }
-
-    /**
-     * Replace the stale entries of one proxy's chain list with the current
-     * beans, in order.
-     *
-     * <p>An element that is identical to a current bean is already right and
-     * stays. An element with no filters is a chain {@code WebSecurity.ignoring()}
-     * built inline, never a bean, and stays where it is. Everything else is a
-     * chain from an earlier era of the container, and there must be exactly as
-     * many of those as there are current beans not yet in the list: the two
-     * line up in order or nothing is touched, because guessing which rules go
-     * where is the one thing a security swap must never do.
-     */
-    @SuppressWarnings("unchecked")
-    static int swapChains(Object proxy, List<Object> current) {
-        Field field = chainListField(proxy.getClass());
-        if (field == null) return 0;
-        try {
-            field.setAccessible(true);
-            List<Object> chains = (List<Object>) field.get(proxy);
-            if (chains == null || chains.isEmpty()) return 0;
-
-            java.util.Set<Object> currentSet =
-                    java.util.Collections.newSetFromMap(new IdentityHashMap<>());
-            currentSet.addAll(current);
-
-            List<Integer> staleIndexes = new java.util.ArrayList<>();
-            List<Object> missing = new java.util.ArrayList<>();
-            for (Object bean : current) {
-                boolean present = false;
-                for (Object chain : chains) {
-                    if (chain == bean) { present = true; break; }
-                }
-                if (!present) missing.add(bean);
-            }
-            for (int i = 0; i < chains.size(); i++) {
-                Object chain = chains.get(i);
-                if (currentSet.contains(chain)) continue;   // already the current bean
-                if (!hasFilters(chain)) continue;           // ignoring() chain, not ours
-                staleIndexes.add(i);
-            }
-            if (missing.isEmpty()) {
-                return 0;                     // the list already serves the current beans
-            }
-            if (staleIndexes.size() != missing.size()) {
-                // Guessing which rules go where is the one thing a security
-                // swap must never do; the mismatch is reported, not resolved.
-                StatusReporter.warn("Filter chain swap declined: "
-                        + Plural.of(staleIndexes.size(), "stale chain")
-                        + " in the live proxy but "
-                        + Plural.of(missing.size(), "rebuilt bean")
-                        + " to place. The old rules keep serving.");
-                return 0;
-            }
-
-            int swapped = 0;
-            try {
-                for (int i = 0; i < staleIndexes.size(); i++) {
-                    chains.set(staleIndexes.get(i), missing.get(i));
-                    swapped++;
-                }
-            } catch (UnsupportedOperationException immutable) {
-                // The proxy captured an unmodifiable list; replace the list
-                // itself, same contents, current beans where the stale were.
-                List<Object> fresh = new java.util.ArrayList<>(chains);
-                for (int i = 0; i < staleIndexes.size(); i++) {
-                    fresh.set(staleIndexes.get(i), missing.get(i));
-                    swapped++;
-                }
-                field.set(proxy, fresh);
-            }
-            return swapped;
-        } catch (Throwable t) {
-            // The list or its field refused the write; the old rules keep
-            // serving and the caller's warn says so. Name the refusal here.
-            StatusReporter.warn("Filter chain swap failed: " + t);
-            return 0;
-        }
     }
 
     /** Exact identity replacement for an XML-owned chain, with rollback of all proxy fields. */
@@ -523,18 +357,6 @@ public class SpringSecurityReloader {
                 Edit edit=written.get(i);edit.field.set(edit.proxy,edit.before);
             }
             throw failure;
-        }
-    }
-
-    /** Whether the chain carries filters; an {@code ignoring()} chain has none. */
-    private static boolean hasFilters(Object chain) {
-        try {
-            Object filters = chain.getClass().getMethod("getFilters").invoke(chain);
-            return filters instanceof List<?> list && !list.isEmpty();
-        } catch (Throwable unknownShape) {
-            // A chain whose filters cannot be read is treated as a real one:
-            // the count check above still guards against a wrong pairing.
-            return true;
         }
     }
 
@@ -1029,6 +851,38 @@ public class SpringSecurityReloader {
                 || simple.equals("PreFilter") || simple.equals("PostFilter")
                 || simple.equals("Secured") || simple.equals("RolesAllowed")
                 || simple.equals("DenyAll") || simple.equals("PermitAll");
+    }
+
+    private static boolean beanMethod(java.lang.reflect.Method method) {
+        for (var annotation : method.getDeclaredAnnotations())
+            if (annotation.annotationType().getName().equals("org.springframework.context.annotation.Bean")) return true;
+        return false;
+    }
+
+    private static boolean possibleFactory(Class<?> type) {
+        try {
+            for (Class<?> owner = type; owner != null && owner != Object.class; owner = owner.getSuperclass()) {
+                for (var annotation : owner.getDeclaredAnnotations())
+                    if (annotation.annotationType().getName().equals("org.springframework.context.annotation.Configuration")) return true;
+                for (var method : owner.getDeclaredMethods()) if (beanMethod(method)) return true;
+            }
+        } catch (LinkageError unavailable) { /* optional method types */ }
+        return false;
+    }
+
+    static boolean declaresChain(Class<?> type) {
+        try {
+            Class<?> chain = Class.forName(CHAIN, false, type.getClassLoader());
+            for (var method : type.getDeclaredMethods())
+                if (chain.isAssignableFrom(method.getReturnType()) && beanMethod(method)) return true;
+        } catch (ClassNotFoundException | LinkageError unavailable) { /* security is optional */ }
+        return false;
+    }
+
+    private static boolean extendsAdapter(Class<?> type) {
+        for (Class<?> c = type; c != null; c = c.getSuperclass())
+            if (c.getName().equals("org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter")) return true;
+        return false;
     }
 
     private boolean isSecurityConfigClass(Class<?> clazz) {
