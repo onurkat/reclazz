@@ -75,6 +75,12 @@ final class SpringReflection {
 
     static boolean loadXml(Object tempFactory, File xmlFile, ClassLoader springLoader, Object environment,
                            Class<?> documentReader, java.util.function.Consumer<String> missingClass) {
+        return loadXml(tempFactory, xmlFile, springLoader, environment, documentReader, missingClass, null);
+    }
+
+    static boolean loadXml(Object tempFactory, File xmlFile, ClassLoader springLoader, Object environment,
+                           Class<?> documentReader, java.util.function.Consumer<String> missingClass,
+                           org.w3c.dom.Document resolvedDocument) {
         // Spring finds the handler for a namespace like context: or util: by
         // reading META-INF/spring.handlers from the classpath, through the
         // reader's classloader and, failing that, the thread's. Both default to
@@ -119,8 +125,13 @@ final class SpringReflection {
             com.onurkat.reclazz.platform.SpringXmlAliases.begin(reader, resource);
 
             Class<?> resourceIface = loadClass(CLS_RESOURCE, springLoader);
-            Method load = readerCls.getMethod("loadBeanDefinitions", resourceIface);
-            load.invoke(reader, resource);
+            if (resolvedDocument == null) {
+                readerCls.getMethod("loadBeanDefinitions", resourceIface).invoke(reader, resource);
+            } else {
+                // Keep the native reader and the original file as the base for imports.
+                readerCls.getMethod("registerBeanDefinitions", org.w3c.dom.Document.class, resourceIface)
+                        .invoke(reader, resolvedDocument, resource);
+            }
             com.onurkat.reclazz.platform.SpringXmlAliases.complete(reader, resource);
             clearSources(tempFactory);
             return true;

@@ -962,12 +962,15 @@ public class ReclazzAgent {
                 };
             }
 
-            watcherExecutor = Executors.newSingleThreadExecutor(r -> {
+            // The watch loop occupies one worker; XML deadlines must fire even with no filesystem events.
+            var watchPool = Executors.newScheduledThreadPool(2, r -> {
                 Thread t = new Thread(r, "Reclazz-Watcher");
                 t.setDaemon(true);
                 return t;
             });
 
+            watcherExecutor = watchPool;
+            springXmlReloader.setClassWaitTimer(watchPool);
             running = true;
             // submit() hands anything thrown to a Future nobody holds. The
             // watcher dying that way is a session where saving a file does

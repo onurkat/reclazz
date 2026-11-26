@@ -60,24 +60,44 @@ import com.onurkat.reclazz.util.Reflect;
 public final class SpringXmlReloader {
 
     private final PlatformContext platformContext;
-    private final java.util.Map<Path, java.util.Set<String>> pendingClasses = new java.util.LinkedHashMap<>();
+    private static final class PendingXml {
+        final java.util.Set<String> names = new java.util.LinkedHashSet<>();
+        java.util.concurrent.ScheduledFuture<?> warning;
+    }
+    private final java.util.Map<Path, PendingXml> pendingClasses = new java.util.LinkedHashMap<>();
+    private java.util.concurrent.ScheduledExecutorService waitTimer;
     private String retryingClass;
 
-    private void awaitClass(Path xml, String className) {
-        if (!className.equals(retryingClass)) {
-            pendingClasses.computeIfAbsent(xml, ignored -> new java.util.LinkedHashSet<>()).add(className);
-        }
+    public synchronized void setClassWaitTimer(java.util.concurrent.ScheduledExecutorService timer) {
+        waitTimer = timer;
     }
 
-    /** Reparse the current file once the exact missing class or newly added setter is available. */
+    private void discardHold(Path path) {
+        PendingXml hold = pendingClasses.remove(path);
+        if (hold != null && hold.warning != null) hold.warning.cancel(false);
+    }
+
+    private void awaitClass(Path xml, String className) {
+        if (!className.equals(retryingClass))
+            pendingClasses.computeIfAbsent(xml, ignored -> new PendingXml()).names.add(className);
+    }
+
+    private synchronized void reportWait(Path path, PendingXml hold) {
+        if (pendingClasses.get(path) == hold)
+            StatusReporter.warn(path.getFileName() + " references " + String.join(", ", hold.names)
+                    + " that is not compiled yet; save again after building");
+    }
+
+    /** Retry once, after the last missing class or setter in this save arrives. */
     public synchronized void classReady(String className) {
-        var ready = pendingClasses.entrySet().stream().filter(e -> e.getValue().contains(className))
+        var ready = pendingClasses.entrySet().stream()
+                .filter(entry -> entry.getValue().names.remove(className) && entry.getValue().names.isEmpty())
                 .map(java.util.Map.Entry::getKey).toList();
         String previous = retryingClass;
         try {
             retryingClass = className;
             for (Path path : ready) {
-                pendingClasses.remove(path);
+                discardHold(path);
                 if (java.nio.file.Files.isRegularFile(path)) reload(path);
             }
         } finally {
@@ -112,11 +132,29 @@ public final class SpringXmlReloader {
 
     /** Entry for filenames recognized by captured resource identity, never by bean names. */
     public synchronized void reloadLoaded(Path xmlPath) {
-        pendingClasses.remove(xmlPath);
+        discardHold(xmlPath);
         List<Object> owners = SpringXmlResources.owners(xmlPath, gatherCandidateContexts());
         if (owners.isEmpty()) {
             StatusReporter.info("Spring XML " + xmlPath.getFileName() + ", no active owner; nothing applied");
             return;
+        }
+        var resolvedDocuments = new java.util.IdentityHashMap<Object, org.w3c.dom.Document>();
+        if (platformContext instanceof HybrisPlatformContext) {
+            var missing = new java.util.LinkedHashSet<String>();
+            for (Object owner : owners) {
+                Object factory = SpringReflection.getBeanFactory(owner);
+                if (factory == null) continue;
+                try {
+                    ClassLoader loader = (ClassLoader) factory.getClass().getMethod("getBeanClassLoader").invoke(factory);
+                    var check = XmlReferenceClasses.inspect(xmlPath, loader, factory);
+                    missing.addAll(check.missing());
+                    if (check.resolvedDocument() != null) resolvedDocuments.put(owner, check.resolvedDocument());
+                } catch (ReflectiveOperationException failure) {
+                    StatusReporter.warn("Spring XML: application bean classloader unavailable");
+                    return;
+                }
+            }
+            if (holdReferences(xmlPath, missing)) return;
         }
         List<OwnerChange> changes = new ArrayList<>();
         for (Object context : owners) {
@@ -124,7 +162,6 @@ public final class SpringXmlReloader {
             if (factory == null) continue;
             try {
                 ClassLoader loader = (ClassLoader) factory.getClass().getMethod("getBeanClassLoader").invoke(factory);
-                if (awaitReferenceClasses(xmlPath, loader, factory)) continue;
                 Object temporary = SpringReflection.newTempBeanFactory(loader);
                 Object environment = context.getClass().getMethod("getEnvironment").invoke(context);
                 // Parsed the way the context parsed it, or SAP's lazy web beans
@@ -132,7 +169,7 @@ public final class SpringXmlReloader {
                 Class<?> documentReader = SpringXmlResources.documentReader(xmlPath, context);
                 if (documentReader != null) PlatformTenant.ensureActive(loader);
                 if (temporary != null && SpringReflection.loadXml(temporary, xmlPath.toFile(), loader, environment,
-                        documentReader, missing -> awaitClass(xmlPath, missing)))
+                        documentReader, missing -> awaitClass(xmlPath, missing), resolvedDocuments.get(context)))
                     changes.add(new OwnerChange(temporary, context, factory,
                             owners.size() == 1 ? "" : " [context " + (owners.indexOf(context) + 1) + "/" + owners.size() + "]", true,
                             documentReader == null ? null : loader));
@@ -145,18 +182,18 @@ public final class SpringXmlReloader {
         processRegistrations.accept(com.onurkat.reclazz.platform.SapProcessDefinitions.registeredFrom(xmlPath));
     }
 
-    private boolean awaitReferenceClasses(Path path, ClassLoader loader, Object factory) {
-        // Only the SAP platform loader needs protection against caching a class miss.
-        if (!(platformContext instanceof HybrisPlatformContext)) return false;
-        var missing = XmlReferenceClasses.missing(path, loader, factory);
-        for (String name : missing) awaitClass(path, name);
-        if (!missing.isEmpty()) StatusReporter.info("Spring XML " + path.getFileName()
-                + " waiting for referenced classes: " + String.join(", ", missing));
-        return !missing.isEmpty();
+    private boolean holdReferences(Path path, java.util.Set<String> missing) {
+        if (missing.isEmpty()) return false;
+        PendingXml hold = pendingClasses.computeIfAbsent(path, ignored -> new PendingXml());
+        hold.names.addAll(missing);
+        if (waitTimer != null && hold.warning == null)
+            hold.warning = waitTimer.schedule(() -> reportWait(path, hold), 10, java.util.concurrent.TimeUnit.SECONDS);
+        StatusReporter.info("Spring XML " + path.getFileName() + " waiting for referenced classes: " + String.join(", ", missing));
+        return true;
     }
 
     public synchronized void reload(Path xmlPath) {
-        pendingClasses.remove(xmlPath);
+        discardHold(xmlPath);
         if (!SpringXmlResources.owners(xmlPath, gatherCandidateContexts()).isEmpty()) {
             reloadLoaded(xmlPath);
             return;
@@ -195,13 +232,18 @@ public final class SpringXmlReloader {
         }
 
         // Sandbox parse. If this fails, we haven't touched any live context.
-        if (awaitReferenceClasses(xmlPath, springCl, parseFactory)) return;
+        org.w3c.dom.Document resolved = null;
+        if (platformContext instanceof HybrisPlatformContext) {
+            var check = XmlReferenceClasses.inspect(xmlPath, springCl, parseFactory);
+            if (holdReferences(xmlPath, check.missing())) return;
+            resolved = check.resolvedDocument();
+        }
         Object tempFactory = SpringReflection.newTempBeanFactory(springCl);
         if (tempFactory == null) {
             StatusReporter.warn("Spring XML: DefaultListableBeanFactory not on classpath, skip");
             return;
         }
-        if (!SpringReflection.loadXml(tempFactory, xmlPath.toFile(), springCl, null, null, missing -> awaitClass(xmlPath, missing))) {
+        if (!SpringReflection.loadXml(tempFactory, xmlPath.toFile(), springCl, null, null, missing -> awaitClass(xmlPath, missing), resolved)) {
             // Parse error is already reported by SpringReflection.loadXml.
             return;
         }
