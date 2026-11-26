@@ -10,8 +10,12 @@ import com.intellij.execution.process.ProcessEvent
 import com.intellij.execution.process.ProcessListener
 import com.intellij.openapi.util.Key
 import com.intellij.openapi.util.SystemInfo
+import com.sun.jna.platform.win32.Shell32Util
 import java.nio.file.Files
 import java.nio.file.Path
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ExecutionException
+import java.util.concurrent.TimeUnit
 
 /**
  * Runs `ant server` in bin/platform the way SAP Commerce documents it: the platform's setantenv script first, so its own
@@ -126,21 +130,42 @@ internal object SapServerProcess {
                 val process = pid?.takeIf { it > 0 }?.let { ProcessHandle.of(it).orElse(null) }
                 if (process == null || !process.isAlive) return@any false
                 val info = process.info()
-                val args = info.arguments().orElse(null)
-                if (args != null && args.isNotEmpty()) {
-                    val bin = args.firstOrNull { it.startsWith("-DHYBRIS_BIN_DIR=") }?.substringAfter('=')
-                    return@any bin != null && Files.isSameFile(Path.of(bin), home.resolve("bin")) &&
-                        args.contains("org.apache.catalina.startup.Bootstrap")
-                }
-                // Windows may expose the executable and start time without arguments. The Java wrapper
-                // writes its PID at startup. A later process reusing a stale PID must not block a build.
-                val executable = info.command().orElse(null)?.let { Path.of(it).fileName.toString() }
-                val started = info.startInstant().orElse(null) ?: return@any false
-                executable in listOf("java.exe", "javaw.exe") &&
-                    java.time.Duration.between(started, Files.getLastModifiedTime(file).toInstant()).seconds in -1..15
+                val args = info.arguments().orElse(null)?.takeIf { it.isNotEmpty() }
+                    ?: windowsArguments(process) ?: return@any false
+                val bin = args.firstOrNull { it.startsWith("-DHYBRIS_BIN_DIR=") }?.substringAfter('=')
+                bin != null && Files.isSameFile(Path.of(bin), home.resolve("bin")) &&
+                    args.contains("org.apache.catalina.startup.Bootstrap") && process.isAlive
             } catch (_: java.io.IOException) { false }
               catch (_: SecurityException) { false }
               catch (_: java.nio.file.InvalidPathException) { false }
+        }
+    }
+
+    /** The JDK may omit arguments on Windows. Neither a recent PID file nor a listening Java PID identifies Tomcat. */
+    private fun windowsArguments(process: ProcessHandle): Array<String>? {
+        if (!SystemInfo.isWindows) return null
+        val name = process.info().command().orElse(null)?.let { Path.of(it).fileName.toString() }
+        if (!name.equals("java.exe", true) && !name.equals("javaw.exe", true)) return null
+        val system = System.getenv("SystemRoot") ?: return null
+        val powershell = Path.of(system, "System32", "WindowsPowerShell", "v1.0", "powershell.exe")
+        val script = "[Console]::OutputEncoding = [Text.UTF8Encoding]::new(\$false); " +
+            "[Console]::Write((Get-CimInstance Win32_Process -Filter 'ProcessId=${process.pid()}' -ErrorAction Stop).CommandLine)"
+        val query = ProcessBuilder(powershell.toString(), "-NoProfile", "-NonInteractive", "-Command", script)
+            .redirectError(ProcessBuilder.Redirect.DISCARD).start()
+        try {
+            val output = CompletableFuture.supplyAsync {
+                query.inputStream.bufferedReader(Charsets.UTF_8).use { it.readText() }
+            }
+            if (!query.waitFor(5, TimeUnit.SECONDS) || query.exitValue() != 0) return null
+            val line = output.get()
+            return if (line.isBlank()) null else Shell32Util.CommandLineToArgv(line)
+        } catch (_: InterruptedException) {
+            Thread.currentThread().interrupt()
+            return null
+        } catch (_: ExecutionException) {
+            return null
+        } finally {
+            if (query.isAlive) query.destroyForcibly()
         }
     }
 }
