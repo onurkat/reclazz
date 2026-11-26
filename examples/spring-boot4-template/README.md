@@ -18,7 +18,7 @@ cd examples/spring-boot4-template
 ./gradlew bootRun -PreclazzMode=manual -Dmaven.repo.local="$SAMPLE_MAVEN_REPO"
 ```
 
-The sample pins the current source artifact version 1.10.1. Local publication is
+The sample pins the current source artifact version 1.10.2. Local publication is
 required to test the source candidate rather than a previously published jar.
 No remote publication is involved. Only run one mode at a time on port8084.
 

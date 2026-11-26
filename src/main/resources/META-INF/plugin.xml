@@ -110,6 +110,11 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h3>1.10.2</h3>
+        <ul>
+            <li><b>Setup wizard:</b> if your SAP Commerce server is still running, the wizard says so before ant server instead of failing; a failed ant build (BUILD FAILED) is shown with its output, Retry and Copy output; the last page has a Finish button.</li>
+            <li><b>New dependencies on save:</b> adding a constructor parameter (or a Lombok final field) to a Spring bean now injects the new dependency on save when it resolves to one bean or an explicit @Qualifier. On SAP Commerce, a new XML property reference with its setter applies in either save order. Anything ambiguous reports a restart and keeps the previous bean serving.</li>
+        </ul>
         <h3>1.10.1</h3>
         <ul>
             <li><b>Setup wizard:</b> opens by itself as a dialog after you install, reinstall or update Reclazz while a project still needs setup. Each step shows its state and the button to fix it (turn Reclazz on; for SAP Commerce, the exact local.properties lines, then ant server with live output; connect an AI assistant). Reopen it any time from Tools &gt; Set Up Reclazz.</li>
