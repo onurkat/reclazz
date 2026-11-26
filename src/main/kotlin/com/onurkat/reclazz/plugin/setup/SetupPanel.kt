@@ -56,6 +56,7 @@ internal class SetupPanel(private val project: Project, private val wizard: Bool
 
     private val content = JPanel(VerticalLayout(JBUI.scale(12))).apply { isOpaque = false }
     private val antLog = JBTextArea(10, 80).apply { isEditable = false; lineWrap = false }
+    private var wizardConsole: JBScrollPane? = null
     /** The page: a centred column of at most [MAX_WIDTH], scrolling vertically and following the window's width. */
     private val page = object : JPanel(), javax.swing.Scrollable {
         init {
@@ -67,16 +68,24 @@ internal class SetupPanel(private val project: Project, private val wizard: Bool
                 override fun preferredLayoutSize(parent: java.awt.Container): Dimension {
                     val w = columnWidth(parent.width.takeIf { it > 0 } ?: JBUI.scale(MAX_WIDTH))
                     content.setSize(w, content.height); content.doLayout()
-                    return Dimension(w + 2 * pad(), content.preferredSize.height + 2 * pad())
+                    val h = content.preferredSize.height
+                    return Dimension(w + 2 * pad(), h + 2 * verticalPad(h))
                 }
                 override fun layoutContainer(parent: java.awt.Container) {
                     val w = columnWidth(parent.width)
-                    content.setBounds((parent.width - w) / 2, pad(), w, content.preferredSize.height)
+                    val h = content.preferredSize.height
+                    content.setBounds((parent.width - w) / 2, verticalPad(h), w, h)
                 }
             }
             add(content)
         }
         private fun pad() = if (width in 1 until JBUI.scale(420)) JBUI.scale(10) else JBUI.scale(24)
+        private fun verticalPad(contentHeight: Int): Int {
+            val normal = pad()
+            val viewport = parent as? javax.swing.JViewport ?: return normal
+            if (!wizard || viewport.height <= 0) return normal
+            return ((viewport.extentSize.height - contentHeight) / 2).coerceIn(JBUI.scale(8), normal)
+        }
         private fun columnWidth(total: Int) = maxOf(minOf(total - 2 * pad(), JBUI.scale(MAX_WIDTH)), 1)
         override fun getPreferredScrollableViewportSize(): Dimension = preferredSize
         override fun getScrollableUnitIncrement(r: java.awt.Rectangle, o: Int, d: Int) = JBUI.scale(16)
@@ -84,11 +93,13 @@ internal class SetupPanel(private val project: Project, private val wizard: Bool
         override fun getScrollableTracksViewportWidth() = true
         override fun getScrollableTracksViewportHeight() = false
     }
-    val component: JComponent = JBScrollPane(page).apply {
+    private val pageScroll = JBScrollPane(page).apply {
         border = JBUI.Borders.empty()
         horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
         viewport.background = UIUtil.getPanelBackground()
     }
+
+    val component: JComponent get() = pageScroll
 
     @Volatile private var observed = SetupFactsCollector.Observed()
     private var facts: SetupFacts? = null
@@ -104,6 +115,9 @@ internal class SetupPanel(private val project: Project, private val wizard: Bool
 
     init {
         antLog.font = EditorColorsManager.getInstance().globalScheme.let { Font(it.editorFontName, Font.PLAIN, JBUI.scaleFontSize(12f)) }
+        if (wizard) pageScroll.viewport.addComponentListener(object : java.awt.event.ComponentAdapter() {
+            override fun componentResized(event: java.awt.event.ComponentEvent) = sizeWizardConsole()
+        })
         timer.start()
         refresh()
     }
@@ -175,6 +189,7 @@ internal class SetupPanel(private val project: Project, private val wizard: Bool
     private fun render() {
         val f = facts ?: return
         if (evaluated.isEmpty()) return
+        wizardConsole = null
         content.removeAll()
         content.add(header(f))
         val current = SetupFlow.current(evaluated)
@@ -206,6 +221,18 @@ internal class SetupPanel(private val project: Project, private val wizard: Bool
         if (!wizard && complete) content.add(finished(f))
         content.revalidate(); content.repaint()
         component.revalidate(); component.repaint()
+    }
+
+    /** Reserve the body for instructions and retry actions; longer output scrolls within the log. */
+    private fun sizeWizardConsole() {
+        val console = wizardConsole ?: return
+        val available = pageScroll.viewport.extentSize.height
+        if (available <= 0) return
+        val cap = JBUI.scale(160)
+        val twoLines = 2 * antLog.getFontMetrics(antLog.font).height + antLog.insets.top + antLog.insets.bottom
+        val height = (available / 6).coerceIn(minOf(twoLines, cap), cap)
+        val current = console.preferredSize
+        if (current.height != height) console.preferredSize = Dimension(current.width, height)
     }
 
     // ---- header ----
@@ -403,6 +430,10 @@ internal class SetupPanel(private val project: Project, private val wizard: Bool
         else panel.add(JBScrollPane(area).apply {
             isOpaque = false; viewport.isOpaque = false; border = JBUI.Borders.empty()
             preferredSize = Dimension(JBUI.scale(400), maxHeight)
+            if (wizard && area === antLog) {
+                wizardConsole = this
+                sizeWizardConsole()
+            }
         }, BorderLayout.CENTER)
         return panel
     }
