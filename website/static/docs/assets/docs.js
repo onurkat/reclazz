@@ -1,10 +1,11 @@
 /* Progressive enhancement: every guide and matrix entry is present in the HTML. */
 (() => {
   const root = document.documentElement;
+  const local = (en, tr) => root.lang === 'tr' ? tr : en;
   const themeButton = document.getElementById('theme-toggle');
   themeButton.hidden = false;
   const describeTheme = () => {
-    themeButton.setAttribute('aria-label', `Switch to ${root.dataset.theme === 'dark' ? 'light' : 'dark'} theme`);
+    themeButton.setAttribute('aria-label', local(`Switch to ${root.dataset.theme === 'dark' ? 'light' : 'dark'} theme`, root.dataset.theme === 'dark' ? 'Açık temaya geç' : 'Koyu temaya geç'));
     themeButton.setAttribute('title', themeButton.getAttribute('aria-label'));
   };
   describeTheme();
@@ -19,11 +20,11 @@
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'copy-button';
-    button.textContent = 'Copy';
-    button.setAttribute('aria-label', `Copy ${block.querySelector('.code-label').textContent} example`);
+    button.textContent = local('Copy', 'Kopyala');
+    button.setAttribute('aria-label', local(`Copy ${block.querySelector('.code-label').textContent} example`, `${block.querySelector('.code-label').textContent} örneğini kopyala`));
     block.append(button);
     const wrap = document.createElement('button');
-    wrap.type='button'; wrap.className='wrap-button'; wrap.textContent='Wrap'; wrap.setAttribute('aria-pressed','false');
+    wrap.type='button'; wrap.className='wrap-button'; wrap.textContent=local('Wrap', 'Satırları kaydır'); wrap.setAttribute('aria-pressed','false');
     wrap.addEventListener('click',()=>{const on=block.classList.toggle('is-wrapped');wrap.setAttribute('aria-pressed',String(on));});
     block.append(wrap);
     button.addEventListener('click', async () => {
@@ -31,18 +32,18 @@
       try {
         if (!navigator.clipboard || !window.isSecureContext) throw new Error('Clipboard is unavailable');
         await navigator.clipboard.writeText(text);
-        button.textContent = 'Copied';
-        document.getElementById('copy-status').textContent = 'Example copied to clipboard.';
+        button.textContent = local('Copied', 'Kopyalandı');
+        document.getElementById('copy-status').textContent = local('Example copied to clipboard.', 'Örnek panoya kopyalandı.');
       } catch (_) {
         const selection = getSelection();
         const range = document.createRange();
         range.selectNodeContents(code);
         selection.removeAllRanges();
         selection.addRange(range);
-        button.textContent = 'Selected';
-        document.getElementById('copy-status').textContent = 'Clipboard is unavailable. The example is selected; use your keyboard to copy.';
+        button.textContent = local('Selected', 'Seçildi');
+        document.getElementById('copy-status').textContent = local('Clipboard is unavailable. The example is selected; use your keyboard to copy.', 'Panoya erişilemiyor. Seçili örneği klavyeyle kopyalayabilirsiniz.');
       }
-      setTimeout(() => { button.textContent = 'Copy'; }, 2200);
+      setTimeout(() => { button.textContent = local('Copy', 'Kopyala'); }, 2200);
     });
   });
 
@@ -140,7 +141,29 @@
   const statusLine = document.getElementById('search-status');
   if (typeof dialog.showModal !== 'function') return;
   openButton.hidden = false;
-  openButton.setAttribute('aria-label', 'Search documentation (Control or Command K)');
+  function localizeShell() {
+    describeTheme();
+    openButton.setAttribute('aria-label', local('Search documentation (Control or Command K)', 'Belgelerde ara (Control veya Command K)'));
+    document.getElementById('search-title').textContent = local('Search documentation', 'Belgelerde ara');
+    searchInput.placeholder = local('What would you like to reload?', 'Neyi yeniden yüklemek istiyorsunuz?');
+    document.getElementById('search-close').setAttribute('aria-label', local('Close search', 'Aramayı kapat'));
+    statusLine.textContent = local('Search guides, changes and limits. Your query stays in this browser.', 'Rehberleri, değişiklikleri ve sınırları arayın. Sorgunuz bu tarayıcıda kalır.');
+    document.querySelector('.search-hint').textContent = local('↑ ↓ to select · Enter to open · Esc to close', '↑ ↓ ile seçin · Enter ile açın · Esc ile kapatın');
+    const labels = [
+      ['.brand', 'Reclazz home', 'Reclazz ana sayfası'],
+      ['.header-links', 'Main navigation', 'Ana menü'],
+      ['.site-menu summary', 'Site navigation', 'Site menüsü'],
+      ['.site-menu nav', 'Mobile main navigation', 'Mobil ana menü'],
+      ['.site-footer nav:nth-of-type(1)', 'Product links', 'Ürün bağlantıları'],
+      ['.site-footer nav:nth-of-type(2)', 'Project links', 'Proje bağlantıları'],
+      ['.site-footer nav:nth-of-type(3)', 'Legal links', 'Yasal bilgiler'],
+    ];
+    for (const [selector, en, tr] of labels) {
+      document.querySelectorAll(selector).forEach(el => el.setAttribute('aria-label', local(en, tr)));
+    }
+  }
+  localizeShell();
+  new MutationObserver(localizeShell).observe(root, {attributes:true, attributeFilter:['lang']});
   let records = null;
   let loading = null;
   let active = -1;
@@ -169,13 +192,13 @@
   const render = async () => {
     const revision = ++searchRevision;
     const terms = searchInput.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
-    statusLine.textContent = 'Loading the local documentation index…';
+    statusLine.textContent = local('Loading the local documentation index…', 'Belge dizini yükleniyor…');
     let data;
     try { data = await loadIndex(); }
     catch (_) {
       if (revision !== searchRevision) return;
       results.replaceChildren(); links = []; active = -1;
-      statusLine.textContent = 'Search could not load. Check your connection, then type again to retry. All guides remain available in the documentation menu.';
+      statusLine.textContent = local('Search could not load. Check your connection, then type again to retry. All guides remain available in the documentation menu.', 'Arama yüklenemedi. Bağlantınızı kontrol edip yeniden yazın. Tüm rehberlere belge menüsünden ulaşabilirsiniz.');
       return;
     }
     if (revision !== searchRevision) return;
@@ -211,7 +234,7 @@
       link.append(section, title, preview); results.append(link);
     }
     links = [...results.querySelectorAll('a')]; active = -1;
-    statusLine.textContent = terms.length ? (matches.length ? `${matches.length} results. Showing ${shown.length}.` : 'No results. Try another keyword, annotation or framework name.') : 'Suggested starting points. Your search stays in this browser.';
+    statusLine.textContent = terms.length ? (matches.length ? local(`${matches.length} results. Showing ${shown.length}.`, `${matches.length} sonuç bulundu. ${shown.length} sonuç gösteriliyor.`) : local('No results. Try another keyword, annotation or framework name.', 'Sonuç bulunamadı. Başka bir sözcük, anotasyon veya framework adı deneyin.')) : local('Suggested starting points. Your search stays in this browser.', 'Başlangıç için öneriler. Sorgunuz bu tarayıcıda kalır.');
   };
   const openSearch = () => {
     if (!dialog.open) dialog.showModal();

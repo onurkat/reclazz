@@ -21,6 +21,7 @@ class Document(HTMLParser):
         self.headers = 0; self.footers = 0
         self.mains = 0; self.title_count = 0; self.canonical = []; self.active = 0
         self.lang = None; self.images = []
+        self.skip_link = False
         self.feed(text)
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
@@ -28,6 +29,8 @@ class Document(HTMLParser):
         if a.get('id'): self.ids.append(a['id'])
         if tag in ('a','link') and a.get('href'): self.links.append(a['href'])
         if tag in ('img','script') and a.get('src'): self.links.append(a['src'])
+        if tag == 'a' and 'skip-link' in a.get('class', '').split() and a.get('href') == '#main':
+            self.skip_link = True
         if tag == 'img': self.images.append(a)
         if tag == 'a' and a.get('aria-current') == 'page': self.active += 1
         if tag in ('h1','h2','h3','h4','h5','h6'): self.headings.append(int(tag[1]))
@@ -171,7 +174,8 @@ def check_site(output, revision='main'):
         check('{{SITE_' not in path.read_text(), str(path)+': unexpanded layout marker')
         check(len(doc.canonical) == 1, str(path) + ': require canonical URL')
         check(all('alt' in img for img in doc.images), str(path) + ': image lacks alt')
-        check('Skip to content' in path.read_text(), str(path) + ': missing skip link')
+        skip_text = 'İçeriğe geç' if doc.lang == 'tr' else 'Skip to content'
+        check(doc.skip_link and 'main' in doc.ids and skip_text in path.read_text(), str(path) + ': missing skip link')
         for href in doc.links:
             parsed = urlsplit(href)
             if parsed.netloc == 'github.com' and '/docs/' in parsed.path and parsed.fragment:

@@ -32,7 +32,7 @@ async function setLang(lang) {
     currentLang = lang;
     try { localStorage.setItem('reclazz-lang', lang); } catch (_) { /* Keep the in-page language. */ }
     langToggle.textContent = lang === 'en' ? 'TR' : 'EN';
-    langToggle.setAttribute('aria-label', lang === 'en' ? 'Switch language to Turkish' : 'Switch language to English');
+    langToggle.setAttribute('aria-label', lang === 'en' ? 'Switch language to Turkish' : 'İngilizceye geç');
     document.documentElement.lang = lang;
     document.querySelectorAll('[data-sap-setup]').forEach(link => {
         link.setAttribute('href', lang === 'tr' ? '/tr/sap-commerce-kurulum/' : '/docs/sap-commerce/');

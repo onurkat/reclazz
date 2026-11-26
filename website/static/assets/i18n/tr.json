@@ -88,9 +88,9 @@
   "cmp.sap-model-xml.hotswap": "Belgelenmemiş",
   "hero.install": "IntelliJ eklentisini kurun",
   "hero.start": "Nasıl kurulur",
-  "demo.caption": "DefaultShopPriceService içindeki indirim %10'dan %15'e çıkarılıyor. Build'den sonra çalışan sunucudaki ceketin fiyatı 72.00'den 68.00'e düşüyor. Aynı sunucu süreci, restart yok.",
+  "demo.caption": "DefaultShopPriceService içindeki indirim %10’dan %15’e çıkarılıyor. Derlemenin ardından ceketin fiyatı 72,00 avrodan 68,00 avroya düşüyor. Aynı sunucu çalışmaya devam ediyor.",
   "hero.badge": "Ücretsiz ve açık kaynak. Java {{CLAIM:agent_java_min}} ve üzeri.",
-  "hero.title": "Her kod değişikliğini görmek için SAP Commerce'i yeniden başlatmayın",
+  "hero.title": "SAP Commerce'i her değişiklikte yeniden başlatmayın",
   "hero.subtitle": "Reclazz, değişen Java sınıflarınızı zaten çalışan sunucuya yükler. Bir metodu değiştirin, build alın, sayfayı yenileyin. Restart yok, oturumunuz da açık kalır.",
   "install.title": "Kurulum birkaç dakika sürer",
   "install.intro": "Projenizi ilk açtığınızda eklenti bir kurulum penceresi açar. SAP Commerce için local.properties'e iki satır ekler, ant server'ı sizin için çalıştırır ve bir kez ne zaman restart etmeniz gerektiğini söyler. Spring Boot ya da düz bir Java projesinde yalnızca Reclazz'ı açmanız yeterli.",
@@ -126,5 +126,8 @@
   "setup.fullsize": "Ekran görüntüsünü tam boyutta aç",
   "film.build": "Build alın. Reclazz değişen sınıfı çalışan sunucuya yükler.",
   "film.edit": "Hafta sonu indirimini %10'dan %15'e çıkarın.",
-  "film.refresh": "Ürün sayfasını yenileyin. Aynı sunucuda fiyat 72.00'den 68.00'e düşer."
+  "film.refresh": "Ürün sayfasını yenileyin. Aynı sunucuda fiyat 72,00 avrodan 68,00 avroya düşer.",
+  "site.skip": "İçeriğe geç",
+  "site.search": "Belgelerde ara",
+  "site.openSource": "Apache 2.0 · Açık kaynak olarak geliştiriliyor."
 }

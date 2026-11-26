@@ -46,7 +46,8 @@
 .stage-a :is(a,button,summary,video):focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
 .stage-a .brand:hover { text-decoration: none; }
 .stage-a .sa-hero { padding-block: clamp(32px,4.5vw,72px) 0; }
-.hero-copy { display: grid; grid-template-columns: 1.1fr 1fr; gap: 8%; align-items: center; }
+.hero-copy { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 64px); align-items: start; }
+.stage-a .hero-copy h1 { font-size: clamp(2.4rem, 3.7vw, 3.75rem); max-width: none; }
 .hero-intro { max-width: 56ch; }
 .stage-a .sa-lede, .stage-a .sa-intro { font-size: 1.06rem; margin: 0 0 20px; max-width: 62ch; }
 .sa-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }

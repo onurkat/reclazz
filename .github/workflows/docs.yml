@@ -6,6 +6,7 @@ on:
       - 'docs/**'
       - 'website/**'
       - 'scripts/*docs-site.py'
+      - 'scripts/check-home-layout.py'
       - 'requirements-docs.txt'
       - 'README.md'
       - 'CHANGELOG.md'
@@ -18,6 +19,7 @@ on:
       - 'docs/**'
       - 'website/**'
       - 'scripts/*docs-site.py'
+      - 'scripts/check-home-layout.py'
       - 'requirements-docs.txt'
       - 'README.md'
       - 'CHANGELOG.md'
@@ -51,6 +53,8 @@ jobs:
         run: python scripts/build-docs-site.py --revision "$GITHUB_SHA"
       - name: Check source coverage, routes, anchors and evidence
         run: python scripts/check-docs-site.py --revision "$GITHUB_SHA"
+      - name: Check English and Turkish home headlines in Chrome
+        run: python scripts/check-home-layout.py
       - name: Package the checked site
         uses: actions/upload-pages-artifact@v5
         with:
