@@ -85,7 +85,7 @@ cat > /tmp/fixture/.idea/runConfigurations/Fixture.xml <<'XML'
 <module name="fixture"/><method v="2"/></configuration></component>
 XML
 
-javac --release 17 -proc:none -cp '/tmp/ide/lib/*:/tmp/ide/plugins/java/lib/*:/tmp/plugins/reclazz/lib/*' -d /tmp/driver /suite/driver/IdeActions.java
+javac --release 17 -proc:none -cp '/tmp/ide/lib/*:/tmp/ide/plugins/java/lib/*:/tmp/plugins/reclazz/lib/*' -d /tmp/driver /suite/driver/*.java
 cp -R /suite/driver/META-INF /tmp/driver/
 mkdir -p /tmp/plugins/ui-driver/lib
 jar cf /tmp/plugins/ui-driver/lib/driver.jar -C /tmp/driver .
@@ -110,7 +110,18 @@ cat >> /tmp/profile.vmoptions <<'OPTIONS'
 OPTIONS
 export IDEA_VM_OPTIONS=/tmp/profile.vmoptions DISPLAY=:73
 screen=1280x900x24
-if [[ "${1:-}" == wizard* ]]; then screen=1366x768x24; fi
+export RECLAZZ_UI_PROFILE=${2:-default}
+if [[ ${1:-} == wizard* || $RECLAZZ_UI_PROFILE != default ]]; then screen=1366x768x24; fi
+if [[ $RECLAZZ_UI_PROFILE == retina ]]; then
+    screen=2880x1800x24
+    echo '-Dsun.java2d.uiScale=2' >> /tmp/profile.vmoptions
+    cat > /tmp/config/options/other.xml <<'XML'
+<application><component name="NotRoamableUiSettings"><option name="overrideLafFonts" value="true"/><option name="overrideLafFontsWasMigrated" value="true"/><option name="fontSize" value="16.0"/><option name="fontScale" value="1.0"/></component></application>
+XML
+    echo '<application><component name="LafManager"><laf themeId="Darcula"/></component></application>' > /tmp/config/options/laf.xml
+elif [[ $screen == 1366x768x24 ]]; then
+    echo '<application><component name="LafManager"><laf themeId="IntelliJ"/></component></application>' > /tmp/config/options/laf.xml
+fi
 Xvfb "$DISPLAY" -screen 0 "$screen" -nolisten tcp > /out/xvfb.log 2>&1 &
 run_ide() {
     local scenario=$1
@@ -127,7 +138,17 @@ done
 echo 'Robot endpoint startup timed out' >&2
 exit 1
 }
-if [[ "${1:-all}" == wizard ]]; then
+if [[ ${1:-} == wizard-update ]]; then
+    # Compile against the candidate API; the old process only calls operations it supports.
+    mv /tmp/plugins/reclazz /tmp/candidate-install
+    unzip -q /input/previous-plugin.zip -d /tmp/plugins
+    run_ide wizard-before-update
+    wait "$ide"
+    mv /tmp/plugins/reclazz /tmp/previous-install
+    mv /tmp/candidate-install /tmp/plugins/reclazz
+    run_ide wizard-after-update
+    wait "$ide"
+elif [[ "${1:-all}" == wizard ]]; then
     echo '<application><component name="ReclazzAppState"><option name="welcomeShown" value="true"/></component></application>' > /tmp/config/options/reclazz-global.xml
     run_ide wizard
     wait "$ide"

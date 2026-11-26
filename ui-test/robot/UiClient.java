@@ -28,9 +28,54 @@ public class UiClient {
             check(proof.equals("IC-233.11799.241|true|true"), proof);
             System.out.println("Real plugin frame " + proof);
             await("ready", "fixture"::equals);
+            if (args[0].startsWith("wizard") || !System.getenv("RECLAZZ_UI_PROFILE").equals("default")) {
+                String profile = act("displayProfile");
+                System.out.println("IDE display " + profile);
+                if ("retina".equals(System.getenv("RECLAZZ_UI_PROFILE"))) {
+                    check(profile.startsWith("1440x900 scale=2.0 font=16 dark=true"), profile);
+                } else {
+                    check(profile.startsWith("1366x768 scale=1.0") && profile.contains("dark=false"), profile);
+                }
+            }
             if (args[0].startsWith("wizard")) {
                 await("wizardStartup", "started"::equals);
-                if (args[0].equals("wizard-restart")) {
+                if (args[0].equals("wizard-before-update")) {
+                    await("wizardCount", "1"::equals);
+                    await("wizardClick:Next", "clicked"::equals);
+                    await("wizardClick:Skip", "clicked"::equals);
+                    await("wizardSkipSaved", "true"::equals);
+                    await("wizardClick:Close", "clicked"::equals);
+                    String state = act("installState");
+                    check(state.startsWith("1.10.1|1.10.1|"), state);
+                    Files.writeString(output.resolve("before-update.txt"), state);
+                } else if (args[0].equals("wizard-after-update")) {
+                    String old = Files.readString(output.resolve("before-update.txt"));
+                    String state = act("installState");
+                    String[] parts = state.split("\\|");
+                    check(!state.equals(old) && !parts[0].equals("1.10.1") && parts[0].equals(parts[1])
+                            && old.endsWith("|" + parts[2]), "wrong upgrade state " + old + " -> " + state);
+                    await("welcomeTitles", t -> t.contains("Reclazz is installed, and on for this project"));
+                    check(act("wizardCount").equals("0"), "wizard automatically reopened on version update");
+                    check(act("wizardSkipSaved").equals("true"), "update lost existing project state");
+                    capture("updated-notification");
+                    System.out.println("PASS update " + old + " -> " + state + " notification only, skipped state retained");
+                } else if (args[0].equals("wizard-skipped")) {
+                    await("wizardStep", "Step 1 of 3"::equals);
+                    await("wizardClick:Next", "clicked"::equals);
+                    await("wizardClick:Skip", "clicked"::equals);
+                    await("wizardSkipSaved", "true"::equals);
+                    await("wizardClick:Close", "clicked"::equals);
+                    await("wizardCount", "0"::equals);
+                    await("wizardOpenAgain", "invoked"::equals);
+                    String reopened = await("wizardStep", t -> t.startsWith("Step "));
+                    // Older installations reopen the page that was closed; current ones start at step one.
+                    if (reopened.equals("Step 1 of 3")) await("wizardClick:Next", "clicked"::equals);
+                    await("wizardStep", "Step 2 of 3"::equals);
+                    String controls = await("wizardControls", t -> t.contains("label=Skipped"));
+                    capture("reopened-skipped");
+                    check(controls.contains("action=Connect Claude Code"), "reopened skipped step has no Connect Claude Code: " + controls);
+                    System.out.println("PASS skipped assistant offers Connect on reopen");
+                } else if (args[0].equals("wizard-restart")) {
                     check(act("wizardCount").equals("0"), "wizard reopened on unchanged restart");
                     System.out.println("PASS restart with persisted settings and same installation");
                 } else {
@@ -38,7 +83,25 @@ public class UiClient {
                     await("wizardStep", "Step 1 of 3"::equals);
                     check(act("wizardManual").equals("invoked"), "Tools action failed");
                     await("wizardSame", "true"::equals);
+                    String install = act("installState");
+                    if (args[0].equals("wizard")) Files.writeString(output.resolve("first-install.txt"), install);
+                    if (args[0].equals("wizard-reinstall")) {
+                        String[] old = Files.readString(output.resolve("first-install.txt")).split("\\|");
+                        check(install.equals(old[0] + "|" + old[1] + "|" + (Long.parseLong(old[2]) + 1)), install);
+                        check(act("wizardSkipSaved").equals("true"), "same-version reinstall lost project state");
+                        System.out.println("Same-version reinstall " + install);
+                    }
                     wizardPages(args[0]);
+                    if (args[0].equals("wizard")) {
+                        await("wizardOpenAgain", "invoked"::equals);
+                        await("wizardClick:Next", "clicked"::equals);
+                        await("wizardClick:Keep skipped", "clicked"::equals);
+                        await("wizardControls", t -> t.contains("label=All set") && t.contains("action=Finish"));
+                        check(act("wizardCompleted").equals("true"), "Tools reopen lost completion");
+                        capture("java-completed-reopened");
+                        await("wizardClick:Close", "clicked"::equals);
+                        await("wizardCount", "0"::equals);
+                    }
                     if (args[0].equals("wizard-java-off") || args[0].equals("wizard-sap")) {
                         await("wizardOpenAgain", "invoked"::equals);
                         await("wizardStep", "Step 1 of 3"::equals);
@@ -71,6 +134,16 @@ public class UiClient {
             }
             await("wizardStartup", "started"::equals);
             if (act("wizardCount").equals("1")) await("wizardClick:Close", "clicked"::equals);
+            if (args[0].equals("settings-geometry")) {
+                act("settings");
+                await("formLabels", t -> t.contains("Connect AI assistant"));
+                ImageIO.write(new Robot().createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize())),
+                        "png", output.resolve("settings.png").toFile());
+                String geometry = act("formLayout");
+                check(geometry.equals("fits"), "Settings layout: " + geometry);
+                System.out.println("PASS visible Settings form geometry");
+                return;
+            }
             act("setup");
             if (args[0].equals("settings-setup")) {
                 settingsSetup();
@@ -188,10 +261,10 @@ public class UiClient {
     static void capture(String name) throws Exception {
         ImageIO.write(new Robot().createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize())),
                 "png", output.resolve(name + ".png").toFile());
-        if (name.startsWith("sap") || name.startsWith("java") || name.startsWith("assistant")) {
-            String geometry = act("wizardViewport");
+        if (!name.equals("reopened-skipped") && !name.equals("updated-notification")) {
+            String geometry = act("wizardLayout");
             System.out.println(name + " " + geometry);
-            check(geometry.endsWith(" fits"), "setup page scrollbar visible at " + name + ": " + geometry);
+            check(geometry.equals("fits"), "layout at " + name + ": " + geometry);
         }
     }
 

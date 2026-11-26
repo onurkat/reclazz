@@ -22,5 +22,5 @@ tasks.register<Exec>("uiTest") {
         file("../gradle.properties").inputStream().use { props.load(it) }
         file("../build/distributions/reclazz-" + props.getProperty("pluginVersion") + ".zip")
     })
-    commandLine("python3", "run.py", plugin.get().absolutePath, providers.gradleProperty("uiScenario").getOrElse("all"))
+    commandLine("python3", "run.py", plugin.get().absolutePath, providers.gradleProperty("uiScenario").getOrElse("matrix"))
 }

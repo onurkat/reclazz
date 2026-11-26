@@ -39,10 +39,20 @@ def checksum(path):
     return digest.hexdigest()
 
 
+# Keep the original reload/Settings journey, then exercise the shared installation
+# and the two real display profiles in independent containers.
+MATRIX = ("all", "wizard", "wizard-java-off", "wizard-sap", "settings-setup",
+          "wizard-update", "wizard-retina", "wizard-sap-retina", "settings-laptop", "settings-retina")
+PROFILES = {"wizard-retina": ("wizard-geometry", "retina"),
+            "wizard-sap-retina": ("wizard-sap", "retina"),
+            "settings-laptop": ("settings-geometry", "laptop"),
+            "settings-retina": ("settings-geometry", "retina")}
+
+
 def main():
     scenario = sys.argv[2]
     if scenario not in ("all", "reload", "settings", "settings-sap", "settings-sap-installed", "settings-setup",
-                        "wizard", "wizard-sap", "wizard-java-off"):
+                        "wizard", "wizard-sap", "wizard-java-off", "wizard-skipped", "matrix", "wizard-update", *PROFILES):
         raise ValueError("Unknown IDE scenario: " + scenario)
     plugin = Path(sys.argv[1]).resolve(strict=True)
     arch = subprocess.check_output(["docker", "info", "--format", "{{.Architecture}}"], text=True).strip()
@@ -66,6 +76,12 @@ def main():
     report = BUILD / "reports" / "uiTest" / datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S-%fZ")
     report.mkdir(parents=True)
     print("UI evidence:", report, flush=True)
+    scenarios = MATRIX if scenario == "matrix" else (scenario,)
+    previous = None
+    if "wizard-update" in scenarios:
+        previous = download("reclazz-1.10.1.zip",
+                            "https://github.com/onurkat/reclazz/releases/download/v1.10.1/reclazz-1.10.1.zip",
+                            "979293d2d9810ba95162f27a46be76c935562d89aa1c7b6d9cf860d6d6356c39")
     cmd = ["docker", "run", "--rm", "--network", "none", "--shm-size=512m"]
     mounts = [(idea, "/input/idea.tar.gz"), (robot, "/input/robot.zip"), (plugin, "/input/plugin.zip"),
               (BUILD / "robot-libs", "/input/client-libs"),
@@ -74,8 +90,19 @@ def main():
         mounts.append((ROOT / entry, "/suite/" + entry))
     for source, target in mounts:
         cmd.extend(["-v", f"{source.resolve(strict=True)}:{target}:ro"])
-    cmd.extend(["-v", f"{report}:/out", tag, "/bin/bash", "/suite/inside.sh", scenario])
-    subprocess.run(cmd, check=True)
+    failures = []
+    for name in scenarios:
+        target = report / name
+        target.mkdir()
+        flow, profile = PROFILES.get(name, (name, "default"))
+        run = cmd.copy()
+        if name == "wizard-update":
+            run.extend(["-v", f"{previous}:/input/previous-plugin.zip:ro"])
+        run.extend(["-v", f"{target}:/out", tag, "/bin/bash", "/suite/inside.sh", flow, profile])
+        if subprocess.run(run).returncode:
+            failures.append(name)
+    if failures:
+        raise SystemExit("Failed IDE scenarios: " + ", ".join(failures))
 
 
 if __name__ == "__main__":

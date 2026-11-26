@@ -54,6 +54,26 @@ public final class IdeActions {
         Project[] projects = ProjectManager.getInstance().getOpenProjects();
         if (projects.length != 1) return "waiting for fixture";
         Project project = projects[0];
+        if (command.equals("displayProfile")) {
+            var frame = com.intellij.openapi.wm.WindowManager.getInstance().getFrame(project);
+            var graphics = frame.getGraphicsConfiguration();
+            var bounds = graphics.getBounds();
+            return bounds.width + "x" + bounds.height + " scale=" + graphics.getDefaultTransform().getScaleX()
+                    + " font=" + new JLabel().getFont().getSize() + " dark=" + com.intellij.util.ui.UIUtil.isUnderDarcula()
+                    + " theme=" + com.intellij.ide.ui.LafManager.getInstance().getCurrentLookAndFeel().getName();
+        }
+        if (command.equals("installState")) {
+            var plugin = com.intellij.ide.plugins.PluginManagerCore.getPlugin(
+                    com.intellij.openapi.extensions.PluginId.getId("com.onurkat.reclazz"));
+            var app = ApplicationManager.getApplication().getService(
+                    com.onurkat.reclazz.plugin.settings.ReclazzAppState.class).getState();
+            return plugin.getVersion() + "|" + app.getSetupVersion() + "|" + app.getSetupGeneration();
+        }
+        if (command.equals("welcomeTitles")) {
+            var items = com.intellij.notification.NotificationsManager.getNotificationsManager()
+                    .getNotificationsOfType(com.intellij.notification.Notification.class, project);
+            return java.util.Arrays.stream(items).map(n -> n.getTitle()).collect(java.util.stream.Collectors.joining("|"));
+        }
         if (command.startsWith("wizard")) {
             var dialogs = java.util.Arrays.stream(Window.getWindows())
                     .filter(w -> w instanceof JDialog d && w.isShowing() && d.getTitle().equals("Set Up Reclazz"))
@@ -96,10 +116,11 @@ public final class IdeActions {
                 dialog.setSize(dialog.getWidth() + 24, dialog.getHeight());
                 return dialog.getWidth() + "x" + dialog.getHeight();
             }
-            if (command.equals("wizardViewport")) {
+            if (command.equals("wizardViewport") || command.equals("wizardLayout")) {
                 for (var part : parts) {
                     if (part instanceof JScrollPane scroll && scroll.isShowing()
                             && SwingUtilities.getAncestorOfClass(JScrollPane.class, scroll) == null) {
+                        if (command.equals("wizardLayout")) return LayoutProbe.wizard(dialog, scroll);
                         var size = dialog.getSize();
                         return size.width + "x" + size.height + (scroll.getVerticalScrollBar().isShowing() ? " scroll" : " fits");
                     }
@@ -223,6 +244,12 @@ public final class IdeActions {
                 collect(window, parts);
                 if (parts.stream().noneMatch(c -> c instanceof JCheckBox box && box.isShowing() &&
                         "Enable Reclazz in this project".equals(box.getText()))) continue;
+                if (command.equals("formLayout")) {
+                    var anchor = parts.stream().filter(c -> c instanceof JCheckBox b && c.isShowing()
+                            && "Enable Reclazz in this project".equals(b.getText())).findFirst().orElseThrow();
+                    var form = SwingUtilities.getAncestorOfClass(com.intellij.openapi.ui.DialogPanel.class, anchor);
+                    return form == null ? "Reclazz settings form missing" : LayoutProbe.check(form);
+                }
                 if (command.equals("formLabels")) {
                     var labels = new java.util.LinkedHashSet<String>();
                     for (var c : parts) {
