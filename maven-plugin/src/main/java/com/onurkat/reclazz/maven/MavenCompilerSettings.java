@@ -34,6 +34,12 @@ final class MavenCompilerSettings {
             "debug", "debuglevel", "showWarnings", "showDeprecation", "failOnWarning", "compilerArgs",
             "compilerArgument", "compilerId", "fork", "executable", "proc", "annotationProcessors",
             "annotationProcessorPaths", "generatedSourcesDirectory");
+    private record Defaults(String languageLevel, boolean showWarnings, boolean legacy) {}
+    private static final Defaults MODERN = new Defaults("1.8", true, false);
+    private static final Map<String, Defaults> COMPILER_DEFAULTS = Map.of(
+            "3.10.1", new Defaults("1.7", false, true),
+            "3.11.0", new Defaults("1.8", true, true),
+            "3.13.0", MODERN, "3.14.0", MODERN, "3.14.1", MODERN, "3.15.0", MODERN);
     private final MavenProject project;
     private final MavenSession session;
     private final RepositorySystem resolver;
@@ -51,8 +57,10 @@ final class MavenCompilerSettings {
 
     String prepare(boolean forced) throws Exception {
         Plugin plugin = project.getPlugin(GROUP + ":" + COMPILER);
-        if (plugin == null || !Set.of("3.13.0", "3.14.0", "3.14.1", "3.15.0").contains(Objects.toString(plugin.getVersion(), "")))
-            throw new IOException("unverified Maven compiler plugin version");
+        String version = plugin == null ? "" : Objects.toString(plugin.getVersion(), "");
+        Defaults defaults = COMPILER_DEFAULTS.get(version);
+        if (defaults == null)
+            throw new IOException("unverified Maven compiler plugin version " + (version.isEmpty() ? "(unspecified)" : version));
         for (Plugin active : project.getBuildPlugins()) {
             String id = active.getArtifactId();
             if (id.contains("kotlin") || id.contains("groovy") || id.contains("scala") || id.contains("toolchain"))
@@ -72,7 +80,7 @@ final class MavenCompilerSettings {
             for (var child : config.getChildren())
                 if (!SUPPORTED.contains(child.getName())) throw new IOException("unsupported compiler option " + child.getName());
         List<String> classpath = project.getCompileClasspathElements();
-        configureProcessors(classpath, forced);
+        configureProcessors(classpath, forced, defaults);
         verifiedInPlaceProcessors = manifest.getProperty("mapstruct") == null
                 && child("compilerArgs") == null && child("compilerArgument") == null;
         if (!"javac".equals(value("compilerId", "javac"))) throw new IOException("compilerId=" + value("compilerId", ""));
@@ -96,20 +104,20 @@ final class MavenCompilerSettings {
         manifest.setProperty("roots", String.join(File.pathSeparator, roots));
         manifest.setProperty("classpath", String.join(File.pathSeparator, classpath));
         manifest.setProperty("jdk", System.getProperty("java.specification.version"));
-        String encoding = value("encoding", property("encoding", property("project.build.sourceEncoding", Charset.defaultCharset().name())));
+        String encoding = value("encoding", property("encoding", property("project.build.sourceEncoding", Charset.defaultCharset().name())), !defaults.legacy());
         manifest.setProperty("encoding", Charset.forName(encoding).name());
         String release = value("release", "");
         if (!release.isEmpty()) Collections.addAll(options, "--release", release);
-        else Collections.addAll(options, "-source", value("source", "1.8"), "-target", value("target", "1.8"));
+        else Collections.addAll(options, "-source", value("source", defaults.languageLevel()), "-target", value("target", defaults.languageLevel()));
         String level = value("debuglevel", "");
         options.add(bool("debug", true) ? (level.isEmpty() ? "-g" : "-g:" + level) : "-g:none");
         if (bool("parameters", false)) options.add("-parameters");
         if (bool("failOnWarning", false)) options.add("-Werror");
-        if (!bool("showWarnings", true)) options.add("-nowarn");
+        if (!bool("showWarnings", defaults.showWarnings())) options.add("-nowarn");
         if (bool("showDeprecation", false)) options.add("-deprecation");
         Xpp3Dom arguments = child("compilerArgs");
         if (arguments != null) for (var arg : arguments.getChildren()) addFlag(arg.getValue());
-        String single = value("compilerArgument", "");
+        String single = value("compilerArgument", "", !defaults.legacy());
         if (!single.isBlank()) for (String arg : single.trim().split("\\s+")) addFlag(arg);
         for (int i = 0; i < options.size(); i++) manifest.setProperty("option." + i, options.get(i));
         return snapshot();
@@ -127,8 +135,9 @@ final class MavenCompilerSettings {
         options.add(arg);
     }
 
-    private void configureProcessors(List<String> classpath, boolean forced) throws Exception {
-        String proc = value("proc", "");
+    private void configureProcessors(List<String> classpath, boolean forced, Defaults defaults) throws Exception {
+        // Older compile mojos accept <proc> in plugin configuration only.
+        String proc = value("proc", "", !defaults.legacy());
         if ("none".equals(proc)) { options.add("-proc:none"); return; }
         if (!proc.isEmpty() && !proc.equals("full")) throw new IOException("unsupported annotation processing mode " + proc);
         if (!proc.isEmpty()) options.add("-proc:" + proc);
@@ -142,6 +151,8 @@ final class MavenCompilerSettings {
                 for (var field : path.getChildren())
                     if (!Set.of("groupId", "artifactId", "version").contains(field.getName()))
                         throw generates(group + ":" + artifact);
+                if (version.isEmpty() && defaults.legacy())
+                    throw new IOException("missing annotation processor path version for " + group + ":" + artifact);
                 if (version.isEmpty() && project.getDependencyManagement() != null) {
                     for (var managed : project.getDependencyManagement().getDependencies())
                         if (group.equals(managed.getGroupId()) && artifact.equals(managed.getArtifactId())
@@ -178,7 +189,7 @@ final class MavenCompilerSettings {
             manifest.setProperty("mapstruct", "true");
         }
         if (!processors.isEmpty()) {
-            String generated = value("generatedSourcesDirectory", project.getBuild().getDirectory() + "/generated-sources/annotations");
+            String generated = value("generatedSourcesDirectory", project.getBuild().getDirectory() + "/generated-sources/annotations", !defaults.legacy());
             Path directory = project.getBasedir().toPath().resolve(generated).normalize();
             Path source = project.getBasedir().toPath().resolve("src/main/java").normalize();
             if (source.startsWith(directory) || directory.startsWith(source))
@@ -224,8 +235,14 @@ final class MavenCompilerSettings {
     }
 
     private String value(String key, String fallback) throws IOException {
+        return value(key, fallback, true);
+    }
+
+    private String value(String key, String fallback, boolean hasCompilerProperty) throws IOException {
         var field = child(key);
-        String value = field == null ? property("maven.compiler." + key, fallback) : field.getValue();
+        String value = fallback;
+        if (field != null) value = field.getValue();
+        else if (hasCompilerProperty) value = property("maven.compiler." + key, fallback);
         if (value == null || value.contains("${")) throw new IOException("unresolved compiler option " + key);
         return value.trim();
     }
