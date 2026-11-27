@@ -26,4 +26,9 @@ public interface RunningSystemUpdater {
      *         which case the caller keeps the "apply it in HAC" guidance.
      */
     boolean updateSchema();
+
+    /** The database update completed, but the running server still needs a restart. */
+    final class RestartRequired extends RuntimeException {
+        public RestartRequired(String message) { super(message); }
+    }
 }

@@ -86,6 +86,7 @@ class HacRunningSystemUpdaterTest {
                 package de.hybris.platform.core;
                 public class Registry {
                     private static final ThreadLocal<Boolean> active = ThreadLocal.withInitial(() -> false);
+                    public static Tenant getCurrentTenant() { return new Tenant(); }
                     public static boolean hasCurrentTenant() { return active.get(); }
                     public static void activateMasterTenant() { active.set(true); }
                 }
@@ -113,9 +114,31 @@ class HacRunningSystemUpdaterTest {
                     }
                 }
                 """);
+        var tenant = registry.resolveSibling("Tenant.java");
+        var manager = dir.resolve("de/hybris/platform/jalo/type/TypeManager.java");
+        var relation = manager.resolveSibling("RelationType.java");
+        java.nio.file.Files.createDirectories(manager.getParent());
+        java.nio.file.Files.writeString(tenant, """
+                package de.hybris.platform.core;
+                public class Tenant {
+                    public Source getDataSource() { return new Source(); }
+                    public static class Source { public String getDatabaseURL() { return "jdbc:other:test"; } }
+                }
+                """);
+        java.nio.file.Files.writeString(manager, """
+                package de.hybris.platform.jalo.type;
+                public class TypeManager {
+                    public static TypeManager getInstance() { return new TypeManager(); }
+                    public java.util.Collection<?> getAllComposedTypes() { return java.util.List.of(); }
+                }
+                """);
+        java.nio.file.Files.writeString(relation, """
+                package de.hybris.platform.jalo.type;
+                public abstract class RelationType { public abstract String getCode(); }
+                """);
         assertEquals(0, javax.tools.ToolProvider.getSystemJavaCompiler().run(null, null, null,
                 "-proc:none", "-d", dir.toString(), notifier.toString(), data.toString(), facade.toString(),
-                registry.toString()));
+                registry.toString(), tenant.toString(), manager.toString(), relation.toString()));
         try (var loader = new java.net.URLClassLoader(new java.net.URL[]{dir.toUri().toURL()}, null)) {
             ClassLoader before = Thread.currentThread().getContextClassLoader();
             assertTrue(new HacRunningSystemUpdater(() -> loader).updateSchema());

@@ -388,10 +388,22 @@ public class CodegenReloader {
      */
     SchemaOutcome handleNewPersistence(boolean autoUpdate, RunningSystemUpdater updater) {
         boolean attempted = autoUpdate && updater != null;
-        if (attempted && updater.updateSchema()) {
-            StatusReporter.success("items.xml changed, ran Update Running System (schema only); "
-                    + "the new attributes and enum values are live. No restart, no HAC click.");
-            return SchemaOutcome.APPLIED;
+        if (attempted) {
+            long start = System.nanoTime();
+            try {
+                if (updater.updateSchema()) {
+                    StatusReporter.success("items.xml changed, ran Update Running System (schema only); "
+                            + "the new attributes and enum values are live. No restart, no HAC click. Elapsed "
+                            + java.util.concurrent.TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start) + " ms.");
+                    return SchemaOutcome.APPLIED;
+                }
+            } catch (RunningSystemUpdater.RestartRequired applied) {
+                String reason = "schema applied; " + applied.getMessage();
+                StatusReporter.warn(reason + ". Elapsed "
+                        + java.util.concurrent.TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start) + " ms.");
+                RestartLedger.note("items.xml", reason);
+                return SchemaOutcome.RESTART_REQUIRED;
+            }
         }
         // items.xml DOESN'T just mean "new method on a POJO". Model classes are tied to
         // the Hybris persistence layer: new attributes map to new DB columns, and the
@@ -420,7 +432,7 @@ public class CodegenReloader {
     }
 
     /** What {@link #handleNewPersistence} did about the schema side of an items.xml change. */
-    enum SchemaOutcome { WARNED, APPLIED, FAILED }
+    enum SchemaOutcome { WARNED, APPLIED, RESTART_REQUIRED, FAILED }
 
     /**
      * How the platform's ant is started on this operating system: the files

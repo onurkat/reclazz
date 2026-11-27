@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -199,6 +200,22 @@ class CodegenReloaderTest {
     void handleNewPersistence_appliedWhenTheUpdateCompletes() {
         assertEquals(CodegenReloader.SchemaOutcome.APPLIED,
                 reloader.handleNewPersistence(true, () -> true));
+    }
+
+    @Test
+    void handleNewPersistence_appliedSchemaWithAStaleRelationGivesOnlyTheNamedRestart() {
+        com.onurkat.reclazz.ui.RestartLedger.clear();
+        try {
+            assertEquals(CodegenReloader.SchemaOutcome.RESTART_REQUIRED, reloader.handleNewPersistence(true, () -> {
+                throw new com.onurkat.reclazz.hybris.RunningSystemUpdater.RestartRequired(
+                        "relation ExampleSet needs a restart before saving it");
+            }));
+            var notes = com.onurkat.reclazz.ui.RestartLedger.digest();
+            assertTrue(notes.stream().anyMatch(s -> s.contains("ExampleSet") && s.contains("restart")));
+            assertFalse(notes.stream().anyMatch(s -> s.contains("HAC")));
+        } finally {
+            com.onurkat.reclazz.ui.RestartLedger.clear();
+        }
     }
 
     @Test

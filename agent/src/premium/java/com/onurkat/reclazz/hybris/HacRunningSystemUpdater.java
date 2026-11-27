@@ -31,6 +31,7 @@ public final class HacRunningSystemUpdater implements RunningSystemUpdater {
     private static final String INIT_METHOD = DATA + "$InitMethod";
 
     private final Supplier<ClassLoader> platformLoader;
+    private final SetRelationAccess setRelations = new SetRelationAccess();
 
     public HacRunningSystemUpdater(Supplier<ClassLoader> platformLoader) {
         this.platformLoader = platformLoader;
@@ -77,8 +78,19 @@ public final class HacRunningSystemUpdater implements RunningSystemUpdater {
             ClassLoader previous = thread.getContextClassLoader();
             thread.setContextClassLoader(loader);
             Object result;
+            Object tenant;
+            java.util.Set<String> prior;
             try {
-                result = facadeClass.getMethod("executeInitUpdate", dataClass).invoke(facade, data);
+                Class<?> registry = Class.forName("de.hybris.platform.core.Registry", false, loader);
+                tenant = registry.getMethod("getCurrentTenant").invoke(null);
+                Class<?> tenantType = Class.forName("de.hybris.platform.core.Tenant", false, loader);
+                var dataSourceMethod = tenantType.getMethod("getDataSource");
+                Object dataSource = dataSourceMethod.invoke(tenant);
+                String jdbc = (String) dataSourceMethod.getReturnType().getMethod("getDatabaseURL").invoke(dataSource);
+                prior = SetRelationAccess.relations(loader).keySet();
+                var execute = facadeClass.getMethod("executeInitUpdate", dataClass);
+                result = SchemaUpdateTransaction.call(jdbc, () -> Class.forName("de.hybris.platform.tx.Transaction", true, loader)
+                        .getMethod("current").invoke(null), () -> execute.invoke(facade, data), HacRunningSystemUpdater::succeeded);
             } finally {
                 thread.setContextClassLoader(previous);
             }
@@ -92,10 +104,22 @@ public final class HacRunningSystemUpdater implements RunningSystemUpdater {
             thread.setContextClassLoader(loader);
             try {
                 ModelConverterRefresh.refresh(loader);
+                java.util.Set<String> unresolved;
+                try {
+                    unresolved = setRelations.verify(tenant, loader, prior);
+                } catch (ReflectiveOperationException | RuntimeException unavailable) {
+                    throw new RestartRequired("new SET relation accessors could not be verified; restart before saving a new relation");
+                }
+                if (!unresolved.isEmpty()) {
+                    throw new RestartRequired("relation " + String.join(", ", new java.util.TreeSet<>(unresolved))
+                            + " needs a restart before saving it (its generated Jalo accessors are not loaded in this JVM)");
+                }
             } finally {
                 thread.setContextClassLoader(previous);
             }
             return true;
+        } catch (RestartRequired applied) {
+            throw applied;
         } catch (Throwable notAvailable) {
             StatusReporter.warn("Automatic Update Running System could not run ("
                     + com.onurkat.reclazz.ui.Failures.describe(notAvailable)
