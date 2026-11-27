@@ -24,6 +24,24 @@ class PrepareAgentMojoTest {
     private final File jar = new File("/repo/reclazz-agent-1.3.0.jar");
 
     @Test
+    void unicodeOutputKeepsJarAndOptionsSeparate() throws Exception {
+        var project = new MavenProject();
+        var mojo = mojo(project, jar, "argLine");
+        String roots = "C:\\Alan Çalışma\\classes;C:\\東京\\classes";
+        set(mojo, "watchDirs", roots);
+        mojo.execute();
+        String once = project.getProperties().getProperty("argLine");
+        mojo.execute();
+        assertEquals(once, project.getProperties().getProperty("argLine"));
+        String option = parsed(once)[0];
+        String prefix = "-javaagent:" + jar.getAbsolutePath() + "=reclazz-utf8:";
+        assertTrue(option.startsWith(prefix), option);
+        String original = new String(java.util.Base64.getUrlDecoder().decode(option.substring(prefix.length())),
+                java.nio.charset.StandardCharsets.UTF_8);
+        assertTrue(original.contains("watchDirs=" + roots), original);
+    }
+
+    @Test
     void buildsFlagWithPlatformAndWatchDirs() {
         String arg = PrepareAgentMojo.buildAgentArg(jar, "spring", "/app/target/classes", null);
         assertEquals("-javaagent:" + jar.getAbsolutePath()

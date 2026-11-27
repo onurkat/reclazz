@@ -314,7 +314,7 @@ Arguments are passed as a comma-separated string after the `=` sign:
 | `verbose` | `false` | Enable verbose logging in the console, including each framework step's own line after a reload (the reload line carries the summary either way) |
 | `statusPort` | `0` | TCP port for plugin communication (0 = auto-assign) |
 | `portFile` | (none) | Path where Java agent writes its actual port after binding |
-| `watchDirs` | auto-detect | Semicolon-separated class output directories to watch, for a project the detection does not know |
+| `watchDirs` | auto-detect | Semicolon-separated class output directories to watch, for a project the detection does not know. For a non-ASCII Windows path see the [manual launch example](installation.md). |
 | `excludeClasses` | (none) | Semicolon-separated class name patterns the transform leaves alone; the way out when instrumenting one class is the problem |
 | `impexAllowRemove` | `false` | Let auto-imported ImpEx files run `REMOVE` lines |
 | `autoUpdateRunningSystem` | `false` | After an items.xml change regenerates the models, run the schema-only Update Running System (add columns, no data, never drop) so a new attribute is live without a manual HAC click. A saved `*-locales_<iso>.properties` also writes the type, attribute and enumeration names it keys onto the types, as "Localize types" would for those keys only. Writes to the live database, so opt-in and dev-only |

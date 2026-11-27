@@ -732,7 +732,12 @@ public class FileWatcher {
             StatusReporter.info("Attached to a running JVM: " + count
                     + " class files taken as the baseline. Save a file to reload it.");
         }
-        StatusReporter.info("Watching " + Plural.of(watchCount, "directory", "directories"));
+        if (watchKeyMap.isEmpty()) {
+            StatusReporter.warn("Watching 0 directories; nothing will reload. Check the configured watch paths.");
+        } else {
+            StatusReporter.info("Watching " + Plural.of(watchCount, "directory", "directories"));
+            StatusReporter.success("Reclazz is active. Watching for changes...");
+        }
 
         // The transformer keeps its last emitted bytecode per class for the
         // per-method superclass salvage, deflated. This line is the memory

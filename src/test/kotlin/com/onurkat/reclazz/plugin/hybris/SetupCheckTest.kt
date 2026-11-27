@@ -71,6 +71,17 @@ class SetupCheckTest {
         val text = Files.readString(path)
         Files.writeString(path, text.lineSequence().joinToString("\n") { if (it.startsWith("$key=")) "$key=${change(it.substringAfter('='))}" else it })
     }
+    @Test fun encodedAndPlainWrapperOptionsAreEquivalent() {
+        layout()
+        val raw = "autoCompile=false,portFile=Çalışma/東京.port"
+        val encoded = "reclazz-utf8:" + java.util.Base64.getUrlEncoder().withoutPadding().encodeToString(raw.toByteArray(Charsets.UTF_8))
+        for (key in listOf("tomcat.javaoptions", "tomcat.debugjavaoptions")) editOptions(key) { it.replace("autoCompile=false", raw) }
+        wrappers()
+        val wrapper = platform.resolve("tomcat/conf/wrapper.conf")
+        Files.writeString(wrapper, Files.readString(wrapper).replace(raw, encoded))
+        assertEquals(SetupCheck.Level.OK, row("ant-server").level)
+    }
+
     @Test fun correctManagedInstallHasEightOrderedChecks() {
         layout();val rows=check()
         assertEquals(listOf("agent-line","ant-server","debug-flags","agent-jar","jdk","other-agents","extensions","server"),rows.map { it.id })

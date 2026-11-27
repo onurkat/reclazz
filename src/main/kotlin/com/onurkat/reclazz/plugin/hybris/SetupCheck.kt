@@ -1,6 +1,7 @@
 /* Copyright 2026 Onur Kat. SPDX-License-Identifier: Apache-2.0 */
 package com.onurkat.reclazz.plugin.hybris
 
+import java.util.Base64
 import java.io.IOException
 import java.io.UncheckedIOException
 import java.nio.file.FileVisitResult
@@ -43,7 +44,17 @@ internal object SetupCheck {
     private fun agentIdentity(token: String,home:Path): String {
         val value=expand(token.substringAfter(':'),home);val actual=agentPath(token,home)
         val resolved=try { actual?.toRealPath() } catch (_: IOException) { actual }
-        val args=if ('=' in value) value.substringAfter('=').split(',').associate { it.substringBefore('=') to it.substringAfter('=', "") }.toSortedMap().toString() else ""
+        val wire = value.substringAfter('=', "")
+        val options = if (wire.startsWith("reclazz-utf8:")) {
+            try {
+                Base64.getUrlDecoder().decode(wire.substringAfter(':')).decodeToString(throwOnInvalidSequence = true)
+            } catch (_: IllegalArgumentException) {
+                return "$resolved=invalid:$wire"
+            } catch (_: java.nio.charset.CharacterCodingException) {
+                return "$resolved=invalid:$wire"
+            }
+        } else wire
+        val args=if (options.isNotEmpty()) options.split(',').associate { it.substringBefore('=') to it.substringAfter('=', "") }.toSortedMap().toString() else ""
         return "$resolved=$args"
     }
     private fun relevant(value: List<String>,home:Path) = value.filter(::isReclazz).map { agentIdentity(it,home) }.sorted() +

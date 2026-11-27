@@ -15,6 +15,7 @@ import com.onurkat.reclazz.plugin.hybris.HybrisProjectDetector
 import com.onurkat.reclazz.plugin.settings.ReclazzSettings
 import java.io.File
 import java.nio.file.Files
+import java.util.Base64
 import java.nio.file.Paths
 
 object AgentJarLocator {
@@ -219,7 +220,9 @@ object AgentJarLocator {
             args.add("portFile=$portFilePath")
         }
 
-        return args.joinToString(",")
+        val options = args.joinToString(",")
+        if (options.all { it.code < 128 }) return options
+        return "reclazz-utf8:" + Base64.getUrlEncoder().withoutPadding().encodeToString(options.toByteArray(Charsets.UTF_8))
     }
 
     private fun collectModuleOutputDirs(project: Project): List<String> {

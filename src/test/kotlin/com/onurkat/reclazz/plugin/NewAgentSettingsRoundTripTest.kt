@@ -28,6 +28,19 @@ class NewAgentSettingsRoundTripTest : BasePlatformTestCase() {
         autoImpex = true, autoSolrReindex = true, autoUpdateRunningSystem = true, impexAllowRemove = true, backofficeConfigReset = false,
         reloadBoundary = "request", structuralReload = false, resetStatics = true, excludeClasses = "com.example.Legacy*;com.example.Old")
 
+    fun testUnicodeOptionsReachTheDirectAndInstalledLaunchers() {
+        SyntheticProject(project, sap = true).use { layout ->
+            val state = ReclazzSettings.State(excludeClasses = "com.example.Çalışma;com.example.東京")
+            for (includeHome in listOf(true, false)) {
+                val argument = AgentJarLocator.buildAgentArgs(layout.project, state, includeHybrisHome = includeHome)
+                expectTrue(argument.startsWith("reclazz-utf8:") && argument.all { it.code < 128 }, argument)
+                val original = java.util.Base64.getUrlDecoder().decode(argument.substringAfter(':')).toString(Charsets.UTF_8)
+                expectTrue(original.contains("excludeClasses=" + state.excludeClasses), original)
+                expectTrue(original.contains("portFile=" + layout.home.resolve(".idea/reclazz/agent.port")), original)
+            }
+        }
+    }
+
     fun testDefaultLaunchLeavesDebounceAdaptive() {
         SyntheticProject(project, sap = true).use { layout ->
             val args = AgentJarLocator.buildAgentArgs(layout.project, ReclazzSettings.State(autoCompile = true))

@@ -62,6 +62,39 @@ class StartupSaysWhatMattersTest {
         }
     }
 
+    @Test
+    void aMissingWatchRootCannotAnnounceReadiness() throws Exception {
+        Path missing = tmp.resolve("missing-classes");
+        try (WatchedApp app = WatchedApp.in(tmp).agentArgs("platform=spring,startupDelaySec=1,watchDirs=" + missing)
+                .with("App", driver()).start()) {
+            app.awaitOrFail("Watching 0 directories", "registration did not report zero roots");
+            assertTrue(app.output().stream().anyMatch(line -> line.contains(missing.toString())));
+            assertTrue(app.output().stream().anyMatch(line -> line.contains("nothing will reload")));
+            assertFalse(app.output().stream().anyMatch(line -> line.contains("Reclazz is active")));
+        }
+    }
+
+    @Test
+    void mixedRootsOnlyAnnounceReadinessAfterRegistration() throws Exception {
+        Path classes = tmp.resolve("classes");
+        Path missing = tmp.resolve("missing");
+        String value = "package app; public class Value { public static String text() { return \"before\"; } }";
+        String reader = "package app; public class App { public static void main(String[] args) throws Exception {"
+                + " while (true) { System.out.println(Value.text()); Thread.sleep(200); } } }";
+        try (WatchedApp app = WatchedApp.in(tmp).agentArgs("platform=spring,startupDelaySec=1,watchDirs=" + classes + ";" + missing)
+                .with("Value", value).with("App", reader).start()) {
+            app.awaitOrFail("] Watching 1 director", "valid root was not registered");
+            app.awaitOrFail("Reclazz is active", "watcher never became ready");
+            app.awaitOrFail("before", "baseline value unavailable");
+            app.rewrite("Value", value.replace("before", "after-edit"));
+            app.awaitOrFail("after-edit", "class edit under the registered root did not reload");
+            var lines = app.output();
+            int ready = java.util.stream.IntStream.range(0, lines.size()).filter(i -> lines.get(i).contains("Reclazz is active")).findFirst().orElseThrow();
+            assertTrue(lines.get(ready).endsWith("Reclazz is active. Watching for changes..."), lines.get(ready));
+            assertTrue(lines.subList(0, ready).stream().anyMatch(line -> line.contains("] Watching 1 director")));
+        }
+    }
+
     private static String driver() {
         return """
                 package app;

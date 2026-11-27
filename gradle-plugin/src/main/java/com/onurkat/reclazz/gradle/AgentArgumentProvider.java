@@ -5,6 +5,8 @@
 package com.onurkat.reclazz.gradle;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import org.gradle.api.file.ConfigurableFileCollection;
@@ -36,6 +38,9 @@ public abstract class AgentArgumentProvider implements CommandLineArgumentProvid
         }
         File jar = getAgentJar().getSingleFile();
         String args = getArgumentString().getOrElse("");
+        if (!args.chars().allMatch(c -> c < 128)) {
+            args = "reclazz-utf8:" + Base64.getUrlEncoder().withoutPadding().encodeToString(args.getBytes(StandardCharsets.UTF_8));
+        }
         String flag = "-javaagent:" + jar.getAbsolutePath() + (args.isEmpty() ? "" : "=" + args);
         return List.of(flag);
     }

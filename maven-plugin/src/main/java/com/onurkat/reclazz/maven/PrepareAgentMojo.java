@@ -5,6 +5,8 @@
 package com.onurkat.reclazz.maven;
 
 import java.io.File;
+import java.util.Base64;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -226,7 +228,11 @@ public class PrepareAgentMojo extends AbstractMojo {
             joined.append(e.getKey()).append("=").append(e.getValue());
         }
         String flag = "-javaagent:" + agentJar.getAbsolutePath();
-        String argument = joined.length() == 0 ? flag : flag + "=" + joined;
+        String options = joined.toString();
+        if (!options.chars().allMatch(c -> c < 128)) {
+            options = "reclazz-utf8:" + Base64.getUrlEncoder().withoutPadding().encodeToString(options.getBytes(StandardCharsets.UTF_8));
+        }
+        String argument = options.isEmpty() ? flag : flag + "=" + options;
         return quoteArgument(argument);
     }
 

@@ -999,7 +999,6 @@ public class ReclazzAgent {
                 StatusReporter.info("Reclazz agent stopped.");
             }, "Reclazz-Shutdown"));
 
-            StatusReporter.success("Reclazz is active. Watching for changes...");
             StatusReporter.info("Press Ctrl+C or stop the server to deactivate.");
 
         } catch (Throwable e) {

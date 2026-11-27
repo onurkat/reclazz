@@ -190,6 +190,19 @@ java "-javaagent:/absolute/tools/reclazz-agent-X.Y.Z.jar=watchDirs=/absolute/app
 java "-javaagent:C:/Tools/Reclazz/reclazz-agent-X.Y.Z.jar=watchDirs=C:/Projects/app/target/classes" -cp "C:/Projects/app/target/classes" com.example.Main
 ```
 
+If a Windows project path contains non-ASCII characters, pass the agent options
+as UTF-8 encoded with URL-safe Base64. The IntelliJ, Gradle and Maven launchers
+do this automatically with the matching agent version. For a manual PowerShell
+launch, keep the jar path outside the encoded options:
+
+```powershell
+$classes = 'C:\Projects\Alan Çalışma\target\classes'
+$jar = 'C:\Tools\Reclazz\reclazz-agent-X.Y.Z.jar'
+$options = [Text.Encoding]::UTF8.GetBytes("platform=spring,watchDirs=$classes")
+$encoded = [Convert]::ToBase64String($options).TrimEnd('=').Replace('+', '-').Replace('/', '_')
+java "-javaagent:${jar}=reclazz-utf8:$encoded" -cp "$classes" com.example.Main
+```
+
 Add your normal dependency classpath/JVM options as needed; Windows classpath
 entries use `;` instead of `:`. For an executable application JAR retain your
 normal `-jar app.jar` launch, while pointing `watchDirs` to the actual recompiled

@@ -6,6 +6,9 @@ package com.onurkat.reclazz.config;
 
 import com.onurkat.reclazz.ui.StatusReporter;
 
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -207,6 +210,19 @@ public class AgentConfig {
      */
     private final Map<String, List<String>> refreshOwnersOnHelper = new LinkedHashMap<>();
 
+    // Windows may lose characters in -javaagent options before premain is called.
+    private static String decodeLaunchOptions(String options) {
+        String prefix = "reclazz-utf8:";
+        if (!options.startsWith(prefix)) return options;
+        try {
+            byte[] bytes = Base64.getUrlDecoder().decode(options.substring(prefix.length()));
+            if (bytes.length == 0) throw new IllegalArgumentException();
+            return StandardCharsets.UTF_8.newDecoder().decode(ByteBuffer.wrap(bytes)).toString();
+        } catch (IllegalArgumentException | CharacterCodingException invalid) {
+            throw new IllegalArgumentException("Invalid UTF-8 agent options. Check the encoded JVM argument.");
+        }
+    }
+
     public static AgentConfig parse(String agentArgs) {
         AgentConfig config = new AgentConfig();
 
@@ -215,6 +231,7 @@ public class AgentConfig {
         return config;
         }
 
+        agentArgs = decodeLaunchOptions(agentArgs);
         Map<String, String> params = new HashMap<>();
         for (String pair : SPLIT_PATTERN.split(agentArgs)) {
             String[] kv = pair.split("=", 2);
