@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- A new SAP Commerce properties file inherits the permissions shared by the files supplying its JVM options.
+
 - Java launcher validation skips hot-reload startup on systems that expose the launcher arguments. This shortens the validation step during SAP Commerce startup on macOS.
 
 - Maven Spring Boot projects opened through a symbolic link reload compiled class changes from their shared class and resource output.

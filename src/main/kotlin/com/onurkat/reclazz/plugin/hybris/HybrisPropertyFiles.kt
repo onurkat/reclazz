@@ -96,21 +96,29 @@ object HybrisPropertyFiles {
      * install can append to what the user configured instead of erasing
      * it. Returns an empty string when nothing defines it.
      */
-    fun effectiveValue(platformHome: Path, configDir: Path, key: String, excludeManagedBlock: Boolean = true): String {
-        var value = ""
+    fun effectiveValue(platformHome: Path, configDir: Path, key: String, excludeManagedBlock: Boolean = true): String =
+        effectiveProperty(platformHome, configDir, key, excludeManagedBlock)?.value.orEmpty()
 
-        readProperty(platformHome.resolve("project.properties"), key)?.let { value = it }
-        readProperty(configDir.resolve("local.properties"), key, excludeManagedBlock = excludeManagedBlock)?.let { value = it }
+    internal data class EffectiveProperty(val value: String, val file: Path)
 
-        optionalConfigDir(configDir, createMissing = false)?.let { dir ->
-            propertyFilesInLoadOrder(dir)
-                .forEach { file ->
-                    readProperty(file, key, excludeManagedBlock = excludeManagedBlock && file.fileName.toString() == RECLAZZ_PROPERTIES)
-                        ?.let { value = it }
-                }
+    internal fun effectiveProperty(
+        platformHome: Path, configDir: Path, key: String, excludeManagedBlock: Boolean = true
+    ): EffectiveProperty? {
+        var result: EffectiveProperty? = null
+        fun readLayer(file: Path, excludeBlock: Boolean) {
+            readProperty(file, key, excludeManagedBlock = excludeBlock)?.let {
+                result = EffectiveProperty(it.trim(), file)
+            }
         }
 
-        return value.trim()
+        readLayer(platformHome.resolve("project.properties"), false)
+        readLayer(configDir.resolve("local.properties"), excludeManagedBlock)
+        optionalConfigDir(configDir, createMissing = false)?.let { dir ->
+            for (file in propertyFilesInLoadOrder(dir)) {
+                readLayer(file, excludeManagedBlock && file.fileName.toString() == RECLAZZ_PROPERTIES)
+            }
+        }
+        return result
     }
 
     /**

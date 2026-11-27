@@ -345,9 +345,12 @@ object HybrisAgentInstaller {
         val target = HybrisPropertyFiles.targetFile(configDir)
         val previous = if (Files.exists(target)) Files.readString(target) else null
         return try {
-            val javaOptions = HybrisPropertyFiles.effectiveValue(platformHome, configDir, JAVA_OPTIONS)
-            val debugOptions = HybrisPropertyFiles.effectiveValue(platformHome, configDir, DEBUG_JAVA_OPTIONS)
-            writeBlock(target, buildBlock(agentArg, javaOptions, debugOptions))
+            val javaOptions = HybrisPropertyFiles.effectiveProperty(platformHome, configDir, JAVA_OPTIONS)
+            val debugOptions = HybrisPropertyFiles.effectiveProperty(platformHome, configDir, DEBUG_JAVA_OPTIONS)
+            val sources = listOfNotNull(javaOptions, debugOptions)
+                .filter { it.value.isNotEmpty() }.map { it.file }.toSet()
+            val block = buildBlock(agentArg, javaOptions?.value.orEmpty(), debugOptions?.value.orEmpty())
+            writeBlock(target, block, sources)
             val problem = verify()
             if (problem == null) Result.Success("Reclazz startup options written.")
             else {
@@ -526,7 +529,7 @@ object HybrisAgentInstaller {
     internal fun agentArgument(pathAndArgs: String): String =
         if (pathAndArgs.contains(' ')) "-javaagent:\"$pathAndArgs\"" else "-javaagent:$pathAndArgs"
 
-    private fun writeBlock(target: Path, block: String) {
+    private fun writeBlock(target: Path, block: String, sources: Set<Path>) {
         Files.createDirectories(target.parent)
 
         val existing = if (Files.isRegularFile(target)) Files.readString(target) else ""
@@ -545,7 +548,7 @@ object HybrisAgentInstaller {
         }
 
         val content = if (cleaned.isBlank()) block else cleaned.trimEnd('\n', '\r') + "\n\n" + block
-        writeAtomically(target, content)
+        writeAtomically(target, content, sources)
     }
 
     /**

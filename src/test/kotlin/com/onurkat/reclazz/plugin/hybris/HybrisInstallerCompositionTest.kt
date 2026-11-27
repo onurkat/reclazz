@@ -4,10 +4,14 @@
  */
 package com.onurkat.reclazz.plugin.hybris
 
+import org.junit.jupiter.api.Assumptions.assumeTrue
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import org.junit.jupiter.api.io.TempDir
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.attribute.PosixFilePermissions
 import kotlin.test.*
 
 class HybrisInstallerCompositionTest {
@@ -27,6 +31,73 @@ class HybrisInstallerCompositionTest {
     private fun install(platform: Path, config: Path, value: String = agent) {
         val result = HybrisAgentInstaller.installConfiguration(platform, config, value)
         assertTrue(result is HybrisAgentInstaller.Result.Success, result.toString())
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["rw-------", "rw-r-----", "rw-r--r--"])
+    fun newlyCreatedFileInheritsWinningSourceMode(mode: String) {
+        assumeTrue(Files.getFileStore(root).supportsFileAttributeView("posix"))
+        val (platform, config) = layout(true)
+        val local = config.resolve("local.properties")
+        Files.writeString(local, Files.readString(local) + "tomcat.javaoptions=-Xmx1g\n")
+        Files.setPosixFilePermissions(local, PosixFilePermissions.fromString("rw-------"))
+        val lower = HybrisPropertyFiles.targetFile(config).resolveSibling("10-local.properties")
+        Files.writeString(lower, "tomcat.javaoptions=-Xmx2g\ntomcat.debugjavaoptions=-Xdebug\n")
+        val expected = PosixFilePermissions.fromString(mode)
+        Files.setPosixFilePermissions(lower, expected)
+        install(platform, config)
+        val target = HybrisPropertyFiles.targetFile(config)
+        assertEquals("-Xmx2g $agent", HybrisPropertyFiles.readProperty(target, "tomcat.javaoptions"))
+        assertEquals("-Xdebug $agent", HybrisPropertyFiles.readProperty(target, "tomcat.debugjavaoptions"))
+        assertEquals(expected, Files.getPosixFilePermissions(target))
+    }
+
+    @Test fun separateOptionSourcesContributeOnlyTheirCommonPermissions() {
+        assumeTrue(Files.getFileStore(root).supportsFileAttributeView("posix"))
+        val (platform, config) = layout(true)
+        val local = config.resolve("local.properties")
+        Files.writeString(local, Files.readString(local) + "tomcat.javaoptions=-Xmx3g\n")
+        Files.setPosixFilePermissions(local, PosixFilePermissions.fromString("rw-r-----"))
+        val target = HybrisPropertyFiles.targetFile(config)
+        val debug = target.resolveSibling("20-local.properties")
+        Files.writeString(debug, "tomcat.debugjavaoptions=-Dsynthetic=true\n")
+        Files.setPosixFilePermissions(debug, PosixFilePermissions.fromString("rw----r--"))
+        install(platform, config)
+        assertEquals("-Xmx3g $agent", HybrisPropertyFiles.readProperty(target, "tomcat.javaoptions"))
+        assertEquals("-Dsynthetic=true $agent", HybrisPropertyFiles.readProperty(target, "tomcat.debugjavaoptions"))
+        assertEquals(PosixFilePermissions.fromString("rw-------"), Files.getPosixFilePermissions(target))
+    }
+
+    @Test fun existingManagedFileRetainsItsOwnMode() {
+        assumeTrue(Files.getFileStore(root).supportsFileAttributeView("posix"))
+        val (platform, config) = layout(true)
+        val target = HybrisPropertyFiles.targetFile(config)
+        Files.writeString(target, "# existing\n")
+        val existingMode = PosixFilePermissions.fromString("rw-r-----")
+        Files.setPosixFilePermissions(target, existingMode)
+        Files.setPosixFilePermissions(platform.resolve("project.properties"), PosixFilePermissions.fromString("rw-------"))
+        install(platform, config)
+        assertEquals(existingMode, Files.getPosixFilePermissions(target))
+        assertEquals("-Xmx1g $agent", HybrisPropertyFiles.readProperty(target, "tomcat.javaoptions"))
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun noInheritedOptionsUseTheOrdinaryNewFileMode(explicitBlank: Boolean) {
+        assumeTrue(Files.getFileStore(root).supportsFileAttributeView("posix"))
+        val (platform, config) = layout(true)
+        val target = HybrisPropertyFiles.targetFile(config)
+        if (explicitBlank) {
+            val lower = target.resolveSibling("10-local.properties")
+            Files.writeString(lower, "tomcat.javaoptions= \ntomcat.debugjavaoptions=\n")
+            Files.setPosixFilePermissions(lower, PosixFilePermissions.fromString("rw-------"))
+        } else {
+            Files.writeString(platform.resolve("project.properties"), "# no JVM options\n")
+        }
+        install(platform, config)
+        assertEquals(agent, HybrisPropertyFiles.readProperty(target, "tomcat.javaoptions"))
+        assertEquals(agent, HybrisPropertyFiles.readProperty(target, "tomcat.debugjavaoptions"))
+        assertEquals(PosixFilePermissions.fromString("rw-r--r--"), Files.getPosixFilePermissions(target))
     }
 
     @Test fun localPropertiesFallbackVerifiesOwnAddition() {

@@ -9,6 +9,7 @@ import java.nio.file.AtomicMoveNotSupportedException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.StandardCopyOption
+import java.nio.file.attribute.PosixFileAttributeView
 
 /**
  * Replacing one of the user's files without ever leaving half of one.
@@ -32,7 +33,7 @@ import java.nio.file.StandardCopyOption
  * The agent has the same helper for the same reason; the two modules do not
  * share code.
  */
-internal fun writeAtomically(target: Path, content: String) {
+internal fun writeAtomically(target: Path, content: String, permissionSources: Set<Path> = emptySet()) {
     val directory = target.toAbsolutePath().parent
         ?: throw java.io.IOException("no directory for $target")
     Files.createDirectories(directory)
@@ -42,7 +43,7 @@ internal fun writeAtomically(target: Path, content: String) {
     val temporary = Files.createTempFile(directory, ".${target.fileName}", ".reclazz-tmp")
     try {
         Files.writeString(temporary, content)
-        carryPermissions(target, temporary)
+        carryPermissions(target, temporary, permissionSources)
         moveOnto(temporary, target)
     } finally {
         Files.deleteIfExists(temporary)
@@ -87,13 +88,21 @@ private fun moveOnto(temporary: Path, target: Path) {
  * and wrong for what this becomes. Measured on a real SAP Commerce
  * installation: `wrapper.conf` is 777 there, and handing it back as 600 would
  * leave a server another account starts unable to read its own configuration.
- * A file that did not exist before gets the ordinary 644 rather than the
- * temporary file's 600, for the same reason.
+ * A new file inherits the common permissions of the files that supplied its
+ * options. Without inherited options, the ordinary default is 644.
  *
  * Silently skipped where the filesystem has no POSIX permissions, which is
  * Windows, where there is nothing to preserve.
  */
-private fun carryPermissions(target: Path, temporary: Path) {
+private fun carryPermissions(target: Path, temporary: Path, permissionSources: Set<Path>) {
+    if (permissionSources.isNotEmpty() && Files.notExists(target) &&
+        Files.getFileStore(temporary).supportsFileAttributeView(PosixFileAttributeView::class.java)
+    ) {
+        val common = permissionSources.map { Files.getPosixFilePermissions(it).toSet() }
+            .reduce { first, next -> first intersect next }
+        Files.setPosixFilePermissions(temporary, common)
+        return
+    }
     try {
         val permissions = if (Files.exists(target)) {
             Files.getPosixFilePermissions(target)
