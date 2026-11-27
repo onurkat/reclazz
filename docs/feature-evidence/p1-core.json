@@ -1018,12 +1018,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Method body changes | **Yes** | Yes (restart) | Yes |",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P1-BODY-SUPER",
-          "block_sha256": "a167004326f8320b1d65fc221069fa11e0effbdd58e38ba82a0507cc032fd32a"
+          "block_sha256": "07bad3186fc1f2c08d46a08020cb06ef50dfe45b87f142c0e12cffe1c274a3e6"
         }
       ],
       "observable": "Held Derived answers d1/b1, d2/b1, d2/b2, d3/b2; all printed values have two halves.",
@@ -1056,12 +1056,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Method body changes | **Yes** | Yes (restart) | Yes |",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P1-BODY-VIRTUAL",
-          "block_sha256": "5b92bc2ae39765c6c5bd4e7eab94e1c6055c589667cfd6e451960b92cffb4482"
+          "block_sha256": "3944abd97c908707399b2c2570baad1603c6163826778c58bd0dbb95137e85b5"
         }
       ],
       "observable": "Held Derived answers b1:dh then b2:dh; startup PID/nonce unchanged and emitted once.",
@@ -1094,7 +1094,7 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Add instance fields |",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/usage.md",
@@ -1104,7 +1104,7 @@
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P1-FIELD-OLD",
-          "block_sha256": "03d0f2e66ab2386169a3e23e67c4299577c0c352d604a8701e4ddeac2fcf02ca"
+          "block_sha256": "5f35e6528b89e39229617b233e858d7104356790b3facee976dc235464d021be"
         }
       ],
       "observable": "New list sizes1 then2, integer retries3 and computed label HOLDER!; first-read explanation and no initializer warning.",
@@ -1137,7 +1137,7 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Add instance fields |",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/usage.md",
@@ -1147,7 +1147,7 @@
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P1-FIELD-PARAM-REFUSAL",
-          "block_sha256": "9e22b990247a57fe72ef7fbb25a995e390716be91e6b00a7bf22207d3fb8a6d1"
+          "block_sha256": "d574b3f190a1adba013c236e0cb2dcd9c433297ab7459048772d61a17705dddd"
         }
       ],
       "observable": "Held name x survives; added upper stays null and warning names upper/constructor parameter.",
@@ -1180,7 +1180,7 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Add instance fields |",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/usage.md",
@@ -1190,7 +1190,7 @@
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P1-FIELD-FAILURE",
-          "block_sha256": "15296c774a73749dc1efc90c1a91d8583300303bc17d8840bf912dd37d77517f"
+          "block_sha256": "dd67954b42699368c352ef3f29c245126a62bd26806d9600cdba9de58b1aa9bd"
         }
       ],
       "observable": "null:1|healthy:1 becomes recovered:2|healthy:1; successful neighbor is not reinitialized.",
@@ -1223,7 +1223,7 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Add instance fields |",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/usage.md",
@@ -1233,7 +1233,7 @@
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P1-FIELD-CONDITIONAL",
-          "block_sha256": "e9d37466c6d7b90cf0c7c1c50b8e61845c7f6839127826d3c514052074bd0ed0"
+          "block_sha256": "0c6efacea41c895737125e5f1aa4f70b1e19024c2550ec0234f5609ab1334567"
         }
       ],
       "observable": "Four held objects produce on1/true, off1/false and explicit-null outcomes with per-object branch counts.",
@@ -1266,7 +1266,7 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Add instance fields |",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/usage.md",
@@ -1276,7 +1276,7 @@
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P1-FIELD-NEW-ROUTES",
-          "block_sha256": "6af4e46f236c6379cd00d3f20173aaef2d96752e24fe2917fc4ec09448f1a602"
+          "block_sha256": "6269479c9553404d11cfad02f3716c23c869958b06e6a0e08696c882463e49e0"
         }
       ],
       "observable": "Old constructor count4 stays fixed; new three constructor routes give off3/false with total7 constructors/2 delegations and one initializer call each.",
@@ -1309,7 +1309,7 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Add instance fields |",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/usage.md",
@@ -1319,7 +1319,7 @@
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P1-FIELD-UNREAD-LATER",
-          "block_sha256": "b80a254fe435f31f5dae6771773d82a106acb6e763fbf74794645072a4046e29"
+          "block_sha256": "dd6272ed088ec9ce8c3c12b850fd1eb220d5fff6fc704fa1e56f457037922fe6"
         }
       ],
       "observable": "Unread object uses on2/true after the second save, while earlier values remain unchanged.",
@@ -1352,7 +1352,7 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Add instance fields |",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/usage.md",
@@ -1362,7 +1362,7 @@
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P1-FIELD-NULL-KEEP",
-          "block_sha256": "644770caf68c74f851905cd8ed55b219c9153bfe15d75a8ebdb767eeef6fcd47"
+          "block_sha256": "66015537fd23718479e7ad4189ff46f5cdeb6c0e9f4b10a2834ffc228e376da9"
         }
       ],
       "observable": "user/true and explicit null survive repeated saves; existing application field77 remains77.",
@@ -1395,7 +1395,7 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Add instance fields |",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/usage.md",
@@ -1405,7 +1405,7 @@
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P1-FIELD-SIDE-EFFECT-BOUNDS",
-          "block_sha256": "9b5afe915edc120dd8ce650abe0543a5e6bde9fc92ff79e81a0e4510e05d8542"
+          "block_sha256": "4d494644566a6b069b4b295b226f6337c6e28970e4710d6c59c2deb8ab4d5203"
         }
       ],
       "observable": "Constructor count4 across edits, unrelated block count8 in each of four stages; selected arm counts and new constructor ordering verified.",
@@ -1438,7 +1438,7 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Add static fields |",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/usage.md",
@@ -1448,7 +1448,7 @@
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P1-STATIC-CONDITIONAL",
-          "block_sha256": "0072aa1a59918c473b147e29bbca14f0249b607031b3c59f85df3e2bcc092e7e"
+          "block_sha256": "4aaadf27f24d8365c1bb6514138a2dfe411163e0368d4f507c70a28af3737362"
         }
       ],
       "observable": "Selected condition/left/right counters progress 1:1:0 then2:1:1 across three saves.",
@@ -1481,7 +1481,7 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Add static fields |",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/usage.md",
@@ -1491,7 +1491,7 @@
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P1-STATIC-NULL-KEEP",
-          "block_sha256": "1a7b6b7f5819fdba257011ae279f70c24851f1654bad49988d0951f3eaa2543f"
+          "block_sha256": "b826bbe3fa57e380e2743c498b487dd07c5eb459c698d54146d8ad677cc49c2d"
         }
       ],
       "observable": "NULLABLE remains null and CHOICE=user survives later saves.",
@@ -1524,7 +1524,7 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Add static fields |",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/usage.md",
@@ -1534,7 +1534,7 @@
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P1-STATIC-LATER-KEEP",
-          "block_sha256": "4c15430f51aff029de9c0e45386848daecf4d3c5252102b4053166c8bd3bfe6e"
+          "block_sha256": "1c4ab9d969b667560aecf1decf33eb3aea71ea9189597918be3805bfcd2e006c"
         }
       ],
       "observable": "LATER=right after the flag changes; existing77 remains77 and earlier CHOICE=user.",
@@ -1574,7 +1574,7 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Add static fields |",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/usage.md",
@@ -1584,7 +1584,7 @@
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P1-STATIC-BLOCK-NO-REPLAY",
-          "block_sha256": "06f33e29dbc0d9c7d1cb78a7585342721f6917de7e12fe3f3ca83342630f5d3c"
+          "block_sha256": "6cab6e350c155ecf8a47eebdcc0c2f77d65d3c94b1bf3ffd5f13a3b80228bbc0"
         }
       ],
       "observable": "Original block count1 or2 stays fixed across three edits, including isolated switch and unrelated handler fixture.; Original block count1 or2 stays fixed across three edits, including isolated switch and unrelated handler fixture.",
@@ -1617,7 +1617,7 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Add / remove methods |",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "src/main/resources/META-INF/plugin.xml",
@@ -1627,7 +1627,7 @@
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P1-METHOD-ADD",
-          "block_sha256": "dee9965ae6d9c5d0d1a0e8253cba837dc11bc2eb018329f21d0bd130dcfbb420"
+          "block_sha256": "926cb2e2e3bcec88d37a6171f0f99c1179643e1e027424113b52a4409be6b15c"
         }
       ],
       "observable": "Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, the added extra method is visible through meta-reflection and the added field is also visible; same PID/nonce.",
@@ -1660,7 +1660,7 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Add / remove methods |",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "src/main/resources/META-INF/plugin.xml",
@@ -1670,7 +1670,7 @@
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P1-METHOD-REMOVE-HELD",
-          "block_sha256": "216295f259b9473d77e8638d2674d4bf5a6700cfd2c04da87186e545b1d2f255"
+          "block_sha256": "84fe42da8abfcbed752f56b7078a9845eacc55136b13102d4b3d5f303710c2c7"
         }
       ],
       "observable": "Held object/Field survive add/remove/restore/repeat; held Method and pre-existing Legacy caller get NoSuchMethodError while gone is removed and the restored body after restore; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, the added extra method is visible through meta-reflection and the added field is also visible; same PID/nonce.",
@@ -1703,7 +1703,7 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Add / remove methods |",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "src/main/resources/META-INF/plugin.xml",
@@ -1713,7 +1713,7 @@
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P1-REMOVED-REFLECTION",
-          "block_sha256": "ec433fe5751acecc8a7e0efb35060d4e576f49c687cff4b9dc763c79ea0e6e3c"
+          "block_sha256": "18298b857e2c72dcddef99ef6c7ead18bac89dbf238c6aa31d772c47b05afa52"
         }
       ],
       "observable": "Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, the added extra method is visible through meta-reflection and the added field is also visible; same PID/nonce.",
@@ -1746,7 +1746,7 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Add / remove methods |",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "src/main/resources/META-INF/plugin.xml",
@@ -1756,7 +1756,7 @@
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P1-MEMBER-RESTORE",
-          "block_sha256": "255e2ffb2e191a0fb7beae014f5f2cf6dfada309adc30182004975110fa4c92b"
+          "block_sha256": "cc76320535cf00326c4ef5d1742d04746f96a3f27cac78d2509a1e3cfc484f21"
         }
       ],
       "observable": "Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, the added extra method is visible through meta-reflection and the added field is also visible; same PID/nonce.",
@@ -1789,7 +1789,7 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Add / remove methods |",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "src/main/resources/META-INF/plugin.xml",
@@ -1799,7 +1799,7 @@
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P1-FIELD-REMOVE",
-          "block_sha256": "861108992f8eab8c9ccfaa4c4bb500c472e67e059459901f12044b3b05a7bf87"
+          "block_sha256": "ec6588e1459fcd79299d977d4a5cd1bb61aed5f2f522f88dabc23336816311e0"
         }
       ],
       "observable": "Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, the added extra method is visible through meta-reflection and the added field is also visible; same PID/nonce.",
@@ -1887,12 +1887,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| A lambda added to an edited method body |",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P1-LAMBDA-RELOAD",
-          "block_sha256": "5fea674ff9afde2fdbca24a2e05dcbb0e6b340343c1a189d48eeb06327aae745"
+          "block_sha256": "dd5627f0b3478a877909fe047c9f225f1c684557be7e6ee1a33c4bc69071f3f0"
         }
       ],
       "observable": "Three sequential body edits return current local/this captures, a-b stream value and added private helper; existing state user and PID/nonce retained; ObjectOutputStream fails with NotSerializableException.",
@@ -1925,12 +1925,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| A lambda added to an edited method body |",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P1-LAMBDA-SERIALIZATION-LIMIT",
-          "block_sha256": "e891ff0737d957979823a1345a922ecea67ffdca4ea4e2609cb0c748b79e5f30"
+          "block_sha256": "f12389e6440a2e0fca6194867cef2528281371368f9bb60240ebe9c7a1798640"
         }
       ],
       "observable": "Three sequential body edits return current local/this captures, a-b stream value and added private helper; existing state user and PID/nonce retained; ObjectOutputStream fails with NotSerializableException.",
@@ -1963,12 +1963,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Add enum values (on the end) |",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P1-ENUM-APPEND-VALUES",
-          "block_sha256": "6772f184ad8fcd07a0bb0bf8bd36c9a0fd6fb771a7b8d256b1aa7c3acae2b12e"
+          "block_sha256": "2a1708fe21b7e0c5e28b89ff66f80d5db30a57bf3c1990ae4b9a735c05d5441c"
         }
       ],
       "observable": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and reports the accepted source order; same PID/nonce.",
@@ -2001,12 +2001,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Add enum values (on the end) |",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P1-ENUM-APPEND-SWITCH",
-          "block_sha256": "6a897622c37f26d76e81703f85f1b12dd7b49aff7ff7a3d9aa2e37a128fbf76f"
+          "block_sha256": "f4e89fab4e431d2c17b60c71391d4650c42557bc1cf79cd00cd779fcf3c4a49b"
         }
       ],
       "observable": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and reports the accepted source order; same PID/nonce.",
@@ -2039,12 +2039,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Add enum values (on the end) |",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P1-ENUM-OLD-COLLECTIONS",
-          "block_sha256": "3ff6fc002a4ab41763a0d73df5574b51bce82b810fc25ea43ab0a0ff0b70feb2"
+          "block_sha256": "21e455df1b9ab0823b63c684c9a8da81f6c551931bce16ce9429c19d4622aeeb"
         }
       ],
       "observable": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and reports the accepted source order; same PID/nonce.",
@@ -2077,12 +2077,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Remove the LAST enum value |",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P1-ENUM-TAIL",
-          "block_sha256": "7c52e55a4c83c979892c42dd9e7a4f0d17beb976d24fd75fd3284ef6a152a385"
+          "block_sha256": "b31e6bc42ed560aec527010ff88b3d2a67097e003de4d3247e41c2d945abdf1a"
         }
       ],
       "observable": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and reports the accepted source order; same PID/nonce.",
@@ -2115,12 +2115,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Insert or reorder enum values |",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P1-ENUM-REORDER-REFUSAL",
-          "block_sha256": "87f44a593de53dc96c00ebd555e6ff3d52497a27c6d0dc299c2c29a874cd45fe"
+          "block_sha256": "418fa81f6c5d86a89585476871d8a04b0087df670ff0f18e7255cb9caa0428e3"
         }
       ],
       "observable": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and reports the accepted source order; same PID/nonce.",
@@ -2153,12 +2153,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Add enum values (on the end) |",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P1-ENUM-OLD-ARRAY-LIMIT",
-          "block_sha256": "4ce47eb0b135177b3fabfe677a2d93cd046991fa2f9b30a54ada965007746361"
+          "block_sha256": "639cf4516309b6b01f281f2b169d1d7ca40b98dd1f3d3095d3e9a7dd3e2d30e9"
         }
       ],
       "observable": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and reports the accepted source order; same PID/nonce.",
@@ -2191,12 +2191,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Add / remove an interface |",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P1-INTERFACE-STOCK-REFUSAL",
-          "block_sha256": "93e20b3437c9dc30cd4aa5a037fa25847316fe2a1f218cb7d8ba9a9e943e1122"
+          "block_sha256": "4cf4621f4937a96272953c08b51e96a06c0256ce9094809e8275b30f5a0f520d"
         }
       ],
       "observable": "Old Holder remains instanceof Tag=false, interfaces=[], same Class/state29; body v1->v2->v3, named interface refusal, unchanged PID/nonce.",
@@ -2221,12 +2221,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Add / remove an interface |",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P1-INTERFACE-ENHANCED",
-          "block_sha256": "cb1ef4c2dd73e71def1f4f9114c4f61252bf372e1f848629ae8f22079fcadd27"
+          "block_sha256": "14a9fd510c5f9112fcb7bd1a24e6e4980332ecefdc196a236f448960c06d445f"
         }
       ],
       "observable": "No observing test executed for this current advertised promise.",
@@ -2259,7 +2259,7 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Change superclass |",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "src/main/resources/META-INF/plugin.xml",
@@ -2269,7 +2269,7 @@
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P1-SUPERCLASS-REFUSAL-SALVAGE",
-          "block_sha256": "27651bd1c23dee523d8933049312a006b570386a99f3c9fad8a1a7068236f082"
+          "block_sha256": "0289a12360d22f7e5c087568bf210f1dcb1716289123f0a061a0baf91b98d7a4"
         }
       ],
       "observable": "Seven versions: same original Class/loader/self/state19/superclassA; safe body edits apply, dependent c pinned, typed B saves refuse, recovery works with same status-session ID.",
@@ -2339,7 +2339,7 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Add static fields |",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/usage.md",
@@ -2349,7 +2349,7 @@
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P1-STATIC-CONSTANTS",
-          "block_sha256": "0c11e81ee3a7cf43936a9f17d022cada9ed143f57f71bbbf3345d5236bfafb54"
+          "block_sha256": "2a8b3667fd29200c759fa9565c93b6e0864e9fd9b05fe2ea1733a0e0447fa032"
         }
       ],
       "observable": "Constant plan reads MAX50 and NAMEreclazz with no refusal.; Boolean/char/byte/short/int constant values keep native wrapper types.",
@@ -2389,12 +2389,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Added static field whose initialiser is entangled",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P1-STATIC-ENTANGLED",
-          "block_sha256": "d77a589c69ceeff6916e63b915e1213fe02671f999fb184388d9304d05cdd625"
+          "block_sha256": "7f56b4bec8dd46ae73e2b33d40e6c91841d72cce1a762dfb42e6a65e73502f59"
         }
       ],
       "observable": "No emitted slice; computed-earlier reason recorded.; Eleven named guarded/shared/local/loop/handler/object/array-write shapes emit no partial code and retain refusal keys.",
@@ -2434,7 +2434,7 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Add static fields |",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/usage.md",
@@ -2444,7 +2444,7 @@
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P1-STATIC-LOWERINGS",
-          "block_sha256": "bf1c4eb4fb020db3244356345da49518de5bd2c0bd5b84804cbdaff74717506c"
+          "block_sha256": "8c3e0250753437136f4e4d7b7a4f0405281347a8c8a271c0a77b4ec13f88ba11"
         }
       ],
       "observable": "Two flag arms verify object identity, nested int, long, double, null, object constructor, short-circuit boolean and source order; existing99 and old blocks unchanged.; Isolated switch plan accepts VALUE:I.",
@@ -2808,12 +2808,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Add enum values (on the end) |",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P1-JDK26-ENUM",
-          "block_sha256": "5175515ca7924dbf00767d6ecb775b68d9aa43df0c074e1baa592fc1ea71c7e9"
+          "block_sha256": "1f50e5175ebaf7f3edd9476d7e24dc5403c224130fcc84db8bae001b3f444676"
         }
       ],
       "observable": "No observing test executed for this current advertised promise.",

@@ -67,12 +67,14 @@ public class EnumFactoryLifecycleTest {
 
     @Test void factoryCompletingBetweenInspectionAndEnumPublication() throws Exception { launch("overlap", true); }
 
+    @Test void realSpringProxyWithSharedCacheKeepsItsFactory() throws Exception { launch("spring-cache", true); }
+
     @Test void realSpringProxyAndLateOrdinalFactory() throws Exception { launch("spring", true); }
 
     @Test void destructiveCreateKeepsExistingRows() throws Exception { launch("create", true); }
     @Test void destructiveCreateDropKeepsExistingRows() throws Exception { launch("create-drop", true); }
-    @Test void createDropRebuildRetiresOnlyTheOldDropAction() throws Exception { launch("retire", true); }
-    @Test void createRebuildMapsTheNewEntity() throws Exception { launch("refresh-create", true); }
+    @Test void createDropKeepsTheOriginalFactoryWithoutEnumChanges() throws Exception { launch("retire", true); }
+    @Test void createKeepsMappedRowsWithoutEnumChanges() throws Exception { launch("refresh-create", true); }
     @Test void convertedWrapperCannotPersistDivergentOrdinal() throws Exception { launch("wrapper", true); }
     @Test void embeddableGetterCannotPersistDivergentOrdinal() throws Exception { launch("getter", true); }
     @Test void idClassMethodsCannotPersistDivergentOrdinal() throws Exception { launch("idclass", true); }
@@ -156,7 +158,7 @@ public class EnumFactoryLifecycleTest {
             } finally { HibernateEnumStorage.recordOrder(State.class, false); }
             return;
         }
-        if (args[0].equals("spring")) { springFactory(); return; }
+        if (args[0].equals("spring") || args[0].equals("spring-cache")) { springFactory(args[0].equals("spring-cache")); return; }
         try (SessionFactory named = factory(NamedOrder.class); var context = new GenericApplicationContext()) {
             context.getBeanFactory().registerSingleton("visibleNamedFactory", named);
             context.refresh();
@@ -288,43 +290,21 @@ public class EnumFactoryLifecycleTest {
             HibernateEnumStorage.recordOrder(State.class, reordered);
             JpaMappingRefresh.configure(() -> true, () -> false);
             JpaMappingRefresh.applyForNewEntity(OrdinalOrder.class.getName(), OrdinalOrder.class);
-            if (reordered) {
-                assertSame(old, bean.getNativeEntityManagerFactory());
-                try (var connection = data.getConnection(); var sql = connection.createStatement();
-                     var rows = sql.executeQuery("select state from NamedOrder where id=42")) {
-                    assertTrue(rows.next(), "rebuilding erased the existing row");
-                    assertEquals("PAID", rows.getString(1));
-                }
-                assertFalse(bean.getPersistenceUnitInfo().getManagedClassNames().contains(OrdinalOrder.class.getName()));
-            } else {
-                var replacement = bean.getNativeEntityManagerFactory();
-                assertNotSame(old, replacement, "configured destructive rebuild must proceed without a divergent order");
-                assertFalse(old.isOpen());
-                try (var em = replacement.createEntityManager()) {
-                    em.getTransaction().begin();
-                    var row = new OrdinalOrder(); row.id = 73; row.state = State.PAID;
-                    var shared = new NamedOrder(); shared.id = 74; shared.state = State.PAID;
-                    em.persist(row); em.persist(shared); em.getTransaction().commit();
-                }
-                try (var connection = data.getConnection(); var sql = connection.createStatement();
-                     var rows = sql.executeQuery("select state from OrdinalOrder where id=73")) {
-                    assertTrue(rows.next());
-                    assertEquals(State.PAID.ordinal(), rows.getInt(1));
-                }
-                try (var connection = data.getConnection(); var sql = connection.createStatement();
-                     var rows = sql.executeQuery("select state from NamedOrder where id=74")) {
-                    assertTrue(rows.next(), "the retired factory must preserve tables shared with its replacement");
-                    assertEquals("PAID", rows.getString(1));
-                }
+            assertSame(old, bean.getNativeEntityManagerFactory());
+            try (var connection = data.getConnection(); var sql = connection.createStatement();
+                 var rows = sql.executeQuery("select state from NamedOrder where id=42")) {
+                assertTrue(rows.next(), "rebuilding erased the existing row");
+                assertEquals("PAID", rows.getString(1));
             }
+            assertFalse(bean.getPersistenceUnitInfo().getManagedClassNames().contains(OrdinalOrder.class.getName()));
         } finally { HibernateEnumStorage.recordOrder(State.class, false); ApplicationContextHolder.clear(); }
         try (var connection = data.getConnection();
-             var tables = connection.getMetaData().getTables(null, null, reordered ? "NAMEDORDER" : "ORDINALORDER", null)) {
+             var tables = connection.getMetaData().getTables(null, null, "NAMEDORDER", null)) {
             assertEquals(ddl.equals("create"), tables.next(), "the last live factory must keep its own shutdown policy");
         }
     }
 
-    private static void springFactory() throws Exception {
+    private static void springFactory(boolean sharedCache) throws Exception {
         String url = "jdbc:h2:mem:spring_names;DB_CLOSE_DELAY=-1";
         var bean = new org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean();
         bean.setDataSource(new org.springframework.jdbc.datasource.DriverManagerDataSource(url, "sa", ""));
@@ -333,7 +313,11 @@ public class EnumFactoryLifecycleTest {
         bean.setManagedTypes(org.springframework.orm.jpa.persistenceunit.PersistenceManagedTypes.of(
                 NamedOrder.class.getName(), Parent.class.getName()));
         bean.setJpaVendorAdapter(new org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter());
-        bean.setJpaPropertyMap(Map.of("hibernate.hbm2ddl.auto", "update", "hibernate.archive.autodetection", "none"));
+        var settings = new java.util.HashMap<String, Object>();
+        settings.put("hibernate.hbm2ddl.auto", "update");
+        settings.put("hibernate.archive.autodetection", "none");
+        if (!sharedCache) settings.put("hibernate.cache.region.factory_class", org.hibernate.cache.internal.NoCachingRegionFactory.class);
+        bean.setJpaPropertyMap(settings);
         try (var context = new GenericApplicationContext()) {
             context.registerBean("emf", org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.class, () -> bean);
             context.refresh();
@@ -342,6 +326,19 @@ public class EnumFactoryLifecycleTest {
             assertTrue(java.lang.reflect.Proxy.isProxyClass(proxy.getClass()));
             var original = bean.getNativeEntityManagerFactory();
             assertNotSame(proxy, original);
+            if (sharedCache) {
+                JpaMappingRefresh.configure(() -> true, () -> false);
+                var messages = new ArrayList<String>();
+                com.onurkat.reclazz.ui.StatusReporter.StatusListener listener = (level, message) -> messages.add(message);
+                com.onurkat.reclazz.ui.StatusReporter.addListener(listener);
+                try { JpaMappingRefresh.applyForNewEntity(OrdinalOrder.class.getName(), OrdinalOrder.class); }
+                finally { com.onurkat.reclazz.ui.StatusReporter.removeListener(listener); }
+                assertTrue(messages.stream().anyMatch(message -> message.contains("JCacheRegionFactory")), messages.toString());
+                assertFalse(bean.getPersistenceUnitInfo().getManagedClassNames().contains(OrdinalOrder.class.getName()));
+                assertSame(original, bean.getNativeEntityManagerFactory());
+                assertTrue(original.isOpen());
+                return;
+            }
             var parent = original.unwrap(SessionFactoryImplementor.class).getMappingMetamodel().getEntityDescriptor(Parent.class);
             var children = (org.hibernate.metamodel.mapping.PluralAttributeMapping) parent.findAttributeMapping("children");
             assertInstanceOf(org.hibernate.metamodel.mapping.internal.OneToManyCollectionPart.class, children.getElementDescriptor());

@@ -115,50 +115,59 @@ public final class JpaMappingRefresh {
             // NEW entity is by definition nobody (measured: it answered unset
             // while the property said update).
             Field nativeField = nativeFactoryField(factoryBean);
-            Object current = nativeField.get(factoryBean);
-            if (JpaSchemaAdvice.managesEntity(current, entityClass)) {
+            if (JpaSchemaAdvice.managesEntity(nativeField.get(factoryBean), entityClass)) {
                 JpaPreparedSchemaRefresh.mapped(className, entityClass);
                 return;
             }
-            String ddlAuto = JpaSchemaAdvice.settingOf(current);
-            if ("validate".equals(ddlAuto)) {
-                JpaPreparedSchemaRefresh.apply(className, entityClass, factoryBean, nativeField, bytecode);
-                return;
+            try (var reservation = JpaFactoryRetention.reserve(factoryBean, nativeField)) {
+                Object current = nativeField.get(factoryBean);
+                if (JpaSchemaAdvice.managesEntity(current, entityClass)) {
+                    JpaPreparedSchemaRefresh.mapped(className, entityClass);
+                    return;
+                }
+                String ddlAuto = JpaSchemaAdvice.settingOf(current);
+                if ("validate".equals(ddlAuto)) {
+                    JpaPreparedSchemaRefresh.apply(className, entityClass, factoryBean, nativeField, bytecode, reservation);
+                    return;
+                }
+                if (!ddlAutoQualifies(ddlAuto)) {
+                    StatusReporter.warn("New entity " + className
+                            + " needs its table, and hbm2ddl.auto="
+                            + (ddlAuto == null ? "unset" : ddlAuto)
+                            + " will not create it during a rebuild; the mapping is left "
+                            + "for a restart after the table exists.");
+                    RestartLedger.note(className,
+                            "is a new entity whose table hbm2ddl.auto="
+                            + (ddlAuto == null ? "unset" : ddlAuto) + " will not create");
+                    return;
+                }
+                // The unit's managed-class list was scanned once at startup and
+                // the rebuild reuses it, so the new class has to be added to the
+                // unit info first (measured: without this the rebuild ran and the
+                // fresh metamodel still did not carry the entity).
+                var managed = managedClasses(factoryBean);
+                if (managed == null) {
+                    StatusReporter.warn("New entity " + className
+                            + " could not be added to the persistence unit's managed classes; "
+                            + "a restart maps it.");
+                    RestartLedger.note(className,
+                            "is a new entity that could not be added to the persistence unit's "
+                            + "managed classes");
+                    return;
+                }
+                boolean added = !managed.contains(className);
+                if (added) managed.add(className);
+                try {
+                    Result result = rebuild(className, entityClass,
+                            new JpaEntityChange.Change(java.util.List.of("its first mapping"), java.util.List.of()), factoryBean, ddlAuto, nativeField, reservation);
+                    if (!result.refreshed()) StatusReporter.warn("New entity " + className + " could not be mapped:" + result.appendix());
+                } finally {
+                    if (added && nativeField.get(factoryBean) == current) managed.remove(className);
+                }
             }
-            if (!ddlAutoQualifies(ddlAuto)) {
-                StatusReporter.warn("New entity " + className
-                        + " needs its table, and hbm2ddl.auto="
-                        + (ddlAuto == null ? "unset" : ddlAuto)
-                        + " will not create it during a rebuild; the mapping is left "
-                        + "for a restart after the table exists.");
-                RestartLedger.note(className,
-                        "is a new entity whose table hbm2ddl.auto="
-                        + (ddlAuto == null ? "unset" : ddlAuto) + " will not create");
-                return;
-            }
-            // The unit's managed-class list was scanned once at startup and
-            // the rebuild reuses it, so the new class has to be added to the
-            // unit info first (measured: without this the rebuild ran and the
-            // fresh metamodel still did not carry the entity).
-            var managed = managedClasses(factoryBean);
-            if (managed == null) {
-                StatusReporter.warn("New entity " + className
-                        + " could not be added to the persistence unit's managed classes; "
-                        + "a restart maps it.");
-                RestartLedger.note(className,
-                        "is a new entity that could not be added to the persistence unit's "
-                        + "managed classes");
-                return;
-            }
-            boolean added = !managed.contains(className);
-            if (added) managed.add(className);
-            try {
-                Result result = rebuild(className, entityClass,
-                        new JpaEntityChange.Change(java.util.List.of("its first mapping"), java.util.List.of()), factoryBean, ddlAuto);
-                if (!result.refreshed()) StatusReporter.warn("New entity " + className + " could not be mapped:" + result.appendix());
-            } finally {
-                if (added && nativeField.get(factoryBean) == current) managed.remove(className);
-            }
+        } catch (JpaFactoryRetention.Hold held) {
+            RestartLedger.note(className, held.getMessage());
+            StatusReporter.warn("New entity " + className + ": " + held.getMessage());
         } catch (Throwable t) {
             Throwable root = t;
             while (root.getCause() != null) root = root.getCause();
@@ -290,7 +299,13 @@ public final class JpaMappingRefresh {
 
             if (!optedIn()) return new Result(false, OPT_IN_HINT);
 
-            return rebuild(className, entityClass, change, factoryBean, ddlAuto);
+            Field field = nativeFactoryField(factoryBean);
+            try (var reservation = JpaFactoryRetention.reserve(factoryBean, field)) {
+                return rebuild(className, entityClass, change, factoryBean, ddlAuto, field, reservation);
+            } catch (JpaFactoryRetention.Hold held) {
+                RestartLedger.note(className, held.getMessage());
+                return new Result(false, " " + held.getMessage() + ".");
+            }
         } catch (Throwable t) {
             Throwable root = t;
             while (root.getCause() != null) root = root.getCause();
@@ -375,79 +390,7 @@ public final class JpaMappingRefresh {
 
     private static Result rebuild(String className, Class<?> entityClass,
                                   JpaEntityChange.Change change, Object factoryBean,
-                                  String ddlAuto) throws Exception {
-        Field nativeField = nativeFactoryField(factoryBean);
-        Object old = nativeField.get(factoryBean);
-        Object unitInfo = factoryBean.getClass().getMethod("getPersistenceUnitInfo").invoke(factoryBean);
-        Map<?, ?> live = (Map<?, ?>) old.getClass().getMethod("getProperties").invoke(old);
-        Map<?, ?> unit = unitInfo == null ? Map.of() : (Map<?, ?>) unitInfo.getClass().getMethod("getProperties").invoke(unitInfo);
-        Map<?, ?> overrides = (Map<?, ?>) factoryBean.getClass().getMethod("getJpaPropertyMap").invoke(factoryBean);
-        boolean destructive = destructiveAction(live) || destructiveAction(unit) || destructiveAction(overrides);
-        if (destructive && !HibernateEnumStorage.beginDestructiveRebuild()) {
-            String reason = "destructive schema bootstrap cannot preserve the current tables while enum order differs or is changing";
-            RestartLedger.note(className, reason);
-            return new Result(false, " Retained the previous persistence factory: " + reason + ".");
-        }
-        try {
-            // Inspect the exact observer before bootstrap; leave it armed if construction fails.
-            DropOnClose oldDrop = destructive ? DropOnClose.find(old, live) : null;
-            return replaceFactory(className, entityClass, change, factoryBean, ddlAuto, nativeField, old, oldDrop);
-        } finally {
-            if (destructive) HibernateEnumStorage.finishDestructiveRebuild();
-        }
-    }
-
-    private static boolean destructiveAction(Map<?, ?> settings) {
-        for (var entry : settings.entrySet()) {
-            String key = String.valueOf(entry.getKey());
-            if (!(key.equals("hibernate.hbm2ddl.auto") || key.startsWith("hibernate.hbm2ddl.auto.")
-                    || key.startsWith("jakarta.persistence.schema-generation.database.action")
-                    || key.startsWith("javax.persistence.schema-generation.database.action"))) continue;
-            if (java.util.Set.of("create", "drop", "create-drop", "drop-and-create").contains(actionName(entry.getValue())))
-                return true;
-        }
-        return false;
-    }
-
-    private static String actionName(Object value) {
-        String text = value instanceof Enum<?> action ? action.name() : String.valueOf(value);
-        return text.trim().toLowerCase(java.util.Locale.ROOT).replace('_', '-');
-    }
-
-    /** Hibernate installs one schema-export observer per factory. Only the retired observer loses its close action. */
-    private record DropOnClose(Object observer, Field field) {
-        static DropOnClose find(Object old, Map<?, ?> settings) throws ReflectiveOperationException {
-            boolean configured = settings.entrySet().stream().anyMatch(e -> String.valueOf(e.getKey()).startsWith("hibernate.hbm2ddl.auto")
-                    && "create-drop".equals(actionName(e.getValue())));
-            if (!configured) return null;
-            if (!old.getClass().getName().equals("org.hibernate.internal.SessionFactoryImpl"))
-                throw new IllegalStateException("cannot verify the retiring factory's Hibernate create-drop action");
-            Object chain = readField(old, "observer");
-            if (!chain.getClass().getName().equals("org.hibernate.internal.SessionFactoryObserverChain"))
-                throw new IllegalStateException("unrecognized Hibernate observer chain");
-            DropOnClose found = null;
-            for (Object observer : (java.util.List<?>)readField(chain, "observers")) {
-                if (!observer.getClass().getName().equals("org.hibernate.boot.internal.SessionFactoryObserverForSchemaExport")) continue;
-                Field field = observer.getClass().getDeclaredField("delayedDropAction");
-                if (!field.getType().getName().equals("org.hibernate.tool.schema.spi.DelayedDropAction")
-                        || !field.trySetAccessible() || found != null)
-                    throw new IllegalStateException("cannot isolate the retiring factory's schema drop action");
-                found = new DropOnClose(observer, field);
-            }
-            if (found == null) throw new IllegalStateException("retiring factory has no recognized schema-export observer");
-            return found;
-        }
-
-        private static Object readField(Object bean, String name) throws ReflectiveOperationException {
-            Field field = bean.getClass().getDeclaredField(name);
-            if (!field.trySetAccessible()) throw new IllegalAccessException(name);
-            return field.get(bean);
-        }
-    }
-
-    private static Result replaceFactory(String className, Class<?> entityClass, JpaEntityChange.Change change,
-                                         Object factoryBean, String ddlAuto, Field nativeField, Object old,
-                                         DropOnClose oldDrop) throws Exception {
+                                  String ddlAuto, Field nativeField, JpaFactoryRetention.Reservation reservation) throws Exception {
         Class<?> declaring = nativeField.getDeclaringClass();
         Method create = declaring.getDeclaredMethod("createNativeEntityManagerFactory");
         create.setAccessible(true);
@@ -456,22 +399,9 @@ public final class JpaMappingRefresh {
         Object fresh = create.invoke(factoryBean);
         long wallMs = (System.nanoTime() - start) / 1_000_000;
 
-        var unsafe = HibernateEnumStorage.freshFactoryProblems(fresh);
-        if (!unsafe.isEmpty()) {
-            fresh.getClass().getMethod("close").invoke(fresh);
-            return new Result(false, " Retained the previous persistence factory: " + String.join(", ", unsafe));
-        }
-        nativeField.set(factoryBean, fresh);
-        if (oldDrop != null) oldDrop.field().set(oldDrop.observer(), null);
-        old.getClass().getMethod("close").invoke(old);
-
-        if (!JpaSchemaAdvice.managesEntity(fresh, entityClass)) {
-            // The swap already happened and is not undone: the fresh factory is
-            // the one the schema action ran for, and putting the closed one
-            // back would be worse. Saying so is what is left.
-            return new Result(false, " The automatic rebuild ran in " + wallMs
-                    + "ms but the new metamodel does not carry " + entityClass.getName()
-                    + ", so the warning above still stands.");
+        if (!JpaPreparedSchemaRefresh.install(entityClass, factoryBean, nativeField, fresh, reservation)) {
+            return new Result(false, " The replacement metamodel does not carry " + entityClass.getName()
+                    + "; the previous factory remains active.");
         }
 
         String unit = unitName(factoryBean);
@@ -482,7 +412,7 @@ public final class JpaMappingRefresh {
             msg.append(" The column was created by hbm2ddl.auto=").append(ddlAuto)
                     .append(" during the rebuild.");
         }
-        msg.append(" Open persistence contexts from before the rebuild are closed.");
+        msg.append(reservation.receipt());
         StatusReporter.success(msg.toString());
         return new Result(true, "");
     }

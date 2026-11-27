@@ -1273,6 +1273,19 @@
               "status": "PASSED"
             }
           ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.reload.JpaPreparedSchemaTest#retainedFactoriesCloseAtContextShutdownAndContinueAfterOneCloseFails",
+          "status": "PASSED",
+          "source_sha256": "f239c1e426d3c8d1bf50993954b7b182257dd7fefbc28736e66d827caf64457f",
+          "artifact_sha256": "149542c1d787415053b81453a5784b5eb336b7a45c750931dd0c2da9a34022f6",
+          "raw_evidence": ".collab/lanes/jpa-factory-close/research/close-on-17.xml",
+          "invocations": [
+            {
+              "name": "retainedFactoriesCloseAtContextShutdownAndContinueAfterOneCloseFails()",
+              "status": "PASSED"
+            }
+          ]
         }
       ],
       "runs": [
@@ -1480,6 +1493,22 @@
             }
           },
           "raw_evidence": ".collab/research/2026-10-14-rf09-build/targeted-main-17"
+        }
+      ],
+      "retention_followup_runs": [
+        {
+          "command": "./gradlew -Preclazz.testJava=17 :agent:springSixTest --tests '*JpaPreparedSchemaTest.retainedFactoriesCloseAtContextShutdownAndContinueAfterOneCloseFails' --rerun",
+          "runtime": "openjdk version \"17.0.16\" 2025-07-15 LTS",
+          "utc": "2026-11-27T23:40:12.079Z",
+          "task_base": "7ab2dc07",
+          "artifact_sha256": "149542c1d787415053b81453a5784b5eb336b7a45c750931dd0c2da9a34022f6",
+          "counts": {
+            "tests": 1,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "raw_evidence": ".collab/lanes/jpa-factory-close/research/close-on-17.xml"
         }
       ]
     },
@@ -2749,6 +2778,19 @@
               "status": "PASSED"
             }
           ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.reload.JpaPreparedSchemaTest#retainedFactoriesCloseAtContextShutdownAndContinueAfterOneCloseFails",
+          "status": "PASSED",
+          "source_sha256": "f239c1e426d3c8d1bf50993954b7b182257dd7fefbc28736e66d827caf64457f",
+          "artifact_sha256": "149542c1d787415053b81453a5784b5eb336b7a45c750931dd0c2da9a34022f6",
+          "raw_evidence": ".collab/lanes/jpa-factory-close/research/close-on-21.xml",
+          "invocations": [
+            {
+              "name": "retainedFactoriesCloseAtContextShutdownAndContinueAfterOneCloseFails()",
+              "status": "PASSED"
+            }
+          ]
         }
       ],
       "runs": [
@@ -2956,6 +2998,22 @@
             }
           },
           "raw_evidence": ".collab/research/2026-10-14-rf09-build/targeted-main-21"
+        }
+      ],
+      "retention_followup_runs": [
+        {
+          "command": "./gradlew -Preclazz.testJava=21 :agent:springSixTest --tests '*JpaPreparedSchemaTest.retainedFactoriesCloseAtContextShutdownAndContinueAfterOneCloseFails' --rerun",
+          "runtime": "openjdk version \"21.0.10.0.1\" 2026-02-17 LTS",
+          "utc": "2026-11-27T23:40:16.678Z",
+          "task_base": "7ab2dc07",
+          "artifact_sha256": "149542c1d787415053b81453a5784b5eb336b7a45c750931dd0c2da9a34022f6",
+          "counts": {
+            "tests": 1,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "raw_evidence": ".collab/lanes/jpa-factory-close/research/close-on-21.xml"
         }
       ]
     }
@@ -4955,12 +5013,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| New `@Entity` class picks up a mapping",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P3C-JPA-NEW-ENTITY",
-          "block_sha256": "794ee3b7e9d11c9b9e597721ac1c860e515d5e7e5feddb230f50d6fe39a69fd4"
+          "block_sha256": "5fe515d78034b21438fa585d732309faa09b85a157af5124c43edf47155296e7"
         }
       ],
       "opt_in": "jpaRefresh=true; sole standard Spring ORM/Hibernate unit with prepared validate schema; autoCompile varied explicitly.",
@@ -4993,12 +5051,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| New `@Entity` class picks up a mapping",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P3C-JPA-PENDING-METADATA",
-          "block_sha256": "13b34eff20351a684e58537242827e3ff6ec7ab79cbdccc5f9f19e796b13481d"
+          "block_sha256": "fcf9e4f17ee44b8044c86d3da75a6dee3f4dffbcf6648b68c34fa5221e7cd769"
         }
       ],
       "opt_in": "jpaRefresh=true; supported validate mode and original pending mapping.",
@@ -5031,12 +5089,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| New `@Entity` class picks up a mapping",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P3C-JPA-VALIDATION-FAILURE",
-          "block_sha256": "a09f5ddc6dd41b17122ced6f415d692e23e0326538bdb48f53e88c9ebc388eee"
+          "block_sha256": "69f6df08377fbe8d28de1f3b79c68074ed87acfe5a937daa411e5d636be48ffb"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -5062,19 +5120,19 @@
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/reload/JpaPreparedSchemaTest.java",
           "kind": "component",
           "assertions": "Native factory notSame, old closed, new/kept rows; second identical entity does not rebuild.",
-          "method_sha256": "cda07805722b5a907194700fec053e6522094115f898c84d259d728c11ef5066"
+          "method_sha256": "313609602f04d5f1703f2933b8c083a3f6489ade57c3f7de33c8b7afce4ac0c5"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
           "quote": "| New `@Entity` class picks up a mapping",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P3C-JPA-PREPARED-SCHEMA",
-          "block_sha256": "e5479350462a0b963b0bda6422c0c9fa75d00347481a6d64f7092a192b2e49c4"
+          "block_sha256": "83710b702120a1d98cf4c9bf89775b99bb15cf9fedcb995480630e5dbd088dab"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -5107,12 +5165,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| New `@Entity` class picks up a mapping",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P3C-JPA-SCHEMA-OVERRIDES",
-          "block_sha256": "e1d912cdb35dcded26dadb183c74aedee50f0586b167e5137bdb28e09df4560d"
+          "block_sha256": "f974ca252ffe17f8b1a0c033827415e2403bf9916e63634e515cb8c6b3658688"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -5145,12 +5203,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| New `@Entity` class picks up a mapping",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P3C-JPA-OPTIN-AMBIGUITY",
-          "block_sha256": "9b71059a13de454b0cf6435a51b7f46f81c42dcea13015df33f243c282471db3"
+          "block_sha256": "dd190dadcbe061d11142a9a7dc9e45a04c2ec3bb6d107f3a1a7c714cbd83aa97"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -5169,31 +5227,31 @@
     },
     {
       "id": "P3C-JPA-CLOSE-REPORT",
-      "statement": "An old-factory close failure after successful swap is reported as installed with retirement failure.",
+      "statement": "Retained factories close when the owning context closes. A close failure is reported once and cleanup continues with the remaining factories.",
       "tests": [
         {
-          "symbol": "com.onurkat.reclazz.reload.JpaPreparedSchemaTest#closeFailureAfterSwapIsReportedWithoutClaimingTheOldFactoryWasRetained",
+          "symbol": "com.onurkat.reclazz.reload.JpaPreparedSchemaTest#retainedFactoriesCloseAtContextShutdownAndContinueAfterOneCloseFails",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/reload/JpaPreparedSchemaTest.java",
           "kind": "component",
-          "assertions": "Fresh factory same/open; warning contains mapping installed and retiring.",
-          "method_sha256": "ae507df2dfd6f6f1604ddc8e5f6b215bb54eea67903ea520e8f13a9404318318"
+          "assertions": "Previous factory stays open after publication, closes after context shutdown, and one failed close produces one warning.",
+          "method_sha256": "bcfc218b6cfe8b150a5edb88f19256ddd0d0188d13ddd548fa336da92e6be45a"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/product-reference.md",
           "quote": "| New `@Entity` class picks up a mapping",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P3C-JPA-CLOSE-REPORT",
-          "block_sha256": "72d5c19e774c9094975f3b424cea3e158cee9fad9a3e68941ad61d67dd5236a9"
+          "block_sha256": "c886d0bb5f2cc8ef2a9d698dc68ee03e9e51bd0809aac4028e30b5fe734173fe"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
       "bounds": "SapMachine17/21, macOS arm64. Spring ORM6.1.14/Hibernate6.5.3.Final/H2 2.5.250; component with synthetic failing-close holder.",
-      "observable": "An old-factory close failure after successful swap is reported as installed with retirement failure.",
+      "observable": "Retained factories close when the owning context closes. A close failure is reported once and cleanup continues with the remaining factories.",
       "control": "Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.",
       "execution_lanes": [
         "sapmachine-17-macos-arm64",
@@ -5203,7 +5261,17 @@
       "reviewer": "Astra read source assertions; independent Claude audit pending.",
       "limitation": "Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim.",
       "missing_environment": "Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.",
-      "next_action": "Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending."
+      "next_action": "Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.",
+      "prior_swap_time_evidence": {
+        "statement": "An old-factory close failure after successful swap is reported as installed with retirement failure.",
+        "test": "com.onurkat.reclazz.reload.JpaPreparedSchemaTest#closeFailureAfterSwapIsReportedWithoutClaimingTheOldFactoryWasRetained",
+        "assertions": "Fresh factory same/open; warning contains mapping installed and retiring.",
+        "execution_lanes": [
+          "sapmachine-17-macos-arm64",
+          "sapmachine-21-macos-arm64"
+        ]
+      },
+      "current_verification": "Both retention_followup_runs exercise context-shutdown cleanup. The historical immediate-close runs are separately identified."
     },
     {
       "id": "P3C-JPA-QUERY-WATCHER",
@@ -5304,12 +5372,12 @@
         {
           "path": "docs/usage.md",
           "quote": "### Held repositories after a prepared mapping refresh",
-          "block_sha256": "bba67cc76f58b479eb020b7496426127e837fefc5b23e6b332c13c938e977fb8"
+          "block_sha256": "89cbde1c60a2fb16d63e2631ccae8d0dd2c65ac31e7194b1db75780f0f3ead8a"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P3C-JPA-REPOSITORY-AFTER-EMF-SWAP",
-          "block_sha256": "d283ceadd55d9517bdc5825b3efcf25176bc3edfbe0fa770d92fc4e5a0a0a1c5"
+          "block_sha256": "fa381dc0530dabe487b3103b719f3c3f4faee5ad46014b66477bdb92a4e83b4f"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -5370,12 +5438,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| New `@Entity` class picks up a mapping",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P3C-JPA-FIELD-DETECTION",
-          "block_sha256": "e92b729e3d05f4af8ebf0cd4b444b4e8243f5b630f05ec412eac232391b97ebc"
+          "block_sha256": "5cb06874ad57c722f50b468c018af1d5d92640271ad25bd2f5063f82c01befb6"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -5408,12 +5476,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| New `@Entity` class picks up a mapping",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P3C-JPA-UPDATE-ADVICE",
-          "block_sha256": "5126393cf1fda917bc503e718bc3395a45e71687583b17d37606323565e54344"
+          "block_sha256": "c543e9e0782aea40f696dad2c1cc7c9f5947f537f46b40e5024b3704cefd6ed1"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -5446,12 +5514,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| New `@Entity` class picks up a mapping",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P3C-JPA-VALIDATE-ADVICE",
-          "block_sha256": "1a3b3539f29e6c71a12bd16a60b7185987780dbc20f80ddae2e902c4e0e4cf6f"
+          "block_sha256": "bba0b2b6bed2967b14113693d102094cc27ff7766e6a5a3550ba26b58a90e4bc"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -5484,12 +5552,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| New `@Entity` class picks up a mapping",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P3C-JPA-FIELD-REFRESH-GATE",
-          "block_sha256": "ccc005c74f050b6965a190ba736a87526965e04ef0d7844c7ffc0e4b7f161a8c"
+          "block_sha256": "8bd9166d403a5646ef5d4308f12d2e93c95387a244bba5f42cb3e209881140bc"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -5522,12 +5590,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| New `@Entity` class picks up a mapping",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P3C-JPA-DDL-GATE",
-          "block_sha256": "511be6586eafe236adef5683caeb3c8d411fab3c0ffd55dd17b9b471e13e6cc6"
+          "block_sha256": "7600f46dbb017858b7dcaf3c2fb5e9a7314bd01229fc8898aa4b5a8da6d9ddc0"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
@@ -5552,12 +5620,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| New `@Entity` class picks up a mapping",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P3C-JPA-ENHANCED-FIELD",
-          "block_sha256": "d625c3ffbf6761e3e29cd448525710ee677a9654b045958012d155b8e663c4bf"
+          "block_sha256": "9f1a6e72e470911b3eacded0b1ebda567c417096be2e97d5a3be4624cda21996"
         }
       ],
       "opt_in": "jpaRefresh=true plus enhanced structural redefinition and supported schema-creating setting.",
@@ -5580,12 +5648,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| New `@Entity` class picks up a mapping",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P3C-JPA-SPRING5",
-          "block_sha256": "0840f52baae703edec6fd904afbb7cb24af13bed554a7d8f427769616eb497dd"
+          "block_sha256": "eb2aab7575c1f9d7812925dcc6cba817129e6857e3848ea3ace24ac542928fc5"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",

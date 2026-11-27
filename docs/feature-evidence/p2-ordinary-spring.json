@@ -2071,12 +2071,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "New `@Service` / `@Component` / `@Controller` class",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-BEAN-REGISTER-NEW",
-          "block_sha256": "8d1fcda9642f250513758118f6ad0d850dbd4d5c1b44b98d0990e81527feedb1"
+          "block_sha256": "d9e432d7193159f324ea42e308566a475ce8d6fb1de9e90b35818a1625793445"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -2109,12 +2109,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "New `@Service` / `@Component` / `@Controller` class",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-BEAN-COMPONENT-PROFILE",
-          "block_sha256": "d21dd69153ddb7c006d7c64ea5356b18bd77a4b28c3f54e38a38afd7897f7c99"
+          "block_sha256": "e240e7a688914c8e1b675fff7c71c3b5dd347c4ee31b07d36e400f66511fc881"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -2147,12 +2147,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "New `@Service` / `@Component` / `@Controller` class",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-BEAN-COMPONENT-CONDITIONAL",
-          "block_sha256": "3cf8bf9696161f5e914cdb8c32b38dd7fae174ef4379bba00a931b13ebd130db"
+          "block_sha256": "0c7b5091dee849c9b0cf95c879577ac8a61c69bf16cd868f37da9e46170cbc7c"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -2299,12 +2299,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "its constructor autowired",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-BEAN-NEW-CONSTRUCTOR-INJECTION",
-          "block_sha256": "edf99d33ca44337e1715430d86389b3380a010d65b087966d03645f980db6899"
+          "block_sha256": "b54504137b1b532fa57f1ae246ec3be36a3352b25a0ad4f90812fa51e4f5eac5"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -2326,12 +2326,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "Spring bean refresh",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-BEAN-REFRESH",
-          "block_sha256": "d28ed820650b4565706ad6694f47d993df164cce8552635697192234905cfe64"
+          "block_sha256": "cfe70433b17d8df2ae5631e662e1b82383073d0335e4501a864b08d90ecfdb03"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -2402,12 +2402,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "`@Autowired` added to an existing field",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-INJECTION-AUTOWIRED",
-          "block_sha256": "9467463500589270efff246823cf57c36ad7918f8329e99a3374aafa6ad9a234"
+          "block_sha256": "ef902afa6c76f0374449a62d5e66fb5fa702cd16a5f7572d39eefb9111acdc6d"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -2440,12 +2440,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "`@Autowired` added to an existing field",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-INJECTION-VALUE",
-          "block_sha256": "6bb0e86acfb2820bcec8a30eaebbcb0bd5ac948f733a3495f2d8fc4a178a55c0"
+          "block_sha256": "973e5b42137923a7cc4310d9a2ffbecd47f253eb9a329dbbd2d0327967249296"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -2478,12 +2478,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "`@Autowired` added to an existing field",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-INJECTION-RESOURCE",
-          "block_sha256": "f2ed40b618426ace3adb5c5eb0b9ba0867dd8d3fbed7f842416f858d8d22de72"
+          "block_sha256": "c06395964729fcbe2013ff15965044300993c4f946a737d2f7bf80c99a433038"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -2516,12 +2516,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "`@Bean` method added after startup",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-BEAN-LITE-CONFIG",
-          "block_sha256": "ed798a6cde4fbf91ad81c5c151190669f34a8ca864434f0aa7437639d99f1e6a"
+          "block_sha256": "cca5f12f592b8a62c24e2c40212ed4c201fa0b20aeee4ef0111191f7b44acd3d"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -2554,12 +2554,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "`@Bean` method added after startup",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-BEAN-ARGS",
-          "block_sha256": "765b81634a4a5c9a5d23a6f3b409506e75c82a7782985865efdf48d290c2b475"
+          "block_sha256": "e5d99210b683e50696792bb614b1e61d936c9cde1bf029e535222da1ede4bcaf"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -2592,12 +2592,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "`@Bean` method added after startup",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-BEAN-RICH-ARGS",
-          "block_sha256": "3a3daaaf65432b704c740b589e22f3f18469eb56a5b6d937833d5e912ea198e7"
+          "block_sha256": "e662446c82b6a0675adec63682b5bfd9ac610e7c0ebaf08a15e790cf29cf86e4"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -2630,12 +2630,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "`@Bean` method added after startup",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-BEAN-PROVIDER",
-          "block_sha256": "69d7602dd3a92cc9fcecc74625fdff1b7e85c637f36c930ea02c0b57f6001018"
+          "block_sha256": "b7285c47654a152624cd30942d8413941f34a6c7b0c558810bcd4c704aaae5b0"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -2668,12 +2668,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "`@Bean` method added after startup",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-BEAN-PRIMITIVE-VALUE",
-          "block_sha256": "03f37747775213c7e18dd757ac91eec9ceb65c507db97451241d0b1a8f4a162e"
+          "block_sha256": "a2945245b9869a3d9dd058ce73cfb2b77a8119e31f24ac44096997df4804040d"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -2782,12 +2782,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "Scalar `@Value` inputs",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-BEAN-VALUE-PROPERTY",
-          "block_sha256": "296637e7d5ea1a466beaf4f2c9cdd1f9837cf3398dd512b909307fcea71a5f70"
+          "block_sha256": "c62934218f9cd7895315ebfb8bb3226abbfac2e350125690f340b673273dedc8"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -2820,12 +2820,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "Multiple names register one singleton",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-BEAN-ALIASES",
-          "block_sha256": "88d5163cfa1ee5e3ff2b41a5f8aef74030a6718592678a7befbae1523a95d2b5"
+          "block_sha256": "fcf0c789ffa18bc2a551ee723a769249d3194e8916068f749bf36dfc6b289851"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -2858,12 +2858,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "Direct `@Primary`/`@Qualifier`",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-BEAN-QUALIFIER",
-          "block_sha256": "f9c1c3560e2e9181b0a608153c2f35f88de17c29256c8e5cca6b3e92f2dd4ed3"
+          "block_sha256": "90110aed905b7c892ba7f3ce50d809748f7cdd945df79785b006051aad5cf744"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -2896,12 +2896,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "Direct `@Primary`/`@Qualifier`",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-BEAN-PRIMARY",
-          "block_sha256": "da48263a9d31b6f8ef2fa986948ccba8f52e6793df9e1dd8fa18f2ce596f3778"
+          "block_sha256": "b4ec9c532dcdbafea149299c46b6b55626cd8f14c01e224d8e181fe731367d29"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -2934,12 +2934,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "Direct method-level `@Conditional`",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-BEAN-CONDITIONAL",
-          "block_sha256": "341f82fd8b11664993e996a9249c17dad7fcf7fd5fec12a75ca374eabb17953d"
+          "block_sha256": "162960d326bc1d8bff7eb1f2461b55aaab2bd3ddb36a8e4bc009e1b344c75fed"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -2972,12 +2972,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "Direct Boot `@ConditionalOnProperty`",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-BEAN-BOOT-PROPERTY",
-          "block_sha256": "e9b40b878251cea711a470bbf4279a4b27ca1d57b18d2ec7b744632490d907a1"
+          "block_sha256": "351ae618792d7755347efc7eed058d30df81d05e613b830538d228a106a3a087"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -3010,12 +3010,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "Direct Boot `@ConditionalOnProperty`",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-BEAN-BOOT-BEAN",
-          "block_sha256": "1a3bc48c127fcaccfffa2caa8424cf4250b3821dd48c887200c22d22a6361094"
+          "block_sha256": "8a3163af08282a617938f9190a24d897ab9c830a39d001a530cbd1d9c74ebdbc"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -3048,12 +3048,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "Direct Boot `@ConditionalOnProperty`",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-BEAN-BOOT-MISSING-BEAN",
-          "block_sha256": "27356df8c4e4e38c8d0728fa06cc730f641ed9f0cf592c738672cbcb205eaa30"
+          "block_sha256": "3c864a76f356fa85238fb541c8b8f508f398a32252be13d23f2ecb1738606b95"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -3086,12 +3086,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "and `@Profile` registers",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-BEAN-PROFILE",
-          "block_sha256": "02a4edb8630318c3fbfa0e606aa6bd9c147427b11dbbdd04071da5826df5a8f5"
+          "block_sha256": "5d8d06f6e05bb20d5c8fed8de6cc1b879d3e2e9b7d5040dc45173f234caa43cb"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -3124,12 +3124,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "`@Scope(\"prototype\")` gives",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-BEAN-SCOPE-PROTOTYPE",
-          "block_sha256": "975ea118678cfae4b2c980a1075934141ac7da0c7a55d8d27ec9a82e47184a80"
+          "block_sha256": "911a5a874da853955052ff9d21bc6c8855de50367ac2e7adc61c83dbcd302f1c"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -3162,12 +3162,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "Direct `@Lazy` creates",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-BEAN-LAZY",
-          "block_sha256": "6082e55b1d2fb37010398e965472eba9aa9a4207d575d4c967948079f9828e8f"
+          "block_sha256": "6b91ca4f24d6f285041448dff6264c23306d377722caf31e21377c44d28d8017"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -3200,12 +3200,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "Default `@Configuration` also supports",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-FULL-CONFIG",
-          "block_sha256": "8ad7c99ccd484ec2be96b2b7b1e307bc1d2f623761e8ff9d00a32c437a5dd016"
+          "block_sha256": "20fcc1d034115ed94adb6185bcb6715c9173e5ba412c8032734eae147913e135"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -3238,12 +3238,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "preserve supported explicit-argument/prototype semantics",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-FULL-CONFIG-ARGS",
-          "block_sha256": "b9f5f131ae5d981945680d30be1a6381b8ef70319588c2e39ffce65473a25361"
+          "block_sha256": "82e7afadbff29e6c6dfc617ef1770fe5389fa9f6d9d9633215ec70b0eb2bff7b"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -3314,12 +3314,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "Static factories retain plain Java call semantics",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-FULL-CONFIG-STATIC-JAVA",
-          "block_sha256": "75be90e666b5d045481c000cbd461edf4c9e27280318e18ca52074ed83787d7f"
+          "block_sha256": "bc15bf381088b8ec9a20c8b31bd648ab0b2c736f89269d345f6003f538b96e2f"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -3352,12 +3352,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "Entirely new `@PostConstruct` / `@PreDestroy` methods",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-LIFECYCLE-INIT",
-          "block_sha256": "9210cb0c0fe30dbc20568f686957cea9c7d87031add36028119c5dba03e5ef2b"
+          "block_sha256": "0d1d0958cc4053ba60bd77b79b1b0fd80a1d5bb78b1517e7d7c3cb74354fc01c"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -3397,12 +3397,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "Entirely new `@PostConstruct` / `@PreDestroy` methods",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-LIFECYCLE-DESTROY",
-          "block_sha256": "5150781e4258ce8e9aa32e434fe2482e3e0990994565a5a6fe556432b1919147"
+          "block_sha256": "719e3ab989b8cdc68c41c11a0fd7a193d757f161344afd4d30929ff7f963bbf7"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -3442,12 +3442,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "Entirely new `@PostConstruct` / `@PreDestroy` methods",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-LIFECYCLE-NATIVE-LIFECYCLE",
-          "block_sha256": "940a70ed2cd7f0738c938c0543ebd88951ed277128bc5d4a31b0cdf149984730"
+          "block_sha256": "cf3593d8c40eba767e2652df2b76ccac692aefcbbb0e7a497d161d422b8a86c6"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -3487,12 +3487,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "New service methods with `@Transactional`",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-ADDED-OPERATIONS-PLAIN",
-          "block_sha256": "55e02d280af03d6d7c825352d6286b591088cf3b261490c253371c4673d5cc47"
+          "block_sha256": "8ddc8e8d069cab6a44a1af33f9bb3924200261681b31db671c01d9489182e027"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -3525,12 +3525,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "New service methods with `@Transactional`",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-ADDED-OPERATIONS-HELD",
-          "block_sha256": "f628f3bf55900743570b3407d6cc27325540730bdae6ae577655e7ef36e1c82e"
+          "block_sha256": "1661173111cb5c3e8866736bbe031cbf59d0c3fa26e2ace6e581c82f30ed9cb5"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -3563,12 +3563,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "Commit/rollback, cache hits",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-TX-ROLLBACK",
-          "block_sha256": "cc23893948f03cc420006f5b2acd3628fd82d1262b17e9b86d9517edef801a1e"
+          "block_sha256": "9e2a7746dc23592a41ab03b71b128a340365060cf3f3c4626798bf52072b4134"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -3608,12 +3608,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "Commit/rollback, cache hits",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-CACHE-HIT",
-          "block_sha256": "132a3580d0b01f7225d8202bce23deb36bc2de5568f0ff52138890fae3698a55"
+          "block_sha256": "f53313c8cf10ba37e473eef500e308bf9aa1d68646e5240098b45afbe424840d"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -3653,12 +3653,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "Commit/rollback, cache hits",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-CACHE-PUT",
-          "block_sha256": "765f98dfb74cf34eff955681c1a27c6630d7be038e4b63cd1c37abb8d186d1e1"
+          "block_sha256": "6ed7df1182aec9cbf0b83e6e6f116fde5b082da66da3f8da65282d43c029f8e5"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -3698,12 +3698,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "Commit/rollback, cache hits",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-CACHE-EVICT",
-          "block_sha256": "b96c2a6583caefb4b7622663c45bb5e212fa41f560c8cc4d55d52bf8e731dc79"
+          "block_sha256": "400c96a7fb1af9f701334cefc3fd173d49a1ae1fbe96b03efa6b5b735f99c419"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -3788,12 +3788,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "Supported [composed transaction]",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-COMPOSED-TRANSACTION",
-          "block_sha256": "8534712a658111e02ad0bfcc848ab62538b95362a25063034b7eedc8bd0d4459"
+          "block_sha256": "3a4c417af3254a8e31bac5eb5f4e86bd8a2dc557674c4abfca81beb8d7103317"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -3826,12 +3826,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "[composed cache annotations]",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-COMPOSED-CACHE",
-          "block_sha256": "652750bd6432e52a41122662a83f2e38b3887717f14272e94d76145076c7f3d0"
+          "block_sha256": "af2cebf58191d48932f773f9329ba82202e25e6ad81cde5161c2413af8d35b30"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -3864,12 +3864,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "Edited `@Aspect` pointcut",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-AOP-REFRESH",
-          "block_sha256": "494cc3b8bb2c52ffa0418afd69983a967569037cbe72dc6e0b98b791bed221f5"
+          "block_sha256": "9502e0ffa577e955d633b756b41c369906ab4e5dc5d4c23593dea4e815b5fc5b"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -3909,12 +3909,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "New service methods with `@PreAuthorize`",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-SECURITY-PRE-POST",
-          "block_sha256": "a9bdd9105f4773319a920eedd1c9ac55c26f0f0e2f31eb55229ce5939dfdfa76"
+          "block_sha256": "56dc5cbf0e6710734587ba28e1e00ce31ba763a762d7d509512fc442c30b4d3f"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -3959,12 +3959,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "fixed composed markers",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-COMPOSED-SECURITY",
-          "block_sha256": "b4d2d37dff815e6d17184a3c469ea14daa5f22adaa34534ed9ca0af77bfe3ada"
+          "block_sha256": "f0e19025cba1d4704a4edc5bde7d5e258eb20c0a419c71b2fe67d17d390ba594"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -4202,12 +4202,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Cache eviction | **Yes** | Yes (restart) | Yes |",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-CACHE-RELOAD-EVICTION",
-          "block_sha256": "a66ece0729e572b5d9746b3be4d93cf574daf5ce888e666031947a1f987350de"
+          "block_sha256": "ad666509c9fe94371ee9d3631695606a4863b41eb7ac6168601d350184bc22b7"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -4279,12 +4279,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "Edited `@Transactional` / `@Cacheable` annotation",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-EXISTING-TX-METADATA",
-          "block_sha256": "f7dd9d13d7610886936d1b27cb16e7f77e600776fabef80f283d09dfa392694b"
+          "block_sha256": "217b2e8f0c16dd45e3d962ac30a1791f742cd61a91582c348abcf89375d7890b"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -4329,12 +4329,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "Edited `@Transactional` / `@Cacheable` annotation",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-EXISTING-CACHE-METADATA",
-          "block_sha256": "68a92ec1d943221ce5174e8a10dd53ebe044f8fee44816743d39a3b6e151c367"
+          "block_sha256": "dadfba4b6f48b88b85ffd1fa28ab92a6d2ebe1fa04f6f3acdddc35adcd3bcf38"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -4379,12 +4379,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "preserve aliases and class defaults",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-TX-CLASS-DEFAULTS",
-          "block_sha256": "df6b5643f8eccc8a9eceb6b5b4a5ca108da45db7d128b63493c57c1509fa44ba"
+          "block_sha256": "df2b9ea34b97defcfe81375b37b756edec21297198faff665689f3ab341b0407"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -4417,12 +4417,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "preserve aliases and class defaults",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-CACHE-CLASS-DEFAULTS",
-          "block_sha256": "0defe60a227a4c7cf7fa13be1b79ba77cd77e59f7744f2a05b7470c55f1540f2"
+          "block_sha256": "cc2ee489c55145fe9ab4f276ad9e7a1eeafd656df0f4d11b06b69c60d6032197"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
@@ -4455,12 +4455,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "the filter chain is rebuilt and swapped into the live proxy",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P2-SECURITY-FILTER-CHAIN-SWAP",
-          "block_sha256": "11d803d83fdee57d9f9442d72fc29a729089f34cb765112339842584981aa1ec"
+          "block_sha256": "6898a8fa84dd36a39f24683da1b2adf773e0c4e1aa6e71ad38809c7324f6371a"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",

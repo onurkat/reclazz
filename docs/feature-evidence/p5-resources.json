@@ -3479,12 +3479,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| `@Value` field picks up",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-VALUE-FIELD",
-          "block_sha256": "05ebf8e8db524ecd76a1275a8e9c4ea539b834439abc2a55d4f4de6bcf0beb73"
+          "block_sha256": "b64b4b75ad493b753f821fa4d826ecbfeec4ca36f767ff99085e2b6d19414241"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -3529,12 +3529,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| `@Value` field picks up",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-VALUE-FIELD-REJECT",
-          "block_sha256": "8e56966efee93055322ca1f84a0837dc2d6d388c32a82bb08a0da9e8d2451bb7"
+          "block_sha256": "a2dbb290db8e0af00a4d770bab75d06f1622449e3b48119bea535db078b63909"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -3579,12 +3579,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| `@Value` field picks up",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-VALUE-FIELD-UNSAFE",
-          "block_sha256": "52c9466779e3d486b27beab6d18a8a17c438572c5c5ad2ecdc164526ef43ddfd"
+          "block_sha256": "1f573072abddcfcd599a616a0c0ae8497e11c691cc236b9a747cfdaee235d639"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -3629,12 +3629,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Computed `@Value` constructor",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-VALUE-CONSTRUCTOR",
-          "block_sha256": "0e4faaa18bb056b526d4d824e82cf880db08cd40e707f652c200ca185ec46f8c"
+          "block_sha256": "33a75107cb25f4c1adc80b15d934b04a0705604cf73e27947734b3a3229b9958"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -3679,12 +3679,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Computed `@Value` constructor",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-VALUE-CONSTRUCTOR-REJECT",
-          "block_sha256": "de31fc1c601eda9011169033a8ab8c2dc5ab84e83a21005f1b985db687e2e1d3"
+          "block_sha256": "7b786f72404a72be3d905fe66cb535776b05ced53cfa07d32b1bb910c7972cb1"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -3729,12 +3729,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Computed `@Value` constructor",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-VALUE-CONSTRUCTOR-UNSAFE",
-          "block_sha256": "4beb3abd0a4d40097deeb69cd168649778bec9b147eb3c2baba3ffce83aa46a4"
+          "block_sha256": "6c499d65b6a4ab82ec73998a2e8150d1671e2e2086eae55e02fccb75e765c75e"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -3779,12 +3779,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| `@Value` field picks up",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-VALUE-TEXT-TEMPLATE",
-          "block_sha256": "c33c6224817d5a92dbd22540e8c7f46ddc11f21d5c044d1ee5bb8e3c8516368e"
+          "block_sha256": "fb63328cfe9d8dbb497af2c13c18961e43d53f24243908c6b688701fc63e4958"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -3829,12 +3829,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| `@Value` field picks up",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-VALUE-TEXT-UNSAFE",
-          "block_sha256": "63d0dae135f041dbcc306d3595d528ed277687ac43543abeba4a280246f01cf9"
+          "block_sha256": "f95e2333f7efd4f7b640a6401d4362c926289d86fc0e5c81914ba10760ce105c"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -3879,12 +3879,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| `@Value` field picks up",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-VALUE-COLLECTION",
-          "block_sha256": "cf4b70358fd2a87bfca955c8cc8f06b5c38543cd221b505cfdf04ca9e7a4e13d"
+          "block_sha256": "e3cf22469729533049c278d6e648b0df6d0b2d0ea8c531a330a3cece7e9cefdd"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -3929,12 +3929,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| `@Value` field picks up",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-VALUE-COLLECTION-REJECT",
-          "block_sha256": "109f526aa0f60ed2fe14497676a48ddc901f9d7764f907e566875c0db1f4e642"
+          "block_sha256": "c6315ea7a7d7388a07365e2d61fd80f1f851a08a20ca9abdff3b0e24ca919d1b"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -3979,12 +3979,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| `@Value` field picks up",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-INDIRECT-CHAIN",
-          "block_sha256": "a3e02d51a73a21d0ba3e394b694cbd8dde4e50a5fde118106abcfeba03407456"
+          "block_sha256": "40676bcfc673e27e360f0bf429c31d39e7001c2558c4ad73403ad4b1df1c2bd2"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -4029,12 +4029,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| `@Value` field picks up",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-INDIRECT-INVALID",
-          "block_sha256": "f5fd9dee700d3a59493d7d1082e637f8d240672e5576a65b3bfb4ae6b0f522fe"
+          "block_sha256": "884a952967b26f0be16aada369beed4ec00b5a4db2aa78404c67b8220e14bc9f"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -4079,12 +4079,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| `@Value` field picks up",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-INDIRECT-CYCLE",
-          "block_sha256": "1d2af76e253fbeb4557d7164a2a81dffda48a31f956525709f1c8b2ba7809cc1"
+          "block_sha256": "1f9610fc5c27a969ead2de9863e7b7b61cb07809e35661508a50ebbc3401f924"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -4148,12 +4148,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Computed `@Value` constructor",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-FACTORY-ARGUMENT",
-          "block_sha256": "6780ff6751521bdbb3b29a9602b360bdddda902a589f6148fa13472a8fa61604"
+          "block_sha256": "5d5d2b9fff29daefe75dc50f503af022794ed759148f4faed82884e4879bce02"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -4217,12 +4217,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Computed `@Value` constructor",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-FACTORY-REJECT",
-          "block_sha256": "d0709104be2f0d13121021c95a8e7828e86172d43391b902d62e33b37806f9aa"
+          "block_sha256": "faf802f80cdb27d879e027ba98d29ea60f8bd72659e2d386ca67b2f75d17a251"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -4286,12 +4286,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Computed `@Value` constructor",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-FACTORY-UNSAFE",
-          "block_sha256": "c6b088ba701a9edced5d7fe087449d26bb7189b097b6c8cd7fb8cb196dfc9ac4"
+          "block_sha256": "5b63e467b7fa5a0be940e52e21c01537d2e43a4e8ccd0e1dc52280292ad09744"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -4336,12 +4336,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Computed `@Value` constructor",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-ADDED-FACTORY-ARGUMENT",
-          "block_sha256": "854ac19ae17fbfcd09566fe7e0fb7679539137699593fb7f15552f34f5b6044c"
+          "block_sha256": "459b1e0292e1c24a6a4fd92c446d89e5546039d4a36ae9bc4448878ee5826caf"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -4386,12 +4386,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Computed `@Value` constructor",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-ADDED-FACTORY-LIFECYCLE",
-          "block_sha256": "ead804089fbb9f29649546796d8f569ae98de02c2e8da755c3b4faf43daf16d1"
+          "block_sha256": "d2d5de7ebee2ee83d008774e725be1a9d1924ebb195ee754067538bce1a81b9d"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -4436,12 +4436,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Computed `@Value` constructor",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-ADDED-FACTORY-DEPENDENCY-EDIT",
-          "block_sha256": "1fdfe91e0d944fc32390dd411b9105c503ebc701e6c6fe638a22313ff6a61a4a"
+          "block_sha256": "74bdefc2fd2bf398603a7d7bfae455970b537673ca3584afb6c8602615eb0751"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -4486,12 +4486,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Computed `@Value` constructor",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-ADDED-FACTORY-REJECT",
-          "block_sha256": "05a6f0c1783b410359946f6c73fa8cec167b3e0967a7111e5b891037e92dcbf3"
+          "block_sha256": "036a3203c0844cfd773592d0bd2e253a0936f4827b3fbd4202891a50739638ab"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -4548,12 +4548,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Computed `@Value` constructor",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-TRANSACTION-PROXY",
-          "block_sha256": "dcff899e4a2e75a2974afabe64f2132fa99aa0a75206434408351ae5945be816"
+          "block_sha256": "a5c3e1bab2f5c30139356b9013b79cb12997d32d922f8fa5b3013a8948d2a710"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -4610,12 +4610,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Computed `@Value` constructor",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-TRANSACTION-ROLLBACK",
-          "block_sha256": "aa3e55c6e2a5b322d6ea9ac2efd0e1210f3315cdfc3f1118321c777e36337658"
+          "block_sha256": "4b1267b89c015ea562627897dad210dd6794e4dab322f37ebe9a0e823c0c4954"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -4665,12 +4665,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Computed `@Value` constructor",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-SECURITY-PROXY",
-          "block_sha256": "ad1ef77a0f36543c1dbfd3051846154883c702ab3156b9cc3c7fb9d58022085a"
+          "block_sha256": "4c57bc815fa2470dead437b7255abb73194f45bb29b13f98a79cda6db1b4b473"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -5691,12 +5691,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Computed `@Value` constructor",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-VALUE-CONSTRUCTOR-PARTIAL",
-          "block_sha256": "5145853b961f896b790ef5907bb10174ac62931c87611c9818093cd7fbbc997f"
+          "block_sha256": "d6af1110f44af02722c77d54be546063c77aa0bc0c9f4a0b6bc55275d4dfe25f"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -5729,12 +5729,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Computed `@Value` constructor",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-VALUE-CONSTRUCTOR-NOCHECK-SIDE-EFFECT",
-          "block_sha256": "1796283ff616b7da9ecde43c71df7e2ab5540297e124d73b997e2da0e789b0c0"
+          "block_sha256": "31e20ea6f8c834ae6b8bb7680be9ad06b1ff0a0af7dd0702ed50062a42e3ee3e"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -5767,12 +5767,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Computed `@Value` constructor",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-VALUE-FACTORY-PARTIAL",
-          "block_sha256": "f4b49e89661ffc71c642dc3f0a57c11819d487ca12f172a72c52e39533090afc"
+          "block_sha256": "c5a8236a6a914efa7de49a48530357971aaa808a4742ed762864dc938356404f"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -5805,12 +5805,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Computed `@Value` constructor",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-VALUE-FACTORY-DEFERRED",
-          "block_sha256": "65a4535403ecdce3f5ef4860ca40c21934515e2bbfc057398d43d3e4c094b203"
+          "block_sha256": "abec3f446dfa00fb7ac8c4d6250e6ab6bb433c5a4a7eba6bb8fc613960df249f"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -5843,12 +5843,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Computed `@Value` constructor",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-VALUE-FACTORY-COLLECTION-REFUSAL",
-          "block_sha256": "96ffa8fd6ba3095674c108cf1f07741982319b72e78fde036d4108a3156618e3"
+          "block_sha256": "bac9b47eb06afe0686d018f433e3dbeddd8da235578206bc76bfd4b8d7093259"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -5881,12 +5881,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Computed `@Value` constructor",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-VALUE-FACTORY-OWNER-REFUSAL",
-          "block_sha256": "6fcdb2890ab40bb71f08152c68dc99df00155ec765732ea663ffc9831276c335"
+          "block_sha256": "265c1ac86990c07f19729a855000e26c1b3cc6947007c949323bc3d99301bd11"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -5919,12 +5919,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Computed `@Value` constructor",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-VALUE-FACTORY-RESOLVER-REFUSAL",
-          "block_sha256": "194ad874c010be73509da3a11c9862d3e633e5e10bdd10c021b44a102a895608"
+          "block_sha256": "d22340201397f52269a2b43c84cc858d6b948006f9b5108c63a24f79cf2e4853"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -5957,12 +5957,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| `@Value` field picks up",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-INDIRECT-CONTEXT-ISOLATION",
-          "block_sha256": "a1c7b487a95832575d399b564a82aa0a4ac4f932a55798a2fc4034104a1243dc"
+          "block_sha256": "bed4c12adbb50ea6c98f7988d2d16d0a100c129f1c5a81809834f52ee533753a"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -8159,12 +8159,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Message bundle",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-MESSAGE-NATIVE-WATCHER",
-          "block_sha256": "ad1b8e474acd3b5947d6144d7244ca83df9faf5133239643a48509dfad3ff860"
+          "block_sha256": "ed05af81af4173ffc7eb944ec63db6852a5b8db0e6102854a652d3be0b4e2492"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -8209,12 +8209,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Message bundle",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-MESSAGE-NATIVE-CACHE-CONTROL",
-          "block_sha256": "2a6a47ab7faff4502b4bdb9f62fc8b5ccab0ec3ef84ee289836e1319af020a2a"
+          "block_sha256": "d71347ef70c1ee33ce033b9e7800f0fa5dbcf5a0f44ce06dacd4e61fdc932da9"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -8247,12 +8247,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Message bundle",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-MESSAGE-ANCESTOR-HOOK",
-          "block_sha256": "54cee6081ca0b1ba67f7ba1ca8e1781cacbbfc7bb8b00d4e163e14f0ef77fee9"
+          "block_sha256": "6ab4d55de6c24121e27e961bfc8a3526540f3c81007ddd0fbf4641d8205dd99b"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -8285,12 +8285,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Message bundle",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-MESSAGE-UNKNOWN-REFUSAL",
-          "block_sha256": "eb3b16eec17d3e9ba52dc9e983255cc470fafdf34005ca5f546f51b423a449dd"
+          "block_sha256": "0f917e65501d42204b22d9db80de6366b79bc70d3be7509dffea519b0ab613db"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -8323,12 +8323,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Message bundle",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-MESSAGE-THROWING-REFUSAL",
-          "block_sha256": "0808e01128017cd756b2f63d8c67f63f9fca2e13271c12c045160a83be0c98d5"
+          "block_sha256": "dea615a0601ab93d1f228114ee6a4bbe03804c84f7bbb417094646141deedba3"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -8361,12 +8361,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Message bundle",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-BUNDLE-PARENT-CACHE",
-          "block_sha256": "ef1cc6d0a70b052ccca24cf1d1efa0a0ee0cea94f723330702c03873901b58da"
+          "block_sha256": "adaec9eef85c1868549d1ff1d41beb0d1bf9c86ebdeb116b99f43c8719f5a775"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -8399,12 +8399,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Template reload",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-TEMPLATE-NATIVE-RENDER",
-          "block_sha256": "210a1f24758ea856919a33c18d88956d1121c2973cea453f785fa03690f3e731"
+          "block_sha256": "0677d41deed8c543206e6787c84546804d1fa5339d165af3e4db31a8ec1799e8"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -8437,12 +8437,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Template reload",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-TEMPLATE-MALFORMED-RECOVERY",
-          "block_sha256": "edd57448a5c38b5f497f434f26f106bce2e657948add049d8d3c70e6a1fde068"
+          "block_sha256": "a411d16da8116b8be6361998d37107fb2864157c50e05a8697d9d68d837a75e1"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -8475,12 +8475,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Template reload",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-TEMPLATE-NATIVE-CACHE-CONTROL",
-          "block_sha256": "c3334ef9506fd61e35fd460b72226af68c035095b1aae13f91154e1581e6b542"
+          "block_sha256": "77f93563fa5d8bf328c33e24009c29c108feb7d31ee729e28edc3a3eaa79d303"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -8513,12 +8513,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Template reload",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-TEMPLATE-NO-ENGINE",
-          "block_sha256": "cc01f2b0e22caf3473b23ebdf10140e2b6271854fd59947badf10e9c54aec53b"
+          "block_sha256": "2275552d60e85ae61fe68b294dd559f8bdb966cf9c36cf64e54efce25e422126"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -8551,12 +8551,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Template reload",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-TEMPLATE-UNKNOWN-ENGINE",
-          "block_sha256": "757df0d98f250bbfe873167fe898b6adcdb3afc85f473054ab6fea61c517f4bc"
+          "block_sha256": "fa47f3fa9a9ca3e58d69060d1fa4381dd9231cf08a5f9bbf5738c3d1d94993d6"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -8608,12 +8608,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Template reload",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-PACKAGED-RESOURCES",
-          "block_sha256": "50ea04231520ccd9b85808ef3c8d01d31a17d7492d33211aad243c5ce49c0acb"
+          "block_sha256": "721761620b401d5e55ac64db3f93570bd7e84f7ef82254c5837c83bcc4383a29"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -8635,12 +8635,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Message bundle",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-MESSAGE-ANCESTOR-NATIVE",
-          "block_sha256": "41b37053da95079981443709c154582a99a7b25dfe2d018938eabd6c856ce08e"
+          "block_sha256": "09ad8e7bf504f41c7682c80f8496dde27b133b26d62c138f3ca48823fcb65a29"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -8662,12 +8662,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Message bundle",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-MESSAGE-CUSTOM-BASENAME",
-          "block_sha256": "f0b451f873610c38a6cb0829c5b54d721d499be02895adc4d6db6a0715c1530b"
+          "block_sha256": "7c804019f8fb4cb968e383d2e657c08de1943dadc667dd94d296c2f91c3ca222"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -8689,12 +8689,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "| Template reload",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-TEMPLATE-WEB-INTEGRATION",
-          "block_sha256": "076c33e241aac548bf039450770d1d4874c3db9c97ba6325a7a37246fdb5c40b"
+          "block_sha256": "064b6d8a7a0751554a80f9eb3b0dda2deb889a93869d7c8f6f8729dd42be107f"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",

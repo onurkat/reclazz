@@ -1876,12 +1876,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "Entirely new `@ExceptionHandler` method",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P3B-EXCEPTION-MODERN",
-          "block_sha256": "1d0d045f382c0c4577425e7c84ba307d292560f4a0107de982d1df38a4cad539"
+          "block_sha256": "475e1148cb0955c2381ae17ac50261c6723957a5e6529821ccbe9cea5dbdb2a6"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
@@ -2770,12 +2770,12 @@
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P3B-INTERCEPTOR-LIMIT",
-          "block_sha256": "c3df89f5362ecbf4586672ae588a96d2a86bac905ceca428eeb149652c5ce1a6"
+          "block_sha256": "9432426f8ced9baeacd685f17df323048c3805748fe88b6286c3f52daf8597db"
         },
         {
           "path": "docs/product-reference.md",
           "quote": "Registered MVC interceptor dependency state",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",

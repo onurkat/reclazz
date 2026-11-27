@@ -18,7 +18,7 @@ Live evidence fingerprints cover the quoted Markdown heading section, XML elemen
 
 Edited overrides continue dispatching super calls to the current original parent.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -42,7 +42,7 @@ Edited overrides continue dispatching super calls to the current original parent
 
 A reloaded parent still reaches the existing child override without restart.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -66,7 +66,7 @@ A reloaded parent still reaches the existing child override without restart.
 
 Isolated added instance initializers give existing objects their own first-read values.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/usage.md` (block SHA-256 `5a1c91e90f9aa4918575569f3919f258099aaae83e0bbdf70fd7348fb3effe74`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/usage.md` (block SHA-256 `5a1c91e90f9aa4918575569f3919f258099aaae83e0bbdf70fd7348fb3effe74`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -90,7 +90,7 @@ Isolated added instance initializers give existing objects their own first-read 
 
 Historical constructor arguments are not reconstructed for an added field.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/usage.md` (block SHA-256 `5a1c91e90f9aa4918575569f3919f258099aaae83e0bbdf70fd7348fb3effe74`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/usage.md` (block SHA-256 `5a1c91e90f9aa4918575569f3919f258099aaae83e0bbdf70fd7348fb3effe74`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -114,7 +114,7 @@ Historical constructor arguments are not reconstructed for an added field.
 
 An initializer failure is isolated and may retry after a later initializer generation.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/usage.md` (block SHA-256 `5a1c91e90f9aa4918575569f3919f258099aaae83e0bbdf70fd7348fb3effe74`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/usage.md` (block SHA-256 `5a1c91e90f9aa4918575569f3919f258099aaae83e0bbdf70fd7348fb3effe74`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -138,7 +138,7 @@ An initializer failure is isolated and may retry after a later initializer gener
 
 An isolated conditional uses each existing receiver state.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/usage.md` (block SHA-256 `5a1c91e90f9aa4918575569f3919f258099aaae83e0bbdf70fd7348fb3effe74`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/usage.md` (block SHA-256 `5a1c91e90f9aa4918575569f3919f258099aaae83e0bbdf70fd7348fb3effe74`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -162,7 +162,7 @@ An isolated conditional uses each existing receiver state.
 
 Equivalent and delegated constructors preserve old/new initialization order.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/usage.md` (block SHA-256 `5a1c91e90f9aa4918575569f3919f258099aaae83e0bbdf70fd7348fb3effe74`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/usage.md` (block SHA-256 `5a1c91e90f9aa4918575569f3919f258099aaae83e0bbdf70fd7348fb3effe74`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -186,7 +186,7 @@ Equivalent and delegated constructors preserve old/new initialization order.
 
 A previously unread added field uses the current initializer generation.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/usage.md` (block SHA-256 `5a1c91e90f9aa4918575569f3919f258099aaae83e0bbdf70fd7348fb3effe74`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/usage.md` (block SHA-256 `5a1c91e90f9aa4918575569f3919f258099aaae83e0bbdf70fd7348fb3effe74`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -210,7 +210,7 @@ A previously unread added field uses the current initializer generation.
 
 Application values, including an explicit null write before read, survive later saves.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/usage.md` (block SHA-256 `5a1c91e90f9aa4918575569f3919f258099aaae83e0bbdf70fd7348fb3effe74`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/usage.md` (block SHA-256 `5a1c91e90f9aa4918575569f3919f258099aaae83e0bbdf70fd7348fb3effe74`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -234,7 +234,7 @@ Application values, including an explicit null write before read, survive later 
 
 Isolated switch arms and unrelated initializer handlers do not replay old constructors/blocks.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/usage.md` (block SHA-256 `5a1c91e90f9aa4918575569f3919f258099aaae83e0bbdf70fd7348fb3effe74`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/usage.md` (block SHA-256 `5a1c91e90f9aa4918575569f3919f258099aaae83e0bbdf70fd7348fb3effe74`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -258,7 +258,7 @@ Isolated switch arms and unrelated initializer handlers do not replay old constr
 
 Only selected isolated conditional static initializer arms run.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/usage.md` (block SHA-256 `0494544397ca5618e97d4b204feb6f23565934fbd20e118ad17853d9939efc6d`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/usage.md` (block SHA-256 `0494544397ca5618e97d4b204feb6f23565934fbd20e118ad17853d9939efc6d`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -282,7 +282,7 @@ Only selected isolated conditional static initializer arms run.
 
 An initialized null and an application-written static value remain stored.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/usage.md` (block SHA-256 `0494544397ca5618e97d4b204feb6f23565934fbd20e118ad17853d9939efc6d`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/usage.md` (block SHA-256 `0494544397ca5618e97d4b204feb6f23565934fbd20e118ad17853d9939efc6d`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -306,7 +306,7 @@ An initialized null and an application-written static value remain stored.
 
 A newly added later static field uses the current condition without resetting older fields.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/usage.md` (block SHA-256 `0494544397ca5618e97d4b204feb6f23565934fbd20e118ad17853d9939efc6d`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/usage.md` (block SHA-256 `0494544397ca5618e97d4b204feb6f23565934fbd20e118ad17853d9939efc6d`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -330,7 +330,7 @@ A newly added later static field uses the current condition without resetting ol
 
 Unrelated static blocks are not replayed for isolated static initializers.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/usage.md` (block SHA-256 `0494544397ca5618e97d4b204feb6f23565934fbd20e118ad17853d9939efc6d`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/usage.md` (block SHA-256 `0494544397ca5618e97d4b204feb6f23565934fbd20e118ad17853d9939efc6d`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -354,7 +354,7 @@ Unrelated static blocks are not replayed for isolated static initializers.
 
 An updated caller can invoke an added method on the existing receiver.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `74e0f63080bbe0058169911574cfac4f2c5154b8704b05f715a2ba1f84814458`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `74e0f63080bbe0058169911574cfac4f2c5154b8704b05f715a2ba1f84814458`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -378,7 +378,7 @@ An updated caller can invoke an added method on the existing receiver.
 
 A held Method and an unchanged caller of a removed method get NoSuchMethodError, as after a restart; restoring the method makes both answer with the restored body, and held objects and fields survive.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `74e0f63080bbe0058169911574cfac4f2c5154b8704b05f715a2ba1f84814458`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `74e0f63080bbe0058169911574cfac4f2c5154b8704b05f715a2ba1f84814458`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -402,7 +402,7 @@ A held Method and an unchanged caller of a removed method get NoSuchMethodError,
 
 Original members removed by reload disappear from native reflection scans.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `74e0f63080bbe0058169911574cfac4f2c5154b8704b05f715a2ba1f84814458`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `74e0f63080bbe0058169911574cfac4f2c5154b8704b05f715a2ba1f84814458`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -426,7 +426,7 @@ Original members removed by reload disappear from native reflection scans.
 
 Restoring an original removed member makes it visible and callable again.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `74e0f63080bbe0058169911574cfac4f2c5154b8704b05f715a2ba1f84814458`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `74e0f63080bbe0058169911574cfac4f2c5154b8704b05f715a2ba1f84814458`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -450,7 +450,7 @@ Restoring an original removed member makes it visible and callable again.
 
 A removed original field is hidden while a held Field and unchanged caller retain its value.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `74e0f63080bbe0058169911574cfac4f2c5154b8704b05f715a2ba1f84814458`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `74e0f63080bbe0058169911574cfac4f2c5154b8704b05f715a2ba1f84814458`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -498,7 +498,7 @@ Direct watched cross-class instance-field reads and writes share the owning obje
 
 Lambdas introduced in reloaded bodies execute with current captured values.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -522,7 +522,7 @@ Lambdas introduced in reloaded bodies execute with current captured values.
 
 A serializable lambda introduced after reload cannot be serialized in the measured companion path.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -546,7 +546,7 @@ A serializable lambda introduced after reload cannot be serialized in the measur
 
 Appending an enum tail updates native values/valueOf without changing surviving ordinals.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -570,7 +570,7 @@ Appending an enum tail updates native values/valueOf without changing surviving 
 
 An already-initialized old enum switch takes its default for an appended constant.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -594,7 +594,7 @@ An already-initialized old enum switch takes its default for an appended constan
 
 Pre-existing EnumMap/EnumSet can use the appended constant.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -618,7 +618,7 @@ Pre-existing EnumMap/EnumSet can use the appended constant.
 
 Removing an enum tail removes values/valueOf while preserving surviving ordinals.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -642,7 +642,7 @@ Removing an enum tail removes values/valueOf while preserving surviving ordinals
 
 A source reorder keeps the running ordinals and can be accepted, including when the save inserts constants. Unsafe or unproven persistence mappings still require restart. The earlier refusal is preserved in history_before_r32_enum_order. CoreEnumReloadTest passed five cases on SapMachine 17 and six on 21. The JDK 21 case checks direct ordinal switches in the enum and its enclosing class.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -666,7 +666,7 @@ A source reorder keeps the running ordinals and can be accepted, including when 
 
 Application-owned old values() arrays are not automatically grown.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -690,7 +690,7 @@ Application-owned old values() arrays are not automatically grown.
 
 Stock-JVM interface identity stays unchanged while eligible edited bodies/later saves run.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -714,7 +714,7 @@ Stock-JVM interface identity stays unchanged while eligible edited bodies/later 
 
 Advertised enhanced-JVM added/removed interfaces require their own native acceptance.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -738,7 +738,7 @@ Advertised enhanced-JVM added/removed interfaces require their own native accept
 
 Reclazz preserves original hierarchy, applies eligible bodies, pins dependent methods and refuses unsafe signatures.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `74e0f63080bbe0058169911574cfac4f2c5154b8704b05f715a2ba1f84814458`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `74e0f63080bbe0058169911574cfac4f2c5154b8704b05f715a2ba1f84814458`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -786,7 +786,7 @@ Sequential initialization evidence does not certify concurrent initializer side 
 
 Compile-time constants and narrow primitive constant conversions have component evidence.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/usage.md` (block SHA-256 `0494544397ca5618e97d4b204feb6f23565934fbd20e118ad17853d9939efc6d`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/usage.md` (block SHA-256 `0494544397ca5618e97d4b204feb6f23565934fbd20e118ad17853d9939efc6d`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -810,7 +810,7 @@ Compile-time constants and narrow primitive constant conversions have component 
 
 Intertwined/guarded static initializer shapes are refused by the component slicer.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -834,7 +834,7 @@ Intertwined/guarded static initializer shapes are refused by the component slice
 
 Nested conditionals, wide/decimal/object/null/source-order/short-circuit values have component observations, not universal watcher coverage.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/usage.md` (block SHA-256 `0494544397ca5618e97d4b204feb6f23565934fbd20e118ad17853d9939efc6d`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/usage.md` (block SHA-256 `0494544397ca5618e97d4b204feb6f23565934fbd20e118ad17853d9939efc6d`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -1026,7 +1026,7 @@ The published any-JDK17+/provider matrix is broader than the two executed stock 
 
 Advertised JDK26 enum/Unsafe fallback requires an actual JDK26 native run.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -1056,7 +1056,7 @@ This package maps current registration, recreation, injection, factory, lifecycl
 
 A new direct component becomes a live bean without restarting.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1078,7 +1078,7 @@ A new direct component becomes a live bean without restarting.
 
 A new component is admitted only by the active profile.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1100,7 +1100,7 @@ A new component is admitted only by the active profile.
 
 New component conditions use the live application context before class initialization.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1188,7 +1188,7 @@ A custom component stereotype and AliasFor bean name register through native nam
 
 New components support native constructor injection.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1210,7 +1210,7 @@ New components support native constructor injection.
 
 A plain singleton is recreated and loses mutable instance state when a constructor or creation metadata change requires a new instance. Eligible body-only edits now retain state; the current recreation fixture explicitly changes its constructor. Historical execution records below predate this R7 scope revision.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1254,7 +1254,7 @@ A live manually wired singleton holder is repointed to the recreated bean.
 
 Autowired added to an existing warmed field is satisfied after refresh.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1276,7 +1276,7 @@ Autowired added to an existing warmed field is satisfied after refresh.
 
 Value added to an existing warmed field resolves the live property.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1298,7 +1298,7 @@ Value added to an existing warmed field resolves the live property.
 
 Resource added to an existing warmed field resolves the named bean.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1320,7 +1320,7 @@ Resource added to an existing warmed field resolves the named bean.
 
 New private instance Bean factory on lite Configuration registers, replaces, removes and recovers.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1342,7 +1342,7 @@ New private instance Bean factory on lite Configuration registers, replaces, rem
 
 Saved factory reference parameters use native qualifier selection.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1364,7 +1364,7 @@ Saved factory reference parameters use native qualifier selection.
 
 Added factory list/map/Optional arguments preserve measured native resolution.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1386,7 +1386,7 @@ Added factory list/map/Optional arguments preserve measured native resolution.
 
 An added factory provider stays lazy and resolves the current target after retirement.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1408,7 +1408,7 @@ An added factory provider stays lazy and resolves the current target after retir
 
 Added factories convert measured int, long and double Value arguments.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1474,7 +1474,7 @@ All eight primitive Value conversions and reference nulls work.
 
 Checked scalar property edits recreate an already added unproxied factory product.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1496,7 +1496,7 @@ Checked scalar property edits recreate an already added unproxied factory produc
 
 Factory names/aliases follow edits, removal and recovery without duplicate singleton products.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1518,7 +1518,7 @@ Factory names/aliases follow edits, removal and recovery without duplicate singl
 
 Saved factory qualifiers and parameter qualifiers select matching native candidates.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1540,7 +1540,7 @@ Saved factory qualifiers and parameter qualifiers select matching native candida
 
 Saved Primary metadata updates default selection and reports ambiguity.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1562,7 +1562,7 @@ Saved Primary metadata updates default selection and reports ambiguity.
 
 Saved method Conditional admits/rejects against the live context and retires old products.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1584,7 +1584,7 @@ Saved method Conditional admits/rejects against the live context and retires old
 
 Direct Boot ConditionalOnProperty uses the measured native decision on added factories.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1606,7 +1606,7 @@ Direct Boot ConditionalOnProperty uses the measured native decision on added fac
 
 Direct Boot ConditionalOnBean uses the measured native decision on added factories.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1628,7 +1628,7 @@ Direct Boot ConditionalOnBean uses the measured native decision on added factori
 
 Direct Boot ConditionalOnMissingBean uses the measured native decision on added factories.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1650,7 +1650,7 @@ Direct Boot ConditionalOnMissingBean uses the measured native decision on added 
 
 Saved direct factory Profile expressions re-evaluate admitted products.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1672,7 +1672,7 @@ Saved direct factory Profile expressions re-evaluate admitted products.
 
 Added prototype factory creates distinct lookup products.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1694,7 +1694,7 @@ Added prototype factory creates distinct lookup products.
 
 Added lazy factory waits for first lookup and keeps singleton identity.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1716,7 +1716,7 @@ Added lazy factory waits for first lookup and keeps singleton identity.
 
 Full enhanced Configuration inter-bean calls preserve container singleton identity across saves.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1738,7 +1738,7 @@ Full enhanced Configuration inter-bean calls preserve container singleton identi
 
 Full factory calls preserve supported explicit/prototype arguments and held method references.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1782,7 +1782,7 @@ Static companion factories register/replace/retire products with native lifecycl
 
 Static factories retain plain Java call semantics outside container lookup.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1804,7 +1804,7 @@ Static factories retain plain Java call semantics outside container lookup.
 
 Entirely new PostConstruct initializes after injection and before InitializingBean.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1826,7 +1826,7 @@ Entirely new PostConstruct initializes after injection and before InitializingBe
 
 Entirely new PreDestroy remains owed per instance through metadata edits/removal and context close.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1848,7 +1848,7 @@ Entirely new PreDestroy remains owed per instance through metadata edits/removal
 
 InitializingBean and DisposableBean retain native callback ordering during recreation.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1870,7 +1870,7 @@ InitializingBean and DisposableBean retain native callback ordering during recre
 
 First transaction/cache operations added to a plain singleton use real native interceptors.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1892,7 +1892,7 @@ First transaction/cache operations added to a plain singleton use real native in
 
 Added operations invoked through an old CGLIB reference use real interceptors and retain target identity.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1914,7 +1914,7 @@ Added operations invoked through an old CGLIB reference use real interceptors an
 
 A checked exception from an added transactional method rolls back the real database write.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1936,7 +1936,7 @@ A checked exception from an added transactional method rolls back the real datab
 
 Added Cacheable executes once for a repeated key.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1958,7 +1958,7 @@ Added Cacheable executes once for a repeated key.
 
 Added CachePut updates the native cache entry.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1980,7 +1980,7 @@ Added CachePut updates the native cache entry.
 
 Added CacheEvict removes the native entry so next lookup executes again.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2024,7 +2024,7 @@ Native self invocation stays outside transaction interception.
 
 Supported composed transaction aliases follow saves through held proxy and affect DB rollback/readOnly.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2046,7 +2046,7 @@ Supported composed transaction aliases follow saves through held proxy and affec
 
 Supported composed cache aliases/conditions follow saves through held proxy and affect real cache entries.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2068,7 +2068,7 @@ Supported composed cache aliases/conditions follow saves through held proxy and 
 
 Edited aspect pointcuts change advice on already injected mutable JDK/CGLIB singleton proxies.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2090,7 +2090,7 @@ Edited aspect pointcuts change advice on already injected mutable JDK/CGLIB sing
 
 Added/saved PreAuthorize and PostAuthorize enforce real authentication/authorization through a held native proxy.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2112,7 +2112,7 @@ Added/saved PreAuthorize and PostAuthorize enforce real authentication/authoriza
 
 Fixed composed policy markers enforce saved native pre/post authorization through the held proxy.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2200,7 +2200,7 @@ Edited web security configuration rebuilds a live filter chain and changes route
 
 Reloading an annotated class evicts existing native caches.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2244,7 +2244,7 @@ Ordinary registration/factories/injection/AOP watcher behavior is established on
 
 Edited original-method Transactional metadata is re-read.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2266,7 +2266,7 @@ Edited original-method Transactional metadata is re-read.
 
 Edited original-method Cacheable metadata is re-read.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2288,7 +2288,7 @@ Edited original-method Cacheable metadata is re-read.
 
 Added operations honor class-level transaction defaults.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2310,7 +2310,7 @@ Added operations honor class-level transaction defaults.
 
 Added operations honor CacheConfig defaults and saved parameter names.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2332,7 +2332,7 @@ Added operations honor CacheConfig defaults and saved parameter names.
 
 Security chain replacement preserves the rebuilt chain identity.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2376,7 +2376,7 @@ This nine-cell hardening slice does not complete P3 MVC/data/callback evidence. 
 
 ### P3A-VALIDATION-ADD
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE.
 
@@ -2394,7 +2394,7 @@ An existing DTO field gaining NotBlank/Size rejects invalid HTTP input.
 
 ### P3A-VALIDATION-CHANGE
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE.
 
@@ -2412,7 +2412,7 @@ A changed Size minimum is enforced after warmed native metadata.
 
 ### P3A-VALIDATION-REMOVE-RESTORE
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE.
 
@@ -2430,7 +2430,7 @@ Removing and restoring constraints changes acceptance without restarting.
 
 ### P3A-VALIDATION-HELD
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE.
 
@@ -2448,7 +2448,7 @@ A validator reference and DTO instance captured before edits use current constra
 
 ### P3A-VALIDATION-SIDE-EFFECTS
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE.
 
@@ -2466,7 +2466,7 @@ Rejected validation/malformed JSON never executes the controller body.
 
 ### P3A-VALIDATION-CONTROL
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE.
 
@@ -2590,7 +2590,7 @@ This package classifies the measured MVC slice and explicitly records missing va
 
 ### P3B-EXCEPTION-MODERN
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Spring6.1.14 added local/advice exception handlers change HTTP status/body across five saves after the constructor-Function repair.
 
@@ -2760,7 +2760,7 @@ This package classifies the measured MVC slice and explicitly records missing va
 
 ### P3B-INTERCEPTOR-LIMIT
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `6b6f7fd68dc670d2c83c2703ae4a1bdbcee2e1ad985fbdd6ad0d2de06dd34c61`); this block (digest in JSON); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `6b6f7fd68dc670d2c83c2703ae4a1bdbcee2e1ad985fbdd6ad0d2de06dd34c61`); this block (digest in JSON); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`).
 
 **Verdict:** PROVEN_WITH_SCOPE. Named plain MVC singleton selection follows current native bean identities and dependency constructor state after watched class saves. The historical cell ID is retained.
 
@@ -4332,7 +4332,7 @@ Composed transaction/cache/security operation annotations on added callbacks beh
 
 A new entity on a prepared schema becomes available to an already-injected JPA client and round-trips real H2 rows.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** jpaRefresh=true; sole standard Spring ORM/Hibernate unit with prepared validate schema; autoCompile varied explicitly.
 
@@ -4356,7 +4356,7 @@ A new entity on a prepared schema becomes available to an already-injected JPA c
 
 A failed new-entity validation retry refuses changed field/column metadata until the original mapping is restored.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** jpaRefresh=true; supported validate mode and original pending mapping.
 
@@ -4380,7 +4380,7 @@ A failed new-entity validation retry refuses changed field/column metadata until
 
 Missing table/column or wrong type retains the old factory/data; prepared retry installs mapping and clears only its own reason.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4404,7 +4404,7 @@ Missing table/column or wrong type retains the old factory/data; prepared retry 
 
 Successful validate rebuild retires old native factory and already-injected clients see persisted new/existing entities.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4428,7 +4428,7 @@ Successful validate rebuild retires old native factory and already-injected clie
 
 Conflicting schema/custom-provider overrides cannot turn a supported prepared-schema validation into DDL or skip validation.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4452,7 +4452,7 @@ Conflicting schema/custom-provider overrides cannot turn a supported prepared-sc
 
 Missing opt-in or ambiguous persistence units retain existing factory identities.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4474,21 +4474,21 @@ Missing opt-in or ambiguous persistence units retain existing factory identities
 
 **Verdict:** PARTIAL.
 
-An old-factory close failure after successful swap is reported as installed with retirement failure.
+Retained factories close when the owning context closes. A close failure is reported once and cleanup continues with the remaining factories.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
 **Bounds:** SapMachine17/21, macOS arm64. Spring ORM6.1.14/Hibernate6.5.3.Final/H2 2.5.250; component with synthetic failing-close holder.
 
-**Tests/assertions:** `com.onurkat.reclazz.reload.JpaPreparedSchemaTest#closeFailureAfterSwapIsReportedWithoutClaimingTheOldFactoryWasRetained` (component): Fresh factory same/open; warning contains mapping installed and retiring.
+**Tests/assertions:** `com.onurkat.reclazz.reload.JpaPreparedSchemaTest#retainedFactoriesCloseAtContextShutdownAndContinueAfterOneCloseFails` (component): Previous factory stays open after publication, closes after context shutdown, and one failed close produces one warning.
 
-**Observable:** An old-factory close failure after successful swap is reported as installed with retirement failure.
+**Observable:** Retained factories close when the owning context closes. A close failure is reported once and cleanup continues with the remaining factories.
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** The current component test passed on SapMachine 17 and 21 on macOS with Hibernate 6.5.3.Final. Archived dual-JDK runs exercised the earlier immediate-close behavior.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
@@ -4548,7 +4548,7 @@ Native Spring Data JPQL query caches are refreshed through wired holders and tra
 
 An already-injected Spring Data repository remains usable after a native EntityManagerFactory swap.
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `bba67cc76f58b479eb020b7496426127e837fefc5b23e6b332c13c938e977fb8`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `89cbde1c60a2fb16d63e2631ccae8d0dd2c65ac31e7194b1db75780f0f3ead8a`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4572,7 +4572,7 @@ An already-injected Spring Data repository remains usable after a native EntityM
 
 Persistent field additions/removals are detected before redefinition without mistaking injected/unmapped fields for schema edits.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4596,7 +4596,7 @@ Persistent field additions/removals are detected before redefinition without mis
 
 For ddl-auto update the restart advice does not falsely demand manual column creation.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4620,7 +4620,7 @@ For ddl-auto update the restart advice does not falsely demand manual column cre
 
 For ddl-auto validate the advice requires the column before restarting.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4644,7 +4644,7 @@ For ddl-auto validate the advice requires the column before restarting.
 
 Existing-field refresh on a stock VM declines silently and only schema-creating settings qualify for the enhanced path.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4668,7 +4668,7 @@ Existing-field refresh on a stock VM declines silently and only schema-creating 
 
 Existing-field refresh first checks schema eligibility. The rebuild permits update/create/create-drop. Destructive bootstrap is refused while enum order diverges.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4692,7 +4692,7 @@ Existing-field refresh first checks schema eligibility. The rebuild permits upda
 
 Existing entity persistent-field edits reach rebuilt mappings and database on enhanced redefinition VMs.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** jpaRefresh=true plus enhanced structural redefinition and supported schema-creating setting.
 
@@ -4716,7 +4716,7 @@ Existing entity persistent-field edits reach rebuilt mappings and database on en
 
 The prepared-schema/new-entity path works on Spring5/Boot2 JPA.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -5010,7 +5010,7 @@ Machine record: [p5-resources.json](feature-evidence/p5-resources.json); manifes
 
 Supported computed scalar fields change with the accepted property candidate while singleton identity stays the same.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5034,7 +5034,7 @@ Supported computed scalar fields change with the accepted property candidate whi
 
 Division-by-zero candidate keeps field values and Environment at the last accepted values.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5058,7 +5058,7 @@ Division-by-zero candidate keeps field values and Environment at the last accept
 
 Unsupported method-call expression does not run its body or change live field/configuration values.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5082,7 +5082,7 @@ Unsupported method-call expression does not run its body or change live field/co
 
 Accepted computed constructor values recreate the singleton and heal an already-held registered singleton reference.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5106,7 +5106,7 @@ Accepted computed constructor values recreate the singleton and heal an already-
 
 Rejected computed constructor candidate does not construct a replacement or alter the holder/configuration.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5130,7 +5130,7 @@ Rejected computed constructor candidate does not construct a replacement or alte
 
 Unsupported computed constructor expression is held before its side-effect or replacement constructor runs.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5154,7 +5154,7 @@ Unsupported computed constructor expression is held before its side-effect or re
 
 A scalar mixed text/SpEL @Value template follows supported property saves.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5178,7 +5178,7 @@ A scalar mixed text/SpEL @Value template follows supported property saves.
 
 Unsupported expression inside a scalar @Value text template holds all fields and can recover.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5202,7 +5202,7 @@ Unsupported expression inside a scalar @Value text template holds all fields and
 
 Supported inline SpEL List/Map/Set/primitive-array fields update their actual elements.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5226,7 +5226,7 @@ Supported inline SpEL List/Map/Set/primitive-array fields update their actual el
 
 Invalid collection element conversion holds every participating field and correction recovers.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5250,7 +5250,7 @@ Invalid collection element conversion holds every participating field and correc
 
 A changed source behind chained placeholders updates computed fields and recreates the constructor consumer/holder.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5274,7 +5274,7 @@ A changed source behind chained placeholders updates computed fields and recreat
 
 Invalid indirect expression holds the prior values and correction retries all pending keys.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5298,7 +5298,7 @@ Invalid indirect expression holds the prior values and correction retries all pe
 
 An introduced placeholder cycle is held without changing accepted live values.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5322,7 +5322,7 @@ An introduced placeholder cycle is held without changing accepted live values.
 
 Native @Bean scalar @Value arguments recreate a product and heal an existing holder.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5346,7 +5346,7 @@ Native @Bean scalar @Value arguments recreate a product and heal an existing hol
 
 Invalid native factory argument candidate retains all live values without extra construction.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5370,7 +5370,7 @@ Invalid native factory argument candidate retains all live values without extra 
 
 Unsafe factory argument expression is held without application-code execution.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5394,7 +5394,7 @@ Unsafe factory argument expression is held without application-code execution.
 
 A factory added after startup recreates its product when a scalar @Value dependency changes.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5418,7 +5418,7 @@ A factory added after startup recreates its product when a scalar @Value depende
 
 Repeated property recreation retires old added-factory products and closes the current one once.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5442,7 +5442,7 @@ Repeated property recreation retires old added-factory products and closes the c
 
 Editing the saved added factory installs its new @Value dependency for subsequent property saves.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5466,7 +5466,7 @@ Editing the saved added factory installs its new @Value dependency for subsequen
 
 Invalid or unsafe values for an added factory hold configuration, existing product and lifecycle counters.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5490,7 +5490,7 @@ Invalid or unsafe values for an added factory hold configuration, existing produ
 
 Property recreation preserves native transactions for constructor/factory products and heals held proxies.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5514,7 +5514,7 @@ Property recreation preserves native transactions for constructor/factory produc
 
 Recreated property consumers keep real JDBC rollback rather than retaining failed writes.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5538,7 +5538,7 @@ Recreated property consumers keep real JDBC rollback rather than retaining faile
 
 Property recreation retains unauthenticated/unauthorized refusal and authorized calls on supported native security+transaction proxies.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6186,7 +6186,7 @@ Failure only on live application is PARTIAL and is not accepted as an applied ca
 
 A live constructor failure is reported PARTIAL and does not advance accepted state.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6210,7 +6210,7 @@ A live constructor failure is reported PARTIAL and does not advance accepted sta
 
 Prechecking and unrelated property saves do not construct or replace the computed constructor consumer.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6234,7 +6234,7 @@ Prechecking and unrelated property saves do not construct or replace the compute
 
 A live native factory failure can retire the prior product and is explicitly PARTIAL, not a claim that the old bean survived.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6258,7 +6258,7 @@ A live native factory failure can retire the prior product and is explicitly PAR
 
 Prechecking and application do not instantiate cold lazy/prototype native factories.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6282,7 +6282,7 @@ Prechecking and application do not instantiate cold lazy/prototype native factor
 
 Nonscalar native factory argument is held before recreation.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6306,7 +6306,7 @@ Nonscalar native factory argument is held before recreation.
 
 A FactoryBean owner is not confused with its cached product during @Value recreation.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6330,7 +6330,7 @@ A FactoryBean owner is not confused with its cached product during @Value recrea
 
 A custom expression resolver is refused before candidate precheck can invoke it.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6354,7 +6354,7 @@ A custom expression resolver is refused before candidate precheck can invoke it.
 
 Indirect dependencies stay context-specific, while a failing relevant context holds a shared candidate.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7578,7 +7578,7 @@ Changed XML definition metadata protects both owning contexts while unrelated sa
 
 Native ResourceBundleMessageSource and ReloadableResourceBundleMessageSource return changed formatted locale text after repeated watched saves.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7602,7 +7602,7 @@ Native ResourceBundleMessageSource and ReloadableResourceBundleMessageSource ret
 
 A native message source stays stale after a file edit alone and reads the new text after the actual reset path.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7626,7 +7626,7 @@ A native message source stays stale after a file edit alone and reads the new te
 
 When reset methods coexist, the ancestor-reset method is preferred.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7650,7 +7650,7 @@ When reset methods coexist, the ancestor-reset method is preferred.
 
 An unrecognized message source is not counted as successfully reset.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7674,7 +7674,7 @@ An unrecognized message source is not counted as successfully reset.
 
 A reset that throws is not counted as done.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7698,7 +7698,7 @@ A reset that throws is not counted as done.
 
 Explicit JDK bundle invalidation clears an ancestor loader cache.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7722,7 +7722,7 @@ Explicit JDK bundle invalidation clears an ancestor loader cache.
 
 Native FreeMarker and Thymeleaf enabled caches serve new rendered text after repeated watched physical-file saves.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7746,7 +7746,7 @@ Native FreeMarker and Thymeleaf enabled caches serve new rendered text after rep
 
 A malformed template produces a native render error; correcting its physical file restores rendered output.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7770,7 +7770,7 @@ A malformed template produces a native render error; correcting its physical fil
 
 Native enabled template caches stay stale after a file edit alone and reread after explicit cache clear.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7794,7 +7794,7 @@ Native enabled template caches stay stale after a file edit alone and reread aft
 
 A template reload with no registered engine reports zero work.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7818,7 +7818,7 @@ A template reload with no registered engine reports zero work.
 
 An unrecognized registered object is not mistaken for a native template engine.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7866,7 +7866,7 @@ The complete properties/YAML/binding package works on native Boot3.
 
 Edits to templates/messages/config inside a packaged JAR/WAR are live.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7890,7 +7890,7 @@ Edits to templates/messages/config inside a packaged JAR/WAR are live.
 
 A watched ancestor message bundle updates child-context native lookups.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7914,7 +7914,7 @@ A watched ancestor message bundle updates child-context native lookups.
 
 Arbitrary custom message basenames are automatically classified as localization changes.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7938,7 +7938,7 @@ Arbitrary custom message basenames are automatically classified as localization 
 
 Native Spring MVC/servlet template view resolvers and every HTML dialect render changed files.
 
-**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); this block (digest in JSON).
+**Shipped surfaces:** `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); this block (digest in JSON).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -8016,7 +8016,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-FIRST-ADD
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. A first listener added to an already used plain singleton consumes a real broker message.
 
@@ -8030,7 +8030,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-EXISTING-PRESERVED
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Adding and editing beside an original listener preserves its real message handling.
 
@@ -8044,7 +8044,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-BODY-EDIT
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Subsequent watched saves execute the changed callback body.
 
@@ -8058,7 +8058,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-ROUTE-EDIT
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. A watched destination edit moves the consumer and stops delivery from the old route.
 
@@ -8072,7 +8072,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-METHOD-REMOVE
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Removing the added method removes its consumer registration.
 
@@ -8086,7 +8086,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-PRIVATE-RESTORE
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. A later save restores a private callback and consumes a real message.
 
@@ -8100,7 +8100,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-ANNOTATION-REMOVE
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Removing just the listener annotation unregisters the added callback.
 
@@ -8114,7 +8114,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-BOUNDED-DUPLICATES
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Unique test messages produce one callback output in the observed duplicate window.
 
@@ -8128,7 +8128,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-RETIRED-CONSUMERS
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Retired containers are stopped after each observed save.
 
@@ -8142,7 +8142,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-UNRELATED-IDENTITY
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Reloading one bean preserves unrelated container identity and message handling.
 
@@ -8156,7 +8156,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-CONTEXT-CLOSE
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Closing the native application context stops all observed containers.
 
@@ -8170,7 +8170,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-PAYLOAD-HEADER
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Native argument conversion supplies payload and header to the added callback.
 
@@ -8184,7 +8184,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-FIRST-ADD
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. A first listener added to an already used plain singleton consumes a real broker message.
 
@@ -8198,7 +8198,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-EXISTING-PRESERVED
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Adding and editing beside an original listener preserves its real message handling.
 
@@ -8212,7 +8212,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-BODY-EDIT
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Subsequent watched saves execute the changed callback body.
 
@@ -8226,7 +8226,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-ROUTE-EDIT
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. A watched destination edit moves the consumer and stops delivery from the old route.
 
@@ -8240,7 +8240,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-METHOD-REMOVE
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Removing the added method removes its consumer registration.
 
@@ -8254,7 +8254,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-PRIVATE-RESTORE
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. A later save restores a private callback and consumes a real message.
 
@@ -8268,7 +8268,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-ANNOTATION-REMOVE
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Removing just the listener annotation unregisters the added callback.
 
@@ -8282,7 +8282,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-BOUNDED-DUPLICATES
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Unique test messages produce one callback output in the observed duplicate window.
 
@@ -8296,7 +8296,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-RETIRED-CONSUMERS
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Retired containers are stopped after each observed save.
 
@@ -8310,7 +8310,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-UNRELATED-IDENTITY
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Reloading one bean preserves unrelated container identity and message handling.
 
@@ -8324,7 +8324,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-CONTEXT-CLOSE
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Closing the native application context stops all observed containers.
 
@@ -8338,7 +8338,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-PAYLOAD-HEADER
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Native argument conversion supplies payload and header to the added callback.
 
@@ -8352,7 +8352,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-LOCAL-ROLLBACK
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. A local transaction failure redelivers the message to the added callback.
 
@@ -8366,7 +8366,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-FIRST-ADD
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. A first listener added to an already used plain singleton consumes a real broker message.
 
@@ -8380,7 +8380,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-EXISTING-PRESERVED
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Adding and editing beside an original listener preserves its real message handling.
 
@@ -8394,7 +8394,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-BODY-EDIT
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Subsequent watched saves execute the changed callback body.
 
@@ -8408,7 +8408,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-ROUTE-EDIT
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. A watched destination edit moves the consumer and stops delivery from the old route.
 
@@ -8422,7 +8422,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-METHOD-REMOVE
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Removing the added method removes its consumer registration.
 
@@ -8436,7 +8436,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-PRIVATE-RESTORE
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. A later save restores a private callback and consumes a real message.
 
@@ -8450,7 +8450,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-ANNOTATION-REMOVE
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Removing just the listener annotation unregisters the added callback.
 
@@ -8464,7 +8464,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-BOUNDED-DUPLICATES
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Unique test messages produce one callback output in the observed duplicate window.
 
@@ -8478,7 +8478,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-RETIRED-CONSUMERS
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Retired containers are stopped after each observed save.
 
@@ -8492,7 +8492,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-UNRELATED-IDENTITY
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Reloading one bean preserves unrelated container identity and message handling.
 
@@ -8506,7 +8506,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-CONTEXT-CLOSE
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Closing the native application context stops all observed containers.
 
@@ -8520,7 +8520,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-PAYLOAD-HEADER
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Native argument conversion supplies payload and header to the added callback.
 
@@ -8534,7 +8534,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-LOCAL-ROLLBACK
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. A local transaction failure redelivers the message to the added callback.
 
@@ -8548,7 +8548,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-IDLESS-ORIGINAL
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. An existing listener with a Spring-generated ID survives additions and subsequent saves.
 
@@ -8562,7 +8562,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-PLACEHOLDER
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. A property-placeholder route resolves through native Spring and consumes a real message.
 
@@ -8576,7 +8576,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-PLACEHOLDER
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. A property-placeholder route resolves through native Spring and consumes a real message.
 
@@ -8590,7 +8590,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-WATCHED-SELECTOR
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Native selector filtering on a watched added listener delivers the accepted message and excludes the rejected one.
 
@@ -8604,7 +8604,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-PLACEHOLDER
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. A property-placeholder route resolves through native Spring and consumes a real message.
 
@@ -8618,7 +8618,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-SELF-EXPRESSIONS
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Self-referencing topic/group expressions route real messages across watched saves.
 
@@ -8632,7 +8632,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-PROPERTY-ONLY-LIMIT
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Changing expression inputs alone does not reroute the existing consumer.
 
@@ -8646,7 +8646,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-EXPRESSION-FAILURE
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. A non-String group expression leaves the failed registration absent.
 
@@ -8660,7 +8660,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-MULTITOPIC-RECOVERY
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. A valid subsequent save recovers registration for multiple topics.
 
@@ -8674,7 +8674,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-GROUP-REPLAY
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Changing to a fresh group replays retained records according to the fixture offset policy.
 
@@ -8688,7 +8688,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-EXPRESSION-REMOVE
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Removing the expression listener removes its container.
 
@@ -8702,7 +8702,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-HIDDEN-DELEGATE
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Expression callback additions remain absent from physical reflection while real messages invoke them.
 
@@ -8716,7 +8716,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-BEAN-EXPRESSIONS
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Bean-driven queue expressions route real messages across watched saves.
 
@@ -8730,7 +8730,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-PROPERTY-ONLY-LIMIT
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Changing the routing bean alone does not move the existing consumer.
 
@@ -8744,7 +8744,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-EXPRESSION-FAILURE
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. An invalid queue expression leaves the failed registration absent.
 
@@ -8758,7 +8758,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-MULTIQUEUE-RECOVERY
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. A valid subsequent save recovers consumers for multiple queues.
 
@@ -8772,7 +8772,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-EXPRESSION-REMOVE
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Removing the expression listener removes its container.
 
@@ -8786,7 +8786,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-HIDDEN-DELEGATE
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Expression callback additions remain absent from physical reflection while actual messages invoke them.
 
@@ -8800,7 +8800,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-WATCHED-REPLY
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Added synchronous callbacks send actual text replies across watched saves.
 
@@ -8814,7 +8814,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-WATCHED-CORRELATION
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Watched added replies preserve an explicit incoming JMSCorrelationID.
 
@@ -8828,7 +8828,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-WATCHED-REPLYTO
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. JMSReplyTo overrides the added callback default reply queue.
 
@@ -8842,7 +8842,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-WATCHED-REPLY-ROUTE
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. A later watched save changes the default reply destination, including a placeholder.
 
@@ -8856,7 +8856,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-WATCHED-REPLY-RESTORE
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Removal and private restoration of an added reply callback preserve original/unrelated consumers.
 
@@ -8870,7 +8870,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-WATCHED-REPLY-ROLLBACK
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. A failed local JMS attempt produces a reply after broker redelivery.
 
@@ -8884,7 +8884,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-WATCHED-REPLY-REFLECTION
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PARTIAL.
 
@@ -8898,7 +8898,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-COMPONENT-STANDARD-PROCESSOR-CONVERTS-MESSAGES-AND-PRIVATE-DELEGATE-USES-CURRENT-SINGLETON
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PARTIAL. Direct component contract: standard Processor Converts Messages And Private Delegate Uses Current Singleton.
 
@@ -8912,7 +8912,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-COMPONENT-ORIGINAL-AND-ADDED-CONTAINERS-ARE-REMOVED-BEFORE-RECREATION-AND-UNRELATED-ONE-SURVIVES
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PARTIAL. Direct component contract: original And Added Containers Are Removed Before Recreation And Unrelated One Survives.
 
@@ -8926,7 +8926,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-COMPONENT-DUPLICATE-ID-CANNOT-STEAL-ANOTHER-BEANS-CONTAINER
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PARTIAL. Direct component contract: duplicate Id Cannot Steal Another Beans Container.
 
@@ -8940,7 +8940,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-COMPONENT-INVALID-DECLARATIONS-DO-NOT-START-APARTIAL-REGISTRATION
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: invalid Declarations Do Not Start APartial Registration.
 
@@ -8954,7 +8954,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-COMPONENT-ACTUAL-SECOND-REGISTRATION-FAILURE-REMOVES-THE-FIRST-AND-KEEPS-UNRELATED-CONTAINER
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: actual Second Registration Failure Removes The First And Keeps Unrelated Container.
 
@@ -8968,7 +8968,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-COMPONENT-PROXY-IS-REFUSED-AND-NO-ADVICE-IS-BYPASSED
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: proxy Is Refused And No Advice Is Bypassed.
 
@@ -8982,7 +8982,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-COMPONENT-FILTERED-FACTORIES-ARE-REFUSED-BEFORE-CREATING-ANY-CONTAINER
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: filtered Factories Are Refused Before Creating Any Container.
 
@@ -8996,7 +8996,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-COMPONENT-A-WRAPPED-EXISTING-LISTENER-IS-REFUSED-BEFORE-UNREGISTERING-IT
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: a Wrapped Existing Listener Is Refused Before Unregistering It.
 
@@ -9010,7 +9010,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-COMPONENT-CONCRETE-CONSUMER-RECORD-GENERIC-METADATA-REACHES-THE-REAL-KAFKA-ADAPTER
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PARTIAL. Direct component contract: concrete Consumer Record Generic Metadata Reaches The Real Kafka Adapter.
 
@@ -9024,7 +9024,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-COMPONENT-UNSUPPORTED-KAFKA-INFRASTRUCTURE-DOES-NOT-BLOCK-AN-UNRELATED-BEAN-RELOAD
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: unsupported Kafka Infrastructure Does Not Block An Unrelated Bean Reload.
 
@@ -9038,7 +9038,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-COMPONENT-INTERRUPTED-STOP-RETAINS-REGISTRY-OWNERSHIP-AND-CAN-BE-RETRIED
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: interrupted Stop Retains Registry Ownership And Can Be Retried.
 
@@ -9052,7 +9052,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-COMPONENT-TOPIC-AND-GROUP-EXPRESSIONS-MATCH-NATIVE-STARTUP
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PARTIAL. Direct component contract: topic And Group Expressions Match Native Startup.
 
@@ -9066,7 +9066,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-COMPONENT-EXPRESSION-SCOPE-RESTORES-ITS-PREVIOUS-BINDING-AFTER-SUCCESS-AND-FAILURE
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: expression Scope Restores Its Previous Binding After Success And Failure.
 
@@ -9080,7 +9080,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-COMPONENT-EXPRESSION-ROUTING-BELONGS-TO-EACH-CONTEXT-AND-REEVALUATES-ON-SAVE
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PARTIAL. Direct component contract: expression Routing Belongs To Each Context And Reevaluates On Save.
 
@@ -9094,7 +9094,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-COMPONENT-EXPRESSION-FAILURES-CLEAN-PARTIAL-REGISTRATIONS-AND-SCOPE
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: expression Failures Clean Partial Registrations And Scope.
 
@@ -9108,7 +9108,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-COMPONENT-UNSUPPORTED-OPTIONS-SHAPES-AND-EXTRA-ADVICE-ARE-EXPLICITLY-REJECTED
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: unsupported Options Shapes And Extra Advice Are Explicitly Rejected.
 
@@ -9122,7 +9122,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-COMPONENT-ACTUAL-SPRING-ADAPTER-USES-PRIVATE-METHOD-AND-CURRENT-SINGLETON
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PARTIAL. Direct component contract: actual Spring Adapter Uses Private Method And Current Singleton.
 
@@ -9136,7 +9136,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-COMPONENT-OWNED-CONTAINERS-ARE-DESTROYED-AND-UNRELATED-IDENTITY-SURVIVES
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PARTIAL. Direct component contract: owned Containers Are Destroyed And Unrelated Identity Survives.
 
@@ -9150,7 +9150,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-COMPONENT-DUPLICATE-ID-CANNOT-STEAL-ANOTHER-BEANS-CONTAINER
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PARTIAL. Direct component contract: duplicate Id Cannot Steal Another Beans Container.
 
@@ -9164,7 +9164,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-COMPONENT-SECOND-REAL-REGISTRATION-FAILURE-CLEANS-ONLY-THIS-ATTEMPT
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: second Real Registration Failure Cleans Only This Attempt.
 
@@ -9178,7 +9178,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-COMPONENT-PROXY-RECEIVER-IS-REFUSED-WITHOUT-BYPASSING-ADVICE
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: proxy Receiver Is Refused Without Bypassing Advice.
 
@@ -9192,7 +9192,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-COMPONENT-UNSUPPORTED-INFRASTRUCTURE-DOES-NOT-BLOCK-AN-UNRELATED-BEAN
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: unsupported Infrastructure Does Not Block An Unrelated Bean.
 
@@ -9206,7 +9206,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-COMPONENT-MIXED-JMS-KAFKA-OWNER-RETIRES-NOTHING-UNTIL-BOTH-VALIDATED-THEN-BOTH
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: mixed JMS Kafka Owner Retires Nothing Until Both Validated Then Both.
 
@@ -9220,7 +9220,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-COMPONENT-MIXED-RABBIT-JMS-OWNER-WITH-REMOVED-ANNOTATIONS-RETIRES-BOTH-ONLY-ON-COMMIT
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: mixed Rabbit JMS Owner With Removed Annotations Retires Both Only On Commit.
 
@@ -9234,7 +9234,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-COMPONENT-UNFINISHED-SHUTDOWN-AND-REPEATED-WAIT-KEEP-REGISTRY-OWNERSHIP
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: unfinished Shutdown And Repeated Wait Keep Registry Ownership.
 
@@ -9248,7 +9248,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-COMPONENT-UNSUPPORTED-FACTORIES-ARE-REFUSED-BEFORE-REGISTRATION
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: unsupported Factories Are Refused Before Registration.
 
@@ -9262,7 +9262,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-COMPONENT-SELECTOR-AND-CONCURRENCY-USE-THE-ACTUAL-FACTORY-AND-BROKER
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PARTIAL. Direct component contract: selector And Concurrency Use The Actual Factory And Broker.
 
@@ -9276,7 +9276,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-COMPONENT-CUSTOM-EXISTING-ADAPTER-IS-REFUSED-BEFORE-CONTAINER-SHUTDOWN
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: custom Existing Adapter Is Refused Before Container Shutdown.
 
@@ -9290,7 +9290,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-COMPONENT-INVALID-METADATA-CANNOT-CREATE-PARTIAL-REGISTRATION
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: invalid Metadata Cannot Create Partial Registration.
 
@@ -9304,7 +9304,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-COMPONENT-UNSUPPORTED-SHAPES-AND-METHOD-ADVICE-ARE-EXPLICITLY-REFUSED
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: unsupported Shapes And Method Advice Are Explicitly Refused.
 
@@ -9318,7 +9318,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-REPLY-COMPONENT-DEFAULT-DESTINATION-REPLY-TO-AND-CORRELATION-MATCH-NATIVE-SPRING
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PARTIAL. Direct component contract: default Destination Reply To And Correlation Match Native Spring.
 
@@ -9332,7 +9332,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-REPLY-COMPONENT-REPLY-TO-NEEDS-NO-SEND-TO-ANNOTATION
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PARTIAL. Direct component contract: reply To Needs No Send To Annotation.
 
@@ -9346,7 +9346,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-REPLY-COMPONENT-CONVERTER-PRESERVES-BYTES-MAP-AND-NATIVE-AND-SPRING-MESSAGES
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PARTIAL. Direct component contract: converter Preserves Bytes Map And Native And Spring Messages.
 
@@ -9360,7 +9360,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-REPLY-COMPONENT-NULL-RESULT-SENDS-NOTHING-AFTER-THE-BODY-RUNS
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PARTIAL. Direct component contract: null Result Sends Nothing After The Body Runs.
 
@@ -9374,7 +9374,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-REPLY-COMPONENT-FAILED-TRANSACTED-ATTEMPT-PRODUCES-ONE-REPLY-ONLY-AFTER-REDELIVERY
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PARTIAL. Direct component contract: failed Transacted Attempt Produces One Reply Only After Redelivery.
 
@@ -9388,7 +9388,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-REPLY-COMPONENT-INVALID-SEND-TO-LEAVES-NO-CONTAINER-AND-NEXT-CORRECTED-SAVE-RECOVERS
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: invalid Send To Leaves No Container And Next Corrected Save Recovers.
 
@@ -9402,7 +9402,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-REPLY-COMPONENT-UNSUPPORTED-RESULTS-AND-ADVICE-STAY-REFUSED
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: unsupported Results And Advice Stay Refused.
 
@@ -9416,7 +9416,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-COMPONENT-EXISTING-LISTENER-METADATA-DOES-NOT-BLOCK-ORDINARY-RECREATION
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PARTIAL. Direct component contract: existing Listener Metadata Does Not Block Ordinary Recreation.
 
@@ -9430,7 +9430,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-COMPONENT-ACTUAL-SPRING-ADAPTER-USES-PRIVATE-METHOD-AND-CURRENT-SINGLETON
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PARTIAL. Direct component contract: actual Spring Adapter Uses Private Method And Current Singleton.
 
@@ -9444,7 +9444,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-COMPONENT-OWNED-CONTAINERS-ARE-DESTROYED-AND-UNRELATED-IDENTITY-SURVIVES
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PARTIAL. Direct component contract: owned Containers Are Destroyed And Unrelated Identity Survives.
 
@@ -9458,7 +9458,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-COMPONENT-DUPLICATE-ID-CANNOT-STEAL-ANOTHER-BEANS-CONTAINER
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PARTIAL. Direct component contract: duplicate Id Cannot Steal Another Beans Container.
 
@@ -9472,7 +9472,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-COMPONENT-SECOND-REAL-REGISTRATION-FAILURE-CLEANS-ONLY-THIS-ATTEMPT
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: second Real Registration Failure Cleans Only This Attempt.
 
@@ -9486,7 +9486,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-COMPONENT-PROXY-RECEIVER-IS-REFUSED-WITHOUT-BYPASSING-ADVICE
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: proxy Receiver Is Refused Without Bypassing Advice.
 
@@ -9500,7 +9500,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-COMPONENT-UNSUPPORTED-INFRASTRUCTURE-DOES-NOT-BLOCK-AN-UNRELATED-BEAN
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: unsupported Infrastructure Does Not Block An Unrelated Bean.
 
@@ -9514,7 +9514,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-COMPONENT-MIXED-OWNER-RETIRES-NOTHING-UNTIL-EVERY-BROKER-VALIDATED-THEN-BOTH
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: mixed Owner Retires Nothing Until Every Broker Validated Then Both.
 
@@ -9528,7 +9528,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-COMPONENT-UNSUPPORTED-FACTORIES-ARE-REFUSED-BEFORE-REGISTRATION
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: unsupported Factories Are Refused Before Registration.
 
@@ -9542,7 +9542,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-COMPONENT-QUEUE-EXPRESSIONS-MATCH-NATIVE-ANNOTATION-PROCESSING
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PARTIAL. Direct component contract: queue Expressions Match Native Annotation Processing.
 
@@ -9556,7 +9556,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-COMPONENT-QUEUE-EXPRESSIONS-REEVALUATE-ON-SAVE-AND-RECOVER-AFTER-RESOLUTION-FAILURE
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: queue Expressions Reevaluate On Save And Recover After Resolution Failure.
 
@@ -9570,7 +9570,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-COMPONENT-QUEUE-EXPRESSION-FAILURES-REMOVE-PARTIAL-REGISTRATIONS
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: queue Expression Failures Remove Partial Registrations.
 
@@ -9584,7 +9584,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-COMPONENT-INVALID-METADATA-CANNOT-CREATE-PARTIAL-REGISTRATION
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: invalid Metadata Cannot Create Partial Registration.
 
@@ -9598,7 +9598,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-COMPONENT-UNSUPPORTED-SHAPES-AND-METHOD-ADVICE-ARE-EXPLICITLY-REFUSED
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: unsupported Shapes And Method Advice Are Explicitly Refused.
 
@@ -9612,7 +9612,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-COMPONENT-REFUSED-SAVE-DOES-NOT-RETIRE-EXISTING-CONSUMERS
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: refused Save Does Not Retire Existing Consumers.
 
@@ -9626,7 +9626,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-COMPONENT-CUSTOM-EXISTING-ADAPTER-IS-REFUSED-BEFORE-RETIREMENT
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: custom Existing Adapter Is Refused Before Retirement.
 
@@ -9640,7 +9640,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-COMPONENT-EXISTING-CONTAINER-ADVICE-IS-REFUSED-BEFORE-RETIREMENT
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: existing Container Advice Is Refused Before Retirement.
 
@@ -9654,7 +9654,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-COMPONENT-EXPLICIT-FACTORY-AND-CONCURRENCY-USE-SPRING-SETTINGS
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PARTIAL. Direct component contract: explicit Factory And Concurrency Use Spring Settings.
 
@@ -9668,7 +9668,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-COMPONENT-SHUTDOWN-DOES-NOT-MEAN-BLOCKED-ORIGINAL-CALLBACK-HAS-FINISHED
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: shutdown Does Not Mean Blocked Original Callback Has Finished.
 
@@ -9682,7 +9682,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-WORKER-COMPONENT-QUEUED-WORKER-AND-NORMAL-OR-EXCEPTIONAL-EXIT-STAY-TRACKED
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PARTIAL. Direct component contract: queued Worker And Normal Or Exceptional Exit Stay Tracked.
 
@@ -9696,7 +9696,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-WORKER-COMPONENT-EXACT-SPRING-BYTES-VERIFY-AND-UNKNOWN-SHAPES-OR-LATE-ATTACH-ARE-REFUSED
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** EXPECTED. Direct component contract: exact Spring Bytes Verify And Unknown Shapes Or Late Attach Are Refused.
 
@@ -9714,7 +9714,7 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 Native Spring6/Jakarta messaging listener reload.
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Default/opt-in:** Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.
 
@@ -9734,7 +9734,7 @@ Native Spring6/Jakarta messaging listener reload.
 
 ### P4-KAFKA-OTHER-ENVIRONMENTS
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** UNVERIFIED. Messaging support on other operating systems, JVM providers and broker versions.
 
@@ -9748,7 +9748,7 @@ Native Spring6/Jakarta messaging listener reload.
 
 ### P4-KAFKA-HOSTED
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** UNVERIFIED. Messaging reload against an external or hosted cluster.
 
@@ -9762,7 +9762,7 @@ Native Spring6/Jakarta messaging listener reload.
 
 ### P4-KAFKA-LATE-ATTACH
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** UNVERIFIED. Messaging additions after late agent attachment.
 
@@ -9776,7 +9776,7 @@ Native Spring6/Jakarta messaging listener reload.
 
 ### P4-KAFKA-CASCADE
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Bounded Kafka helper/property consumer recreation.
 
@@ -9794,7 +9794,7 @@ Native Spring6/Jakarta messaging listener reload.
 
 Native Spring6/Jakarta messaging listener reload.
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Default/opt-in:** Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.
 
@@ -9814,7 +9814,7 @@ Native Spring6/Jakarta messaging listener reload.
 
 ### P4-JMS-OTHER-ENVIRONMENTS
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** UNVERIFIED. Messaging support on other operating systems, JVM providers and broker versions.
 
@@ -9828,7 +9828,7 @@ Native Spring6/Jakarta messaging listener reload.
 
 ### P4-JMS-HOSTED
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** UNVERIFIED. Messaging reload against an external or hosted cluster.
 
@@ -9842,7 +9842,7 @@ Native Spring6/Jakarta messaging listener reload.
 
 ### P4-JMS-LATE-ATTACH
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** UNVERIFIED. Messaging additions after late agent attachment.
 
@@ -9856,7 +9856,7 @@ Native Spring6/Jakarta messaging listener reload.
 
 ### P4-JMS-CASCADE
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Bounded JMS helper/property dependency refresh.
 
@@ -9874,7 +9874,7 @@ Native Spring6/Jakarta messaging listener reload.
 
 Native Spring6/Jakarta messaging listener reload.
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Default/opt-in:** Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.
 
@@ -9894,7 +9894,7 @@ Native Spring6/Jakarta messaging listener reload.
 
 ### P4-RABBIT-OTHER-ENVIRONMENTS
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** UNVERIFIED. Messaging support on other operating systems, JVM providers and broker versions.
 
@@ -9908,7 +9908,7 @@ Native Spring6/Jakarta messaging listener reload.
 
 ### P4-RABBIT-HOSTED
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** UNVERIFIED. Messaging reload against an external or hosted cluster.
 
@@ -9922,7 +9922,7 @@ Native Spring6/Jakarta messaging listener reload.
 
 ### P4-RABBIT-LATE-ATTACH
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** UNVERIFIED. Messaging additions after late agent attachment.
 
@@ -9936,7 +9936,7 @@ Native Spring6/Jakarta messaging listener reload.
 
 ### P4-RABBIT-CASCADE
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Bounded Rabbit helper/property consumer recreation.
 
@@ -9950,7 +9950,7 @@ Native Spring6/Jakarta messaging listener reload.
 
 ### P4-KAFKA-TRANSACTION-REBALANCE
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** UNVERIFIED. Transactional/rebalance/failure delivery guarantees across Kafka reload. 
 
@@ -9964,7 +9964,7 @@ Native Spring6/Jakarta messaging listener reload.
 
 ### P4-JMS-XA-JAKARTA-DURABLE
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** UNVERIFIED. XA, Jakarta Messaging3 and durable/shared/topic-provider variants. Since R36, plain topics and durable subscriptions on ActiveMQ Classic 5.19.11 and 6.1.3 are measured by `AddedJmsTopicListenerReloadTest` and `ModernJmsTopicListenerReloadTest`; XA and shared subscriptions stay unverified. 
 
@@ -9978,7 +9978,7 @@ Native Spring6/Jakarta messaging listener reload.
 
 ### P4-RABBIT-REPLY-ASYNC
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** UNVERIFIED. Added Rabbit reply/async return methods. 
 
@@ -9992,7 +9992,7 @@ Native Spring6/Jakarta messaging listener reload.
 
 ### P4-KAFKA-STEREOTYPES
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Added listeners on plain @Service and @Repository receiver variants.
 
@@ -10006,7 +10006,7 @@ Native Spring6/Jakarta messaging listener reload.
 
 ### P4-KAFKA-HEADERS-MAP
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** UNVERIFIED. Native @Headers map and all supported callback parameter combinations on a watched addition.
 
@@ -10020,7 +10020,7 @@ Native Spring6/Jakarta messaging listener reload.
 
 ### P4-KAFKA-PRODUCTION-TIMEOUT
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** UNVERIFIED. Exact production 30-second consumer shutdown deadline behavior.
 
@@ -10034,7 +10034,7 @@ Native Spring6/Jakarta messaging listener reload.
 
 ### P4-JMS-STEREOTYPES
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Added listeners on plain @Service and @Repository receiver variants.
 
@@ -10048,7 +10048,7 @@ Native Spring6/Jakarta messaging listener reload.
 
 ### P4-JMS-HEADERS-MAP
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** UNVERIFIED. Native @Headers map and all supported callback parameter combinations on a watched addition.
 
@@ -10062,7 +10062,7 @@ Native Spring6/Jakarta messaging listener reload.
 
 ### P4-JMS-PRODUCTION-TIMEOUT
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `0885700898923048423d999ee0e482a36b0089ffacabee0c5b72a787f8b8645c`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** UNVERIFIED. Exact production 30-second consumer shutdown deadline behavior.
 
@@ -10076,7 +10076,7 @@ Native Spring6/Jakarta messaging listener reload.
 
 ### P4-RABBIT-STEREOTYPES
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Added listeners on plain @Service and @Repository receiver variants.
 
@@ -10090,7 +10090,7 @@ Native Spring6/Jakarta messaging listener reload.
 
 ### P4-RABBIT-HEADERS-MAP
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** UNVERIFIED. Native @Headers map and all supported callback parameter combinations on a watched addition.
 
@@ -10104,7 +10104,7 @@ Native Spring6/Jakarta messaging listener reload.
 
 ### P4-RABBIT-PRODUCTION-TIMEOUT
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `7b11c0b94df736b55cda59fe2220031f85f50753675ba68d4f3bc2c2722254e5`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** UNVERIFIED. Exact production 30-second consumer shutdown deadline behavior.
 
@@ -10118,7 +10118,7 @@ Native Spring6/Jakarta messaging listener reload.
 
 ### P4-KAFKA-FACTORY-OPTION
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Added Kafka explicit containerFactory selection.
 
@@ -10132,7 +10132,7 @@ Native Spring6/Jakarta messaging listener reload.
 
 ### P4-KAFKA-CONCURRENCY-OPTION
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Added Kafka positive concurrency option behavior.
 
@@ -10146,7 +10146,7 @@ Native Spring6/Jakarta messaging listener reload.
 
 ### P4-KAFKA-AUTOSTART-IDGROUP
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Added Kafka annotation autoStartup and idIsGroup option combinations.
 
@@ -10160,7 +10160,7 @@ Native Spring6/Jakarta messaging listener reload.
 
 ### P4-KAFKA-NULL-GROUP
 
-**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md` (block SHA-256 `4e537c92cc3ed009c726b85ddb263670c485b0a9fddaccb20bac6b255f6eb79a`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `cae30a847c7e74f92cacbc8deed02c09590c22450ba9f2ff788d4345968297de`); `docs/product-reference.md` (block SHA-256 `a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37`); `docs/product-reference.md` (block SHA-256 `0a9cd466343b0cde219e868e105d79f9deef7db85c4d1d66900a561355fcf6ca`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `b998f5db0f2bb462134a321d971c1a1e2092a7faa63c695d147e17fbe9639c71`); `src/main/resources/META-INF/plugin.xml` (block SHA-256 `3bc48fec1ea5d5ce97ba5a844b726aee66868eff64d747d2e6384f0c215e4af5`); this block (digest in JSON).
 
 **Verdict:** PROVEN_WITH_SCOPE. Native null/default Kafka group expression behavior.
 

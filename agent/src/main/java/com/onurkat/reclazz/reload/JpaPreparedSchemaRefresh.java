@@ -21,7 +21,8 @@ final class JpaPreparedSchemaRefresh {
     private record Pending(byte[] metadata, List<String> physical, WeakReference<Object> factory) { }
     private JpaPreparedSchemaRefresh() { }
 
-    static void apply(String name, Class<?> entity, Object bean, Field nativeField, byte[] bytecode) {
+    static void apply(String name, Class<?> entity, Object bean, Field nativeField, byte[] bytecode,
+                      JpaFactoryRetention.Reservation reservation) {
         List<String> managed = null;
         boolean added = false, installed = false;
         try {
@@ -36,13 +37,13 @@ final class JpaPreparedSchemaRefresh {
             var create = bean.getClass().getDeclaredMethod("createNativeEntityManagerFactory");
             create.setAccessible(true);
             Object fresh = create.invoke(bean);
-            installed = install(entity, bean, nativeField, fresh);
+            installed = install(entity, bean, nativeField, fresh, reservation);
             if (!installed) throw new IllegalStateException("validated factory does not map " + name);
             mapped(name, entity);
             StatusReporter.success(name + ": rebuilt persistence unit '"
                     + bean.getClass().getMethod("getPersistenceUnitName").invoke(bean)
                     + "' after validating the prepared schema; no schema action was changed."
-                    + " The previous native factory was retired.");
+                    + reservation.receipt());
         } catch (Throwable failure) {
             Throwable root = failure;
             while (root.getCause() != null) root = root.getCause();
@@ -55,22 +56,15 @@ final class JpaPreparedSchemaRefresh {
     }
 
     /** Check the candidate before touching the live field. Failed candidates must not leak. */
-    static boolean install(Class<?> entity, Object bean, Field nativeField, Object fresh) throws Exception {
+    static boolean install(Class<?> entity, Object bean, Field nativeField, Object fresh,
+                           JpaFactoryRetention.Reservation reservation) throws Exception {
         boolean swapped = false;
         try {
             var unsafe = HibernateEnumStorage.freshFactoryProblems(fresh);
-            if (!unsafe.isEmpty()) throw new IllegalStateException(String.join(", ", unsafe));
+            if (!unsafe.isEmpty()) throw new IllegalStateException("Retained the previous persistence factory: " + String.join(", ", unsafe));
             if (!JpaSchemaAdvice.managesEntity(fresh, entity)) return false;
-            Object old = nativeField.get(bean);
-            nativeField.set(bean, fresh);
+            reservation.install(bean, nativeField, fresh);
             swapped = true;
-            if (old != null) {
-                try { old.getClass().getMethod("close").invoke(old); }
-                catch (Throwable closeFailure) {
-                    StatusReporter.warn("Prepared entity mapping installed, but retiring the previous factory failed: "
-                            + closeFailure);
-                }
-            }
             return true;
         } finally {
             if (!swapped && fresh != null) fresh.getClass().getMethod("close").invoke(fresh);

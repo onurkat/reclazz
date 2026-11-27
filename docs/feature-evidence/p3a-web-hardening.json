@@ -344,12 +344,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "A constraint added to a field (`@NotBlank`)",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P3A-VALIDATION-ADD",
-          "block_sha256": "c48fc8c0b368b49b6849da72069a1ef8c336bdcf06caac2055af42b056645965"
+          "block_sha256": "a17750bb61b8be16be1865dbc49cffe7ee41db72c918d91e57537fe3ba9faa41"
         }
       ],
       "opt_in": "Startup javaagent and compiled annotation edits on existing DTO fields; no extra validation flag.",
@@ -394,12 +394,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "A constraint added to a field (`@NotBlank`)",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P3A-VALIDATION-CHANGE",
-          "block_sha256": "016908e8a40a4af1192cf01ec70db020f29097374aec2f328f7b9eefc1b83215"
+          "block_sha256": "c7f1c69ed7fff4c35e7c23d26c81040d72b50c0e7de879a5cc5eca7aa23dce72"
         }
       ],
       "opt_in": "Startup javaagent and compiled annotation edits on existing DTO fields; no extra validation flag.",
@@ -444,12 +444,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "A constraint added to a field (`@NotBlank`)",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P3A-VALIDATION-REMOVE-RESTORE",
-          "block_sha256": "99084357f50b278a4fd9a8884ad22345dc963594e459d21f9e092c199a28aaa8"
+          "block_sha256": "2237f89d772d5d749fa71855033f98f979d6498011fd0e4f1719ec242732ff07"
         }
       ],
       "opt_in": "Startup javaagent and compiled annotation edits on existing DTO fields; no extra validation flag.",
@@ -494,12 +494,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "A constraint added to a field (`@NotBlank`)",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P3A-VALIDATION-HELD",
-          "block_sha256": "e13f0174bb2d0db65b78d9cd8bc9d0d58a591153ea164f6804c678e2d9151bbd"
+          "block_sha256": "e057bc4b66158cd65ba0d063c3332750f590ec930d0e3c34c80d53684b170988"
         }
       ],
       "opt_in": "Startup javaagent and compiled annotation edits on existing DTO fields; no extra validation flag.",
@@ -544,12 +544,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "A constraint added to a field (`@NotBlank`)",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P3A-VALIDATION-SIDE-EFFECTS",
-          "block_sha256": "fcb3e9f5007506f555ecf5196aee331f1a8d2628bc2c369b3364d8bcf908c40e"
+          "block_sha256": "e076dc6591651b7a233d8040a922bae1742a61d9cc74bab609e418be0758f0ae"
         }
       ],
       "opt_in": "Startup javaagent and compiled annotation edits on existing DTO fields; no extra validation flag.",
@@ -594,12 +594,12 @@
         {
           "path": "docs/product-reference.md",
           "quote": "A constraint added to a field (`@NotBlank`)",
-          "block_sha256": "c323cd3d4a0d37e8cefbbaa385a11119bcdbe52ce7ad45ebd1c6c65d62282bb7"
+          "block_sha256": "a9117769c87097287407f0f2d754df78479c0540fec4cf26015037ab2a81ed37"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P3A-VALIDATION-CONTROL",
-          "block_sha256": "c1e04c8834b9832a0597c8ccf43d89bdad64e9b65e33bae867a6f172f198ee42"
+          "block_sha256": "aff74888894eb128b677ca5f543ff797f324a1d0d03a8b9561c5ea70b29e9499"
         }
       ],
       "opt_in": "Startup javaagent and compiled annotation edits on existing DTO fields; no extra validation flag.",

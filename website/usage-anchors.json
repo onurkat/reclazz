@@ -649,7 +649,7 @@
       "level": 3,
       "title": "New JPA entities with a prepared schema",
       "id": "new-jpa-entities-with-a-prepared-schema",
-      "body_sha256": "d6fb0653fbcc7f8fc3dbc2b469a58ed87fbdb5bfe833f71eab8375ebeaab5ad6",
+      "body_sha256": "559123b22850c2c2cfbd8c25062856563e8d6f03c9401a4060eade96f29f504f",
       "heading": "### New JPA entities with a prepared schema\n"
     },
     {
@@ -662,7 +662,7 @@
       "level": 3,
       "title": "Held repositories after a prepared mapping refresh",
       "id": "held-repositories-after-a-prepared-mapping-refresh",
-      "body_sha256": "6546df45f2cb14f3fcc96ab1811dac86440775d0271321992ea66a7074803e46",
+      "body_sha256": "871386441ce76b97039065d6fbb5e2cda292e5d8659f4d68d6e5888877c9b8c1",
       "heading": "### Held repositories after a prepared mapping refresh\n"
     },
     {
@@ -1082,7 +1082,7 @@
       "level": 2,
       "title": "Supported JDK Providers",
       "id": "supported-jdk-providers",
-      "body_sha256": "8e7bb244c68162692de3a7787ee37d53bff7b4564693689da9dd2a3f05da3623",
+      "body_sha256": "617aaa0a3abd31c7e23e1eab1a5817f8db3ef71fc13d24fd50c1b5422a15d527",
       "heading": "## Supported JDK Providers\n"
     },
     {

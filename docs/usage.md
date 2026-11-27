@@ -3468,14 +3468,14 @@ schema filters, factory subclasses and custom providers are refused on this path
 not added here. Hibernate's own schema validation determines what is checked;
 this is not a check of every index, constraint or application data invariant.
 
-Successful rebuilds retire the old native factory. Finish active database work
-before triggering one; retaining old persistence contexts or active transactions
-across a successful rebuild is not supported. The failure guarantee applies
-before installing the candidate, not to rolling back arbitrary provider callback
-side effects. A failure closing the old factory after installation is reported
-separately; the new mapping remains installed. Existing entity field additions
-on stock JVMs still require enhanced redefinition or a restart. Existing
-DDL-enabled mapping refresh keeps its previous behavior.
+During a supported rebuild, requests already using the old native factory can
+finish. New requests use the rebuilt mapping. Each persistence unit keeps up to
+five earlier factories until its Spring context closes or the JVM shuts down.
+After the fifth replacement, restart before applying another mapping change.
+Named factories, shared cache regions, custom factory observers, JMX and
+destructive schema actions require a restart before applying the change.
+Existing entity field additions on stock JVMs still require enhanced
+redefinition or a restart.
 
 ### Held repositories after a prepared mapping refresh
 
@@ -3487,7 +3487,7 @@ its domain root. After the native factory changes, it writes and reads that
 entity through `saveAndFlush`, `findById`, a warmed JPQL query and `count`. A custom
 repository fragment holding the original shared EntityManager queries the newly
 mapped entity. Repository, holder, shared EntityManager and injected factory-client
-identities remain unchanged; the old native factory closes and an unrelated
+identities remain unchanged, and an unrelated
 context remains accessible. A body-only save of the mapped entity does not rebuild
 it again. Each mapping state is compared with a fresh agentless native application
 and exact expected values.
@@ -3918,7 +3918,7 @@ Reclazz works with **any JDK 17+** that supports the standard Java Instrumentati
 
 Hibernate factories opened after an accepted edit are checked against the running enum order. Reclazz keeps the previous factory if its own rebuild introduces unsafe storage. For a factory opened by the application, a warning and restart entry name the affected mapping. Restart before writing through that factory. Native SQL, query parameters bound by application code, and ordinal calculations delegated to other classes can bypass mapping inspection. Reclazz checks entity, embeddable, ID class and registered listener methods for direct ordinal reads. A loaded MyBatis EnumOrdinalTypeHandler, a numeric Jackson enum annotation, an observed Jackson mapper configured to write ordinal indexes, or an identified Eclipse or Kotlin switch table also requires restart. A nested enum compiled for Java 8–10 requires restart when its compiled nest cannot be verified. Application-created writers, property-level overrides, custom serializers and switch consumers loaded only after the edit can escape inspection. Check those paths and migrate existing ordinal data before changing the declaration order.
 
-A managed JPA rebuild checks the current factory and candidate settings before Hibernate starts. With a pending or accepted divergent enum order, a destructive schema action leaves the active factory and its rows in place. Otherwise `create` and `create-drop` rebuild with Hibernate’s configured startup behavior, which can erase existing data. Under `create-drop`, Reclazz cancels only the old factory’s delayed drop before closing it. The replacement keeps its own shutdown action. Application-created factories can still accept writes after a warning. Stop those writes before restarting.
+A managed JPA rebuild checks the current factory and candidate settings before Hibernate starts. With a destructive schema action such as `create` or `create-drop`, the running factory and its rows stay in place. Restart to apply the mapping under the configured startup policy.
 
 ### Companion-class reflective visibility caveat
 

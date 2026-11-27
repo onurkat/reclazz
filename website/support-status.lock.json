@@ -62,7 +62,7 @@
   "jpa-existing": "conditional",
   "jpa-new": "conditional",
   "jpa-retry": "conditional",
-  "jpa-active": "restart",
+  "jpa-active": "conditional",
   "repository": "conditional",
   "cache": "conditional",
   "custom-cache": "conditional",
