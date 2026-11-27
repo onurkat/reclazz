@@ -45,6 +45,63 @@ class BatchedConstructorReloadTest {
 
     @Test void annotationRefusalIsNotHiddenByAnUnchangedConstructor() throws Exception { exercise(false,true,"annotationRefusal"); }
 
+    @Test void nativeInterfaceReceiptTracksOnlySuccessfullyAdmittedInitializers() throws Exception {
+        Path port = dir.resolve("agent.port");
+        String marker = """
+                package app;
+                public interface Marker {
+                    String VALUE = new String("first");
+                    static int stamp() { return 1; }
+                }
+                """;
+        String plain = "package app; public interface Plain { static int stamp() { return 1; } }";
+        String main = """
+                package app;
+                public class App {
+                    public static void main(String[] args) throws Exception {
+                        while (true) {
+                            System.out.println("LIVE=" + Marker.VALUE + ":" + Marker.stamp() + ":" + Plain.stamp());
+                            Thread.sleep(100);
+                        }
+                    }
+                }
+                """;
+        try (var app = WatchedApp.in(dir).agentArgs("structuralReload=false,startupDelaySec=0,debounceMs=100,portFile=" + port)
+                .with("Marker", marker).with("Plain", plain).with("App", main).start()) {
+            app.awaitOrFail("LIVE=first:1:1", "interfaces initialized");
+            app.awaitWatcherReady();
+            String bodyEdit = marker.replace("return 1", "return 2");
+            app.rewrite("Marker", bodyEdit);
+            awaitReceipt(port, app, "Marker", "applied");
+            app.rewrite("Plain", plain.replace("return 1", "return 2"));
+            awaitReceipt(port, app, "Plain", "applied");
+            app.awaitOrFail("LIVE=first:2:2", "both body-only edits reached the VM");
+            assertFalse(app.output().stream().anyMatch(line -> line.contains("static initialization of interface")), app.tail());
+
+            String changed = bodyEdit.replace("first", "second").replace("return 2", "return 3");
+            app.rewrite("Marker", changed.replace("static int stamp()", "void added(); static int stamp()"));
+            awaitReceipt(port, app, "Marker", "failed");
+            app.rewrite("Marker", changed);
+            awaitReceipt(port, app, "Marker", "unverified");
+            app.awaitOrFail("LIVE=first:3:2", "new method body alongside the old initialized value");
+            app.awaitOrFail("static initialization of interface changed", "the refused save did not advance the baseline");
+            try (Socket socket = new Socket("127.0.0.1", Integer.parseInt(Files.readString(port).trim()))) {
+                socket.setSoTimeout(5000);
+                var input = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
+                socket.getOutputStream().write("PENDING\n".getBytes(StandardCharsets.UTF_8));
+                String message;
+                do {
+                    String line = input.readLine();
+                    assertNotNull(line, app.tail());
+                    message = json.readTree(line).path("message").asText();
+                } while (!message.startsWith("  app.Marker: static initialization of interface changed"));
+            }
+            app.rewrite("Marker", changed.replace("return 3", "return 4"));
+            awaitReceipt(port, app, "Marker", "applied");
+            app.awaitOrFail("LIVE=first:4:2", "next save compares against the last admitted initializer");
+        }
+    }
+
     @Test void refusedStaticInitializerEditHasItsOwnWarningAndUnverifiedReceipt() throws Exception {
         Path port=dir.resolve("agent.port");
         try(var app=WatchedApp.in(dir).classpath(WatchedApp.springClasspath())

@@ -40,10 +40,6 @@ public class ReclazzTransformer implements ClassFileTransformer {
         this.config = config;
     }
 
-    private static boolean isInterface(byte[] bytes) {
-        try { return (new ClassReader(bytes).getAccess() & Opcodes.ACC_INTERFACE) != 0; } catch (RuntimeException unreadable) { return false; }
-    }
-
     @Override
     public byte[] transform(ClassLoader loader, String className,
                             Class<?> classBeingRedefined,
@@ -136,8 +132,8 @@ public class ReclazzTransformer implements ClassFileTransformer {
         // it has no renamed bodies and never will.
         // Interfaces stay uninstrumented (excluded or not), but keep their first static initialization as evidence so a
         // later save that changes it can say a restart is needed: their fields are never initialized again.
-        if (classBeingRedefined == null && classfileBuffer.length >= 10 && isInterface(classfileBuffer))
-            StaticFieldPreparation.recordDefinition(loader, className, classfileBuffer, false);
+        if (classBeingRedefined == null)
+            StaticFieldPreparation.recordInterfaceDefinition(loader, className, classfileBuffer);
         if (config.isClassExcluded(className)) {
             ExcludedClasses.note(className);
             return null;

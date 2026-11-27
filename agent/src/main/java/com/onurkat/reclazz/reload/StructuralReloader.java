@@ -1128,14 +1128,7 @@ public class StructuralReloader {
         var init = StaticInitializerReset.interfaceInitialization(owner, source);
         var result = standardReload(className, definition, source, owner);
         if (result.isSuccess()) {
-            if (init != StaticInitializerReset.InterfaceInit.UNCHANGED) {
-                String reason = init == StaticInitializerReset.InterfaceInit.CHANGED
-                        ? "static initialization of interface changed; its static fields keep their first values on a running JVM"
-                        : "static initialization of interface could not be compared (loaded before Reclazz recorded it); its static fields keep their first values on a running JVM";
-                StatusReporter.warn(className + ": " + reason + "; restart to apply if you changed a static field. Method bodies reloaded.");
-                RestartLedger.note(className, reason);
-            }
-            StaticInitializerReset.interfaceInitializationAccepted(owner, source);
+            StaticInitializerReset.reportAcceptedInterfaceInitialization(owner, source, init);
         }
         return result;
     }

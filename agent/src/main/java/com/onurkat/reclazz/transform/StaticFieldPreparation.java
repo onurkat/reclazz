@@ -28,6 +28,15 @@ public final class StaticFieldPreparation implements Opcodes {
         LoaderKey key=new LoaderKey(loader,COLLECTED);
         return create ? DEFINITIONS.computeIfAbsent(key,ignored->new HashMap<>()) : DEFINITIONS.getOrDefault(key,Map.of());
     }
+    /** Interfaces are never rewritten; preserve the initializer from their watched first definition. */
+    public static void recordInterfaceDefinition(ClassLoader loader, String name, byte[] bytes) {
+        try {
+            if ((new ClassReader(bytes).getAccess() & ACC_INTERFACE) != 0)
+                recordDefinition(loader, name, bytes, false);
+        } catch (RuntimeException unreadable) {
+            // Without a witnessed definition the interface comparison will report UNVERIFIED.
+        }
+    }
     /** Only after the complete first-load transform has passed bytecode validation. */
     public static synchronized void recordDefinition(ClassLoader loader, String name, byte[] bytes, boolean enabled) {
         Definition definition=new Definition(mask(bytes,enabled), snapshot(bytes));

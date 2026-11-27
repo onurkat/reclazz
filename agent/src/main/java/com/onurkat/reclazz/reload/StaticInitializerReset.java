@@ -170,6 +170,17 @@ public final class StaticInitializerReset implements Opcodes {
         } catch (RuntimeException | LinkageError unreadable) { return InterfaceInit.UNVERIFIED; }
     }
 
+    public static void reportAcceptedInterfaceInitialization(Class<?> owner, byte[] next, InterfaceInit init) {
+        if (init != InterfaceInit.UNCHANGED) {
+            String reason = init == InterfaceInit.CHANGED
+                    ? "static initialization of interface changed; its static fields keep their first values on a running JVM"
+                    : "static initialization of interface could not be compared (loaded before Reclazz recorded it); its static fields keep their first values on a running JVM";
+            StatusReporter.warn(owner.getName() + ": " + reason + "; restart to apply if you changed a static field. Method bodies reloaded.");
+            RestartLedger.note(owner.getName(), reason);
+        }
+        interfaceInitializationAccepted(owner, next);
+    }
+
     /** After a successful redefinition only: the save's initialization becomes the comparison baseline. */
     public static void interfaceInitializationAccepted(Class<?> owner, byte[] next) {
         try {

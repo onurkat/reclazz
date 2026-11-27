@@ -19,6 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.onurkat.reclazz.reload.EnumConstantAppender;
 import com.onurkat.reclazz.reload.EnumConstantChange;
 import com.onurkat.reclazz.reload.JpaEntityChange;
+import com.onurkat.reclazz.reload.StaticInitializerReset;
 import com.onurkat.reclazz.reload.StructuralReloader;
 import com.onurkat.reclazz.util.BytecodeVersion;
 
@@ -117,10 +118,17 @@ public class ClassReloader {
                     EnumConstantChange.check(existingClass, newBytecode);
             boolean membersChange = com.onurkat.reclazz.reload.LibraryCaches.membersChange(existingClass, newBytecode);
 
+            var interfaceInit = existingClass.isInterface()
+                    ? StaticInitializerReset.interfaceInitialization(existingClass, newBytecode) : null;
+
             // Redefine the existing class
             ClassDefinition definition = new ClassDefinition(existingClass, newBytecode);
             com.onurkat.reclazz.transform.PhysicalDefinitions.redefine(instrumentation, definition);
-            com.onurkat.reclazz.reload.StaticInitializerReset.afterReload(existingClass, newBytecode, resetStatics);
+            if (interfaceInit != null) {
+                StaticInitializerReset.reportAcceptedInterfaceInitialization(existingClass, newBytecode, interfaceInit);
+            } else {
+                StaticInitializerReset.afterReload(existingClass, newBytecode, resetStatics);
+            }
             if (existingClass.isRecord() && !com.onurkat.reclazz.transform.KeepBaseline.witnessedLoad(existingClass)) {
                 StatusReporter.warn("Native record body was installed; pre-watch record metadata has no witnessed baseline. Restart to verify record metadata: " + className);
             }

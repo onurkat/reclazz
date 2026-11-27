@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- With native redefinition, changing an interface’s static initializer now reports that a restart is needed to update its initialized fields.
+
 - A new SAP Commerce properties file inherits the permissions shared by the files supplying its JVM options.
 
 - Java launcher validation skips hot-reload startup on systems that expose the launcher arguments. This shortens the validation step during SAP Commerce startup on macOS.

@@ -642,7 +642,8 @@ public class ReclazzAgent {
                             java.security.ProtectionDomain domain, byte[] bytes) {
                         if (name != null && loader != null && redefining == null && transformContext.isWatched(name)) {
                             try { com.onurkat.reclazz.transform.KeepBaseline.capture(loader, name, bytes);
-                                com.onurkat.reclazz.transform.AdmittedBytes.defined(loader,name,bytes); }
+                                com.onurkat.reclazz.transform.AdmittedBytes.defined(loader,name,bytes);
+                                com.onurkat.reclazz.transform.StaticFieldPreparation.recordInterfaceDefinition(loader, name, bytes); }
                             catch (RuntimeException unavailable) { /* Missing evidence selects recreation. */ }
                         }
                         return null;
