@@ -7,9 +7,13 @@ import argparse
 import hashlib
 import json
 import re
+import subprocess
+import xml.etree.ElementTree as ET
+from datetime import datetime, timezone
 from urllib.parse import urlsplit, unquote, quote
 
 from website import layout
+from website.content import EVIDENCE_GUIDES
 from website.markdown import MarkdownRenderer, reference_pages, source_dispositions, github_anchor_map
 from website.content import NOTE_IDS, OVERVIEW_IDS, COMMON_IDS, LABELS, TABLE_LABELS, metadata, support_records, guide_evidence, expand_guide, ai_index, marketing_claims, expand_claims, marketing_cards, marketing_faq, comparison_table
 
@@ -206,6 +210,83 @@ def grouped_options(options,renderer):
     return body+'</section>'
 
 
+def history_date(repo, revision, sources):
+    """Latest commit touching this page's content, in the requested revision's history."""
+    if not (repo / '.git').exists():
+        return None
+    try:
+        result = subprocess.run(
+            ['git', 'log', '-1', '--format=%cs', '--end-of-options', revision, '--', *sorted(sources)],
+            cwd=repo, capture_output=True, text=True, check=True)
+    except (OSError, subprocess.CalledProcessError):
+        return None
+    value = result.stdout.strip()
+    return value if re.fullmatch(r'\d{4}-\d{2}-\d{2}', value) else None
+
+
+def guide_content_sources(page, template):
+    if page.get('markdown'):
+        return {page['markdown']}
+    slug = page['slug']
+    sources = {'docs/site/' + (slug or 'overview') + '.html'}
+    sources.update(re.findall(r'\{\{INCLUDE ([^#}]+)#', template))
+    if any(token in template for token in ('{{MATRIX}}', '{{ROWS:', '{{SUPPORT_SUMMARY}}')):
+        sources.add('docs/reload-support.md')
+    if '{{OPTIONS}}' in template:
+        sources.add('docs/usage.md')
+    if '{{GUIDE_EVIDENCE}}' in template:
+        sources.update('docs/feature-evidence/' + name + '.json'
+                       for name, (guide, _) in EVIDENCE_GUIDES.items() if guide == slug)
+    return sources
+
+
+def public_content_sources(name, template, claims):
+    sources = {'website/static/' + name}
+    if '{{HOME_CARDS}}' in template:
+        sources.add('docs/reload-support.md')
+    if '{{COMPARE_' in template:
+        sources.add('website/compare.json')
+    used = set(re.findall(r'\{\{CLAIM:([a-z_]+)\}\}', template))
+    if '{{COMPARE_TABLE}}' in template or '{{COMPARE_SUMMARY}}' in template:
+        model = json.loads((REPO / 'website/compare.json').read_text())
+        for row in model['rows']:
+            if '{{COMPARE_TABLE}}' in template or row['id'] in model['home']:
+                for cell in row['cells'].values():
+                    used.update(re.findall(r'\{\{CLAIM:([a-z_]+)\}\}', cell['text']))
+    if used and claims:
+        sources.add('website/claims.json')
+        sources.update(claims[key]['source'] for key in used if key in claims)
+    return sources
+
+
+def render_sitemap(routes, revision):
+    root = ET.Element('urlset', xmlns='http://www.sitemaps.org/schemas/sitemap/0.9')
+    today = datetime.now(timezone.utc).date().isoformat()
+    date_cache = {}
+    for route, sources in sorted(routes.items()):
+        key = tuple(sorted(sources))
+        if key not in date_cache:
+            date_cache[key] = history_date(REPO, revision, key) or today
+        entry = ET.SubElement(root, 'url')
+        ET.SubElement(entry, 'loc').text = 'https://reclazz.com' + route
+        ET.SubElement(entry, 'lastmod').text = date_cache[key]
+    ET.indent(root, space='  ')
+    return ET.tostring(root, encoding='utf-8', xml_declaration=True).decode() + '\n'
+
+
+def breadcrumbs(page):
+    base = 'https://reclazz.com'
+    links = [('Reclazz', '/'), ('Docs', '/docs/')]
+    slug = page['slug']
+    if slug == 'reference' or slug.startswith('reference/'):
+        links.append(('Reference', url('reference')))
+    if slug and slug != 'reference':
+        links.append((page['title'], url(slug)))
+    return {'@context': 'https://schema.org', '@type': 'BreadcrumbList',
+            'itemListElement': [{'@type': 'ListItem', 'position': n, 'name': name, 'item': base + route}
+                                for n, (name, route) in enumerate(links, 1)]}
+
+
 def generate(revision='main'):
     manifest = metadata(REPO)
     base = 'https://github.com/onurkat/reclazz/blob/' + revision + '/'
@@ -223,9 +304,18 @@ def generate(revision='main'):
     renderer = MarkdownRenderer(REPO, pages, revision)
 
     output = {p.relative_to(ROOT).as_posix(): p.read_bytes() for p in ROOT.rglob('*') if p.is_file()}
+    page_sources = {}
+    claims_path = REPO / 'website/claims.json'
+    claim_sources = json.loads(claims_path.read_text()) if claims_path.is_file() else {}
+    public_urls = {item.text for item in ET.parse(ROOT / 'sitemap.xml').findall('.//{*}loc')}
     for name, kind in layout.PUBLIC_PAGES.items():
         if name in output:
-            output[name] = link_chrome(layout.render_public(output[name].decode('utf-8'),kind,manifest['reviewed'][:4],manifest['source_version']))
+            template = output[name].decode('utf-8')
+            if name.endswith('index.html'):
+                route = '/' + name[:-len('index.html')]
+                if 'https://reclazz.com' + route in public_urls and route not in ('/license/', '/privacy/'):
+                    page_sources[route] = public_content_sources(name, template, claim_sources)
+            output[name] = link_chrome(layout.render_public(template,kind,manifest['reviewed'][:4],manifest['source_version']))
     if (REPO/'website/claims.json').is_file():
         values=marketing_claims(REPO)
         faq, schema=marketing_faq(values)
@@ -242,7 +332,12 @@ def generate(revision='main'):
         for group in GROUPS:
             links = ''.join('<a' + (' aria-current="page"' if p['slug'] == slug else '') + ' href="' + url(p['slug']) + '">' + escape(p['nav_title']) + '</a>' for p in pages if p['group'] == group)
             if links: nav += '<div class="nav-group"><p>' + escape(group) + '</p>' + links + '</div>'
-        body = renderer.render(page['markdown']) if page.get('markdown') else expand_guide((SOURCE / ((slug or 'overview') + '.html')).read_text(encoding='utf-8'), renderer, manifest)
+        template = '' if page.get('markdown') else (SOURCE / ((slug or 'overview') + '.html')).read_text(encoding='utf-8')
+        page_sources[url(slug)] = guide_content_sources(page, template)
+        body = renderer.render(page['markdown']) if page.get('markdown') else expand_guide(template, renderer, manifest)
+        title = page['title']
+        if slug and 'reclazz' not in title.lower() and len(title + ' | Reclazz docs') <= 60:
+            title += ' | Reclazz docs'
         body=body.replace('{{SUPPORT_SUMMARY}}',support_summary(support,renderer)) if '{{SUPPORT_SUMMARY}}' in body else body
         body=re.sub(r'\{\{ROWS:([^}]+)\}\}',lambda m:guide_rows([x.strip() for x in m[1].split(',')],support,renderer),body)
         if '{{GUIDE_EVIDENCE}}' in body:
@@ -275,7 +370,7 @@ def generate(revision='main'):
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>''' + escape(page['title']) + ''' | Reclazz docs</title>
+<title>''' + escape(title) + '''</title>
 <meta name="description" content="''' + escape(page['description'], quote=True) + '''">
 <meta name="theme-color" content="#0b0d12"><meta name="color-scheme" content="dark light">
 <link rel="canonical" href="https://reclazz.com''' + url(slug) + '''">
@@ -285,6 +380,7 @@ def generate(revision='main'):
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
 ''' + layout.head() + '''
 <script type="application/ld+json">''' + json.dumps(schema).replace('<', '\\u003c') + '''</script>
+<script type="application/ld+json">''' + json.dumps(breadcrumbs(page)).replace('<', '\\u003c') + '''</script>
 </head>
 <body class="docs-page''' + (' matrix-page' if slug == 'support-matrix' else '') + '''">
 ''' + layout.header('setup' if slug == 'sap-commerce' else 'docs') + '''
@@ -319,11 +415,7 @@ def generate(revision='main'):
     output['docs/assets/search-index.json'] = json.dumps(index, ensure_ascii=False, separators=(',', ':')) + '\n'
     output['docs/assets/support.json'] = json.dumps(support, indent=2) + '\n'
     output.update(renderer.assets)
-    # Sitemap remains owned by the existing site; retain non-doc URLs verbatim.
-    sitemap = (ROOT / 'sitemap.xml').read_text()
-    sitemap = re.sub(r'\s*<url>\s*<loc>https://reclazz\.com/docs/.*?</url>', '', sitemap, flags=re.S)
-    entries = ''.join('    <url><loc>https://reclazz.com' + url(p['slug']) + '</loc><lastmod>' + manifest['reviewed'] + '</lastmod><changefreq>monthly</changefreq><priority>' + ('0.8' if not p['slug'] else '0.7') + '</priority></url>\n' for p in pages)
-    output['sitemap.xml'] = sitemap.replace('</urlset>', entries + '</urlset>')
+    output['sitemap.xml'] = render_sitemap(page_sources, revision)
     inputs = [p for p in SOURCE.rglob('*') if p.is_file()] + list((REPO / 'docs').glob('*.md')) + list((REPO / 'docs/feature-evidence').glob('*')) + [p for p in ROOT.rglob('*') if p.is_file()] + list((REPO/'website').glob('*.py')) + [REPO/'website/routes.json', REPO/'website/legacy-routes.txt', *[p for p in (REPO/'website').glob('*.json')], REPO/'requirements-docs.txt', REPO/'gradle.properties', REPO/'README.md', REPO/'SECURITY.md']
     output['docs/assets/build-manifest.json'] = json.dumps({
         'source_commit': manifest['source_commit'], 'source_version': manifest['source_version'],

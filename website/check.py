@@ -146,6 +146,8 @@ def check_site(output, revision='main'):
     redirect_files = {build.route_file(route) for route in redirects}
     documents = {p: Document(p.read_text()) for p in output.rglob('*.html') if (p.name == 'index.html' or p.relative_to(output).as_posix() == '404.html') and p.relative_to(output).as_posix() not in redirect_files}
     for error in publication_errors(output,manifest): check(False,error)
+    for error in homepage_schema_errors((output / 'index.html').read_text()):
+        check(False, error)
     docs = {p:d for p,d in documents.items() if p.is_relative_to(output/'docs')}
     check(len(documents) == len(manifest['site_pages']), 'Whole-site page count drift')
     check(len(docs) == manifest['pages'], 'Page count disagrees with provenance manifest')
@@ -211,7 +213,11 @@ def check_site(output, revision='main'):
         if path.name == '404.html':
             check(doc.canonical[0] not in locations, '404 must not appear in sitemap')
             check(not any(record['url'].startswith('/404') for record in index), '404 must not appear in search')
+        elif doc.canonical[0] in ('https://reclazz.com/license/', 'https://reclazz.com/privacy/'):
+            check(doc.canonical[0] not in locations, 'Legal page present in sitemap: ' + doc.canonical[0])
+            check('name="robots" content="noindex, follow"' in path.read_text(), 'Missing legal noindex: ' + str(path))
         else: check(doc.canonical[0] in locations, 'Missing sitemap page: ' + doc.canonical[0])
+    check(not sitemap.findall('.//s:priority',ns) and not sitemap.findall('.//s:changefreq',ns), 'Unexpected sitemap priority/changefreq')
 
     # Runtime contracts must retain local canonical text; do not replace them with stubs.
     check('## Commands' in (build.REPO/'docs/protocol.md').read_text(), 'Protocol was replaced with a link stub')
@@ -302,6 +308,24 @@ def scroll_region_errors(text):
     parser=Regions();parser.feed(text);return parser.errors
 
 
+def homepage_schema_errors(text):
+    errors = []
+    found_site = False
+    for node in ContentTree(text).nodes:
+        if node['tag'] != 'script' or node['attrs'].get('type') != 'application/ld+json':
+            continue
+        try:
+            obj = json.loads(node_text(node))
+        except ValueError:
+            errors.append('Invalid homepage JSON-LD')
+            continue
+        if isinstance(obj, dict) and obj.get('@type') == 'WebSite' and obj.get('name') == 'Reclazz':
+            found_site = True
+    if not found_site:
+        errors.append('Missing homepage WebSite named Reclazz')
+    return errors
+
+
 def page_quality_errors(output, page):
     output=Path(output);page=Path(page);text=page.read_text();doc=AssetDocument(text);errors=automatic_request_errors(text)+scroll_region_errors(text)
     js=sum(len(part.encode('utf-8')) for part in doc.inline);css=0;fonts=set()
@@ -320,7 +344,11 @@ def page_quality_errors(output, page):
     if css>70000:errors.append('Page CSS budget exceeded: '+str(css))
     font_bytes=sum(p.stat().st_size for p in fonts)
     if font_bytes>250000:errors.append('Page font budget exceeded: '+str(font_bytes))
-    for link in ContentTree(text).nodes:
+    nodes = ContentTree(text).nodes
+    for title in (node_text(n) for n in nodes if n['tag'] == 'title'):
+        if len(title) > 60 or title.casefold().count('reclazz') > 1:
+            errors.append('Title exceeds 60 characters or repeats the brand: ' + title)
+    for link in nodes:
         if link['tag'] != 'a':
             continue
         href = link['attrs'].get('href', '')

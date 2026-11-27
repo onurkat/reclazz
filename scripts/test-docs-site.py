@@ -15,6 +15,101 @@ from website.markdown import MarkdownRenderer, reference_pages
 from website.check import Document, output_differences, source_index_errors, publication_errors
 
 class DocumentationBuildTest(unittest.TestCase):
+    def seo_output(self):
+        # Supply a deterministic VCS date while exercising the real page inputs.
+        def date_for_sources(repo, revision, sources):
+            paths = {str(p) for p in sources}
+            self.assertFalse(any(p.endswith(('.css', '.js', 'layout.py')) for p in paths))
+            if 'website/static/index.html' in paths:
+                return '2026-09-20'
+            if 'docs/installation.md' in paths:
+                return '2026-09-21'
+            return None
+        with patch.object(build, 'history_date', date_for_sources, create=True):
+            return build.generate('9a9f58e4')
+
+    def test_seo_public_heads_and_navigation(self):
+        output = self.seo_output()
+        home = self.markup(output['index.html'])
+        expected = {'index.html': 'Reclazz: Free Hot Reload for SAP Commerce and Spring Boot',
+                    'docs/index.html': 'Reclazz documentation',
+                    'get-started/index.html': 'Get started with Reclazz in IntelliJ IDEA',
+                    'compare/index.html': 'Reclazz vs JRebel, DevTools and HotswapAgent'}
+        for name, title in expected.items():
+            self.assertIn('<title>' + title + '</title>', self.markup(output[name]))
+        descriptions = {
+            'get-started': 'Install the free Reclazz plugin, set up a Java or SAP Commerce project in a few clicks and see your first edit live without a restart.',
+            'compare': 'How Reclazz compares with JRebel, Spring Boot DevTools and HotswapAgent for SAP Commerce and Spring: what reloads, what it costs, how you set it up.',
+        }
+        for name, description in descriptions.items():
+            self.assertIn('<meta name="description" content="' + description + '"', self.markup(output[name + '/index.html']))
+        self.assertRegex(home, r'<meta name="description" content="[^"]*Hybris')
+        self.assertIn('SAP Commerce (Hybris)', home.split('<body', 1)[1])
+        for page in ('license', 'privacy'):
+            self.assertIn('name="robots" content="noindex, follow"', self.markup(output[page + '/index.html']))
+            self.assertIn('href="/' + page + '/"', home)
+        schemas = [json.loads(raw) for raw in re.findall(r'<script type="application/ld\+json">(.*?)</script>', home, re.S)]
+        site = next(s for s in schemas if s.get('@type') == 'WebSite')
+        self.assertEqual(('Reclazz', 'Reclazz hot reload', 'https://reclazz.com/'),
+                         (site['name'], site['alternateName'], site['url']))
+        self.assertTrue(any(s.get('@type') == 'SoftwareApplication' for s in schemas))
+        from website.check import homepage_schema_errors
+        self.assertEqual([], homepage_schema_errors(home))
+        removed = re.sub(r'<script type="application/ld\+json">(.*?)</script>',
+                         lambda m: '' if json.loads(m.group(1)).get('@type') == 'WebSite' else m.group(), home, flags=re.S)
+        self.assertIn('Missing homepage WebSite named Reclazz', homepage_schema_errors(removed))
+        self.assertRegex(home, r'class="sa-primary" href="https://plugins.jetbrains.com/')
+        self.assertRegex(home, r'class="header-install" href="/get-started/"')
+        product = home.split('<nav aria-label="Product links">')[1].split('</nav>')[0]
+        self.assertEqual(['/get-started/', '/docs/', '/docs/sap-commerce/', '/compare/'],
+                         re.findall(r'href="([^"]+)"', product)[:4])
+
+    def test_seo_breadcrumbs_and_title_bounds(self):
+        output = self.seo_output()
+        for name in ('docs/index.html', 'docs/quickstart/index.html', 'docs/reference/index.html', 'docs/reference/maven/index.html'):
+            page = self.markup(output[name])
+            schemas = [json.loads(raw) for raw in re.findall(r'<script type="application/ld\+json">(.*?)</script>', page, re.S)]
+            self.assertTrue(any(s.get('@type') == 'TechArticle' for s in schemas))
+            crumbs = next(s for s in schemas if s.get('@type') == 'BreadcrumbList')['itemListElement']
+            parts = name.removesuffix('index.html').strip('/').split('/')
+            urls = ['https://reclazz.com/'] + ['https://reclazz.com/' + '/'.join(parts[:i]) + '/' for i in range(1,len(parts)+1)]
+            self.assertEqual(urls, [c['item'] for c in crumbs])
+            self.assertEqual(list(range(1, len(urls)+1)), [c['position'] for c in crumbs])
+        for name, content in output.items():
+            if name.endswith('.html'):
+                title = re.search(r'<title>(.*?)</title>', self.markup(content), re.S).group(1)
+                self.assertLessEqual(len(title), 60, name)
+                self.assertLessEqual(title.lower().count('reclazz'), 1, name)
+
+    def test_seo_history_command_and_fallback(self):
+        import subprocess
+        sources = ['docs/with space.md', 'docs/guide.md']
+        with patch.object(build.subprocess, 'run') as run:
+            self.assertIsNone(build.history_date(self.root, 'fixture-revision', sources))
+            run.assert_not_called()
+            (self.root / '.git').touch()
+            run.return_value.stdout = '2026-09-21\n'
+            self.assertEqual('2026-09-21', build.history_date(self.root, 'fixture-revision', sources))
+            self.assertEqual(['git', 'log', '-1', '--format=%cs', '--end-of-options', 'fixture-revision', '--',
+                              'docs/guide.md', 'docs/with space.md'], run.call_args.args[0])
+            run.side_effect = subprocess.CalledProcessError(128, 'git')
+            self.assertIsNone(build.history_date(self.root, 'fixture-revision', sources))
+
+    def test_seo_sitemap_uses_page_sources(self):
+        import xml.etree.ElementTree as ET
+        from datetime import datetime, timezone
+        output = self.seo_output()
+        root = ET.fromstring(output['sitemap.xml'])
+        rows = root.findall('{*}url')
+        dates = {row.findtext('{*}loc'): row.findtext('{*}lastmod') for row in rows}
+        self.assertEqual(len(rows), len(dates))
+        self.assertEqual('2026-09-20', dates['https://reclazz.com/'])
+        self.assertEqual('2026-09-21', dates['https://reclazz.com/docs/reference/installation/'])
+        self.assertEqual(datetime.now(timezone.utc).date().isoformat(), dates['https://reclazz.com/get-started/'])
+        self.assertNotIn('https://reclazz.com/license/', dates)
+        self.assertNotIn('https://reclazz.com/privacy/', dates)
+        self.assertFalse(root.findall('.//{*}priority') or root.findall('.//{*}changefreq'))
+
     def setUp(self):
         tmp=tempfile.TemporaryDirectory(prefix='reclazz docs ');self.addCleanup(tmp.cleanup)
         self.root=Path(tmp.name);(self.root/'docs').mkdir()
