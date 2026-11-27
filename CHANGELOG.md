@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Saving a translation in a configured Spring Boot classpath message bundle refreshes cached lookups. If Boot also imports the file as configuration, its property values update through the normal configuration path.
+
 - MCP clients that validate structured results can read status from both legacy and authenticated agents.
 
 - With native redefinition, changing an interface’s static initializer now reports that a restart is needed to update its initialized fields.

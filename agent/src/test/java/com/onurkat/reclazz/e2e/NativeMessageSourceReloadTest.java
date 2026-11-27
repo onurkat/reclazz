@@ -77,6 +77,57 @@ class NativeMessageSourceReloadTest {
             }
         }
     }
+    @ParameterizedTest @ValueSource(booleans = {false, true})
+    void configuredBundleRefreshesBothOfItsConsumers(boolean alsoImported) throws Exception {
+        Path classes = Files.createDirectories(tmp.resolve("classes"));
+        Path bundle = Files.createDirectories(classes.resolve("i18n")).resolve("checkout.properties");
+        Path config = classes.resolve("application.properties");
+        Files.writeString(bundle, "checkout.text=before\n");
+        String settings = "spring.messages.basename=i18n/checkout\n"
+                + (alsoImported ? "spring.config.import=classpath:i18n/checkout.properties\n" : "");
+        Files.writeString(config, settings + "other.value=one\n");
+        try (var app = WatchedApp.in(tmp).classpath(WatchedApp.springClasspath())
+                .agentArgs("startupDelaySec=1,debounceMs=100").with("App", BOOT).start()) {
+            String property = alsoImported ? "before" : "absent";
+            app.awaitOrFail("READ=before:" + property + ":one:0", "cache was not warmed");
+            app.awaitWatcherReady();
+            Files.writeString(config, settings + "other.value=two\n");
+            app.awaitOrFail("READ=before:" + property + ":two:0", "unrelated Boot configuration did not update");
+            Files.writeString(bundle, "checkout.text=after\n");
+            app.awaitOrFail("READ=after:" + (alsoImported ? "after" : "absent") + ":two:0",
+                    "translation, Environment or lazy singleton state differs from startup");
+        }
+    }
+
+    private static final String BOOT = """
+            package app;
+            import org.springframework.context.annotation.*;
+            import org.springframework.context.support.*;
+            @Configuration(proxyBeanMethods=false)
+            @Import(org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration.class)
+            public class App {
+                private static int lazyStarts;
+                @Bean @Lazy public ResourceBundleMessageSource unusedSource() {
+                    lazyStarts++;
+                    return new ResourceBundleMessageSource();
+                }
+                public static void main(String[] args) throws Exception {
+                    try (var context = new org.springframework.boot.builder.SpringApplicationBuilder(App.class)
+                            .web(org.springframework.boot.WebApplicationType.NONE).run()) {
+                        String last = "";
+                        while (true) {
+                            String row = context.getMessage("checkout.text", null, java.util.Locale.ROOT)
+                                    + ":" + context.getEnvironment().getProperty("checkout.text", "absent")
+                                    + ":" + context.getEnvironment().getProperty("other.value") + ":" + lazyStarts;
+                            if (!row.equals(last)) System.out.println("READ=" + row);
+                            last = row;
+                            Thread.sleep(40);
+                        }
+                    }
+                }
+            }
+            """;
+
     private static long resets(WatchedApp running) {
         return running.output().stream().filter(v -> v.contains("messages_tr.properties re-read:")).count();
     }

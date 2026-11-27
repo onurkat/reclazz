@@ -5,6 +5,8 @@
 package com.onurkat.reclazz.spring;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Reflective Spring access shared by the reloaders.
@@ -48,6 +50,24 @@ final class SpringBeans {
             return names != null ? names : new String[0];
         } catch (Exception e) {
             return new String[0];
+        }
+    }
+
+    static List<Object> existingSingletons(Object context, String typeName) {
+        Object factory = getBeanFactory(context);
+        if (factory == null) return List.of();
+        try {
+            Class<?> type = Class.forName(typeName, false, context.getClass().getClassLoader());
+            Method names = factory.getClass().getMethod("getBeanNamesForType", Class.class, boolean.class, boolean.class);
+            Method singleton = factory.getClass().getMethod("getSingleton", String.class);
+            List<Object> result = new ArrayList<>();
+            for (String name : (String[]) names.invoke(factory, type, true, false)) {
+                Object instance = singleton.invoke(factory, name);
+                if (type.isInstance(instance)) result.add(instance);
+            }
+            return result;
+        } catch (ReflectiveOperationException unavailable) {
+            return List.of();
         }
     }
 

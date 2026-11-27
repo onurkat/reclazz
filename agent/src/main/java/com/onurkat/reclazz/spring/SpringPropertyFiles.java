@@ -318,9 +318,30 @@ public final class SpringPropertyFiles {
         return new Result(PropertyChangeOutcome.held(state, List.of(reason)), Map.of(), Set.of());
     }
 
+    /** An uncertain Boot source must retain the normal property validation and reporting path. */
+    public synchronized boolean mayOwn(Path path, List<Object> contexts) {
+        try {
+            Path file = path.toFile().getCanonicalFile().toPath();
+            for (Object context : contexts) {
+                if (com.onurkat.reclazz.util.Reflect.findMethod(context.getClass(), "getEnvironment") == null) continue;
+                Object environment = call(context, "getEnvironment");
+                if (!findOwned(environment, file).isEmpty()) return true;
+            }
+            return false;
+        } catch (Exception uncertain) {
+            return true;
+        }
+    }
+
     private List<Owned> owned(Object environment, Path file) throws Exception {
         Map<Path, List<Owned>> files = ownership.computeIfAbsent(environment, ignored -> new HashMap<>());
-        List<Owned> known = files.get(file);
+        List<Owned> found = findOwned(environment, file);
+        if (!found.isEmpty()) files.put(file, found);
+        return found;
+    }
+
+    private List<Owned> findOwned(Object environment, Path file) throws Exception {
+        List<Owned> known = ownership.getOrDefault(environment, Map.of()).get(file);
         if (known != null) { verifyOwnership(environment, known); return known; }
         List<Owned> found = new ArrayList<>();
         for (Object source : (Iterable<?>) call(environment, "getPropertySources")) {
@@ -334,7 +355,6 @@ public final class SpringPropertyFiles {
                         source, values(source)));
             }
         }
-        if (!found.isEmpty()) files.put(file, List.copyOf(found));
         return List.copyOf(found);
     }
 

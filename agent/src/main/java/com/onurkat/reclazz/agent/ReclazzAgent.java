@@ -1267,7 +1267,7 @@ public class ReclazzAgent {
                         if (SapConfigFiles.isPlatformConfiguration(event.getPath()))
                             platformChanges.apply(Capability.CONFIG_APPLY, event);
                         else StatusReporter.info(fileName + " is not platform configuration, so nothing was applied.");
-                    } else handlePropertiesChange(event);
+                    } else handleSpringPropertiesChange(event);
                 }
                 case LOGGING_CONFIG -> handleLoggingConfigChange(event);
                 case IMPEX -> {
@@ -2395,6 +2395,20 @@ public class ReclazzAgent {
     /** Called by the watcher at startup; see PropertyFileSnapshots. */
     public static void baselinePropertyFile(java.nio.file.Path file) {
         propertySnapshots.baseline(file);
+    }
+
+    private static void handleSpringPropertiesChange(ChangeEvent event) {
+        Path path = event.getPath();
+        java.util.Set<Object> owners = path.getFileName().toString().endsWith(".properties")
+                ? new SpringMessageSourceReloader(platformContext).ownersOf(path) : java.util.Set.of();
+        if (owners.isEmpty()) {
+            handlePropertiesChange(event);
+            return;
+        }
+        if (springPropertyFiles.mayOwn(path, platformContext.getAllApplicationContexts())) handlePropertiesChange(event);
+        if (prepareLocalizationChange(event)) {
+            SpringMessageSourceReloader.report(path.getFileName().toString(), SpringMessageSourceReloader.reloadOwners(owners));
+        }
     }
 
     private static void handlePropertiesChange(ChangeEvent event) {

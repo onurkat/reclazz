@@ -8,6 +8,14 @@ import com.onurkat.reclazz.platform.PlatformContext;
 import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.reflect.Method;
+import java.io.File;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Collections;
+import java.util.IdentityHashMap;
+import java.util.Set;
+import java.util.regex.Pattern;
 import com.onurkat.reclazz.ui.RestartLedger;
 import com.onurkat.reclazz.ui.Plural;
 import com.onurkat.reclazz.util.Reflect;
@@ -70,6 +78,72 @@ public class SpringMessageSourceReloader {
             }
         }
         return reset;
+    }
+
+    /** Existing native sources whose actual lookup resolves to this file. */
+    public Set<Object> ownersOf(Path file) {
+        Set<Object> owners = Collections.newSetFromMap(new IdentityHashMap<>());
+        for (Object context : platformContext.getAllApplicationContexts()) {
+            for (Object source : SpringBeans.existingSingletons(context, MESSAGE_SOURCE)) {
+                if (ownsBundle(source, file)) owners.add(source);
+            }
+        }
+        return owners;
+    }
+
+    public static int reloadOwners(Set<Object> owners) {
+        return (int) owners.stream().filter(SpringMessageSourceReloader::clear).count();
+    }
+
+    private static final Pattern LOCALE_SUFFIX = Pattern.compile(
+            "_(?:[a-z]{2,8}|(?=_))(?:_[A-Z][a-z]{3})?(?:_(?:[A-Z]{2}|[0-9]{3})?)?(?:_[A-Za-z0-9]+)*");
+
+    static boolean ownsBundle(Object source, Path file) {
+        String type = source.getClass().getName();
+        boolean reloadable = type.equals("org.springframework.context.support.ReloadableResourceBundleMessageSource");
+        if (!reloadable && !type.equals("org.springframework.context.support.ResourceBundleMessageSource")) return false;
+        String name = file.getFileName().toString();
+        if (!name.endsWith(".properties")) return false;
+        String stem = name.substring(0, name.length() - ".properties".length());
+        try {
+            Set<?> bases = (Set<?>) source.getClass().getMethod("getBasenameSet").invoke(source);
+            for (Object entry : bases) {
+                String base = (String) entry;
+                if (base.contains(":") && !(reloadable && base.startsWith("classpath:"))) continue;
+                String resource = reloadable ? base : base.replace('.', '/');
+                String path = resource.startsWith("classpath:") ? resource.substring("classpath:".length()) : resource;
+                String last = path.substring(path.lastIndexOf('/') + 1);
+                if (last.isEmpty() || !stem.startsWith(last)) continue;
+                String suffix = stem.substring(last.length());
+                if (!suffix.isEmpty() && !LOCALE_SUFFIX.matcher(suffix).matches()) continue;
+                if (resolvesTo(source, resource + suffix, reloadable, file)) return true;
+            }
+        } catch (ReflectiveOperationException | RuntimeException unavailable) {
+            // A source that cannot identify its own resource does not own the save.
+        }
+        return false;
+    }
+
+    private static boolean resolvesTo(Object source, String resource, boolean reloadable, Path file) {
+        try {
+            Path resolved;
+            if (reloadable) {
+                Method resolve = Reflect.findMethod(source.getClass(), "resolveResource", String.class);
+                if (resolve == null) return false;
+                Object selected = resolve.invoke(source, resource);
+                if (selected == null) return false;
+                resolved = ((File) selected.getClass().getMethod("getFile").invoke(selected)).toPath();
+            } else {
+                Method getter = Reflect.findMethod(source.getClass(), "getBundleClassLoader");
+                if (getter == null || !(getter.invoke(source) instanceof ClassLoader loader)) return false;
+                URL url = loader.getResource(resource + ".properties");
+                if (url == null || !url.getProtocol().equals("file")) return false;
+                resolved = Path.of(url.toURI());
+            }
+            return Files.isSameFile(resolved, file);
+        } catch (Exception unavailable) {
+            return false;
+        }
     }
 
     /** True when this source will not answer from its cache any more. */

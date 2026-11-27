@@ -4,7 +4,13 @@
  */
 package com.onurkat.reclazz.spring;
 
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.springframework.context.support.ResourceBundleMessageSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -82,6 +88,24 @@ class SpringMessageSourceReloaderTest {
     static class Broken {
         public void clearCache() {
             throw new IllegalStateException("no");
+        }
+    }
+
+    @Test
+    void resourceBundleNameAndRealClasspathFileMustBothMatch(@TempDir Path root) throws Exception {
+        var folder = Files.createDirectories(root.resolve("i18n"));
+        var base = Files.createFile(folder.resolve("checkout.properties"));
+        var locale = Files.createFile(folder.resolve("checkout_tr.properties"));
+        var other = Files.createFile(root.resolve("checkout_tr.properties"));
+        var prefix = Files.createFile(folder.resolve("checkout2.properties"));
+        try (var loader = new URLClassLoader(new URL[]{root.toUri().toURL()}, null)) {
+            var source = new ResourceBundleMessageSource();
+            source.setBasename("i18n.checkout");
+            source.setBundleClassLoader(loader);
+            assertTrue(SpringMessageSourceReloader.ownsBundle(source, base));
+            assertTrue(SpringMessageSourceReloader.ownsBundle(source, locale));
+            assertFalse(SpringMessageSourceReloader.ownsBundle(source, other));
+            assertFalse(SpringMessageSourceReloader.ownsBundle(source, prefix));
         }
     }
 
