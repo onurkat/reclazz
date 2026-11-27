@@ -8,8 +8,5 @@
     theme = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
   }
   document.documentElement.dataset.theme = theme;
-  try { if(location.pathname==='/' && localStorage.getItem('reclazz-lang')==='tr'){
-    document.documentElement.classList.add('lang-loading');
-    setTimeout(() => document.documentElement.classList.remove('lang-loading'),300);
-  }} catch (_) {}
+
 })();

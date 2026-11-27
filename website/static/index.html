@@ -32,7 +32,7 @@
     <link rel="preload" as="image" href="/assets/setup/live-reload-phone.webp" media="(max-width: 640px)" fetchpriority="high">
     <link rel="preload" as="image" href="/assets/setup/live-reload-poster.webp" media="(min-width: 641px)" fetchpriority="high">
     {{SITE_HEAD}}
-<link rel="stylesheet" href="/assets/stage-a.css">
+<link rel="stylesheet" href="/assets/stage-a.css"><link rel="stylesheet" href="/assets/demo.css">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "Reclazz", "applicationCategory": "DeveloperApplication", "operatingSystem": "Windows, macOS, Linux", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "softwareVersion": "{{CLAIM:version}}", "description": "Reload supported Java, Spring and SAP Commerce (Hybris) changes in the running application. Set up the free IntelliJ IDEA plugin and try your first method edit.", "softwareRequirements": "JDK {{CLAIM:agent_java_min}}+; IntelliJ IDEA {{CLAIM:intellij_builds}}", "license": "https://github.com/onurkat/reclazz/blob/main/LICENSE", "url": "https://reclazz.com"}</script>
 {{HOME_FAQ_SCHEMA}}
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebSite", "name": "Reclazz", "alternateName": "Reclazz hot reload", "url": "https://reclazz.com/"}</script>
@@ -111,9 +111,9 @@
 <summary><span data-i18n="how.limits">What still needs a restart</span></summary><p><span data-i18n="how.body">A Java agent watches compiled output in your application. A method-body edit keeps existing object fields. A refreshed Spring bean can lose its mutable state. Changing a superclass requires a restart.</span></p><a class="" href="/docs/java/"><span data-i18n="how.link">Java reload reference</span></a>
 <p id="jdk"><span data-i18n="how.jdk">Agent: Java {{CLAIM:agent_java_min}}+. Tested: {{CLAIM:jdk_tested}}. IntelliJ IDEA: {{CLAIM:intellij_builds}}.</span></p><a class="" href="/docs/reference/installation/#versions-and-requirements"><span data-i18n="how.versions">Versions and requirements</span></a><p><span data-i18n="sap.coverage">The default live suite defines {{CLAIM:sap_scenarios}} required scenarios.</span></p><a href="/docs/sap-commerce/" data-sap-setup lang="en"><span data-i18n="sap.link">SAP Commerce setup</span></a></details>
 <details id="comparison">
-<summary><span data-i18n="compare.title">Compared with JRebel and other tools</span></summary>{{COMPARE_SUMMARY}}<p><span data-i18n="compare.note">“Not documented” means the reviewed vendor documentation does not establish support.</span></p><a class="" href="/compare/"><span data-i18n="compare.link">Full comparison and sources</span></a></details>
+<summary><span data-i18n="compare.title">Compared with JRebel and other tools</span></summary>{{COMPARE_SUMMARY}}<p><a href="/jrebel-alternative/" data-i18n="compare.switch">Why teams switch from JRebel</a></p><p><span data-i18n="compare.note">“Not documented” means the reviewed vendor documentation does not establish support.</span></p><a class="" href="/compare/"><span data-i18n="compare.link">Full comparison and sources</span></a></details>
 </section>
 </main>{{SITE_FOOTER}}{{SITE_UTILITIES}}
-<script src="/assets/home.js" defer></script>
+
 <script src="/assets/setup-preview.js" defer></script>
 </body></html>

@@ -41,7 +41,7 @@
 .stage-a h2 { font-size: clamp(1.85rem,2.65vw,2.75rem); margin: 0 0 16px; }
 .stage-a h3 { font-size: 1.15rem; letter-spacing: -.02em; }
 .stage-a a { text-underline-offset: 4px; }
-.stage-a .text-link, .session-film figcaption a, .change-row a { color: var(--accent); font-weight: 575; }
+.stage-a .text-link, .change-row a { color: var(--accent); font-weight: 575; }
 .stage-a a:hover { text-decoration: underline; }
 .stage-a :is(a,button,summary,video):focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
 .stage-a .brand:hover { text-decoration: none; }
@@ -60,10 +60,6 @@
 .stage-a .sa-primary:hover, .stage-a .sa-secondary:hover { text-decoration: underline; }
 .stage-a .requirements { font-size: .8125rem; color: var(--dim); margin: 12px 0 0; }
 .product-session { margin-top: 40px; }
-.session-film { min-width: 0; margin: 0; }
-.session-film video { display: block; width: 100%; height: auto; background: #1d1e21; border: 1px solid var(--border); }
-.session-film figcaption { display: flex; justify-content: space-between; gap: 12px; padding-block: 12px; color: var(--dim); font-size: .82rem; }
-.session-film figcaption a { flex: none; }
 .product-session { display: grid; align-items: start; grid-template-columns: minmax(0,2.45fr) minmax(236px,1fr); gap: 24px; }
 .session-log { display: block; border-top: 2px solid var(--text); padding-top: 16px; }
 .stage-a .session-log h2 { font-size: 1.1rem; margin: 0; }
@@ -129,8 +125,6 @@
   .session-log ol { margin: 8px 0 0; }
   .session-log li { padding-block: 4px; }
   .stage-a .sa-lede { margin-block: 12px 16px; }
-  .session-film figcaption { display: block; }
-  .session-film figcaption a { margin-inline-start: 4px; }
   .wizard-steps li, .wizard-steps.enhanced { display: block; }
   .wizard-steps li, .wizard-steps.enhanced li { display: flex; flex-direction: column; gap: 12px; padding-bottom: 16px; }
   .wizard-steps figure { width: 100%; }
@@ -140,8 +134,3 @@
   .change-index,.faq-list,.settings-row figure { margin-block: 20px !important; }
   .session-log li { padding-left: 8px; }
 }
-.player { display: grid; width: 100%; padding: 0; border: 0; background: transparent; cursor: pointer; }
-.player > * { grid-area: 1 / 1; align-self: start; }
-.film-poster { position: relative; z-index: 1; pointer-events: none; }
-.film-poster[hidden] { display: none; }
-.film-poster img { display: block; width: 100%; height: auto; }

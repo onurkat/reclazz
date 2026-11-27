@@ -12,26 +12,18 @@ from threading import Thread
 PROBE = b"""<!doctype html><title>Home layout check</title><pre id="result">pending</pre>
 <script>
 async function check(width) {
-  localStorage.setItem('reclazz-lang', 'en');
   const frame = document.createElement('iframe');
   frame.style.cssText = 'border:0;height:900px;width:' + width + 'px';
-  const loaded = new Promise(resolve => frame.onload = resolve);
-  frame.src = '/';
   document.body.append(frame);
-  await loaded;
-  const doc = frame.contentDocument;
-  const toggle = doc.getElementById('langToggle');
-  for (const lang of ['en', 'tr']) {
-    if (doc.documentElement.lang !== lang) {
-      const translated = new Promise(resolve => {
-        const observer = new MutationObserver(() => {
-          if (doc.documentElement.lang === lang) { observer.disconnect(); resolve(); }
-        });
-        observer.observe(doc.documentElement, {attributes:true, attributeFilter:['lang']});
-      });
-      toggle.click();
-      await translated;
-    }
+  for (const [lang, path] of [['en','/'],['tr','/tr/']]) {
+    localStorage.setItem('reclazz-lang', lang === 'en' ? 'tr' : 'en');
+    const loaded = new Promise(resolve => frame.onload = resolve);
+    frame.src = path;
+    await loaded;
+    const doc = frame.contentDocument;
+    if (doc.documentElement.lang !== lang) throw new Error('Wrong language at ' + path);
+    const partner = doc.querySelector('a.site-language');
+    if (!partner || partner.getAttribute('href') !== (lang === 'en' ? '/tr/' : '/')) throw new Error('Wrong language link at ' + path);
     await doc.fonts.ready;
     const range = doc.createRange();
     range.selectNodeContents(doc.querySelector('.hero-copy h1 span'));
@@ -42,7 +34,6 @@ async function check(width) {
 }
 (async () => {
   const result = document.getElementById('result');
-  // Use separate windows sequentially: the language toggle persists its choice across loads.
   try {
     for (const width of [1024, 1280, 1440, 1600, 1920, 2560]) await check(width);
     result.textContent = 'PASS';

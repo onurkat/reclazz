@@ -1,4 +1,7 @@
 {
+  "compare.switch": "Neden JRebel'den geçiliyor",
+  "site.jrebelAlternative": "JRebel alternatifi",
+  "site.hybrisReload": "Hybris hot reload",
   "site.start": "Başla",
   "site.docsVersion": "Sürüm",
   "site.evidence": "Test kapsamı ve sürümler",

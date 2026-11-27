@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hybris Hot Reload: SAP Commerce Without Restarts</title><meta name="description" content="Hot reload for SAP Commerce (Hybris): Java classes, items.xml, Spring XML, properties, ImpEx and Backoffice config reach the running server without a restart. Free.">
+<link rel="canonical" href="https://reclazz.com/hybris-hot-reload/">{{SITE_HEAD}}<link rel="stylesheet" href="/assets/demo.css"><script src="/assets/setup-preview.js" defer></script></head>
+<body>{{SITE_HEADER}}<main class="license-page" id="main" tabindex="-1"><div class="container">
+<h1>Hot reload for SAP Commerce (Hybris)</h1>
+<p>An SAP Commerce restart takes minutes, and then you log in again and click back to the page you were testing. Reclazz puts your change into the server that is already running. Change the code, build, refresh the page.</p>
+{{LANDING_DEMO}}
+<h2>What reaches the running server</h2>
+<ul><li>Java classes: method bodies, new methods, services, facades, populators and controllers.</li><li>items.xml and beans.xml: Reclazz runs code generation and reloads the model and DTO classes. A new database column still needs Update Running System.</li><li>Spring XML: bean definitions, including references to classes you just added.</li><li>Properties, log levels, localization and Backoffice labels.</li><li>ImpEx: imported when you save the file, if you turn on autoImpex.</li><li>Interceptors, OCC field sets and mappings, and *-backoffice-config.xml.</li></ul>
+<p><a href="/docs/sap-commerce/">Each item has conditions. The SAP Commerce guide lists them.</a></p>
+<h2>What still needs a restart</h2>
+<p>Changing a class&#x27;s superclass, configuration that is only read at startup, and anything Reclazz cannot apply safely. In those cases Reclazz tells you which file needs the restart, instead of leaving old code running.</p>
+<h2>Set up in a few clicks</h2>
+<ol><li>Install the Reclazz plugin in IntelliJ IDEA and open your SAP Commerce project.</li><li>The setup window adds two lines to your SAP Commerce properties (local.properties, or 95-local.properties when you use an optional config directory) and runs ant server for you.</li><li>Restart the server once. From then on, a build is enough.</li></ol>
+<p>Reclazz needs Java 17 or newer, so it works with SAP Commerce versions that run on Java 17 or newer.</p>
+<h2>Questions</h2>
+<details><summary>Is it free?</summary><p>Yes. The agent, the plugin and every reload feature are free and open source under Apache 2.0.</p></details>
+<details><summary>Does it change my project?</summary><p>It adds two lines to your SAP Commerce properties (local.properties, or 95-local.properties in an optional config directory). The plugin shows them first and removes them with one click.</p></details>
+<details><summary>Does it work without IntelliJ?</summary><p>Yes, attach the agent yourself. The SAP Commerce guide shows how.</p></details>
+<div class="cta-row"><a class="btn btn-primary" href="/get-started/">Get started</a><a class="btn btn-ghost" href="/docs/sap-commerce/">SAP Commerce guide</a></div>
+</div></main>{{SITE_FOOTER}}{{SITE_UTILITIES}}</body></html>

@@ -1,4 +1,5 @@
 """One public navigation, footer and search shell for docs and marketing pages."""
+from website.localized import PAIRS, language_link
 from html import escape, unescape
 from html.parser import HTMLParser
 import re
@@ -8,7 +9,9 @@ from pathlib import Path
 
 PUBLIC_PAGES = {'index.html': 'home', 'get-started/index.html': 'start', 'compare/index.html': 'compare',
                 'privacy/index.html': 'privacy', 'license/index.html': 'license', '404.html': '404',
-                'tr/sap-commerce-kurulum/index.html': 'setup-tr'}
+                'tr/sap-commerce-kurulum/index.html': 'setup-tr',
+                'jrebel-alternative/index.html':'alternative', 'tr/jrebel-alternatifi/index.html':'alternative-tr',
+                'hybris-hot-reload/index.html':'hybris', 'tr/hybris-hot-reload/index.html':'hybris-tr'}
 
 
 def icon(name, css=''):
@@ -43,7 +46,12 @@ def header(active='docs', bilingual=False):
             setup_attrs = (' data-sap-setup lang="' + ('tr' if setup_tr else 'en') + '"') if key == 'sapSetup' else ''
             result += '<a href="'+href+'"'+current+translation+setup_attrs+'>'+label+'</a>'
         return result
-    language = '<button class="site-language" id="langToggle" type="button" aria-label="Switch language to Turkish">TR</button>' if bilingual else ''
+    language = ''
+    if bilingual:
+        filename = next(name for name, kind in PUBLIC_PAGES.items() if kind == active)
+        route = '/' + filename[:-len('index.html')]
+        en = next(en for en,tr in PAIRS.items() if route in (en,tr))
+        language = language_link(en, PAIRS[en], 'tr' if route == PAIRS[en] else 'en')
     if active in ('setup','setup-tr'):
         language = '<a class="site-language" href="' + ('/docs/sap-commerce/' if setup_tr else '/tr/sap-commerce-kurulum/') + '" lang="' + ('en' if setup_tr else 'tr') + '" hreflang="' + ('en' if setup_tr else 'tr') + '" aria-label="' + ('Read the English setup guide' if setup_tr else 'Türkçe kurulum rehberi') + '">' + ('EN' if setup_tr else 'TR') + '</a>'
     return '''<a class="skip-link" href="#main"''' + shell_label('site.skip', 'Skip to content', bilingual, setup_tr) + '''</a>
@@ -63,10 +71,12 @@ def footer(year='2026', bilingual=False, version=None, setup_tr=False):
     setup_href = '/tr/sap-commerce-kurulum/' if setup_tr else '/docs/sap-commerce/'
     setup_text = 'SAP Commerce kurulumu' if setup_tr else 'SAP Commerce setup'
     setup_link = '<a href="' + setup_href + '" data-sap-setup lang="' + ('tr' if setup_tr else 'en') + '"' + label('sapSetup',setup_text) + '</a>'
+    alternative = PAIRS['/jrebel-alternative/'] if setup_tr else '/jrebel-alternative/'
+    hybris = PAIRS['/hybris-hot-reload/'] if setup_tr else '/hybris-hot-reload/'
     version_line = ('<p class="footer-version"><span' + label('docsVersion','Docs for') + '</span> ' + escape(version) + ' · <a href="/docs/evidence/"' + label('evidence','Test coverage &amp; versions') + '</a></p>') if version else ''
     return '''<footer class="site-footer"><div class="site-footer-inner">
 <div class="footer-brand"><a class="brand" href="/" aria-label="Reclazz home"><img src="/favicon.svg" width="28" height="28" alt=""><span>Reclazz</span></a><p''' + label('tagline','Hot reload for Java, Spring and SAP Commerce.') + '''</p><span class="footer-license"''' + label('openSource','Apache 2.0 · Built in the open.') + '''</span></div>
-<nav aria-label="Product links"><p''' + label('product','Product') + '''</p><a href="/get-started/"''' + label('start','Get started') + '''</a><a href="/docs/"''' + label('documentation','Docs') + '''</a>''' + setup_link + '''<a href="/compare/"''' + label('compare','Compare') + '''</a><a href="/docs/quickstart/#install-from-marketplace"''' + label('quickstart','Quickstart') + '''</a><a href="/docs/support-matrix/"''' + label('support','Reload support') + '''</a></nav>
+<nav aria-label="Product links"><p''' + label('product','Product') + '''</p><a href="/get-started/"''' + label('start','Get started') + '''</a><a href="/docs/"''' + label('documentation','Docs') + '''</a>''' + setup_link + '''<a href="/compare/"''' + label('compare','Compare') + '''</a><a href="''' + alternative + '''"''' + label('jrebelAlternative','JRebel alternative') + '''</a><a href="''' + hybris + '''"''' + label('hybrisReload','Hybris hot reload') + '''</a><a href="/docs/quickstart/#install-from-marketplace"''' + label('quickstart','Quickstart') + '''</a><a href="/docs/support-matrix/"''' + label('support','Reload support') + '''</a></nav>
 <nav aria-label="Project links"><p''' + label('project','Project') + '''</p><a href="https://github.com/onurkat/reclazz">GitHub ↗</a><a href="https://github.com/onurkat/reclazz/blob/main/CHANGELOG.md"''' + label('changelog','Changelog ↗') + '''</a><a href="https://github.com/onurkat/reclazz/blob/main/CONTRIBUTING.md"''' + label('contributing','Contributing ↗') + '''</a><a href="https://github.com/onurkat/reclazz/blob/main/SECURITY.md"''' + label('security','Security ↗') + '''</a><a href="https://github.com/onurkat/reclazz/releases"''' + label('releases','Releases ↗') + '''</a><a href="https://github.com/onurkat/reclazz/issues"''' + label('issues','Report an issue ↗') + '''</a></nav>
 <nav aria-label="Legal links"><p''' + label('legal','Legal') + '''</p><a href="/license/"''' + label('license','License') + '''</a><a href="/privacy/"''' + label('privacy','Privacy') + '''</a></nav>
 ''' + version_line + '''<div class="footer-bottom"><span>© ''' + escape(year) + ''' Onur Kat</span><a href="https://github.com/sponsors/onurkat"''' + label('sponsor','Support development ↗') + '''</a></div></div></footer>'''
@@ -90,8 +100,8 @@ def render_public(text, page, year, version=None):
     for marker in ('SITE_HEAD','SITE_HEADER','SITE_FOOTER','SITE_UTILITIES'):
         if text.count('{{'+marker+'}}') != 1:
             raise ValueError('Public page needs one '+marker+' marker: '+page)
-    bilingual = page in ('home', 'start')
-    for marker, value in [('SITE_HEAD',head(marketing=not bilingual)),('SITE_HEADER',header(page,bilingual)),
+    bilingual = page in ('home', 'start','alternative','alternative-tr','hybris','hybris-tr')
+    for marker, value in [('SITE_HEAD',head(marketing=page not in ('home','start'))),('SITE_HEADER',header(page,bilingual)),
                           ('SITE_FOOTER',footer(year,bilingual,version,setup_tr=page == 'setup-tr')),('SITE_UTILITIES',utilities())]:
         text = text.replace('{{'+marker+'}}',value)
     return text

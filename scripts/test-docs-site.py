@@ -447,7 +447,7 @@ class DocumentationBuildTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'SITE_FOOTER'):self.generate()
     def test_public_locale_and_active_navigation_match_page_context(self):
         self.public_fixture();output=self.generate()
-        self.assertIn('id="langToggle"',self.markup(output['index.html']))
+        self.assertIn('class="site-language" href="/tr/"',self.markup(output['index.html']))
         for name in ('compare/index.html','privacy/index.html','license/index.html','docs/index.html'):
             self.assertNotIn('id="langToggle"',self.markup(output[name]))
         self.assertIn('<a href="/compare/" aria-current="page">',self.markup(output['compare/index.html']))
@@ -463,6 +463,8 @@ class DocumentationBuildTest(unittest.TestCase):
             self.assertNotIn('href="/docs/" aria-current',header)
             footer=layout.footer(setup_tr=active=='setup-tr')
             self.assertIn('href="'+href+'" data-sap-setup',footer)
+            for en,tr in LocalizedLandingTest.pairs[2:]:
+                self.assertIn(tr if active=='setup-tr' else en, Document(footer).links)
         for active in ('home','docs','compare'):
             header=layout.header(active,bilingual=active=='home')
             self.assertEqual(2,header.count('href="/docs/sap-commerce/"'))
@@ -490,6 +492,111 @@ class DocumentationBuildTest(unittest.TestCase):
         self.assertIn('Human-readable evidence digest drift: TEST', errors[0])
 
 
+
+class LocalizedLandingTest(unittest.TestCase):
+    pairs = (('/', '/tr/'), ('/get-started/', '/tr/baslangic/'),
+             ('/jrebel-alternative/', '/tr/jrebel-alternatifi/'), ('/hybris-hot-reload/', '/tr/hybris-hot-reload/'))
+
+    @classmethod
+    def setUpClass(cls):
+        with patch.object(build, 'history_date', return_value='2026-11-27'):
+            cls.output = build.generate('fixture-revision')
+
+    def page(self, route):
+        key = route.strip('/') + '/index.html' if route != '/' else 'index.html'
+        self.assertIn(key, self.output.keys(), route)
+        return DocumentationBuildTest.markup(self.output[key])
+
+    def test_reciprocal_routes_and_indexable_content(self):
+        from website.check import ContentTree
+        from xml.etree import ElementTree as ET
+        domain = 'https://reclazz.com'
+        locations = {n.text for n in ET.fromstring(self.output['sitemap.xml']).findall('.//{*}loc')}
+        for en, tr in self.pairs:
+            for lang, route, partner in [('en', en, tr), ('tr', tr, en)]:
+                text = self.page(route)
+                tree = ContentTree(text)
+                links = [n['attrs'] for n in tree.nodes if n['tag'] == 'link']
+                self.assertEqual({'en':domain+en, 'tr':domain+tr, 'x-default':domain+en},
+                                 {a['hreflang']:a['href'] for a in links if 'hreflang' in a})
+                self.assertIn(domain+route, locations)
+                self.assertEqual([domain+route], Document(text).canonical)
+                self.assertEqual(lang, Document(text).lang)
+                self.assertIn(partner, [n['attrs'].get('href') for n in tree.nodes if n['tag']=='a' and 'site-language' in n['attrs'].get('class','').split()])
+                self.assertNotIn('id="langToggle"', text)
+                if route not in ('/', '/get-started/'):
+                    scripts=[json.loads(raw) for raw in re.findall(r'<script type="application/ld\+json">(.*?)</script>',text,re.S)]
+                    crumbs=next(x for x in scripts if x.get('@type')=='BreadcrumbList')['itemListElement']
+                    self.assertEqual(domain+route,crumbs[-1]['item'])
+                    title=re.search(r'<title>(.*?)</title>',text).group(1)
+                    self.assertLessEqual(len(title),60)
+                    self.assertNotRegex(text.split('<body',1)[1],r'[—–]|\bSAP\b(?! Commerce)')
+    def test_turkish_templates_have_visible_translations(self):
+        from website.check import ContentTree, node_text
+        for en,tr in self.pairs[:2]:
+            page = self.page(tr)
+            self.assertNotIn('/assets/home.js',page)
+            self.assertNotIn('What would you like to reload?',page)
+            self.assertIn('Dokümantasyon',page)
+            english, turkish = ContentTree(self.page(en)), ContentTree(page)
+            def keyed(tree):
+                return {n['attrs']['data-i18n']: n for n in tree.nodes if 'data-i18n' in n['attrs']}
+            catalogs = ['assets/i18n/tr.json']
+            if en == '/get-started/':
+                catalogs.append('assets/i18n/start-tr.json')
+            expected = {}
+            for catalog in catalogs:
+                expected.update(json.loads(self.output[catalog]))
+            self.assertEqual(keyed(english).keys(), keyed(turkish).keys())
+            for key, node in keyed(turkish).items():
+                # The layout renderer draws the external-link arrow as an SVG.
+                want = node_text(ContentTree(expected[key]).root).removesuffix('↗').strip()
+                got = node_text(node, ignore=('svg',)).removesuffix('↗').strip()
+                self.assertEqual(want, got, key)
+            def unkeyed(node):
+                if isinstance(node, str):
+                    if node.strip():
+                        yield node.strip()
+                elif node['tag'] not in ('script','style','svg','code','pre') and 'data-i18n' not in node['attrs']:
+                    for child in node['children']:
+                        yield from unkeyed(child)
+            shared = {'Esc','⌘ K','GitHub','HotswapAgent / DCEVM','JRebel','Java / Spring',
+                      'Reclazz','SAP Commerce','Spring Boot DevTools'}
+            def body_text(tree):
+                return set(unkeyed(next(n for n in tree.nodes if n['tag']=='body')))
+            for text in body_text(english) & body_text(turkish) - shared:
+                self.assertRegex(text,r'^(?:[0-9.:]+(?: ·)?|© [0-9]{4} Onur Kat)$',tr)
+        home=self.page('/tr/')
+        faq=next(s for s in (json.loads(raw) for raw in re.findall(r'<script type="application/ld\+json">(.*?)</script>',home,re.S)) if s.get('@type')=='FAQPage')
+        self.assertTrue(all(entry['name'] in home.split('<body',1)[1] for entry in faq['mainEntity']))
+    def test_landing_links_comparison_and_demo(self):
+        for route,link in [('/', '/jrebel-alternative/'),('/tr/', '/tr/jrebel-alternatifi/'),
+                           ('/compare/','/jrebel-alternative/'),('/docs/sap-commerce/','/hybris-hot-reload/')]:
+            self.assertIn(link,Document(self.page(route)).links)
+        for route in self.pairs[2]:
+            page=self.page(route)
+            self.assertIn('https://manuals.jrebel.com/jrebel/misc/integrations.html',Document(page).links)
+            self.assertIn('https://www.jrebel.com/products/jrebel/chat-pricing-request',Document(page).links)
+    def test_demo_captions_use_the_localized_film_without_duplicate_native_subtitles(self):
+        from website.check import ContentTree
+        for name, content in self.output.items():
+            if not name.endswith('.html'):
+                continue
+            text = DocumentationBuildTest.markup(content)
+            if '<track' in text:
+                tracks = [n['attrs'] for n in ContentTree(text).nodes if n['tag']=='track']
+                self.assertFalse(any(t.get('kind')=='captions' and 'default' in t for t in tracks), name)
+        for en,tr in (self.pairs[0], self.pairs[3]):
+            for route,lang,suffix in ((en,'en',''),(tr,'tr','-tr')):
+                nodes = ContentTree(self.page(route)).nodes
+                video = next(n['attrs'] for n in nodes if n['tag']=='video')
+                self.assertEqual('/assets/setup/live-reload'+suffix+'.webm', video['data-src'])
+                self.assertIn('/assets/setup/price-reload.'+lang+'.vtt',
+                              [n['attrs']['src'] for n in nodes if n['tag']=='track' and n['attrs'].get('srclang')==lang])
+    def test_missing_translation_rejected(self):
+        from website import localized
+        with self.assertRaisesRegex(ValueError,'missing.key'):
+            localized.translate('<span data-i18n="missing.key">English</span>', {}, '/tr/')
 
 class DesignGateTest(unittest.TestCase):
     def test_automatic_requests_cover_script_image_css_and_preconnect(self):

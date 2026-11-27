@@ -399,6 +399,9 @@ def generate(revision='main'):
             for section in parser.sections + ([parser.section] if parser.section else []):
                 index.append({'title': ''.join(section['title']), 'section':page['nav_title'],
                               'url':url(slug)+'#'+section['id'], 'text':' '.join(' '.join(section['text']).split())})
+    if 'jrebel-alternative/index.html' in output:
+        from website.localized import add_pages
+        add_pages(output, page_sources, REPO, renderer)
     real_routes = {'/' + name[:-len('index.html')] for name in output if name.endswith('index.html')}
     redirects = redirect_records(REPO,real_routes,revision)
     for route, record in redirects.items(): output[route_file(route)] = redirect_html(record)

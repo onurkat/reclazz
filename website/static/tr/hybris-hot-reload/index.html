@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="tr" data-theme="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hybris Hot Reload: Yeniden Başlatmadan SAP Commerce</title><meta name="description" content="SAP Commerce (Hybris) için hot reload: Java sınıfları, items.xml, Spring XML, property, ImpEx ve Backoffice ayarları çalışan sunucuya yeniden başlatmadan gelir. Ücretsiz.">
+<link rel="canonical" href="https://reclazz.com/tr/hybris-hot-reload/">{{SITE_HEAD}}<link rel="stylesheet" href="/assets/demo.css"><script src="/assets/setup-preview.js" defer></script></head>
+<body>{{SITE_HEADER}}<main class="license-page" id="main" tabindex="-1"><div class="container">
+<h1>SAP Commerce (Hybris) için hot reload</h1>
+<p>SAP Commerce&#x27;i yeniden başlatmak dakikalar sürer, sonra tekrar giriş yapıp test ettiğin sayfaya geri dönersin. Reclazz değişikliğini zaten çalışan sunucuya koyar. Kodu değiştir, derle, sayfayı yenile.</p>
+{{LANDING_DEMO}}
+<h2>Çalışan sunucuya ne gelir</h2>
+<ul><li>Java sınıfları: metot gövdeleri, yeni metotlar, servisler, facade&#x27;lar, populator&#x27;lar ve controller&#x27;lar.</li><li>items.xml ve beans.xml: Reclazz kod üretimini çalıştırır, model ve DTO sınıflarını yükler. Yeni bir veritabanı kolonu için yine Update Running System gerekir.</li><li>Spring XML: yeni eklediğin sınıflara referanslar dahil bean tanımları.</li><li>Property&#x27;ler, log seviyeleri, çeviriler ve Backoffice etiketleri.</li><li>ImpEx: autoImpex açıksa dosyayı kaydedince içe aktarılır.</li><li>Interceptor&#x27;lar, OCC field set ve eşlemeleri, *-backoffice-config.xml.</li></ul>
+<p><a href="/tr/sap-commerce-kurulum/">Her birinin koşulları var, SAP Commerce kılavuzunda yazıyor.</a></p>
+<h2>Hâlâ yeniden başlatma isteyenler</h2>
+<p>Bir sınıfın üst sınıfını değiştirmek, sadece açılışta okunan ayarlar ve Reclazz&#x27;ın güvenle uygulayamadığı her şey. Bu durumlarda Reclazz eski kodu çalışır bırakmak yerine hangi dosyanın yeniden başlatma istediğini söyler.</p>
+<h2>Birkaç tıklamayla kurulum</h2>
+<ol><li>IntelliJ IDEA&#x27;ya Reclazz eklentisini kur ve SAP Commerce projeni aç.</li><li>Kurulum penceresi SAP Commerce property dosyana iki satır ekler (local.properties, isteğe bağlı config klasörü kullanıyorsan 95-local.properties) ve ant server&#x27;ı senin için çalıştırır.</li><li>Sunucuyu bir kez yeniden başlat. Sonrasında derlemek yeterli.</li></ol>
+<p>Reclazz Java 17 ve üstünü ister, yani Java 17 ve üstüyle çalışan SAP Commerce sürümlerinde kullanılır.</p>
+<h2>Sorular</h2>
+<details><summary>Ücretsiz mi?</summary><p>Evet. Agent, eklenti ve tüm reload özellikleri Apache 2.0 lisansıyla ücretsiz ve açık kaynak.</p></details>
+<details><summary>Projemi değiştiriyor mu?</summary><p>SAP Commerce property dosyana iki satır ekler (local.properties, isteğe bağlı config klasöründe 95-local.properties). Eklenti önce bunları gösterir, tek tıkla geri alır.</p></details>
+<details><summary>IntelliJ olmadan çalışır mı?</summary><p>Evet, agent&#x27;ı kendin eklersin. SAP Commerce kılavuzu nasıl yapılacağını gösterir.</p></details>
+<div class="cta-row"><a class="btn btn-primary" href="/tr/baslangic/">Başla</a><a class="btn btn-ghost" href="/tr/sap-commerce-kurulum/">SAP Commerce kurulumu</a></div>
+</div></main>{{SITE_FOOTER}}{{SITE_UTILITIES}}</body></html>

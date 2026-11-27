@@ -146,6 +146,16 @@ def check_site(output, revision='main'):
     redirect_files = {build.route_file(route) for route in redirects}
     documents = {p: Document(p.read_text()) for p in output.rglob('*.html') if (p.name == 'index.html' or p.relative_to(output).as_posix() == '404.html') and p.relative_to(output).as_posix() not in redirect_files}
     for error in publication_errors(output,manifest): check(False,error)
+    if (output / 'jrebel-alternative/index.html').exists():
+        from website.localized import PAIRS, ORIGIN
+        for en, tr in PAIRS.items():
+            for route in (en, tr):
+                path = output / build.route_file(route)
+                tree = ContentTree(path.read_text())
+                alternates = [n['attrs'] for n in tree.nodes if n['tag'] == 'link' and n['attrs'].get('rel') == 'alternate' and 'hreflang' in n['attrs']]
+                expected = {'en': ORIGIN+en, 'tr': ORIGIN+tr, 'x-default': ORIGIN+en}
+                check(len(alternates)==3 and {a['hreflang']:a.get('href') for a in alternates}==expected, 'Wrong language alternates: '+route)
+                check(documents[path].canonical == [ORIGIN+route], 'Wrong language canonical: '+route)
     for error in homepage_schema_errors((output / 'index.html').read_text()):
         check(False, error)
     docs = {p:d for p,d in documents.items() if p.is_relative_to(output/'docs')}
