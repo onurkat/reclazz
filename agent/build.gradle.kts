@@ -422,6 +422,7 @@ dependencies {
     add(springSevenTests.implementationConfigurationName, "org.springframework:spring-context:7.0.10")
     add(springSevenTests.implementationConfigurationName, "org.aspectj:aspectjweaver:1.9.27")
     add(springSevenTests.implementationConfigurationName, "org.springframework.boot:spring-boot:4.1.2")
+    add(springSevenTests.runtimeOnlyConfigurationName, "org.springframework.boot:spring-boot-autoconfigure:4.1.2")
     // Real Jakarta MVC async lifecycle and local HTTP tests; never packaged.
     add(springSevenTests.implementationConfigurationName, "org.springframework:spring-webmvc:7.0.10")
     add(springSevenTests.implementationConfigurationName, "org.springframework:spring-test:7.0.10")
