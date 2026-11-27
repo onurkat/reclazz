@@ -96,6 +96,16 @@ class McpToolContractsTest {
         return data;
     }
 
+    private static void assertStatusProtocol(JsonObject data, int expected) throws Exception {
+        JsonObject field = SapOperationObservationTest.schema("reclazz_status")
+                .getAsJsonObject("properties").getAsJsonObject("protocol");
+        JsonElement actual = data.get("protocol");
+        assertEquals(new JsonPrimitive(expected), actual);
+        assertEquals("integer", field.get("type").getAsString());
+        if (field.has("const")) assertEquals(field.get("const"), actual);
+        assertTrue(field.getAsJsonArray("enum").contains(actual), "Schema must accept agent protocol " + actual);
+    }
+
     @Test void eventsLegacyAndModernReturnTheSameBoundedJsonWithoutInventedCompletion() {
         JsonObject cp = JsonParser.parseString("{\"sessionId\":\"session\",\"subscriptionId\":\"subscription\",\"cursor\":\"0\"}").getAsJsonObject();
         for (String version : List.of(MODERN, LEGACY)) {
@@ -170,6 +180,7 @@ class McpToolContractsTest {
             JsonObject a = connectedArgs(agent);
             JsonObject data = checked(client(MODERN), tool, a, false, "connected");
             if (tool.equals("reclazz_status")) {
+                assertStatusProtocol(data, 2);
                 assertTrue(data.get("attached").getAsBoolean()); assertEquals(1, data.getAsJsonArray("health").size());
             } else if (tool.equals("reclazz_scan")) {
                 assertEquals("queued", data.get("status").getAsString()); assertEquals(0,data.get("enqueued").getAsInt()); assertFalse(data.get("reloadConfirmed").getAsBoolean());
@@ -267,6 +278,7 @@ class McpToolContractsTest {
             JsonObject a = args();
             a.addProperty("portFile", file.toString());
             JsonObject data = checked(server, "reclazz_status", a, false, "legacy-agent");
+            assertStatusProtocol(data, 1);
             assertTrue(data.get("attached").getAsBoolean());
             assertEquals(1, data.getAsJsonArray("health").size());
             agent.verify();

@@ -42,6 +42,8 @@ out of command arguments, logs and reports.
 | Updated client, legacy decimal file or explicit port only | Waits for a protocol 1 greeting. To use a new agent, supply its private file. |
 | Legacy client, updated agent | Cannot subscribe or send commands. Update the client to a version supporting protocol 2. |
 
+MCP exposes the socket version from the greeting as the integer `protocol` in an attached `reclazz_status` result.
+
 ## The stream
 
 One JSON object per line, UTF-8, newline-terminated. The first line on

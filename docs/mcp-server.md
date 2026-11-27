@@ -433,7 +433,7 @@ Decoded `contents[0].text`, showing only the recorded attachment fields:
 }
 ```
 
-The complete result also contains the target port and health observations.
+The `protocol` field reports the agent status socket version. Authenticated connections use 2 and legacy connections use 1. The complete result also contains the target port and health observations.
 This excerpt is not an application-behavior or reload receipt.
 
 ### Event resource selectors

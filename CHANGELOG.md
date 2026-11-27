@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- MCP clients that validate structured results can read status from both legacy and authenticated agents.
+
 - With native redefinition, changing an interface’s static initializer now reports that a restart is needed to update its initialized fields.
 
 - A new SAP Commerce properties file inherits the permissions shared by the files supplying its JVM options.

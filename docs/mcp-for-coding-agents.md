@@ -386,6 +386,8 @@ Recorded result excerpt:
 }
 ```
 
+The `protocol` value identifies the agent status socket version. An authenticated agent reports `2`. The recorded connection above used a legacy agent.
+
 Use the [Claude Code setup](mcp-server.md#claude-code),
 [Codex TOML entry](mcp-server.md#codex) or
 [Cursor configuration](mcp-server.md#cursor). The
