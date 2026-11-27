@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Java launcher validation skips hot-reload startup on systems that expose the launcher arguments. This shortens the validation step during SAP Commerce startup on macOS.
+
 - Maven Spring Boot projects opened through a symbolic link reload compiled class changes from their shared class and resource output.
 - Launchers preserve non-ASCII paths in agent options on Windows. The agent reports readiness after directory registration and warns when no directories are watched.
 

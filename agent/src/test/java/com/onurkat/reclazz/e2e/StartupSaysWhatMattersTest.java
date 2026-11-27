@@ -8,7 +8,11 @@ import com.onurkat.reclazz.e2e.harness.WatchedApp;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import java.net.Socket;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -90,8 +94,65 @@ class StartupSaysWhatMattersTest {
             app.awaitOrFail("after-edit", "class edit under the registered root did not reload");
             var lines = app.output();
             int ready = java.util.stream.IntStream.range(0, lines.size()).filter(i -> lines.get(i).contains("Reclazz is active")).findFirst().orElseThrow();
-            assertTrue(lines.get(ready).endsWith("Reclazz is active. Watching for changes..."), lines.get(ready));
+            assertTrue(lines.get(ready).replace("\u001B[0m", "").endsWith("Reclazz is active. Watching for changes..."), lines.get(ready));
             assertTrue(lines.subList(0, ready).stream().anyMatch(line -> line.contains("] Watching 1 director")));
+        }
+    }
+
+    @Test
+    void onlyALauncherDryRunSkipsAgentStartup() throws Exception {
+        boolean structured = ProcessHandle.current().info().arguments().isPresent();
+        for (String mode : List.of("ordinary", "application-argument", "launcher-option")) {
+            boolean dry = mode.equals("launcher-option");
+            Path port = tmp.resolve(mode + ".port");
+            Path log = tmp.resolve(mode + ".log");
+            Path executable = Path.of(ProcessHandle.current().info().command().orElseThrow());
+            List<String> command = new ArrayList<>(List.of(executable.toString()));
+            if (dry) command.add("--dry-run");
+            command.add("-javaagent:" + WatchedApp.agentJarOrSkip() + "=platform=spring,watchDirs=" + tmp
+                    + ",startupDelaySec=1,statusPort=0,portFile=" + port);
+            command.addAll(List.of("-cp", Path.of(StartupProbe.class.getProtectionDomain()
+                    .getCodeSource().getLocation().toURI()).toString(), StartupProbe.class.getName()));
+            if (mode.equals("application-argument")) command.add("--dry-run");
+            long start = System.nanoTime();
+            Process child = new ProcessBuilder(command).redirectErrorStream(true).redirectOutput(log.toFile()).start();
+            try {
+                if (!dry) {
+                    while (child.isAlive() && System.nanoTime() - start < TimeUnit.SECONDS.toNanos(30)
+                            && !(Files.readString(log).contains("Reclazz is active") && Files.readString(log).contains("MAIN:"))) {
+                        Thread.sleep(50);
+                    }
+                    String output = Files.readString(log);
+                    assertTrue(output.contains("MAIN:" + (mode.equals("application-argument") ? "--dry-run" : "")), output);
+                    assertTrue(output.contains("Reclazz is active"), output);
+                    try (Socket socket = new Socket("127.0.0.1", Integer.parseInt(Files.readString(port).trim()))) {
+                        assertTrue(socket.isConnected());
+                    }
+                    child.getOutputStream().close();
+                }
+                assertTrue(child.waitFor(30, TimeUnit.SECONDS), mode);
+                String output = Files.readString(log);
+                assertEquals(0, child.exitValue(), output);
+                if (dry) {
+                    assertFalse(output.contains("MAIN:"), output);
+                    assertEquals(!structured, output.contains("[Reclazz]"), output);
+                    if (structured) {
+                        assertFalse(output.contains("Hot-reload for Java applications"), output);
+                        assertFalse(Files.exists(port));
+                    }
+                }
+                System.out.println(mode + " elapsed ms=" + TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start));
+            } finally {
+                child.destroyForcibly();
+                child.waitFor(10, TimeUnit.SECONDS);
+            }
+        }
+    }
+
+    public static class StartupProbe {
+        public static void main(String[] args) throws Exception {
+            System.out.println("MAIN:" + String.join(" ", args));
+            System.in.read();
         }
     }
 

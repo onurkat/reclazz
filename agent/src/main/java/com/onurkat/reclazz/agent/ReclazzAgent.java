@@ -329,6 +329,7 @@ public class ReclazzAgent {
      * Called when agent is loaded at JVM startup via -javaagent.
      */
     public static void premain(String agentArgs, Instrumentation inst) {
+        if (LauncherDryRun.current()) return;
         instrumentation = inst;
         StatusReporter.banner();
         StatusReporter.info("Agent loaded via -javaagent (premain)");
