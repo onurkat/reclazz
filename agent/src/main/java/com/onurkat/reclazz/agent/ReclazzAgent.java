@@ -2399,15 +2399,25 @@ public class ReclazzAgent {
 
     private static void handleSpringPropertiesChange(ChangeEvent event) {
         Path path = event.getPath();
-        java.util.Set<Object> owners = path.getFileName().toString().endsWith(".properties")
+        String name = path.getFileName().toString();
+        var logging = LoggingReloader.Log4j2Outcome.NOT_OWNED;
+        if (name.endsWith(".properties") && (name.startsWith("log4j2.") || name.startsWith("log4j2-"))) {
+            logging = new LoggingReloader(instrumentation).reconfigureActiveLog4j2(path);
+            if (logging == LoggingReloader.Log4j2Outcome.APPLIED) {
+                StatusReporter.success(name + " applied to the running Log4j2 context");
+            } else if (logging == LoggingReloader.Log4j2Outcome.REJECTED) {
+                StatusReporter.warn(name + " was not applied: Log4j2 did not confirm the new configuration. Check the configuration and save again.");
+            }
+        }
+        java.util.Set<Object> owners = name.endsWith(".properties")
                 ? new SpringMessageSourceReloader(platformContext).ownersOf(path) : java.util.Set.of();
-        if (owners.isEmpty()) {
+        if (owners.isEmpty() && logging == LoggingReloader.Log4j2Outcome.NOT_OWNED) {
             handlePropertiesChange(event);
             return;
         }
         if (springPropertyFiles.mayOwn(path, platformContext.getAllApplicationContexts())) handlePropertiesChange(event);
-        if (prepareLocalizationChange(event)) {
-            SpringMessageSourceReloader.report(path.getFileName().toString(), SpringMessageSourceReloader.reloadOwners(owners));
+        if (!owners.isEmpty() && prepareLocalizationChange(event)) {
+            SpringMessageSourceReloader.report(name, SpringMessageSourceReloader.reloadOwners(owners));
         }
     }
 

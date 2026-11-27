@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ### Fixed
 
 - Maven projects using maven-compiler-plugin 3.10.1 or 3.11.0 can compile Java edits on save with their compiler version’s language and warning defaults.
+- Saving the active Log4j2 properties configuration refreshes logger settings in the running application.
 
 - Saving a translation in a configured Spring Boot classpath message bundle refreshes cached lookups. If Boot also imports the file as configuration, its property values update through the normal configuration path.
 

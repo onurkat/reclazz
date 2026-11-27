@@ -7,6 +7,9 @@ package com.onurkat.reclazz.reload;
 import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.instrument.Instrumentation;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.IdentityHashMap;
@@ -461,6 +464,50 @@ public class LoggingReloader {
             }
         }
         return true;
+    }
+
+    public enum Log4j2Outcome { NOT_OWNED, APPLIED, REJECTED }
+
+    public Log4j2Outcome reconfigureActiveLog4j2(Path file) {
+        boolean owned = false;
+        try {
+            Class<?> core = null;
+            for (Class<?> loaded : loadedClasses.get()) {
+                if (!loaded.getName().equals("org.apache.logging.log4j.core.LoggerContext")) continue;
+                if (core != null && core != loaded) return Log4j2Outcome.NOT_OWNED;
+                core = loaded;
+            }
+            if (core == null) return Log4j2Outcome.NOT_OWNED;
+            Class<?> manager = Class.forName("org.apache.logging.log4j.LogManager", false, core.getClassLoader());
+            Object factory = manager.getMethod("getFactory").invoke(null);
+            Object selector = factory.getClass().getMethod("getSelector").invoke(factory);
+            Collection<?> contexts = (Collection<?>) selector.getClass().getMethod("getLoggerContexts").invoke(selector);
+            if (contexts.size() != 1) return Log4j2Outcome.NOT_OWNED;
+            Object context = contexts.iterator().next();
+            if (!core.isInstance(context) || manager.getMethod("getContext", boolean.class).invoke(null, false) != context)
+                return Log4j2Outcome.NOT_OWNED;
+            synchronized (context) {
+                Object before = core.getMethod("getConfiguration").invoke(context);
+                if (!configurationReads(before, file)) return Log4j2Outcome.NOT_OWNED;
+                owned = true;
+                core.getMethod("setConfigLocation", URI.class).invoke(context, file.toUri());
+                Object after = core.getMethod("getConfiguration").invoke(context);
+                return after != before && configurationReads(after, file)
+                        ? Log4j2Outcome.APPLIED : Log4j2Outcome.REJECTED;
+            }
+        } catch (Exception | LinkageError unavailable) {
+            return owned ? Log4j2Outcome.REJECTED : Log4j2Outcome.NOT_OWNED;
+        }
+    }
+
+    private static boolean configurationReads(Object configuration, Path file) throws Exception {
+        Object source = configuration.getClass().getMethod("getConfigurationSource").invoke(configuration);
+        if (source == null) return false;
+        if (source.getClass().getMethod("getFile").invoke(source) instanceof java.io.File active)
+            return Files.isSameFile(active.toPath(), file);
+        Object uri = source.getClass().getMethod("getURI").invoke(source);
+        return uri instanceof URI location && "file".equalsIgnoreCase(location.getScheme())
+                && Files.isSameFile(Path.of(location), file);
     }
 
     /**
