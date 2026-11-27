@@ -701,9 +701,15 @@ public class FileWatcher {
             String moduleName = entry.getKey();
             if (!platformContext.shouldWatch(moduleName)) continue;
 
+            Set<Path> classRoots = new HashSet<>();
+            if (platformContext instanceof com.onurkat.reclazz.platform.SpringBootContext && !config.isAutoCompile()) {
+                for (Path classes : platformContext.getClassOutputDirs().getOrDefault(moduleName, List.of())) {
+                    classRoots.add(identity(classes));
+                }
+            }
             for (Path resDir : entry.getValue()) {
-                if (platformContext instanceof com.onurkat.reclazz.platform.SpringBootContext && !config.isAutoCompile()
-                        && platformContext.getClassOutputDirs().getOrDefault(moduleName, List.of()).contains(resDir)) continue;
+                // Registering the same directory again would replace its class role on the shared WatchKey.
+                if (!classRoots.isEmpty() && classRoots.contains(identity(resDir))) continue;
                 if (Files.isDirectory(resDir)) {
                     // Recursive: .impex/.xml/.properties live in subfolders
                     // (e.g. resources/impex/test-data.impex), a single-level

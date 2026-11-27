@@ -246,6 +246,14 @@ public class SpringBootContext implements PlatformContext {
         all.addAll(resourceSources);
         all.addAll(runtimeResources);
         resourceDirs.put("app", List.copyOf(all));
+
+        // Class events keep their configured spelling. Recognize that spelling for resources
+        // in a shared Maven output, without adding a second watcher or resolving every event.
+        Set<Path> runtimeIdentities = new LinkedHashSet<>();
+        for (Path path : runtimeResources) runtimeIdentities.add(SpringXmlResources.canonical(path));
+        for (Path path : classOutputDirs.getOrDefault("app", List.of())) {
+            if (runtimeIdentities.contains(SpringXmlResources.canonical(path))) runtimeResources.add(path);
+        }
     }
 
     private static Set<Path> directoryPaths(String paths) {
