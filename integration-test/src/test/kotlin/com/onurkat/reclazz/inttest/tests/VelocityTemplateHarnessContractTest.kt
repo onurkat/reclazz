@@ -38,7 +38,7 @@ private class VelocityTemplateContractServer(private val root:Path,private val m
             "control" to row("control"),"serviceIdentity" to 11,"jvmStart" to 22)
     }
     init {
-        Thread({connection=socket.accept();writer=java.io.PrintWriter(connection!!.getOutputStream(),true);emit("CONNECTED","velocity-template-contract")},"velocity-contract-accept").apply {isDaemon=true;start()}
+        Thread({connection=socket.accept();writer=java.io.PrintWriter(connection!!.getOutputStream(),true);writer.println(legacyStatusGreeting("velocity-template-contract"))},"velocity-contract-accept").apply {isDaemon=true;start()}
         http.createContext("/") {x ->
             try {
                 val query=if(x.requestMethod=="POST")x.requestBody.readBytes().toString(Charsets.UTF_8) else x.requestURI.rawQuery.orEmpty()

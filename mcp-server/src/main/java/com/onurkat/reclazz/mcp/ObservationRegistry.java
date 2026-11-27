@@ -4,12 +4,14 @@
  */
 package com.onurkat.reclazz.mcp;
 
+import com.onurkat.reclazz.protocol.StatusEndpoint;
 import java.io.IOException;
 import java.util.*;
 
 /** One bounded instance-local registry shared by reload waits and event pages. */
 final class ObservationRegistry implements AutoCloseable {
-    private final LinkedHashMap<String, Entry> subscriptions = new LinkedHashMap<>(4, .75f, true);
+    private record Target(StatusEndpoint endpoint, String baseDirectory, String projectDirectory) { }
+    private final LinkedHashMap<Target, Entry> subscriptions = new LinkedHashMap<>(4, .75f, true);
     private final Set<RequestCancellation> active = java.util.concurrent.ConcurrentHashMap.newKeySet();
     private volatile boolean closed;
     static final class Entry {
@@ -30,9 +32,9 @@ final class ObservationRegistry implements AutoCloseable {
         }
     }
     Entry acquire(Map<String, String> opts, RequestCancellation cancel, long until) throws IOException {
-        AgentSocket.Result address = new AgentSocket.Result(); AgentSocket.resolvePort(opts, address);
+        AgentSocket.Result address = new AgentSocket.Result(); var endpoint = AgentSocket.resolveEndpoint(opts, address);
         if (address.reason != null) throw new EventSubscription.Failure("target_unavailable", "Cannot resolve the selected Java agent endpoint");
-        String key = address.port + "\n" + opts.getOrDefault("baseDir", "") + "\n" + opts.getOrDefault("projectDir", "");
+        Target key = new Target(endpoint, opts.getOrDefault("baseDir", ""), opts.getOrDefault("projectDir", ""));
         synchronized (this) {
             Entry e = subscriptions.get(key);
             if (e != null && e.stream.alive()) {
@@ -48,7 +50,7 @@ final class ObservationRegistry implements AutoCloseable {
                 idle.get().getValue().stream.close(); subscriptions.remove(idle.get().getKey());
             }
         }
-        EventSubscription created = new EventSubscription(opts, address.port, cancel, until);
+        EventSubscription created = new EventSubscription(opts, endpoint, cancel, until);
         synchronized (this) {
             if (closed || subscriptions.containsKey(key) || subscriptions.size() >= 2) {
                 created.close(); throw new EventSubscription.Failure("busy", "Registry changed while opening the subscription");

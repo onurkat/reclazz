@@ -23,7 +23,7 @@ private class DaoContractServer(private val source:Path,private val mode:String)
     @Volatile var rows=0
     @Volatile var cleaned=false
     init {
-        Thread({connection=socket.accept();writer=java.io.PrintWriter(connection!!.getOutputStream(),true);emit("CONNECTED","dao-contract")},
+        Thread({connection=socket.accept();writer=java.io.PrintWriter(connection!!.getOutputStream(),true);writer.println(legacyStatusGreeting("dao-contract"))},
             "dao-contract-accept").apply {isDaemon=true;start()}
         http.createContext("/") {exchange ->
             val form=if(exchange.requestMethod=="POST") exchange.requestBody.readBytes().toString(Charsets.UTF_8) else exchange.requestURI.rawQuery

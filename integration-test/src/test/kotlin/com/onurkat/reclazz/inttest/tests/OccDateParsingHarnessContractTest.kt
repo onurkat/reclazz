@@ -20,7 +20,7 @@ private class OccDateContractServer(private val source:Path,private val mode:Str
     @Volatile private var edited=false
     private val watcher:Thread
     init {
-        Thread({connection=socket.accept();writer=java.io.PrintWriter(connection!!.getOutputStream(),true);emit("CONNECTED","date-contract");receipt()},"date-contract-accept").apply {isDaemon=true;start()}
+        Thread({connection=socket.accept();writer=java.io.PrintWriter(connection!!.getOutputStream(),true);writer.println(legacyStatusGreeting("date-contract"));receipt()},"date-contract-accept").apply {isDaemon=true;start()}
         http.createContext("/") {x ->
             try {
                 val params=x.requestURI.rawQuery.split('&').associate {it.substringBefore('=') to URLDecoder.decode(it.substringAfter('='),Charsets.UTF_8)}

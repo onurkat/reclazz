@@ -4,6 +4,7 @@
  */
 package com.onurkat.reclazz.mcp;
 
+import com.onurkat.reclazz.protocol.StatusEndpoint;
 import com.google.gson.*;
 import java.io.*;
 import java.net.*;
@@ -38,16 +39,21 @@ final class EventSubscription implements AutoCloseable {
     private String sessionId;
 
     EventSubscription(Map<String, String> opts, int port, RequestCancellation cancel, long until) throws IOException {
+        this(opts, StatusEndpoint.legacy(port), cancel, until);
+    }
+
+    EventSubscription(Map<String, String> opts, StatusEndpoint endpoint, RequestCancellation cancel, long until) throws IOException {
         cancel.attach(socket);
         try {
-            socket.connect(new InetSocketAddress("127.0.0.1", port), remaining(until));
+            socket.connect(new InetSocketAddress("127.0.0.1", endpoint.port()), remaining(until));
+            endpoint.authenticate(socket.getOutputStream());
             input = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
             JsonObject hello = BuildSession.read(socket, input, until);
             if (!"CONNECTED".equals(string(hello, "level")) || string(hello, "agent").isBlank()
                     || !hello.has("version") || !hello.get("version").isJsonPrimitive()
                     || !hello.getAsJsonPrimitive("version").isNumber()
-                    || !"1".equals(hello.get("version").getAsString()))
-                throw new Failure("unsupported_agent", "No valid protocol-1 handshake");
+                    || !Integer.toString(endpoint.protocol()).equals(hello.get("version").getAsString()))
+                throw new Failure("unsupported_agent", "No matching agent protocol handshake");
             McpTarget.verifyProject(opts, socket, input, until);
             socket.setSoTimeout(0);
             reader = new Thread(this::receive, "reclazz-mcp-events");

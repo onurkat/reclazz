@@ -4,6 +4,8 @@
  */
 package com.onurkat.reclazz.e2e;
 
+import com.onurkat.reclazz.e2e.harness.StatusTestClient;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onurkat.reclazz.e2e.harness.WatchedApp;
@@ -85,7 +87,7 @@ class BatchedConstructorReloadTest {
             awaitReceipt(port, app, "Marker", "unverified");
             app.awaitOrFail("LIVE=first:3:2", "new method body alongside the old initialized value");
             app.awaitOrFail("static initialization of interface changed", "the refused save did not advance the baseline");
-            try (Socket socket = new Socket("127.0.0.1", Integer.parseInt(Files.readString(port).trim()))) {
+            try (Socket socket = StatusTestClient.connect(port)) {
                 socket.setSoTimeout(5000);
                 var input = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
                 socket.getOutputStream().write("PENDING\n".getBytes(StandardCharsets.UTF_8));
@@ -288,7 +290,7 @@ class BatchedConstructorReloadTest {
     }
 
     private void control(Path port, String action) throws Exception {
-        try (Socket socket = new Socket("127.0.0.1", Integer.parseInt(Files.readString(port).trim()))) {
+        try (Socket socket = StatusTestClient.connect(port)) {
             socket.setSoTimeout(5000);
             var in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
             String token = "hold" + (++serial), prefix = "RELOAD_STATE " + token + " " + action + " ";
@@ -301,7 +303,7 @@ class BatchedConstructorReloadTest {
         }
     }
     private void scan(Path port) throws Exception {
-        try (Socket socket = new Socket("127.0.0.1", Integer.parseInt(Files.readString(port).trim()))) {
+        try (Socket socket = StatusTestClient.connect(port)) {
             socket.setSoTimeout(15000);
             var input = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
             String token = "scanned" + (++serial), prefix = "RELOAD_STATE " + token + " status ";
@@ -341,7 +343,7 @@ class BatchedConstructorReloadTest {
         Path bytes = app.classesDir().resolve("app/" + type + ".class");
         // On AutoCompile the COMPILE event, not an arbitrary delay, establishes these bytes exist.
         String hash = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(bytes)));
-        try (Socket socket = new Socket("127.0.0.1", Integer.parseInt(Files.readString(port).trim()))) {
+        try (Socket socket = StatusTestClient.connect(port)) {
             socket.setSoTimeout(3000);
             var input = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
             long end = System.nanoTime() + TimeUnit.SECONDS.toNanos(30);

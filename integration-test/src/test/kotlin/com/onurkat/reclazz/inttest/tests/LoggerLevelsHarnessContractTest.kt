@@ -22,7 +22,7 @@ private class LoggerContractServer(private val source:Path,private val mode:Stri
     private val target="com.onurkat.reclazztest.logprobe.target"
     private val control="com.onurkat.reclazztest.logprobe.control"
     init {
-        Thread({connection=socket.accept();writer=java.io.PrintWriter(connection!!.getOutputStream(),true);emit("CONNECTED","logger-contract");receipt()},"logger-contract-accept").apply {isDaemon=true;start()}
+        Thread({connection=socket.accept();writer=java.io.PrintWriter(connection!!.getOutputStream(),true);writer.println(legacyStatusGreeting("logger-contract"));receipt()},"logger-contract-accept").apply {isDaemon=true;start()}
         http.createContext("/") {x ->
             try {
                 val form=if(x.requestMethod=="POST") x.requestBody.readBytes().toString(Charsets.UTF_8) else x.requestURI.rawQuery

@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Security
+
+- Status connections require the credential in the agent owner’s private port file. Update IDE and build clients to use protocol 2. Updated clients can still connect to protocol 1 agents.
+
 ### Fixed
 
 - With native redefinition, changing an interface’s static initializer now reports that a restart is needed to update its initialized fields.

@@ -27,19 +27,31 @@ class AgentStatusTest {
 
     @Test
     void reportsAttachedWithAgentAndHealth() throws Exception {
+        exercisePeer(1);
+    }
+
+    @Test
+    void authenticatesBeforeReadingHealth() throws Exception {
+        exercisePeer(2);
+    }
+
+    private void exercisePeer(int version) throws Exception {
         try (ServerSocket server = new ServerSocket(0, 1, InetAddress.getLoopbackAddress())) {
             Path portFile = dir.resolve(".reclazz").resolve("agent.port");
             Files.createDirectories(portFile.getParent());
-            Files.writeString(portFile, String.valueOf(server.getLocalPort()));
+            String fixture = "ab".repeat(32);
+            Files.writeString(portFile, server.getLocalPort() + (version == 2 ? "\ntoken=" + fixture + "\n" : ""));
 
             Thread responder = new Thread(() -> {
                 try (Socket s = server.accept()) {
-                    OutputStream out = s.getOutputStream();
-                    out.write(("{\"level\":\"CONNECTED\",\"message\":\"hi\",\"timestamp\":\"t\","
-                            + "\"version\":1,\"agent\":\"9.9.9\"}\n").getBytes(StandardCharsets.UTF_8));
-                    out.flush();
                     BufferedReader in = new BufferedReader(
                             new InputStreamReader(s.getInputStream(), StandardCharsets.UTF_8));
+                    if (version == 2 && !("AUTH " + fixture).equals(in.readLine())) return;
+                    OutputStream out = s.getOutputStream();
+                    out.write(("{\"level\":\"CONNECTED\",\"message\":\"hi\",\"timestamp\":\"t\","
+                            + "\"version\":" + version + ",\"agent\":\"9.9.9\"}\n").getBytes(StandardCharsets.UTF_8));
+                    out.flush();
+
                     if ("HEALTH".equals(in.readLine())) {
                         out.write(("{\"level\":\"INFO\",\"message\":\"Reloads: 3, failures: 0\","
                                 + "\"timestamp\":\"t\"}\n").getBytes(StandardCharsets.UTF_8));

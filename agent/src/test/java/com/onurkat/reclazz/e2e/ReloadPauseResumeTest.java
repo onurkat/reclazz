@@ -4,6 +4,8 @@
  */
 package com.onurkat.reclazz.e2e;
 
+import com.onurkat.reclazz.e2e.harness.StatusTestClient;
+
 import com.onurkat.reclazz.e2e.harness.WatchedApp;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -38,7 +40,7 @@ class ReloadPauseResumeTest {
             app.awaitOrFail("VALUE=1 PID=", "initial value");
             app.awaitWatcherReady();
             String pid = app.latest("VALUE=1 PID=").split("PID=")[1];
-            try (Socket socket = new Socket("127.0.0.1", Integer.parseInt(Files.readString(portFile).trim()))) {
+            try (Socket socket = StatusTestClient.connect(portFile)) {
                 socket.setSoTimeout(5000);
                 var in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
                 control(socket, in, "pause", "p1", true);
@@ -95,7 +97,7 @@ class ReloadPauseResumeTest {
                     }
                     """).start()) {
             app.awaitOrFail("VALUE=1", "initial value"); app.awaitWatcherReady();
-            try (Socket socket = new Socket("127.0.0.1", Integer.parseInt(Files.readString(portFile).trim()))) {
+            try (Socket socket = StatusTestClient.connect(portFile)) {
                 socket.setSoTimeout(5000);
                 var in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
                 control(socket, in, "pause", "p", true);
@@ -134,7 +136,7 @@ class ReloadPauseResumeTest {
                     }
                     """).start()) {
             app.awaitOrFail("PROPERTY=old", "property baseline"); app.awaitWatcherReady();
-            try (Socket socket = new Socket("127.0.0.1", Integer.parseInt(Files.readString(portFile).trim()))) {
+            try (Socket socket = StatusTestClient.connect(portFile)) {
                 socket.setSoTimeout(5000);
                 var in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
                 control(socket, in, "pause", "p", true);

@@ -1,6 +1,8 @@
 /* Copyright 2026 Onur Kat. SPDX-License-Identifier: Apache-2.0 */
 package com.onurkat.reclazz.e2e;
 
+import com.onurkat.reclazz.e2e.harness.StatusTestClient;
+
 import com.onurkat.reclazz.e2e.harness.WatchedApp;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnOs;
@@ -35,7 +37,7 @@ class WatcherHostPauseTest {
             app.awaitOrFail("PAUSE_NANOS=", "child monotonic clock must be sampled across the pause");
             long elapsed = Long.parseLong(app.latest("PAUSE_NANOS=").split("PAUSE_NANOS=")[1].trim());
             System.out.println("Child monotonic interval including suspension: " + elapsed + " ns");
-            try (Socket socket = new Socket("127.0.0.1", Integer.parseInt(Files.readString(port).trim()))) {
+            try (Socket socket = StatusTestClient.connect(port)) {
                 socket.setSoTimeout(15000);
                 var input = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
                 var output = new PrintWriter(socket.getOutputStream(), true, StandardCharsets.UTF_8);

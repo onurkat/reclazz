@@ -20,7 +20,7 @@ private class ImpexUpdateContractServer(private val folder:Path,private val mode
     @Volatile private var run=""
     private val watcher:Thread
     init {
-        Thread({connection=socket.accept();writer=java.io.PrintWriter(connection!!.getOutputStream(),true);emit("CONNECTED","update-contract")},"update-contract-accept").apply {isDaemon=true;start()}
+        Thread({connection=socket.accept();writer=java.io.PrintWriter(connection!!.getOutputStream(),true);writer.println(legacyStatusGreeting("update-contract"))},"update-contract-accept").apply {isDaemon=true;start()}
         http.createContext("/") {x ->
             try {
                 val query=if(x.requestMethod=="POST")x.requestBody.readAllBytes().toString(Charsets.UTF_8) else x.requestURI.rawQuery.orEmpty()

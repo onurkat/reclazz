@@ -2252,7 +2252,7 @@
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SuperclassReportingVerificationTest.java",
           "assertions": "Seven versions: same original Class/loader/self/state19/superclassA; safe body edits apply, dependent c pinned, typed B saves refuse, recovery works with same status-session ID.",
           "kind": "watcher",
-          "method_sha256": "8f89a44d7ade2392f81b4b673dcb7cac1929ab589d4d02fffa2926d76f719a67"
+          "method_sha256": "bcd9260f5206e9d4f4c8c1baf702801f59bc49438970562cb15d1e9cb8520e1c"
         }
       ],
       "shipped_surfaces": [

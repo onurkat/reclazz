@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Real-agent custom-cache characterization using installed SDK Spring and Guava jars."""
+from reclazz_status import connect_status
 import argparse
 from collections import deque
 import hashlib
@@ -95,7 +96,7 @@ def run(args):
             checks += 2
             print('PASS: initial warm cache hits and managed references')
             session = None
-            with socket.create_connection(('127.0.0.1', int(port.read_text().strip())), timeout=10) as connection:
+            with connect_status(port, 10) as connection:
                 incoming = connection.makefile('r', encoding='utf-8')
 
                 def reload(name, old, new):

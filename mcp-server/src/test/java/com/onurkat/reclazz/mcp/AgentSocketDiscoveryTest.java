@@ -55,6 +55,48 @@ class AgentSocketDiscoveryTest {
         var r=resolve(Map.of()); assertNotNull(r.reason);assertTrue(r.reason.contains("ambiguous"),r.reason);
         assertEquals(12345,resolve(Map.of("portFile","hybris/.reclazz/agent.port")).port);
     }
+    @Test void rejectsIncompleteCredentialsWithoutFallingBackOrEchoingThem() throws Exception {
+        Path file = root.resolve("endpoint");
+        String fixture = "ab".repeat(32);
+        for (String data : java.util.List.of("2345\ntoken=", "2345\ntoken=" + fixture + "x",
+                "2345\ntoken=" + fixture + "\nextra", "2345\n\n", "9".repeat(257))) {
+            Files.writeString(file, data);
+            var result = resolve(Map.of("portFile", file.toString(), "port", "2345"));
+            assertNotNull(result.reason);
+            assertFalse(result.reason.contains(fixture));
+        }
+    }
+
+    @Test void authenticatesCommandBuildAndObservationConnections() throws Exception {
+        Path file = root.resolve("endpoint");
+        String fixture = "ab".repeat(32);
+        for (String client : java.util.List.of("command", "build", "events")) {
+            try (var agent = new BuildSafetyTest.FakeAgent(fixture, (in, out) -> {
+                if (client.equals("command")) assertEquals("SCAN", in.readLine());
+                if (client.equals("events")) {
+                    String command = in.readLine();
+                    DoctorTest.send(out, command, DoctorTest.evidence(command));
+                }
+                assertNull(in.readLine());
+            })) {
+                Files.writeString(file, agent.server.getLocalPort() + "\ntoken=" + fixture + "\n");
+                var opts = Map.of("portFile", file.toString());
+                switch (client) {
+                    case "command" -> assertTrue(AgentSocket.run(opts, "SCAN").connected);
+                    case "build" -> { try (var session = BuildSession.open(opts)) { assertNotNull(session); } }
+                    case "events" -> {
+                        var endpoint = AgentSocket.resolveEndpoint(opts, new AgentSocket.Result());
+                        try (var stream = new EventSubscription(opts, endpoint, new RequestCancellation(),
+                                System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(3))) {
+                            assertTrue(stream.alive());
+                        }
+                    }
+                }
+                agent.verify();
+            }
+        }
+    }
+
     @Test void refusesSymlinkEscape() throws Exception {
         Path outside=Files.createTempDirectory("mcp-outside");
         try {

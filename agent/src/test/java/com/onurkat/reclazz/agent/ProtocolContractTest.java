@@ -4,6 +4,8 @@
  */
 package com.onurkat.reclazz.agent;
 
+import com.onurkat.reclazz.e2e.harness.StatusTestClient;
+
 import com.onurkat.reclazz.AgentSources;
 import com.onurkat.reclazz.ui.StatusReporter;
 import org.junit.jupiter.api.Test;
@@ -26,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * carry, the levels they use, and the commands the socket answers.
  */
 class ProtocolContractTest {
+    @org.junit.jupiter.api.io.TempDir java.nio.file.Path statusDirectory;
 
     @Test void doctorWatcherStateIncludesStalled() throws Exception {
         assertTrue(doc().contains("`watcherState` is starting, watching, stalled, stopped or unavailable."));
@@ -186,8 +189,8 @@ class ProtocolContractTest {
         var config=com.onurkat.reclazz.config.AgentConfig.parse("watchExtensions=a");
         var names=new java.util.TreeSet<String>();for(int i=0;i<80;i++)names.add("syntheticExtension"+i);names.add("a");
         try(var controller=new LiveConfigController(config,names,(key,target,publish)->{publish.accept(target);return java.util.concurrent.CompletableFuture.completedFuture(null);})){
-            var port=java.nio.file.Files.createTempFile("scope-socket","port");var server=new StatusServer(0,port);server.setLiveConfig(controller);server.start();
-            try(var socket=new java.net.Socket("127.0.0.1",Integer.parseInt(java.nio.file.Files.readString(port).strip()))){
+            var port=statusDirectory.resolve("port");var server=new StatusServer(0,port);server.setLiveConfig(controller);server.start();
+            try(var socket=StatusTestClient.connect(port)){
                 socket.setSoTimeout(3000);var reader=new java.io.BufferedReader(StatusServer.readerFor(socket.getInputStream()));assertTrue(reader.readLine().contains("CONNECTED"));
                 String command="CONFIG SET named base=0 watchExtensions="+String.join(";",names);assertTrue(command.length()>512&&command.length()<4096);
                 socket.getOutputStream().write((command+"\n").getBytes(java.nio.charset.StandardCharsets.UTF_8));socket.getOutputStream().flush();

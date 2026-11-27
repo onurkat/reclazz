@@ -4,6 +4,8 @@
  */
 package com.onurkat.reclazz.agent;
 
+import com.onurkat.reclazz.e2e.harness.StatusTestClient;
+
 import java.util.*;
 import java.util.concurrent.*;
 import org.junit.jupiter.api.Test;
@@ -92,8 +94,8 @@ class BuildOwnershipTest {
         var server = new StatusServer(0, port);
         server.setOwnedBuildListener((owner, state) -> false);
         server.start();
-        try (var requester = new java.net.Socket("127.0.0.1", Integer.parseInt(java.nio.file.Files.readString(port)));
-             var observer = new java.net.Socket("127.0.0.1", requester.getPort())) {
+        try (var requester = StatusTestClient.connect(port);
+             var observer = StatusTestClient.connect(port)) {
             requester.setSoTimeout(2000); observer.setSoTimeout(2000);
             var in = new java.io.BufferedReader(StatusServer.readerFor(requester.getInputStream()));
             var other = new java.io.BufferedReader(StatusServer.readerFor(observer.getInputStream()));

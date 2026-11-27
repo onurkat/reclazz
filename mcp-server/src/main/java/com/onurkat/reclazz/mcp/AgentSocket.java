@@ -4,6 +4,7 @@
  */
 package com.onurkat.reclazz.mcp;
 
+import com.onurkat.reclazz.protocol.StatusEndpoint;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -55,13 +56,14 @@ final class AgentSocket {
             result.reason = "invalid Java agent command";
             return result;
         }
-        resolvePort(opts, result);
+        StatusEndpoint endpoint = resolveEndpoint(opts, result);
         if (result.reason != null) return result;
         int port = result.port;
 
         int timeoutMs = intOption(opts, "timeoutMs", 2000);
         try (Socket socket = new Socket()) {
             socket.connect(new InetSocketAddress("127.0.0.1", port), Math.min(timeoutMs, 2000));
+            endpoint.authenticate(socket.getOutputStream());
             BufferedReader in = new BufferedReader(
                     new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
             long deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMs);
@@ -87,12 +89,11 @@ final class AgentSocket {
                 String level = string(event, "level");
                 if (!result.connected) {
                     // Do not send commands to a peer merely claiming a CONNECTED level.
-                    // Protocol 1 is the only status-socket contract this client implements.
                     String agent = string(event, "agent");
                     JsonElement version = event.get("version");
                     if (!"CONNECTED".equals(level) || agent == null || agent.isBlank()
                             || version == null || !version.isJsonPrimitive()
-                            || !version.getAsJsonPrimitive().isNumber() || !"1".equals(version.getAsString())) {
+                            || !version.getAsJsonPrimitive().isNumber() || !Integer.toString(endpoint.protocol()).equals(version.getAsString())) {
                         result.reason = "Invalid Java agent handshake";
                         return result;
                     }
@@ -100,7 +101,7 @@ final class AgentSocket {
                     catch (IOException invalid) { result.reason = invalid.getMessage(); return result; }
                     result.connected = true;
                     result.agent = agent;
-                    result.protocol = 1;
+                    result.protocol = endpoint.protocol();
                     if (command == null) return result;
                     OutputStream out = socket.getOutputStream();
                     out.write((command + "\n").getBytes(StandardCharsets.UTF_8));
@@ -119,7 +120,7 @@ final class AgentSocket {
                 }
             }
             if (!result.connected) {
-                result.reason = "No Java agent handshake received before disconnect or timeout";
+                result.reason = "No Java agent handshake received; check the private status port file";
             } else if (result.lines.isEmpty()) {
                 result.reason = "No INFO response received before disconnect or timeout";
             }
@@ -132,34 +133,24 @@ final class AgentSocket {
     }
 
     static void resolvePort(Map<String, String> opts, Result result) {
-        Integer port = null;
-        if (opts.containsKey("port")) {
-            try {
-                port = Integer.parseInt(opts.get("port").trim());
-            } catch (NumberFormatException e) {
-                result.reason = "invalid port: " + opts.get("port");
-                return;
-            }
+        resolveEndpoint(opts, result);
+    }
+
+    static StatusEndpoint resolveEndpoint(Map<String, String> opts, Result result) {
+        try {
+            Integer fixed = opts.containsKey("port") ? Integer.valueOf(opts.get("port").trim()) : null;
+            Path file = fixed == null || opts.containsKey("portFile") ? locatePortFile(opts) : null;
+            if (file == null && (opts.containsKey("portFile") || fixed == null))
+                throw new IOException("no port file found; run the app with the Reclazz Java agent, or pass port/portFile");
+            StatusEndpoint endpoint = StatusEndpoint.resolve(file, fixed);
+            result.port = endpoint.port();
+            return endpoint;
+        } catch (NumberFormatException invalid) {
+            result.reason = "invalid port";
+        } catch (IOException invalid) {
+            result.reason = invalid.getMessage();
         }
-        if (port == null) {
-            Path portFile;
-            try { portFile = locatePortFile(opts); }
-            catch (IOException invalid) { result.reason = invalid.getMessage(); return; }
-            if (portFile == null) {
-                result.reason = "no port file found; run the app with the Reclazz Java agent, or pass port/portFile";
-                return;
-            }
-            try {
-                port = Integer.parseInt(Files.readString(portFile).trim());
-            } catch (IOException | NumberFormatException e) {
-                result.reason = "unreadable port file: " + portFile;
-                return;
-            }
-        }
-        result.port = port;
-        if (port < 1 || port > 65535) {
-            result.reason = "invalid port: " + port;
-        }
+        return null;
     }
 
     private static Path locatePortFile(Map<String, String> opts) throws IOException {

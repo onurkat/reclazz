@@ -57,3 +57,6 @@ tasks.processResources {
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
 }
+
+// The independently distributed clients use the same status-file and handshake contract.
+sourceSets.main { java.srcDir(rootProject.file("status-protocol/src/main/java")) }

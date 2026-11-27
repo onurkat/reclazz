@@ -1,5 +1,7 @@
 package com.onurkat.reclazz.agent;
 
+import com.onurkat.reclazz.e2e.harness.StatusTestClient;
+
 import com.fasterxml.jackson.databind.*;
 import java.io.*;
 import java.net.*;
@@ -75,8 +77,8 @@ class ScanCompletionTest {
         Path port=dir.resolve("wire.port");var s=new StatusServer(0,port);s.setVerification(new ReloadVerification(Map::of));
         var entered=new CountDownLatch(1);var release=new CountDownLatch(1);var calls=new AtomicInteger();
         s.setScanCompleter(()->{if(calls.incrementAndGet()==1){entered.countDown();await(release);}return 1;});s.start();
-        try(var first=new Socket("127.0.0.1",Integer.parseInt(Files.readString(port)));
-            var second=new Socket("127.0.0.1",first.getPort());var observer=new Socket("127.0.0.1",first.getPort())) {
+        try(var first=StatusTestClient.connect(port);
+            var second=StatusTestClient.connect(port);var observer=StatusTestClient.connect(port)) {
             first.setSoTimeout(3000);second.setSoTimeout(3000);observer.setSoTimeout(3000);
             var in=new BufferedReader(StatusServer.readerFor(second.getInputStream()));var other=new BufferedReader(StatusServer.readerFor(observer.getInputStream()));
             new BufferedReader(StatusServer.readerFor(first.getInputStream())).readLine();in.readLine();other.readLine();

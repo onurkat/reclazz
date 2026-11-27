@@ -1,6 +1,8 @@
 /* Copyright 2026 Onur Kat. SPDX-License-Identifier: Apache-2.0 */
 package com.onurkat.reclazz.e2e;
 
+import com.onurkat.reclazz.e2e.harness.StatusTestClient;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onurkat.reclazz.e2e.harness.WatchedApp;
 import org.junit.jupiter.api.Test;
@@ -175,7 +177,7 @@ class ConstructorRefusalCensusTest {
         result.put("sensorErrors",lines.stream().filter(s->s.startsWith("R26_SENSOR_ERROR")).toList());return result;
     }
     private void control(Path file,String action,boolean scan) throws Exception {
-        try(Socket socket=new Socket("127.0.0.1",Integer.parseInt(Files.readString(file).trim()))) {
+        try(Socket socket=StatusTestClient.connect(file)) {
             socket.setSoTimeout(15000);String id="census"+(++request),prefix="RELOAD_STATE "+id+" "+action+" ";
             var out=socket.getOutputStream();out.write(((scan?"SCAN\n":"")+"RELOAD "+action+" request="+id+"\n").getBytes(StandardCharsets.UTF_8));out.flush();
             var reader=new BufferedReader(new InputStreamReader(socket.getInputStream(),StandardCharsets.UTF_8));

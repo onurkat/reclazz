@@ -4,6 +4,8 @@
  */
 package com.onurkat.reclazz.e2e;
 
+import com.onurkat.reclazz.e2e.harness.StatusTestClient;
+
 import com.onurkat.reclazz.e2e.harness.WatchedApp;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -110,7 +112,7 @@ public class KeepSingletonStateReloadTest {
     }
 
     private static void batchControl(Path port,String commands,String prefix) throws Exception {
-        try(var socket=new java.net.Socket("127.0.0.1",Integer.parseInt(java.nio.file.Files.readString(port).trim()))) {
+        try(var socket=StatusTestClient.connect(port)) {
             socket.setSoTimeout(15000);
             socket.getOutputStream().write(commands.getBytes(java.nio.charset.StandardCharsets.UTF_8));
             socket.getOutputStream().flush();

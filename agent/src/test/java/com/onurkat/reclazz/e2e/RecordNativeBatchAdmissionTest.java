@@ -1,5 +1,7 @@
 /* Copyright 2026 Onur Kat. SPDX-License-Identifier: Apache-2.0 */
 package com.onurkat.reclazz.e2e;
+
+import com.onurkat.reclazz.e2e.harness.StatusTestClient;
 import com.onurkat.reclazz.e2e.harness.JavaLauncher;
 
 import com.fasterxml.jackson.databind.*;
@@ -282,8 +284,7 @@ class RecordNativeBatchAdmissionTest {
         Files.writeString(dir.resolve("observe"),token); app.awaitOrFail("OBS|"+token+"|", "actual native metadata/caller/held record/ledger");
     }
     private String request(String command,String prefix) throws Exception {
-        int port=Integer.parseInt(Files.readString(dir.resolve("agent.port")).trim());
-        try(Socket socket=new Socket("127.0.0.1",port)) {
+        try(Socket socket=StatusTestClient.connect(dir.resolve("agent.port"))) {
             socket.setSoTimeout(15000);var input=new BufferedReader(new InputStreamReader(socket.getInputStream(),StandardCharsets.UTF_8));
             socket.getOutputStream().write((command+"\n").getBytes(StandardCharsets.UTF_8));socket.getOutputStream().flush();
             for(;;){String line=input.readLine();assertNotNull(line);String message=json.readTree(line).path("message").asText();if(message.startsWith(prefix))return message.substring(prefix.length());}

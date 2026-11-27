@@ -4,6 +4,8 @@
  */
 package com.onurkat.reclazz.e2e;
 
+import com.onurkat.reclazz.e2e.harness.StatusTestClient;
+
 import com.onurkat.reclazz.e2e.harness.WatchedApp;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -43,7 +45,6 @@ class ScanOnBuildFinishedLatencyTest {
         try (WatchedApp app = builder.start()) {
             app.awaitOrFail("APP_STARTED", "the app did not start under the agent");
             app.awaitOrFail("] Watching 1 director", "the watcher never said what it watches");
-            int port = Integer.parseInt(Files.readString(portFile).trim());
 
             List<Long> polled = new ArrayList<>();
             List<Long> scanned = new ArrayList<>();
@@ -53,7 +54,7 @@ class ScanOnBuildFinishedLatencyTest {
                 long written = System.currentTimeMillis();
                 app.rewrite(name, unit(i, "v2"));
                 if (nudge) {
-                    try (Socket s = new Socket("127.0.0.1", port)) {
+                    try (Socket s = StatusTestClient.connect(portFile)) {
                         s.setSoTimeout(5000);
                         OutputStream out = s.getOutputStream();
                         String token = "latency-" + i;

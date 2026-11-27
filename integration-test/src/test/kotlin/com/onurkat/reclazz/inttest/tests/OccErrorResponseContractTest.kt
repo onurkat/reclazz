@@ -20,7 +20,7 @@ private class OccErrorContractServer(private val source:Path,private val mode:St
     @Volatile private var edited=false
     private val watcher:Thread
     init {
-        Thread({connection=socket.accept();writer=java.io.PrintWriter(connection!!.getOutputStream(),true);emit("CONNECTED","occ-error-contract");receipt()},"occ-error-contract-accept").apply {isDaemon=true;start()}
+        Thread({connection=socket.accept();writer=java.io.PrintWriter(connection!!.getOutputStream(),true);writer.println(legacyStatusGreeting("occ-error-contract"));receipt()},"occ-error-contract-accept").apply {isDaemon=true;start()}
         http.createContext("/") {x ->
             try {
                 check(x.requestHeaders.getFirst("Accept")=="application/json")

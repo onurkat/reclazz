@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Real-agent SDK indexing acceptance using a local snapshot store, never a Solr server."""
+from reclazz_status import connect_status
 import argparse
 from collections import deque
 import hashlib
@@ -86,7 +87,7 @@ def run(args):
             assert operation('INDEX') == snapshot(versions)
             checks += 1
             session = None
-            with socket.create_connection(('127.0.0.1', int(port.read_text().strip())), timeout=10) as connection:
+            with connect_status(port, 10) as connection:
                 incoming = connection.makefile('r', encoding='utf-8')
                 for key, name in [('provider', 'ProbeProvider'), ('resolver', 'ProbeResolver'),
                                   ('type', 'ProbeTypeResolver'), ('ordinary', 'Ordinary')]:

@@ -22,7 +22,7 @@ private class TriggerContractServer(private val source:Path,private val mode:Str
     private var admission=linkedMapOf<String,Any>()
     private val watcher:Thread
     init {
-        Thread({connection=socket.accept();writer=java.io.PrintWriter(connection!!.getOutputStream(),true);emit("CONNECTED","trigger-contract");receipt()},"trigger-contract-accept").apply {isDaemon=true;start()}
+        Thread({connection=socket.accept();writer=java.io.PrintWriter(connection!!.getOutputStream(),true);writer.println(legacyStatusGreeting("trigger-contract"));receipt()},"trigger-contract-accept").apply {isDaemon=true;start()}
         http.createContext("/") {x ->
             try {
                 val query=if(x.requestMethod=="POST")x.requestBody.readBytes().toString(Charsets.UTF_8) else x.requestURI.rawQuery

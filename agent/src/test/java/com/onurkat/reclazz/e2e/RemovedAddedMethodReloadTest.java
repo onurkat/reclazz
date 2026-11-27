@@ -4,6 +4,8 @@
  */
 package com.onurkat.reclazz.e2e;
 
+import com.onurkat.reclazz.e2e.harness.StatusTestClient;
+
 import com.onurkat.reclazz.e2e.harness.WatchedApp;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -38,7 +40,7 @@ class RemovedAddedMethodReloadTest {
             app.rewrite("Holder", holder("public String keep() { return \"after\"; }"));
             String hash = java.util.HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256")
                     .digest(Files.readAllBytes(app.classesDir().resolve("app/Holder.class"))));
-            try (var socket = new java.net.Socket("127.0.0.1", Integer.parseInt(Files.readString(port).trim()))) {
+            try (var socket = StatusTestClient.connect(port)) {
                 socket.setSoTimeout(3000);
                 var input = new java.io.BufferedReader(new java.io.InputStreamReader(socket.getInputStream(), java.nio.charset.StandardCharsets.UTF_8));
                 var json = new com.fasterxml.jackson.databind.ObjectMapper();

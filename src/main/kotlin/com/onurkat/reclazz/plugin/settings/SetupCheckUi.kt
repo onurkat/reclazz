@@ -38,7 +38,7 @@ internal object SetupCheckUi {
         val settings=ReclazzSettings.getInstance(project).state.copy()
         val input=SetupCheck.Input(home,version,settings.watchExtensions.split(';').map(String::trim).filter(String::isNotEmpty).toSet(),settings.autoCompile)
         return SetupCheck.check(input,server={
-            SetupCheckServer.probe(ReloadManager.getInstance(project).readPortFile(checkPortOpen=false),checkCancelled=ProgressManager::checkCanceled)
+            SetupCheckServer.probeEndpoint(ReloadManager.getInstance(project).readPortFile(checkPortOpen=false),checkCancelled=ProgressManager::checkCanceled)
         },checkCancelled=ProgressManager::checkCanceled)
     }
     fun summary(rows:List<SetupCheck.Finding>):String = "Setup check: ${rows.count { it.level==SetupCheck.Level.FAIL }} failed, ${rows.count { it.level==SetupCheck.Level.WARN }} warnings, ${rows.count { it.level==SetupCheck.Level.SKIP }} skipped."

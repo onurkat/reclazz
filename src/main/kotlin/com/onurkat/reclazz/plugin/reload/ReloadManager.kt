@@ -4,6 +4,7 @@
  */
 package com.onurkat.reclazz.plugin.reload
 
+import com.onurkat.reclazz.protocol.StatusEndpoint
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.Service
@@ -120,7 +121,7 @@ class ReloadManager(private val project: Project) : Disposable {
                 disconnectFromAgent()
                 val generation = connectionGeneration.incrementAndGet()
                 statusClient = AgentStatusClient(
-                    port = port,
+                    endpointProvider = { readPortFile(checkPortOpen = false) },
                     onEvent = { event -> if (generation == connectionGeneration.get() && !project.isDisposed) handleEvent(event) },
                     onDisconnect = disconnected@{
                         if (!connectionGeneration.compareAndSet(generation, generation + 1)) return@disconnected
@@ -348,17 +349,10 @@ class ReloadManager(private val project: Project) : Disposable {
 
     // Note: there is an inherent TOCTOU between isPortOpen() and the actual connection.
     // If the port is reclaimed between check and connect, AgentStatusClient will retry.
-    internal fun readPortFile(checkPortOpen: Boolean = true): Int? {
+    internal fun readPortFile(checkPortOpen: Boolean = true): StatusEndpoint? {
         val settings = ReclazzSettings.getInstance(project).state
 
-        // Priority 1: Explicit port configured in settings
-        if (settings.agentPort in VALID_PORT_RANGE) {
-            val port = settings.agentPort
-            return if (!checkPortOpen || isPortOpen(port)) port else {
-                log.info("Configured port $port not open, agent may not be running")
-                null
-            }
-        }
+        val fixed = settings.agentPort.takeIf { it in VALID_PORT_RANGE }
 
         // Priority 2: Custom port file path from settings
         // Priority 3: Default .idea/reclazz/agent.port (used when the plugin
@@ -372,7 +366,7 @@ class ReloadManager(private val project: Project) : Disposable {
             portFilePaths.add(Paths.get(settings.portFilePath))
         }
         val basePath = project.basePath
-        if (basePath != null) {
+        if (settings.portFilePath.isBlank() && basePath != null) {
             portFilePaths.add(Paths.get(basePath, ".idea", "reclazz", "agent.port"))
             // Also check the agent's own default discovery location.
             val hybrisHome = com.onurkat.reclazz.plugin.hybris.HybrisProjectDetector.findHybrisHome(project)
@@ -383,31 +377,41 @@ class ReloadManager(private val project: Project) : Disposable {
         }
 
         for (portFile in portFilePaths) {
-            try {
-                // Read atomically, Files.readString handles non-existence by throwing,
-                // avoiding the TOCTOU between exists() and readString().
-                val content = try {
-                    Files.readString(portFile).trim()
-                } catch (_: java.nio.file.NoSuchFileException) {
-                    continue
-                }
-                val port = content.toIntOrNull() ?: continue
-                if (port in VALID_PORT_RANGE) {
-                    return if (!checkPortOpen || isPortOpen(port)) port else {
-                        log.info("Port file $portFile found but port $port not open, agent may not be running")
-                        null
-                    }
-                }
-            } catch (_: Exception) {
+            if (!Files.exists(portFile, java.nio.file.LinkOption.NOFOLLOW_LINKS)) continue
+            val endpoint = try { StatusEndpoint.read(portFile) } catch (_: java.io.IOException) { return null }
+            if (fixed != null && endpoint.port() != fixed) {
+                if (settings.portFilePath.isNotBlank()) return null
                 continue
             }
+            return if (!checkPortOpen || isPortOpen(endpoint)) endpoint else null
         }
-        return null
+        if (fixed == null || settings.portFilePath.isNotBlank()) return null
+        val endpoint = StatusEndpoint.legacy(fixed)
+        return if (!checkPortOpen || isPortOpen(endpoint)) endpoint else null
     }
 
-    private fun isPortOpen(port: Int): Boolean {
+    private fun isPortOpen(endpoint: StatusEndpoint): Boolean {
         return try {
-            Socket("127.0.0.1", port).use { true }
+            Socket().use { socket ->
+                socket.connect(java.net.InetSocketAddress("127.0.0.1", endpoint.port()), 1000)
+                endpoint.authenticate(socket.getOutputStream())
+                val input = socket.getInputStream()
+                val deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(2)
+                val banner = java.io.ByteArrayOutputStream()
+                while (banner.size() < 4096) {
+                    val remaining = deadline - System.nanoTime()
+                    if (remaining <= 0) return false
+                    socket.soTimeout = TimeUnit.NANOSECONDS.toMillis(remaining).coerceAtLeast(1).toInt()
+                    val next = input.read()
+                    if (next < 0) return false
+                    if (next == 10) {
+                        val fields = parseJsonObject(banner.toString(Charsets.UTF_8))
+                        return fields["level"] == "CONNECTED" && fields["version"]?.toIntOrNull() == endpoint.protocol()
+                    }
+                    banner.write(next)
+                }
+                false
+            }
         } catch (_: Exception) {
             false
         }

@@ -4,10 +4,11 @@
  */
 package com.onurkat.reclazz.inttest.client
 
+import com.onurkat.reclazz.protocol.StatusEndpoint
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.Socket
-import java.nio.file.Files
+import com.fasterxml.jackson.databind.ObjectMapper
 import java.nio.file.Path
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
@@ -15,8 +16,7 @@ import java.util.concurrent.atomic.AtomicLong
 
 data class AgentEvent(val level: String, val message: String, val timestamp: String, val sequence: Long = 0)
 
-class AgentEventClient(portFile: String) {
-    private val port = Files.readString(Path.of(portFile)).trim().toInt()
+class AgentEventClient(private val portFile: String) {
     private var socket: Socket? = null
     private var reader: BufferedReader? = null
     private val running = AtomicBoolean(false)
@@ -25,8 +25,25 @@ class AgentEventClient(portFile: String) {
     private val totalReceived = AtomicLong()
 
     fun connect() {
+        val endpoint = StatusEndpoint.read(Path.of(portFile))
+        val port = endpoint.port()
         socket = Socket("127.0.0.1", port)
-        reader = BufferedReader(InputStreamReader(socket!!.getInputStream()))
+        try {
+            socket!!.soTimeout = 5000
+            endpoint.authenticate(socket!!.getOutputStream())
+            reader = BufferedReader(InputStreamReader(socket!!.getInputStream(), Charsets.UTF_8))
+            val line = reader!!.readLine() ?: error("Missing status greeting")
+            val hello = ObjectMapper().readTree(line)
+            check(hello.path("level").asText() == "CONNECTED" && hello.path("version").asInt() == endpoint.protocol())
+            synchronized(monitor) {
+                events.add(checkNotNull(parseEvent(line)).copy(sequence = totalReceived.incrementAndGet()))
+                monitor.notifyAll()
+            }
+            socket!!.soTimeout = 0
+        } catch (failure: Exception) {
+            disconnect()
+            throw failure
+        }
         running.set(true)
         Thread({
             try {
@@ -43,7 +60,6 @@ class AgentEventClient(portFile: String) {
                 if (running.get()) System.err.println("AgentEventClient read error: ${e.message}")
             }
         }, "AgentEventClient-reader").apply { isDaemon = true; start() }
-        check(waitForEvent("CONNECTED", 5000) != null) { "Agent did not acknowledge connection" }
         println("  Connected to agent on port $port")
     }
 

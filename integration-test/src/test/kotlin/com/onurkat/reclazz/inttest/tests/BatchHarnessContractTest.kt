@@ -22,7 +22,7 @@ private class BatchContractServer:AutoCloseable {
     @Volatile var cleanup="{\"ownedRemaining\":0}"
     init {
         Thread({
-            try {connection=socket.accept();writer=java.io.PrintWriter(connection!!.getOutputStream(),true);emit("CONNECTED","batch-contract")}
+            try {connection=socket.accept();writer=java.io.PrintWriter(connection!!.getOutputStream(),true);writer.println(legacyStatusGreeting("batch-contract"))}
             catch(e:java.net.SocketException) {if(!socket.isClosed) throw e}
         },"batch-contract-accept").apply {isDaemon=true;start()}
         http.createContext("/") {exchange->

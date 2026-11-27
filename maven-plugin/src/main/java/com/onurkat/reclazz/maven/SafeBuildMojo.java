@@ -27,8 +27,10 @@ public class SafeBuildMojo extends AbstractMojo {
     private MojoExecution execution;
     @Parameter(property = "reclazz.mcpJar", required = true)
     private File mcpJar;
-    @Parameter(property = "reclazz.port", required = true)
-    private int port;
+    @Parameter(property = "reclazz.port")
+    private Integer port;
+    @Parameter(property = "reclazz.portFile")
+    private File portFile;
     @Parameter(property = "reclazz.owner", required = true)
     private String owner;
     @Parameter(property = "reclazz.timeoutMs", defaultValue = "5000")
@@ -75,16 +77,20 @@ public class SafeBuildMojo extends AbstractMojo {
     }
 
     List<String> command() throws MojoExecutionException {
-        if (mcpJar == null || !mcpJar.isFile() || port < 1 || port > 65535
+        if (mcpJar == null || !mcpJar.isFile() || (portFile == null && port == null)
+                || (port != null && (port < 1 || port > 65535))
                 || owner == null || !owner.matches("[A-Za-z0-9_-]{1,64}")
                 || timeoutMs < 1 || timeoutMs > 60000 || mavenExecutable == null || mavenExecutable.isBlank()
                 || buildArguments == null || buildArguments.isEmpty()
                 || buildArguments.stream().anyMatch(a -> a == null || a.isBlank())) {
-            throw new MojoExecutionException("Configure mcpJar, port, owner, timeoutMs, mavenExecutable and nonempty buildArguments");
+            throw new MojoExecutionException("Configure mcpJar, portFile or port, owner, timeoutMs, mavenExecutable and nonempty buildArguments");
         }
         List<String> command = new ArrayList<>(List.of(
                 new File(System.getProperty("java.home"), "bin/java").getAbsolutePath(), "-cp",
-                mcpJar.getAbsolutePath(), "com.onurkat.reclazz.mcp.BuildMain", "--port", "" + port,
+                mcpJar.getAbsolutePath(), "com.onurkat.reclazz.mcp.BuildMain"));
+        if (portFile != null) command.addAll(List.of("--port-file", portFile.getAbsolutePath()));
+        if (port != null) command.addAll(List.of("--port", port.toString()));
+        command.addAll(List.of(
                 "--owner", owner, "--timeout-ms", "" + timeoutMs, "--", mavenExecutable));
         command.addAll(buildArguments);
         return command;

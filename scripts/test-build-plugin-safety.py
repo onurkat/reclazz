@@ -7,6 +7,7 @@ Build :gradle-plugin:jar :agent:shadowJar :mcp-server:shadowJar and package
 maven-plugin first. Requires Java/Javac 17+, Gradle 8.10.2 and Maven 3.9.x.
 All logs/fixtures/evidence remain in the required fresh --work-dir.
 """
+from reclazz_status import connect_status
 import argparse
 import hashlib
 import json
@@ -58,12 +59,10 @@ def await_text(log, text):
     raise AssertionError(f"Missing {text}; see {log}")
 
 
-def query(port, operation, tail=""):
+def query(port_file, operation, tail=""):
     token = str(uuid.uuid4())
-    with socket.create_connection(("127.0.0.1", port), timeout=5) as sock:
+    with connect_status(port_file, 5) as sock:
         with sock.makefile("r", encoding="utf-8") as stream:
-            hello = json.loads(stream.readline(16385))
-            require(hello.get("level") == "CONNECTED", f"Invalid handshake {hello}")
             sock.sendall(f"{operation} {token}{tail}\n".encode())
             prefix = f"{operation}_RESULT {token} "
             until = time.monotonic() + 5
@@ -139,16 +138,16 @@ def exercise(args, tool):
         project(':b') {{ tasks.named('compileJava') {{ dependsOn ':a:compileJava'; doFirst {{ Thread.sleep(1500) }} }} }}
         tasks.named('reclazzSafeBuild') {{
           mcpJar = file({quote(str(args.mcp))})
-          port = providers.gradleProperty('agentPort').map {{ it.toInteger() }}
+          portFile = layout.file(providers.gradleProperty('agentPortFile').map {{ file(it) }})
           owner = providers.gradleProperty('buildOwner')
           buildArguments = ['--offline', '--console=plain', ':b:compileJava']
         }}
         """)
         ordinary = [args.gradle, "--offline", "--no-daemon", "--console=plain", ":b:compileJava"]
         outputs = [root / module / "build/classes/java/main" for module in ("a", "b")]
-        def safe(port, owner):
+        def safe(port_file, owner):
             return [args.gradle, "--offline", "--no-daemon", "--console=plain", "reclazzSafeBuild",
-                    f"-PagentPort={port}", f"-PbuildOwner={owner}"]
+                    f"-PagentPortFile={port_file}", f"-PbuildOwner={owner}"]
     else:
         repository = args.work_dir / "maven-repository"
         prepare_maven(args, repository)
@@ -172,9 +171,9 @@ def exercise(args, tool):
               <artifactId>{module}</artifactId></project>""")
         ordinary = [args.maven, *child_args]
         outputs = [root / module / "target/classes" for module in ("a", "b")]
-        def safe(port, owner):
+        def safe(port_file, owner):
             return [args.maven, "--offline", "--batch-mode", f"-Dmaven.repo.local={repository}",
-                    f"-Dreclazz.port={port}", f"-Dreclazz.owner={owner}",
+                    f"-Dreclazz.portFile={port_file}", f"-Dreclazz.owner={owner}",
                     f"com.onurkat.reclazz:reclazz-maven-plugin:{args.version}:safe-build"]
     # A normal compile has no agent and must remain unchanged / opted out.
     run(ordinary, root, root / "01-baseline.log")
@@ -197,32 +196,31 @@ def exercise(args, tool):
         try:
             await_text(app_log, "VALUES=1:1")
             await_text(app_log, "] Watching ")
-            port = int(port_file.read_text().strip())
-            doctor = query(port, "DOCTOR")
+            doctor = query(port_file, "DOCTOR")
             require(doctor["buildHold"] == "none", "Initial build hold")
             session = doctor["sessionId"]
             sources(root, 2, broken=True)
-            run(safe(port, "fixture-owner"), root, root / "03-partial-failure.log", success=False)
+            run(safe(port_file, "fixture-owner"), root, root / "03-partial-failure.log", success=False)
             require(sha(class_a) != before, "First module must really compile before second fails")
             require("missingSymbol" in (root / "03-partial-failure.log").read_text(), "Expected actual compiler error")
             time.sleep(1.5)
             require("VALUES=2:" not in app_log.read_text(), "Partial output reached the live JVM")
             failed_hash = sha(class_a)
-            require(query(port, "DOCTOR")["buildHold"] == "named", "Failed build must keep its named hold")
-            require(query(port, "VERIFY", f" A {failed_hash}")["status"] != "applied", "False completion receipt")
+            require(query(port_file, "DOCTOR")["buildHold"] == "named", "Failed build must keep its named hold")
+            require(query(port_file, "VERIFY", f" A {failed_hash}")["status"] != "applied", "False completion receipt")
             sources(root, 3)
-            run(safe(port, "other-owner"), root, root / "04-other-owner.log", success=False)
+            run(safe(port_file, "other-owner"), root, root / "04-other-owner.log", success=False)
             require(sha(class_a) == failed_hash, "Competing owner compiled before acquiring a hold")
-            require(query(port, "DOCTOR")["buildHold"] == "named", "Other builder released the hold")
-            run(safe(port, "fixture-owner"), root, root / "05-recovery.log")
+            require(query(port_file, "DOCTOR")["buildHold"] == "named", "Other builder released the hold")
+            run(safe(port_file, "fixture-owner"), root, root / "05-recovery.log")
             await_text(app_log, "VALUES=3:3")
-            require(query(port, "DOCTOR")["buildHold"] == "none", "Successful owner did not release hold")
+            require(query(port_file, "DOCTOR")["buildHold"] == "none", "Successful owner did not release hold")
             receipts = []
             for name, file in (("A", class_a), ("B", class_b)):
                 expected = sha(file)
                 until = time.monotonic() + 15
                 while True:
-                    receipt = query(port, "VERIFY", f" {name} {expected}")
+                    receipt = query(port_file, "VERIFY", f" {name} {expected}")
                     if receipt["status"] == "applied" or time.monotonic() > until:
                         break
                     time.sleep(.05)
@@ -231,7 +229,7 @@ def exercise(args, tool):
                 receipts.append(receipt)
             require(app.poll() is None, "Application restarted/exited")
             # Same successful invocation must still acquire a new hold when tasks are up-to-date.
-            run(safe(port, "fixture-owner"), root, root / "06-up-to-date.log")
+            run(safe(port_file, "fixture-owner"), root, root / "06-up-to-date.log")
             require("Reclazz build owner: fixture-owner" in (root / "06-up-to-date.log").read_text(),
                     "Safety wrapper incorrectly skipped")
             # Offline target must fail BEFORE any compiled output changes.
@@ -239,7 +237,9 @@ def exercise(args, tool):
             with socket.socket() as unused:
                 unused.bind(("127.0.0.1", 0))
                 dead_port = unused.getsockname()[1]  # bound but not listening
-                run(safe(dead_port, "fixture-owner"), root, root / "07-offline.log", success=False)
+                offline_file = root / "offline.port"
+                offline_file.write_text(str(dead_port))
+                run(safe(offline_file, "fixture-owner"), root, root / "07-offline.log", success=False)
             require(sha(class_a) == receipts[0]["observedSha256"], "Offline build still wrote output")
             evidence = {"tool": tool, "passed": True, "pid": app.pid, "sessionId": session,
                         "scenarios": ["opt-out", "partial-failure", "competing-owner", "same-owner-recovery",

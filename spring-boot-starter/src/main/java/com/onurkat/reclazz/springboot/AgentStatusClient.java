@@ -4,6 +4,7 @@
  */
 package com.onurkat.reclazz.springboot;
 
+import com.onurkat.reclazz.protocol.StatusEndpoint;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -48,23 +49,24 @@ final class AgentStatusClient {
     static Status query(ReclazzProperties properties) {
         Status status = new Status();
         Integer port = properties.getPort();
-        if (port == null) {
-            Path portFile = locatePortFile(properties);
-            if (portFile == null) {
+        StatusEndpoint endpoint;
+        try {
+            Path file = port == null || properties.getPortFile() != null ? locatePortFile(properties) : null;
+            if (file == null && (port == null || properties.getPortFile() != null)) {
                 status.reason = "no Java agent port file found";
                 return status;
             }
-            try {
-                port = Integer.parseInt(Files.readString(portFile).trim());
-            } catch (IOException | NumberFormatException e) {
-                status.reason = "unreadable port file: " + portFile;
-                return status;
-            }
+            endpoint = StatusEndpoint.resolve(file, port);
+            port = endpoint.port();
+        } catch (IOException invalid) {
+            status.reason = "unreadable port file or invalid port";
+            return status;
         }
         status.port = port;
 
         try (Socket socket = new Socket()) {
             socket.connect(new InetSocketAddress("127.0.0.1", port), 1000);
+            endpoint.authenticate(socket.getOutputStream());
             socket.setSoTimeout(500);
             BufferedReader in = new BufferedReader(
                     new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
@@ -86,12 +88,16 @@ final class AgentStatusClient {
                 }
                 String level = group(LEVEL, line);
                 if ("CONNECTED".equals(level)) {
-                    status.reachable = true;
                     status.agent = group(AGENT, line);
                     String v = group(VERSION, line);
                     if (v != null) {
                         status.protocol = Integer.parseInt(v);
                     }
+                    if (status.protocol != endpoint.protocol()) {
+                        status.reason = "Incompatible status protocol; check the agent port file";
+                        return status;
+                    }
+                    status.reachable = true;
                     OutputStream out = socket.getOutputStream();
                     out.write("HEALTH\n".getBytes(StandardCharsets.UTF_8));
                     out.flush();
@@ -106,7 +112,7 @@ final class AgentStatusClient {
                 }
             }
             if (!status.reachable) {
-                status.reason = "connected but no CONNECTED line from the Java agent";
+                status.reason = "connected but no CONNECTED line from the Java agent; check the private port file";
             }
             return status;
         } catch (IOException e) {

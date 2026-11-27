@@ -7,6 +7,10 @@ package com.onurkat.reclazz.mcp;
 import com.google.gson.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
+import java.nio.file.attribute.AclEntry;
+import java.nio.file.attribute.AclEntryPermission;
+import java.nio.file.attribute.AclEntryType;
+import java.nio.file.attribute.AclFileAttributeView;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
@@ -22,6 +26,7 @@ class McpToolContractsTest {
     private static final String LEGACY = "2024-11-05";
     private static final List<String> TOOLS = List.of("reclazz_status", "reclazz_scan", "reclazz_pending",
             "reclazz_diagnose", "reclazz_build", "reclazz_verify", "reclazz_doctor", "reclazz_verify_batch", "reclazz_reload_control", "reclazz_await_reload", "reclazz_events");
+    private static final String SOCKET_CREDENTIAL = "ab".repeat(32);
     @TempDir Path dir;
 
     private static JsonObject rpc(String method, JsonObject params) {
@@ -49,6 +54,23 @@ class McpToolContractsTest {
         a.addProperty("sha256", ReloadVerificationTest.HASH); a.addProperty("state", "started"); a.addProperty("owner", "contract-owner");
         a.addProperty("portFile", dir.resolve("missing.port").toString()); a.addProperty("timeoutMs", "500"); return a;
     }
+    private JsonObject connectedArgs(BuildSafetyTest.FakeAgent agent) throws Exception {
+        Path file = Files.createTempFile(dir, "agent-", ".port");
+        var acl = Files.getFileAttributeView(file, AclFileAttributeView.class);
+        if (acl != null) {
+            var user = file.getFileSystem().getUserPrincipalLookupService()
+                    .lookupPrincipalByName(System.getProperty("user.name"));
+            acl.setAcl(List.of(AclEntry.newBuilder().setType(AclEntryType.ALLOW).setPrincipal(user)
+                    .setPermissions(EnumSet.allOf(AclEntryPermission.class)).build()));
+        }
+        int port = agent.server.getLocalPort();
+        Files.writeString(file, port + "\ntoken=" + SOCKET_CREDENTIAL + "\n");
+        JsonObject a = args();
+        a.addProperty("port", Integer.toString(port));
+        a.addProperty("portFile", file.toString());
+        return a;
+    }
+
     private static JsonObject call(McpServer s, String tool, JsonObject args) {
         JsonObject p = new JsonObject(); p.addProperty("name", tool); p.add("arguments", args);
         return s.handle(rpc("tools/call", p));
@@ -135,7 +157,7 @@ class McpToolContractsTest {
 
     @ParameterizedTest @ValueSource(strings={"reclazz_status","reclazz_pending","reclazz_diagnose","reclazz_scan"})
     void connectedDiagnosticsAndScanDoNotClaimCompletion(String tool) throws Exception {
-        try (var agent = new BuildSafetyTest.FakeAgent((in,out) -> {
+        try (var agent = new BuildSafetyTest.FakeAgent(SOCKET_CREDENTIAL, (in,out) -> {
             if (tool.equals("reclazz_scan")) {
                 ScanCompletionTest.advertise(in,out);String scan=in.readLine();
                 ScanCompletionTest.send(out,scan,ScanCompletionTest.receipt(scan,0));return;
@@ -145,7 +167,7 @@ class McpToolContractsTest {
                 case "reclazz_scan" -> "SCAN"; default -> "DIAGNOSE A";}, command);
             if (!tool.equals("reclazz_scan")) out.println("{\"level\":\"INFO\",\"message\":\"observed \\\"value\\\"\",\"timestamp\":\"t\"}");
         })) {
-            JsonObject a = args(); a.addProperty("port", "" + agent.server.getLocalPort());
+            JsonObject a = connectedArgs(agent);
             JsonObject data = checked(client(MODERN), tool, a, false, "connected");
             if (tool.equals("reclazz_status")) {
                 assertTrue(data.get("attached").getAsBoolean()); assertEquals(1, data.getAsJsonArray("health").size());
@@ -162,11 +184,11 @@ class McpToolContractsTest {
 
     @Test void buildAckAndMissingAckHaveDifferentMachineStates() throws Exception {
         for (String state : List.of("started","ok","failed")) for (boolean ack : List.of(true,false)) {
-            try (var agent = new BuildSafetyTest.FakeAgent((in,out) -> {
+            try (var agent = new BuildSafetyTest.FakeAgent(SOCKET_CREDENTIAL, (in,out) -> {
                 String command = in.readLine(); assertTrue(command.startsWith("BUILD " + state + " request="));
                 if (ack) BuildSafetyTest.ack(out, command);
             })) {
-                JsonObject a = args(); a.addProperty("state",state); a.addProperty("port",""+agent.server.getLocalPort());
+                JsonObject a = connectedArgs(agent); a.addProperty("state",state);
                 JsonObject d = checked(client(MODERN),"reclazz_build",a,!ack,state+"-"+ack);
                 assertEquals(ack ? "acknowledged" : "unavailable", d.get("status").getAsString());
                 assertEquals(state,d.get("state").getAsString()); assertFalse(d.get("reloadConfirmed").getAsBoolean()); agent.verify();
@@ -176,11 +198,11 @@ class McpToolContractsTest {
 
     @Test void batchOutputsValidateForAppliedAndPartialReceipts() throws Exception {
         for (String status : List.of("applied", "running")) {
-            try (var agent = new BuildSafetyTest.FakeAgent((in,out) -> {
+            try (var agent = new BuildSafetyTest.FakeAgent(SOCKET_CREDENTIAL, (in,out) -> {
                 BatchVerificationTest.reply(out,in.readLine(),"applied");
                 BatchVerificationTest.reply(out,in.readLine(),status);
             })) {
-                JsonObject a=args();a.addProperty("port",""+agent.server.getLocalPort());
+                JsonObject a = connectedArgs(agent);
                 JsonObject d=checked(client(MODERN),"reclazz_verify_batch",a,!status.equals("applied"),status);
                 assertEquals(status.equals("applied"),d.get("allApplied").getAsBoolean());assertFalse(d.get("atomic").getAsBoolean());agent.verify();
             }
@@ -188,10 +210,10 @@ class McpToolContractsTest {
     }
 
     @Test void doctorReturnsCorrelatedStructuredEvidence() throws Exception {
-        try(var agent=new BuildSafetyTest.FakeAgent((in,out)->{
+        try(var agent=new BuildSafetyTest.FakeAgent(SOCKET_CREDENTIAL, (in,out)->{
             String command=in.readLine();DoctorTest.send(out,command,DoctorTest.evidence(command));
         })) {
-            JsonObject a=args();a.addProperty("port",""+agent.server.getLocalPort());
+            JsonObject a = connectedArgs(agent);
             JsonObject d=checked(client(MODERN),"reclazz_doctor",a,false,"observed");
             assertEquals("observed",d.get("status").getAsString());assertFalse(d.get("reloadConfirmed").getAsBoolean());
             agent.verify();
@@ -200,13 +222,13 @@ class McpToolContractsTest {
 
     @Test void verificationPreservesEveryReceiptStatusAndRejectsUncorrelatedProof() throws Exception {
         for (String status : List.of("applied","running","failed","unverified","mismatch","not_observed","broken")) {
-            try (var agent = new BuildSafetyTest.FakeAgent((in,out) -> {
+            try (var agent = new BuildSafetyTest.FakeAgent(SOCKET_CREDENTIAL, (in,out) -> {
                 JsonObject receipt = ReloadVerificationTest.receipt(in.readLine(), status.equals("broken") ? "applied" : status);
                 String token = receipt.get("requestId").getAsString();
                 if (status.equals("broken")) receipt.addProperty("observedSha256", "wrong");
                 ReloadVerificationTest.send(out,token,receipt);
             })) {
-                JsonObject a=args(); a.addProperty("port",""+agent.server.getLocalPort());
+                JsonObject a = connectedArgs(agent);
                 JsonObject d=checked(client(MODERN),"reclazz_verify",a,!status.equals("applied"),status);
                 assertEquals(status.equals("broken") ? "unavailable" : status,d.get("status").getAsString());
                 assertEquals(ReloadVerificationTest.HASH,d.get("expectedSha256").getAsString());
@@ -218,13 +240,13 @@ class McpToolContractsTest {
 
     @Test void reloadControlResultsAreCorrelatedAndSchemaChecked() throws Exception {
         for (String action : List.of("pause", "resume", "status")) {
-            try (var agent = new BuildSafetyTest.FakeAgent((in,out) -> {
+            try (var agent = new BuildSafetyTest.FakeAgent(SOCKET_CREDENTIAL, (in,out) -> {
                 String command = in.readLine();
                 assertTrue(command.startsWith("RELOAD " + action + " request="));
                 ReloadControlTest.reply(out, command, "paused=" + !action.equals("resume")
                         + " pendingClasses=2 pendingActions=1 buildHold=named");
             })) {
-                JsonObject a=args(); a.addProperty("action", action); a.addProperty("port", ""+agent.server.getLocalPort());
+                JsonObject a = connectedArgs(agent); a.addProperty("action", action);
                 JsonObject d=checked(client(MODERN), "reclazz_reload_control", a, false, action);
                 assertEquals("acknowledged", d.get("status").getAsString());
                 assertEquals(!action.equals("resume"), d.get("paused").getAsBoolean());
@@ -232,6 +254,22 @@ class McpToolContractsTest {
                 assertEquals("named", d.get("buildHold").getAsString());
                 agent.verify();
             }
+        }
+    }
+
+    @Test void legacyAgentWithOneLinePortFileReturnsHealth() throws Exception {
+        try (var agent = new BuildSafetyTest.FakeAgent((in, out) -> {
+            assertEquals("HEALTH", in.readLine());
+            out.println("{\"level\":\"INFO\",\"message\":\"legacy health\",\"timestamp\":\"t\"}");
+        }); var server = client(MODERN)) {
+            Path file = dir.resolve("legacy.port");
+            Files.writeString(file, Integer.toString(agent.server.getLocalPort()));
+            JsonObject a = args();
+            a.addProperty("portFile", file.toString());
+            JsonObject data = checked(server, "reclazz_status", a, false, "legacy-agent");
+            assertTrue(data.get("attached").getAsBoolean());
+            assertEquals(1, data.getAsJsonArray("health").size());
+            agent.verify();
         }
     }
 

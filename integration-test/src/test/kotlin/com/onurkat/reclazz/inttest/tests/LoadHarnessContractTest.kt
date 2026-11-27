@@ -28,7 +28,7 @@ private class LoadContractServer(private val source:Path,private val mode:String
     private val steps=linkedMapOf<String,Map<String,Any>>()
     private val baseline=Files.readAllBytes(source)
     init {
-        Thread({connection=socket.accept();writer=java.io.PrintWriter(connection!!.getOutputStream(),true);emit("CONNECTED","load-contract")},
+        Thread({connection=socket.accept();writer=java.io.PrintWriter(connection!!.getOutputStream(),true);writer.println(legacyStatusGreeting("load-contract"))},
             "load-contract-accept").apply {isDaemon=true;start()}
         http.createContext("/") {exchange ->
             try {

@@ -1,6 +1,8 @@
 /* Copyright 2026 Onur Kat. SPDX-License-Identifier: Apache-2.0 */
 package com.onurkat.reclazz.e2e;
 
+import com.onurkat.reclazz.e2e.harness.StatusTestClient;
+
 import com.onurkat.reclazz.e2e.harness.WatchedApp;
 import com.fasterxml.jackson.databind.*;
 import java.io.*;
@@ -58,7 +60,7 @@ public final class PlainSingletonGainsProxyAcceptance {
         }return String.join(File.pathSeparator,entries);
     }
     private static String command(Path dir,String command,String prefix)throws Exception {
-        var json=new ObjectMapper();try(Socket socket=new Socket("127.0.0.1",Integer.parseInt(Files.readString(dir.resolve("agent.port")).trim()))) {
+        var json=new ObjectMapper();try(Socket socket=StatusTestClient.connect(dir.resolve("agent.port"))) {
             socket.setSoTimeout(15000);var input=new BufferedReader(new InputStreamReader(socket.getInputStream(),StandardCharsets.UTF_8));socket.getOutputStream().write((command+"\n").getBytes(StandardCharsets.UTF_8));socket.getOutputStream().flush();
             for(;;){String line=input.readLine();assertNotNull(line);String message=json.readTree(line).path("message").asText();if(message.startsWith(prefix))return message.substring(prefix.length());}
         }

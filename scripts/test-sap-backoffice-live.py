@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Serialized clean-install setup/edit/restore steps; Claude supplies Chrome evidence."""
+from reclazz_status import connect_status
 from pathlib import Path
 from sap_suite_contract import DEFAULT_CASES, DEFAULT_OUTCOME, NORMAL_FIXTURE_FILES, default_result
 import argparse
@@ -252,10 +253,8 @@ def write_and_wait(folder, state, path, data, kind):
     if doctor['sessionId'] != state['experimentDoctor']['sessionId']:
         raise RuntimeError('Experiment JVM changed')
     events = []; cursor = str(uuid.uuid4())
-    with socket.create_connection(('127.0.0.1', int(support.PORT_FILE.read_text())), 5) as connection:
+    with connect_status(support.PORT_FILE, 5) as connection:
         stream = connection.makefile('r')
-        if read_event(stream, connection, 5).get('level') != 'CONNECTED':
-            raise RuntimeError('No fresh event connection')
         # A new stream has no history replay. The cursor identifies this connection
         # and the ordered events collected strictly after this atomic save.
         staged = path.with_suffix(path.suffix + '.pending'); staged.write_bytes(data); staged.replace(path)

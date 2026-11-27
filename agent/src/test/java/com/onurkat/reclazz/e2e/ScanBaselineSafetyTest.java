@@ -1,6 +1,8 @@
 /* Copyright 2026 Onur Kat; SPDX-License-Identifier: Apache-2.0 */
 package com.onurkat.reclazz.e2e;
 
+import com.onurkat.reclazz.e2e.harness.StatusTestClient;
+
 import com.onurkat.reclazz.e2e.harness.WatchedApp;
 
 import org.junit.jupiter.api.Test;
@@ -47,19 +49,18 @@ class ScanBaselineSafetyTest {
                 .directory(root.toFile()).redirectErrorStream(true).redirectOutput(log.toFile()).start();
         try {
             await(log,"PROBE_READY"); WatchedApp.awaitWatcherReady(log, 30);
-            int port=Integer.parseInt(Files.readString(portFile).strip());
-            scan(port);Files.createFile(root.resolve("probe0"));await(log,"COUNT0=");
+            scan(portFile);Files.createFile(root.resolve("probe0"));await(log,"COUNT0=");
             assertTrue(Files.readString(log).contains("COUNT0=0"),Files.readString(log));
             Files.writeString(impex,Files.readString(impex)+"# changed\n");
-            scan(port);Files.createFile(root.resolve("probe1"));await(log,"COUNT1=");
+            scan(portFile);Files.createFile(root.resolve("probe1"));await(log,"COUNT1=");
             assertTrue(Files.readString(log).contains("COUNT1=1"),Files.readString(log));
-            scan(port);Files.createFile(root.resolve("probe2"));await(log,"COUNT2=");
+            scan(portFile);Files.createFile(root.resolve("probe2"));await(log,"COUNT2=");
             assertTrue(Files.readString(log).contains("COUNT2=1"),Files.readString(log));
             assertTrue(child.waitFor(10,TimeUnit.SECONDS));assertEquals(0,child.exitValue(),Files.readString(log));
         } finally { if(child.isAlive())child.destroyForcibly().waitFor(); }
     }
-    private static void scan(int port) throws Exception {
-        try(var socket=new Socket("127.0.0.1",port)) {
+    private static void scan(Path portFile) throws Exception {
+        try(var socket=StatusTestClient.connect(portFile)) {
             socket.getOutputStream().write("SCAN\n".getBytes(StandardCharsets.UTF_8));socket.getOutputStream().flush();
         }
     }

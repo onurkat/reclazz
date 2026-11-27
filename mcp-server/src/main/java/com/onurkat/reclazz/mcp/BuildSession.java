@@ -4,6 +4,7 @@
  */
 package com.onurkat.reclazz.mcp;
 
+import com.onurkat.reclazz.protocol.StatusEndpoint;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.io.BufferedReader;
@@ -42,7 +43,7 @@ final class BuildSession implements AutoCloseable {
         String owner = opts.getOrDefault("owner", UUID.randomUUID().toString());
         if (!validOwner(owner)) throw new IOException("owner must be 1-64 ASCII letters, digits, _ or -");
         AgentSocket.Result address = new AgentSocket.Result();
-        AgentSocket.resolvePort(opts, address);
+        StatusEndpoint endpoint = AgentSocket.resolveEndpoint(opts, address);
         if (address.reason != null) throw new IOException(address.reason);
         int timeout = 5000;
         if (opts.containsKey("timeoutMs")) {
@@ -54,6 +55,7 @@ final class BuildSession implements AutoCloseable {
         try {
             if (cancellation != null) cancellation.attach(socket);
             socket.connect(new InetSocketAddress("127.0.0.1", address.port), until == 0 ? timeout : remainingMillis(until));
+            endpoint.authenticate(socket.getOutputStream());
             BuildSession session = new BuildSession(socket, timeout, owner);
             session.cancellation = cancellation;
             JsonObject hello;
@@ -62,7 +64,7 @@ final class BuildSession implements AutoCloseable {
                 var level = hello.get("level"); var agent = hello.get("agent"); var version = hello.get("version");
                 if (level == null || !level.isJsonPrimitive() || !level.getAsJsonPrimitive().isString() || !"CONNECTED".equals(level.getAsString())
                         || agent == null || !agent.isJsonPrimitive() || !agent.getAsJsonPrimitive().isString() || agent.getAsString().isBlank()
-                        || version == null || !version.isJsonPrimitive() || !version.getAsJsonPrimitive().isNumber() || !"1".equals(version.getAsString()))
+                        || version == null || !version.isJsonPrimitive() || !version.getAsJsonPrimitive().isNumber() || !Integer.toString(endpoint.protocol()).equals(version.getAsString()))
                     throw new IOException("No valid Java agent handshake");
             } catch (IOException | RuntimeException invalid) {
                 throw new IOException("Invalid Java agent handshake", invalid);

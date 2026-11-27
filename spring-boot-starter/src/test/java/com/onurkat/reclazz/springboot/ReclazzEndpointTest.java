@@ -36,18 +36,30 @@ class ReclazzEndpointTest {
 
     @Test
     void readsHealthFromTheLoopbackStatusSocket() throws Exception {
+        exercisePeer(1);
+    }
+
+    @Test
+    void authenticatesBeforeReadingHealth() throws Exception {
+        exercisePeer(2);
+    }
+
+    private void exercisePeer(int version) throws Exception {
         try (ServerSocket agent = new ServerSocket(0, 1, InetAddress.getLoopbackAddress())) {
             Path portFile = dir.resolve("agent.port");
-            Files.writeString(portFile, String.valueOf(agent.getLocalPort()));
+            String fixture = "ab".repeat(32);
+            Files.writeString(portFile, agent.getLocalPort() + (version == 2 ? "\ntoken=" + fixture + "\n" : ""));
 
             Thread responder = new Thread(() -> {
                 try (Socket s = agent.accept()) {
-                    OutputStream out = s.getOutputStream();
-                    out.write(("{\"level\":\"CONNECTED\",\"message\":\"hi\",\"timestamp\":\"t\","
-                            + "\"version\":1,\"agent\":\"1.3.0\"}\n").getBytes(StandardCharsets.UTF_8));
-                    out.flush();
                     BufferedReader in = new BufferedReader(
                             new InputStreamReader(s.getInputStream(), StandardCharsets.UTF_8));
+                    if (version == 2 && !("AUTH " + fixture).equals(in.readLine())) return;
+                    OutputStream out = s.getOutputStream();
+                    out.write(("{\"level\":\"CONNECTED\",\"message\":\"hi\",\"timestamp\":\"t\","
+                            + "\"version\":" + version + ",\"agent\":\"1.3.0\"}\n").getBytes(StandardCharsets.UTF_8));
+                    out.flush();
+
                     if ("HEALTH".equals(in.readLine())) {
                         out.write(("{\"level\":\"INFO\",\"message\":\"Reloads: 5, failures: 0\","
                                 + "\"timestamp\":\"t\"}\n").getBytes(StandardCharsets.UTF_8));
@@ -63,10 +75,11 @@ class ReclazzEndpointTest {
 
             ReclazzProperties props = new ReclazzProperties();
             props.setPort(agent.getLocalPort());
+            if (version == 2) props.setPortFile(portFile.toString());
             Map<String, Object> result = new ReclazzEndpoint(props).reclazz();
 
             assertThat(result).containsEntry("agent", "1.3.0");
-            assertThat(result).containsEntry("protocol", 1);
+            assertThat(result).containsEntry("protocol", version);
             assertThat(result.get("health").toString()).contains("Reloads: 5");
         }
     }

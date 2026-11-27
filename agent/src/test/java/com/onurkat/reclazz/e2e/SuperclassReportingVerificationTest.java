@@ -4,6 +4,8 @@
  */
 package com.onurkat.reclazz.e2e;
 
+import com.onurkat.reclazz.e2e.harness.StatusTestClient;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onurkat.reclazz.e2e.harness.WatchedApp;
@@ -60,7 +62,7 @@ class SuperclassReportingVerificationTest {
                         """).start()) {
             app.awaitOrFail("] Watching 1 director", "watcher ready");
             app.awaitOrFail("LIVE v1/c1 parent=A same=true state=19 who=A", "original receiver ready");
-            try (var socket = new Socket("127.0.0.1", Integer.parseInt(Files.readString(port).trim()))) {
+            try (var socket = StatusTestClient.connect(port)) {
                 socket.setSoTimeout(3000);
                 var input = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
 

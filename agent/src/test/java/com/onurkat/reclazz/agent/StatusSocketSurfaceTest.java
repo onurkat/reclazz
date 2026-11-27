@@ -4,6 +4,8 @@
  */
 package com.onurkat.reclazz.agent;
 
+import com.onurkat.reclazz.e2e.harness.StatusTestClient;
+
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -29,6 +31,140 @@ import static org.junit.jupiter.api.Assertions.*;
  * made to do. It cannot, and this is what keeps it that way.
  */
 class StatusSocketSurfaceTest {
+    @org.junit.jupiter.api.io.TempDir java.nio.file.Path statusDirectory;
+
+    @Test
+    void publishesPrivateCredentialsBeforeServingAnyEvents(@org.junit.jupiter.api.io.TempDir java.nio.file.Path dir) throws Exception {
+        var file = dir.resolve("port");
+        var server = new StatusServer(0, file);
+        server.start();
+        try {
+            var lines = java.nio.file.Files.readAllLines(file);
+            assertEquals(2, lines.size());
+            assertTrue(lines.get(1).matches("token=[0-9a-f]{64}"));
+            if (java.nio.file.Files.getFileStore(dir).supportsFileAttributeView("posix"))
+                assertEquals(java.nio.file.attribute.PosixFilePermissions.fromString("rw-------"),
+                        java.nio.file.Files.getPosixFilePermissions(file));
+            try (var socket = new java.net.Socket("127.0.0.1", Integer.parseInt(lines.get(0)))) {
+                socket.setSoTimeout(200);
+                server.onEvent("INFO", "private test event");
+                assertThrows(java.net.SocketTimeoutException.class, () -> socket.getInputStream().read());
+            }
+        } finally { server.stop(); }
+    }
+
+    @Test
+    void commandsWaitForAuthenticationWhileOtherClientsCanConnect() throws Exception {
+        var file = statusDirectory.resolve("endpoint");
+        var status = new StatusServer(0, file);
+        var calls = new java.util.concurrent.atomic.AtomicInteger();
+        status.setHealthReporter(() -> List.of("calls=" + calls.incrementAndGet()));
+        status.start();
+        try {
+            var endpoint = com.onurkat.reclazz.protocol.StatusEndpoint.read(file);
+            try (var silent = new java.net.Socket("127.0.0.1", endpoint.port())) {
+                for (String first : List.of("HEALTH", "AUTH " + "0".repeat(64))) {
+                    try (var refused = new java.net.Socket("127.0.0.1", endpoint.port())) {
+                        refused.setSoTimeout(4000);
+                        refused.getOutputStream().write((first + "\n").getBytes(java.nio.charset.StandardCharsets.US_ASCII));
+                        assertEquals(-1, refused.getInputStream().read());
+                        assertEquals(0, calls.get());
+                    }
+                }
+                try (var allowed = StatusTestClient.connect(file)) {
+                    allowed.setSoTimeout(4000);
+                    var reader = new java.io.BufferedReader(StatusServer.readerFor(allowed.getInputStream()));
+                    assertTrue(reader.readLine().contains("CONNECTED"));
+                    allowed.getOutputStream().write("HEALTH\n".getBytes(java.nio.charset.StandardCharsets.US_ASCII));
+                    assertTrue(reader.readLine().contains("calls=1"));
+                    status.onEvent("INFO", "post-auth event");
+                    assertTrue(reader.readLine().contains("post-auth event"));
+                }
+                silent.setSoTimeout(4000);
+                assertEquals(-1, silent.getInputStream().read());
+            }
+        } finally { status.stop(); }
+    }
+
+    @org.junit.jupiter.api.condition.EnabledOnOs({org.junit.jupiter.api.condition.OS.MAC, org.junit.jupiter.api.condition.OS.LINUX})
+    @Test
+    void authenticatesInAGroupWritableProjectDirectory() throws Exception {
+        var shared = java.nio.file.Files.createDirectory(statusDirectory.resolve("shared"));
+        java.nio.file.Files.setAttribute(shared, "unix:mode", 02775);
+        checkPrivateConnection(shared.resolve("agent.port"));
+    }
+
+    @org.junit.jupiter.api.condition.EnabledOnOs({org.junit.jupiter.api.condition.OS.MAC, org.junit.jupiter.api.condition.OS.LINUX})
+    @Test
+    void authenticatesWithAPrivateFileInAForeignOwnedDirectory() throws Exception {
+        var shared = java.nio.file.Path.of("/tmp").toRealPath();
+        org.junit.jupiter.api.Assumptions.assumeFalse(java.nio.file.Files.getOwner(shared).equals(
+                java.nio.file.Files.getOwner(statusDirectory)), "Requires a writable directory owned by a different account");
+        checkPrivateConnection(shared.resolve("reclazz-status-test-" + java.util.UUID.randomUUID() + ".port"));
+    }
+
+    private void checkPrivateConnection(java.nio.file.Path file) throws Exception {
+        var status = new StatusServer(0, file);
+        status.start();
+        try (var socket = StatusTestClient.connect(file)) {
+            assertEquals(java.nio.file.attribute.PosixFilePermissions.fromString("rw-------"),
+                    java.nio.file.Files.getPosixFilePermissions(file));
+            socket.setSoTimeout(3000);
+            var reader = new java.io.BufferedReader(StatusServer.readerFor(socket.getInputStream()));
+            assertTrue(reader.readLine().contains("CONNECTED"));
+        } finally { status.stop(); }
+        assertFalse(java.nio.file.Files.exists(file));
+    }
+
+    @Test
+    void aRestartReplacesCredentialsAndOldCleanupPreservesTheNewFile() throws Exception {
+        var file = statusDirectory.resolve("endpoint");
+        java.nio.file.Files.writeString(file, "3210");
+        boolean posix = java.nio.file.Files.getFileStore(file).supportsFileAttributeView("posix");
+        if (posix) java.nio.file.Files.setPosixFilePermissions(file, java.nio.file.attribute.PosixFilePermissions.fromString("rw-r--r--"));
+        var first = new StatusServer(0, file);
+        var second = new StatusServer(0, file);
+        first.start();
+        try {
+            String before = java.nio.file.Files.readAllLines(file).get(1);
+            second.start();
+            assertFalse(before.equals(java.nio.file.Files.readAllLines(file).get(1)), "Restart must rotate the credential");
+            first.stop();
+            assertTrue(java.nio.file.Files.isRegularFile(file));
+            if (posix) {
+                assertEquals(java.nio.file.attribute.PosixFilePermissions.fromString("rw-------"), java.nio.file.Files.getPosixFilePermissions(file));
+            } else {
+                var acl = java.nio.file.Files.getFileAttributeView(file, java.nio.file.attribute.AclFileAttributeView.class).getAcl();
+                var user = file.getFileSystem().getUserPrincipalLookupService().lookupPrincipalByName(System.getProperty("user.name"));
+                java.util.function.Predicate<java.nio.file.attribute.UserPrincipal> trusted = principal ->
+                        principal.equals(user) || principal.getName().equalsIgnoreCase("NT AUTHORITY\\SYSTEM")
+                                || principal.getName().equalsIgnoreCase("BUILTIN\\Administrators");
+                assertTrue(trusted.test(java.nio.file.Files.getOwner(file)));
+                assertFalse(acl.isEmpty());
+                assertTrue(acl.stream().filter(entry -> entry.type() == java.nio.file.attribute.AclEntryType.ALLOW)
+                        .allMatch(entry -> trusted.test(entry.principal())));
+                assertTrue(acl.stream().anyMatch(entry -> entry.principal().equals(user)
+                        && entry.type() == java.nio.file.attribute.AclEntryType.ALLOW
+                        && entry.permissions().contains(java.nio.file.attribute.AclEntryPermission.READ_DATA)));
+            }
+        } finally { first.stop(); second.stop(); }
+        assertFalse(java.nio.file.Files.exists(file));
+    }
+
+    @Test
+    void missingPrivateFileDisablesListenerAndDanglingLinksStayIntact() throws Exception {
+        assertThrows(java.io.IOException.class, () -> new StatusServer(0, null).start());
+        assertTrue(StatusServer.listenerState().contains("disabled"));
+        var link = statusDirectory.resolve("link");
+        try {
+            java.nio.file.Files.createSymbolicLink(link, statusDirectory.resolve("absent"));
+        } catch (UnsupportedOperationException | java.nio.file.FileSystemException unavailable) {
+            org.junit.jupiter.api.Assumptions.abort("Symbolic links unavailable");
+        }
+        assertThrows(java.io.IOException.class, () -> new StatusServer(0, link).start());
+        assertTrue(java.nio.file.Files.isSymbolicLink(link));
+        try (var children = java.nio.file.Files.list(statusDirectory)) { assertEquals(1, children.count()); }
+    }
 
     private static StatusServer server() {
         return new StatusServer(0, null);
@@ -52,8 +188,8 @@ class StatusSocketSurfaceTest {
         status = new StatusServer(0, port);
         status.setVerification(new ReloadVerification(java.util.Map::of));
         status.start();
-        try (var requester = new java.net.Socket("127.0.0.1", Integer.parseInt(java.nio.file.Files.readString(port)));
-             var observer = new java.net.Socket("127.0.0.1", requester.getPort())) {
+        try (var requester = StatusTestClient.connect(port);
+             var observer = StatusTestClient.connect(port)) {
             requester.setSoTimeout(2000); observer.setSoTimeout(2000);
             var in = new java.io.BufferedReader(StatusServer.readerFor(requester.getInputStream()));
             var other = new java.io.BufferedReader(StatusServer.readerFor(observer.getInputStream()));
@@ -81,7 +217,7 @@ class StatusSocketSurfaceTest {
         status.setVerification(new ReloadVerification(java.util.Map::of)); status.start();
         try {
             for (int i = 0; i < 12; i++) {
-                try (var socket = new java.net.Socket("127.0.0.1", Integer.parseInt(java.nio.file.Files.readString(port)))) {
+                try (var socket = StatusTestClient.connect(port)) {
                     socket.setSoTimeout(2000);
                     var in = new java.io.BufferedReader(StatusServer.readerFor(socket.getInputStream()));
                     assertTrue(in.readLine().contains("CONNECTED"));
@@ -127,9 +263,8 @@ class StatusSocketSurfaceTest {
             catch (InterruptedException e) { throw new AssertionError(e); }
         });
         status.start();
-        try (java.net.Socket socket = new java.net.Socket("127.0.0.1",
-                Integer.parseInt(java.nio.file.Files.readString(port)));
-             java.net.Socket observer = new java.net.Socket("127.0.0.1", socket.getPort())) {
+        try (java.net.Socket socket = StatusTestClient.connect(port);
+             java.net.Socket observer = StatusTestClient.connect(port)) {
             socket.setSoTimeout(2000);
             observer.setSoTimeout(2000);
             var in = new java.io.BufferedReader(StatusServer.readerFor(socket.getInputStream()));
@@ -279,14 +414,13 @@ class StatusSocketSurfaceTest {
      */
     @Test
     void aLineThatNeverEndsDropsTheConnectionAndNothingElse() throws Exception {
-        java.nio.file.Path portFile = java.nio.file.Files.createTempFile("reclazz-port", ".tmp");
+        java.nio.file.Path portFile = statusDirectory.resolve("port");
         java.nio.file.Files.deleteIfExists(portFile);
         StatusServer status = new StatusServer(0, portFile);
         status.start();
         try {
-            int port = Integer.parseInt(java.nio.file.Files.readString(portFile).trim());
 
-            try (java.net.Socket flooder = new java.net.Socket("127.0.0.1", port)) {
+            try (java.net.Socket flooder = StatusTestClient.connect(portFile)) {
                 flooder.setSoTimeout(10_000);
                 java.io.InputStream in = flooder.getInputStream();
                 assertTrue(readLine(in).contains("CONNECTED"), "the welcome line comes first");
@@ -313,7 +447,7 @@ class StatusSocketSurfaceTest {
                 assertTrue(closed, "a megabyte without a newline must end the connection");
             }
 
-            try (java.net.Socket next = new java.net.Socket("127.0.0.1", port)) {
+            try (java.net.Socket next = StatusTestClient.connect(portFile)) {
                 next.setSoTimeout(10_000);
                 assertTrue(readLine(next.getInputStream()).contains("CONNECTED"),
                         "the server is still accepting after dropping the flooder");

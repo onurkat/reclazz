@@ -1059,16 +1059,14 @@ public class ReclazzAgent {
                 StatusReporter.warn("Could not create default port-file directory " + defaultDir + ": " + Failures.describe(e));
             }
         }
-        if (effectivePortFile != null || effectivePort > 0) {
-            try {
-                statusServer = new StatusServer(Math.max(0, effectivePort), effectivePortFile);
-                statusServer.start();
-                if (effectivePortFile != null) {
-                    StatusReporter.info("Status server port file: " + effectivePortFile);
-                }
-            } catch (Exception e) {
-                StatusReporter.warn("Failed to start status server: " + Failures.describe(e));
+        try {
+            statusServer = new StatusServer(Math.max(0, effectivePort), effectivePortFile);
+            statusServer.start();
+            if (effectivePortFile != null) {
+                StatusReporter.info("Status server port file: " + effectivePortFile);
             }
+        } catch (Exception e) {
+            StatusReporter.warn("Failed to start status server: " + Failures.describe(e));
         }
     }
 

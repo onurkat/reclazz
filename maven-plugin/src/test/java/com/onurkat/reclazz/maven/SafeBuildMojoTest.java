@@ -41,6 +41,12 @@ class SafeBuildMojoTest {
         assertEquals(jar.getAbsolutePath(), command.get(2));
         assertEquals(List.of("--", "/path with spaces/mvn", "-Dmessage=space ; $(no-shell)", "verify"),
                 command.subList(command.size() - 4, command.size()));
+        File privateFile = dir.resolve("private endpoint").toFile();
+        set(mojo, "portFile", privateFile); set(mojo, "port", null);
+        List<String> authenticated = mojo.command();
+        assertEquals(privateFile.getAbsolutePath(), authenticated.get(authenticated.indexOf("--port-file") + 1));
+        assertFalse(authenticated.contains("--port"));
+        set(mojo, "portFile", null);
         set(mojo, "owner", "bad\nBUILD ok"); assertThrows(MojoExecutionException.class, mojo::command);
         set(mojo, "owner", "test-owner"); set(mojo, "port", 0);
         assertThrows(MojoExecutionException.class, mojo::command);

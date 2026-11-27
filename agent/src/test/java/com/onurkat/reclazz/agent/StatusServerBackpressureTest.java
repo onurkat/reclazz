@@ -4,6 +4,8 @@
  */
 package com.onurkat.reclazz.agent;
 
+import com.onurkat.reclazz.e2e.harness.StatusTestClient;
+
 import com.onurkat.reclazz.ui.StatusReporter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -27,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * whole hot-reload pipeline indefinitely.
  */
 class StatusServerBackpressureTest {
+    @org.junit.jupiter.api.io.TempDir java.nio.file.Path statusDirectory;
 
     private StatusServer server;
     private Socket client;
@@ -39,16 +42,15 @@ class StatusServerBackpressureTest {
 
     @Test
     void slowClientDoesNotBlockEventEmitter() throws Exception {
-        Path portFile = Files.createTempFile("reclazz-port", ".tmp");
+        Path portFile = statusDirectory.resolve("port");
         Files.deleteIfExists(portFile);
 
         server = new StatusServer(0, portFile);
         server.start();
 
-        int port = Integer.parseInt(Files.readString(portFile).trim());
 
         // Connect but NEVER read: the socket buffer fills up quickly.
-        client = new Socket("127.0.0.1", port);
+        client = StatusTestClient.connect(portFile);
 
         // Give the accept loop a moment to register the connection.
         long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(5);

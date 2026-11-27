@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """G1 native SDK Spring constructor controls and desired watcher acceptance; no tenant."""
+from reclazz_status import connect_status
 import argparse
 from collections import deque
 import fcntl
@@ -183,7 +184,7 @@ def run(args):
                                 if process.poll() is not None or time.monotonic() > deadline:
                                     raise AssertionError('Watcher startup failed; not behavioral RED')
                                 time.sleep(.1)
-                            connection = socket.create_connection(('127.0.0.1', int(port_file.read_text())), timeout=15)
+                            connection = connect_status(port_file, 15)
                             stream = connection.makefile('r', encoding='utf-8')
                             session = None
 

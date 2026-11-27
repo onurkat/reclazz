@@ -28,7 +28,7 @@ private class PrepareContractServer(private val source:Path,private val mode:Str
     private val steps=linkedMapOf<String,Map<String,Any>>()
     private val baseline=Files.readAllBytes(source)
     init {
-        Thread({connection=socket.accept();writer=java.io.PrintWriter(connection!!.getOutputStream(),true);emit("CONNECTED","prepare-contract")},
+        Thread({connection=socket.accept();writer=java.io.PrintWriter(connection!!.getOutputStream(),true);writer.println(legacyStatusGreeting("prepare-contract"))},
             "prepare-contract-accept").apply {isDaemon=true;start()}
         http.createContext("/") {exchange ->
             try {

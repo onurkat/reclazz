@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Real-agent acceptance for a genuine SAP AbstractEventListener; no tenant or cluster runtime."""
+from reclazz_status import connect_status
 import argparse
 from collections import deque
 import hashlib
@@ -99,7 +100,7 @@ def run(args):
                 with urllib.request.urlopen(f'http://127.0.0.1:{http_port[0]}/?{nonce}', timeout=10) as response:
                     return response.status, dict(part.split('=', 1) for part in response.read().decode().split(';'))
 
-            with socket.create_connection(('127.0.0.1', int(status_port.read_text().strip())), timeout=5) as connection:
+            with connect_status(status_port, 5) as connection:
                 incoming = connection.makefile('r', encoding='utf-8')
                 request_number = 0
 

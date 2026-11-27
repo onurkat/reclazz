@@ -150,7 +150,7 @@ configure the root task:
 ```kotlin
 tasks.named<com.onurkat.reclazz.gradle.ReclazzSafeBuildTask>("reclazzSafeBuild") {
     mcpJar.set(file("tools/reclazz-mcp-1.11.0.jar"))
-    port.set(54123) // explicit loopback agent endpoint; check its doctor identity first
+    portFile.set(layout.projectDirectory.file(".reclazz/agent.port"))
     owner.set("builder-alice") // retain for recovery; do not share with concurrent builders
     timeoutMs.set(5000) // acknowledgement timeout, not a build duration limit
     buildArguments.set(listOf("--offline", ":service:classes", ":web:classes"))

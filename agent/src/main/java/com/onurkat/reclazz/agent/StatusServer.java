@@ -24,7 +24,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import com.onurkat.reclazz.ui.Failures;
 import com.onurkat.reclazz.ui.Plural;
-import com.onurkat.reclazz.util.AtomicWrite;
+import java.security.MessageDigest;
+import java.security.SecureRandom;
+import java.util.HexFormat;
 import com.onurkat.reclazz.util.Supervised;
 
 /**
@@ -44,12 +46,18 @@ import com.onurkat.reclazz.util.Supervised;
 public class StatusServer implements StatusReporter.StatusListener {
 
     private static final int MAX_CLIENTS = 5;
-    private static final int PROTOCOL_VERSION = 1;
+    private static final int PROTOCOL_VERSION = 2;
     private static final int ACCEPT_TIMEOUT_MS = 2000;
     private static final int HEARTBEAT_INTERVAL_SECONDS = 10;
 
     private final int requestedPort;
     private final Path portFile;
+    private final byte[] credential = new byte[32];
+    private PrivatePortFile publication;
+    private final java.util.Set<Socket> pending = java.util.concurrent.ConcurrentHashMap.newKeySet();
+    private final java.util.concurrent.atomic.AtomicBoolean authNotice = new java.util.concurrent.atomic.AtomicBoolean();
+    private static volatile String listenerState = "not started";
+    static String listenerState() { return listenerState; }
     private ServerSocket serverSocket;
     private final List<ClientConnection> clients = new CopyOnWriteArrayList<>();
     private volatile boolean running = false;
@@ -110,29 +118,17 @@ public class StatusServer implements StatusReporter.StatusListener {
     public void start() throws IOException {
         serverSocket = new ServerSocket(requestedPort, 5, InetAddress.getLoopbackAddress());
         serverSocket.setSoTimeout(ACCEPT_TIMEOUT_MS);
-        running = true;
-
         int actualPort = serverSocket.getLocalPort();
-
-        // Write the actual bound port to the port file (reject symlinks to prevent TOCTOU attacks)
-        if (portFile != null) {
-            try {
-                Files.createDirectories(portFile.getParent());
-                if (Files.exists(portFile) && Files.isSymbolicLink(portFile)) {
-                    StatusReporter.warn("Port file is a symlink, refusing to write: " + portFile);
-                } else {
-                    // Written whole: the IDE polls this file with no lock
-                    // between us, and a reader arriving mid-write gets whatever
-                    // prefix has landed. "586" parses perfectly well and is not
-                    // the port this agent is listening on.
-                    AtomicWrite.string(
-                            portFile, String.valueOf(actualPort));
-                }
-            } catch (IOException e) {
-                StatusReporter.warn("Failed to write port file: " + Failures.describe(e));
-            }
+        try {
+            new SecureRandom().nextBytes(credential);
+            publication = PrivatePortFile.publish(portFile, actualPort, HexFormat.of().formatHex(credential));
+        } catch (IOException | RuntimeException failure) {
+            serverSocket.close();
+            listenerState = "disabled: private status port file unavailable";
+            throw failure;
         }
-
+        running = true;
+        listenerState = "authenticated loopback listener";
         Thread acceptThread = new Thread(Supervised.forever(
                 "The status server",
                 "The IDE cannot connect to this agent until the application is restarted. "
@@ -367,27 +363,30 @@ public class StatusServer implements StatusReporter.StatusListener {
     }
 
     public void stop() {
-        running = false;
+        java.util.List<ClientConnection> active;
+        synchronized (clients) {
+            running = false;
+            active = java.util.List.copyOf(clients);
+            clients.clear();
+        }
         var controller = liveConfig; liveConfig = null;
         if (controller != null) controller.close();
         StatusReporter.removeListener(this);
         if (heartbeatExecutor != null) {
             heartbeatExecutor.shutdownNow();
         }
-        for (ClientConnection client : clients) {
-            client.close();
-        }
-        clients.clear();
+        for (ClientConnection client : active) client.close();
         if (serverSocket != null) {
             try {
                 serverSocket.close();
             } catch (IOException ignored) {}
         }
-        // Clean up port file
-        if (portFile != null) {
-            try {
-                Files.deleteIfExists(portFile);
-            } catch (IOException ignored) {}
+        synchronized (clients) {
+            for (Socket socket : pending) try { socket.close(); } catch (IOException ignored) { }
+            pending.clear();
+        }
+        if (publication != null) {
+            try { publication.removeIfCurrent(); } catch (IOException ignored) { }
         }
     }
 
@@ -444,32 +443,17 @@ public class StatusServer implements StatusReporter.StatusListener {
             try {
                 Socket clientSocket = serverSocket.accept();
 
-                // Read-only receipt polling may emit no broadcast to prune closed clients.
-                clients.removeIf(client -> client.socket.isClosed());
-                if (clients.size() >= MAX_CLIENTS) {
-                    clientSocket.close();
-                    continue;
+                synchronized (clients) {
+                    if (!running || pending.size() >= MAX_CLIENTS) {
+                        clientSocket.close();
+                        continue;
+                    }
+                    pending.add(clientSocket);
                 }
-
-                ClientConnection conn = new ClientConnection(clientSocket);
-                clients.add(conn);
-
-                // "agent" is additive: a reader that does not know the field
-                // ignores it, which is how a plugin older than this agent keeps
-                // working. It is here because PROTOCOL_VERSION has been 1 since
-                // the beginning and answers a different question. What a
-                // developer needs to know is which release is answering on this
-                // port, since the jar a server attached and the plugin in the
-                // IDE are updated by two different acts.
-                String welcomeJson = String.format(
-                        "{\"level\":\"CONNECTED\",\"message\":\"%s\",\"timestamp\":\"%s\","
-                                + "\"version\":%d,\"agent\":\"%s\"}",
-                        escapeJson("Agent status server connected"),
-                        Instant.now().toString(),
-                        PROTOCOL_VERSION,
-                        escapeJson(AgentVersion.get())
-                );
-                conn.send(welcomeJson);
+                long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(2);
+                Thread handshake = new Thread(() -> authenticate(clientSocket, deadline), "Reclazz-StatusAuth");
+                handshake.setDaemon(true);
+                handshake.start();
 
             } catch (SocketTimeoutException e) {
                 // Expected, accept() timed out, loop back to check running flag
@@ -498,6 +482,56 @@ public class StatusServer implements StatusReporter.StatusListener {
             Supervised.stoppedUnexpectedly("The status server",
                     "The IDE cannot connect to this agent until the application is restarted. "
                             + "Reloading itself is unaffected.");
+        }
+    }
+
+    private void authenticate(Socket socket, long deadline) {
+        boolean admitted = false;
+        try {
+            // Read exactly one fixed-size ASCII frame without buffering later commands.
+            byte[] frame = new byte[5 + 64 + 1];
+            var input = socket.getInputStream();
+            int offset = 0;
+            while (offset < frame.length) {
+                long left = deadline - System.nanoTime();
+                if (left <= 0) return;
+                socket.setSoTimeout((int) Math.max(1, TimeUnit.NANOSECONDS.toMillis(left)));
+                int n = input.read(frame, offset, frame.length - offset);
+                if (n < 0) return;
+                for (int i = offset; i < offset + n; i++)
+                    if (frame[i] == '\n' && i != frame.length - 1) return;
+                offset += n;
+            }
+            String line = new String(frame, java.nio.charset.StandardCharsets.US_ASCII);
+            if (!line.matches("AUTH [0-9a-f]{64}\\n")
+                    || !MessageDigest.isEqual(credential, HexFormat.of().parseHex(line, 5, 69))) return;
+            socket.setSoTimeout(0);
+            synchronized (clients) {
+                clients.removeIf(client -> client.socket.isClosed());
+                if (!running || clients.size() >= MAX_CLIENTS) return;
+                ClientConnection conn = new ClientConnection(socket);
+                String welcomeJson = String.format(
+                        "{\"level\":\"CONNECTED\",\"message\":\"%s\",\"timestamp\":\"%s\","
+                                + "\"version\":%d,\"agent\":\"%s\"}",
+                        escapeJson("Agent status server connected"),
+                        Instant.now().toString(),
+                        PROTOCOL_VERSION,
+                        escapeJson(AgentVersion.get())
+                );
+                conn.send(welcomeJson);
+                clients.add(conn);
+                conn.start();
+                admitted = true;
+            }
+        } catch (IOException ignored) {
+            // No protocol output to a client that did not authenticate.
+        } finally {
+            pending.remove(socket);
+            if (!admitted) {
+                try { socket.close(); } catch (IOException ignored) { }
+                if (running && authNotice.compareAndSet(false, true))
+                    StatusReporter.info("Status connection closed. Use a Reclazz tool supporting protocol 2 and its private port file.");
+            }
         }
     }
 
@@ -618,7 +652,10 @@ public class StatusServer implements StatusReporter.StatusListener {
             this.writer = new PrintWriter(writerFor(socket.getOutputStream()), true);
             this.writerThread = new Thread(this::drainLoop, "Reclazz-StatusWriter");
             this.writerThread.setDaemon(true);
-            this.writerThread.start();
+        }
+
+        void start() {
+            writerThread.start();
 
             Thread readerThread = new Thread(this::readLoop, "Reclazz-StatusReader");
             readerThread.setDaemon(true);
@@ -713,8 +750,8 @@ public class StatusServer implements StatusReporter.StatusListener {
         void close() {
             alive = false;
             writerThread.interrupt();
-            try { writer.close(); } catch (Exception ignored) {}
             try { socket.close(); } catch (Exception ignored) {}
+            try { writer.close(); } catch (Exception ignored) {}
         }
     }
 }

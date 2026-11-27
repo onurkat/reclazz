@@ -1,6 +1,8 @@
 /* Copyright 2026 Onur Kat. SPDX-License-Identifier: Apache-2.0 */
 package com.onurkat.reclazz.e2e;
 
+import com.onurkat.reclazz.e2e.harness.StatusTestClient;
+
 import com.onurkat.reclazz.e2e.harness.WatchedApp;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -22,7 +24,7 @@ class WatcherDeathIsReportedTest {
                 .jvmArgs("-Dprobe.dir="+dir,"-javaagent:"+jar+"=watchDirs="+dir.resolve("classes")+",startupDelaySec=1,portFile="+port)
                 .with("App",APP).start()) {
             app.awaitOrFail("] Watching 1 director","watcher ready");
-            try(var socket=new Socket("127.0.0.1",Integer.parseInt(Files.readString(port).trim()))) {
+            try(var socket=StatusTestClient.connect(port)) {
                 socket.setSoTimeout(400);var in=new BufferedReader(new InputStreamReader(socket.getInputStream(),StandardCharsets.UTF_8));
                 var json=new ObjectMapper();List<String> errors=new ArrayList<>();boolean health=false,doctor=false,ledger=false,restartHealth=false;
                 if(overwrite) {

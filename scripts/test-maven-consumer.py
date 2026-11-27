@@ -129,11 +129,11 @@ def run(command, cwd, log):
 def doctor(project):
     port_file = project / '.reclazz/agent.port'
     require(port_file.is_file(), 'missing agent port file')
-    return safety.query(int(port_file.read_text().strip()), 'DOCTOR')
+    return safety.query(port_file, 'DOCTOR')
 
 
 def verify(project, digest):
-    port = int((project / '.reclazz/agent.port').read_text().strip())
+    port = project / '.reclazz/agent.port'
     return safety.query(port, 'VERIFY', f' {CLASS} {digest}')
 
 

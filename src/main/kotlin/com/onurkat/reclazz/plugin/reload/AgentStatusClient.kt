@@ -4,6 +4,7 @@
  */
 package com.onurkat.reclazz.plugin.reload
 
+import com.onurkat.reclazz.protocol.StatusEndpoint
 import com.intellij.openapi.diagnostic.Logger
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -28,7 +29,7 @@ data class AgentEvent(
 )
 
 class AgentStatusClient(
-    private val port: Int,
+    private val endpointProvider: () -> StatusEndpoint?,
     private val onEvent: (AgentEvent) -> Unit,
     private val onDisconnect: () -> Unit
 ) {
@@ -74,10 +75,15 @@ class AgentStatusClient(
         disconnect()
     }
 
+    @Volatile private var welcomed = false
+
+    internal val transportConnected: Boolean
+        get() = socket?.let { it.isConnected && !it.isClosed } == true
+
     val isConnected: Boolean
         get() {
             val s = socket
-            return running && s != null && s.isConnected && !s.isClosed
+            return running && welcomed && s != null && s.isConnected && !s.isClosed
         }
 
     /**
@@ -87,6 +93,7 @@ class AgentStatusClient(
      * @return false when there is no live connection to ask through
      */
     fun send(command: String): Boolean {
+        if (!welcomed) return false
         val s = socket ?: return false
         return try {
             val out = s.getOutputStream()
@@ -112,7 +119,9 @@ class AgentStatusClient(
                     // Publish before connecting so cancellation can also close an in-flight connect.
                     socket = s
                     if (!running) return
-                    s.connect(InetSocketAddress("127.0.0.1", port), 3000)
+                    val endpoint = endpointProvider() ?: throw java.io.IOException("Status port file unavailable")
+                    s.connect(InetSocketAddress("127.0.0.1", endpoint.port()), 3000)
+                    endpoint.authenticate(s.getOutputStream())
                     s.soTimeout = 30_000
                     retryDelay = 1000L
                     wasConnected = true
@@ -127,7 +136,9 @@ class AgentStatusClient(
                             }
                             val event = parseEvent(line) ?: continue
 
-                            if (event.level == "CONNECTED" && event.version > 0) {
+                            if (!welcomed) {
+                                if (event.level != "CONNECTED" || event.version != endpoint.protocol()) break
+                                welcomed = true
                                 log.info("Agent protocol version: ${event.version}")
                             }
 
@@ -140,6 +151,7 @@ class AgentStatusClient(
             } catch (_: Exception) {
                 if (!running) break
             } finally {
+                welcomed = false
                 socket = null
             }
 
@@ -170,41 +182,42 @@ class AgentStatusClient(
             val agentVersion = fields["agent"] ?: ""
             AgentEvent(level, message, timestamp, type, version, agentVersion)
         } catch (e: Exception) {
-            log.debug("Failed to parse agent event: ${e.message}, payload: ${json.take(200)}")
+            log.debug("Malformed status event")
             null
         }
     }
 
-    internal fun parseJsonObject(json: String): Map<String, String> {
-        val result = mutableMapOf<String, String>()
-        val tokenizer = StreamTokenizer(StringReader(json))
-        tokenizer.ordinaryChar('{'.code)
-        tokenizer.ordinaryChar('}'.code)
-        tokenizer.ordinaryChar(':'.code)
-        tokenizer.ordinaryChar(','.code)
-        tokenizer.quoteChar('"'.code)
+}
 
-        if (tokenizer.nextToken() == '{'.code) {
-            while (true) {
-                val keyToken = tokenizer.nextToken()
-                if (keyToken == '}'.code || keyToken == StreamTokenizer.TT_EOF) break
-                if (keyToken != '"'.code) continue
-                val key = tokenizer.sval ?: continue
+internal fun parseJsonObject(json: String): Map<String, String> {
+    val result = mutableMapOf<String, String>()
+    val tokenizer = StreamTokenizer(StringReader(json))
+    tokenizer.ordinaryChar('{'.code)
+    tokenizer.ordinaryChar('}'.code)
+    tokenizer.ordinaryChar(':'.code)
+    tokenizer.ordinaryChar(','.code)
+    tokenizer.quoteChar('"'.code)
 
-                if (tokenizer.nextToken() != ':'.code) continue
+    if (tokenizer.nextToken() == '{'.code) {
+        while (true) {
+            val keyToken = tokenizer.nextToken()
+            if (keyToken == '}'.code || keyToken == StreamTokenizer.TT_EOF) break
+            if (keyToken != '"'.code) continue
+            val key = tokenizer.sval ?: continue
 
-                val valToken = tokenizer.nextToken()
-                when (valToken) {
-                    '"'.code -> result[key] = tokenizer.sval ?: ""
-                    StreamTokenizer.TT_NUMBER -> result[key] = tokenizer.nval.toLong().toString()
-                    StreamTokenizer.TT_WORD -> result[key] = tokenizer.sval ?: ""
-                    else -> continue
-                }
+            if (tokenizer.nextToken() != ':'.code) continue
 
-                val sep = tokenizer.nextToken()
-                if (sep == '}'.code || sep == StreamTokenizer.TT_EOF) break
+            val valToken = tokenizer.nextToken()
+            when (valToken) {
+                '"'.code -> result[key] = tokenizer.sval ?: ""
+                StreamTokenizer.TT_NUMBER -> result[key] = tokenizer.nval.toLong().toString()
+                StreamTokenizer.TT_WORD -> result[key] = tokenizer.sval ?: ""
+                else -> continue
             }
+
+            val sep = tokenizer.nextToken()
+            if (sep == '}'.code || sep == StreamTokenizer.TT_EOF) break
         }
-        return result
     }
+    return result
 }

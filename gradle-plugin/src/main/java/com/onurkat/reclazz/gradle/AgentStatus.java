@@ -4,6 +4,7 @@
  */
 package com.onurkat.reclazz.gradle;
 
+import com.onurkat.reclazz.protocol.StatusEndpoint;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -44,25 +45,24 @@ final class AgentStatus {
             try {
                 port = Integer.parseInt(opts.get("port").trim());
             } catch (NumberFormatException e) {
-                return json(notAttached("invalid port: " + opts.get("port"), null));
+                return json(notAttached("invalid port", null));
             }
         }
-        if (port == null) {
-            Path portFile = locatePortFile(opts);
-            if (portFile == null) {
-                return json(notAttached(
-                        "no port file found; run the app with the Reclazz Java agent, or pass --port-file", null));
-            }
-            try {
-                port = Integer.parseInt(Files.readString(portFile).trim());
-            } catch (IOException | NumberFormatException e) {
-                return json(notAttached("unreadable port file: " + portFile, null));
-            }
+        StatusEndpoint endpoint;
+        try {
+            Path file = port == null || opts.containsKey("portFile") ? locatePortFile(opts) : null;
+            if (file == null && (port == null || opts.containsKey("portFile")))
+                return json(notAttached("no port file found; run the app with the Reclazz Java agent, or pass --port-file", null));
+            endpoint = StatusEndpoint.resolve(file, port);
+            port = endpoint.port();
+        } catch (IOException invalid) {
+            return json(notAttached("unreadable port file or invalid port", null));
         }
 
         int timeoutMs = intOption(opts, "timeoutMs", 2000);
         try (Socket socket = new Socket()) {
             socket.connect(new InetSocketAddress("127.0.0.1", port), Math.min(timeoutMs, 2000));
+            endpoint.authenticate(socket.getOutputStream());
             socket.setSoTimeout(500);
             BufferedReader in = new BufferedReader(
                     new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
@@ -87,6 +87,7 @@ final class AgentStatus {
                     agent = group(AGENT, line);
                     String v = group(VERSION, line);
                     if (v != null) protocol = Integer.parseInt(v);
+                    if (protocol != endpoint.protocol()) return json(notAttached("Incompatible status protocol; check the agent port file", port));
                     OutputStream out = socket.getOutputStream();
                     out.write("HEALTH\n".getBytes(StandardCharsets.UTF_8));
                     out.flush();
@@ -100,7 +101,7 @@ final class AgentStatus {
             }
 
             if (agent == null || agent.isBlank() || protocol <= 0) {
-                return json(notAttached("connected but no CONNECTED handshake from the Java agent", port));
+                return json(notAttached("connected but no CONNECTED handshake from the Java agent; check the private port file", port));
             }
             Map<String, Object> result = new LinkedHashMap<>();
             result.put("attached", true);

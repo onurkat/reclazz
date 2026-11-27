@@ -24,12 +24,12 @@ You can expect an initial response within 48 hours.
 Reclazz is designed with security in mind:
 
 - **100% local** - No outbound network requests, no telemetry, no analytics
-- **Loopback-only status socket** - The agent listens on 127.0.0.1. Local clients
-  can read diagnostics, request a scan, hold build output and pause/resume reload
-  admission. These controls are process-wide; loopback is not per-client
-  authentication. Use only trusted local clients. The canonical
-  [protocol command table](docs/protocol.md#commands) describes the accepted syntax,
-  bounds and requester-only responses; it is the single command reference.
+- **Local status access** - The agent listens on 127.0.0.1. Every client
+  authenticates with the credential from the agent owner's private port file
+  before receiving events or issuing commands. Processes running as that OS
+  user share this access. Protect the directory and keep the file out of
+  shared logs, source control and support bundles. The agent generates a fresh
+  credential on startup. See the [status protocol](docs/protocol.md).
 - **What the agent writes** - Class redefinition happens in memory. On disk it
   writes a port file beside the project (`.reclazz/agent.port`), and extracts
   its bootstrap jar into a fresh owner-only temporary directory with a random

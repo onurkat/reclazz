@@ -33,6 +33,7 @@ final class DoctorReport {
                 + "," + field("javaVersion", System.getProperty("java.version", ""))
                 + "," + field("vmName", System.getProperty("java.vm.name", ""))
                 + "," + field("workingDirectory", System.getProperty("user.dir", ""))
+                + "," + field("statusListener", StatusServer.listenerState())
                 + "," + field("watcherState", watch.state())
                 + "," + field("buildHold", hold)
                 + ",\"watchedDirectoryCount\":" + watch.count()

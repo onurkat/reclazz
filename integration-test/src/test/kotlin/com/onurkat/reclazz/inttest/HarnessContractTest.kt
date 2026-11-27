@@ -5,6 +5,7 @@ import com.onurkat.reclazz.inttest.http.HttpVerifier
 import com.onurkat.reclazz.inttest.tests.*
 import com.onurkat.reclazz.inttest.client.AgentEvent
 import com.onurkat.reclazz.inttest.tests.afterVersionConverges
+import com.onurkat.reclazz.inttest.tests.legacyStatusGreeting
 import com.onurkat.reclazz.inttest.tests.latestVerificationSample
 import com.onurkat.reclazz.inttest.tests.BatchLiveTest
 import com.onurkat.reclazz.inttest.tests.saveResourceBytes
@@ -52,7 +53,7 @@ private class EventServer : AutoCloseable {
         Thread({
             connection = server.accept()
             output.set(java.io.PrintWriter(connection!!.getOutputStream(), true))
-            emit("CONNECTED", "contract")
+            output.get().println(legacyStatusGreeting("contract"))
         }, "contract-agent-accept").apply { isDaemon = true; start() }
     }
     fun emit(level: String, message: String) {
@@ -453,6 +454,7 @@ fun main() {
             Files.writeString(file,socket.localPort.toString())
             val worker=java.util.concurrent.CompletableFuture.runAsync {
                 socket.accept().use { connection ->
+                    java.io.PrintWriter(connection.getOutputStream(), true).println(legacyStatusGreeting("verification"))
                     val line=connection.getInputStream().bufferedReader().readLine().split(' ')
                     check(line.size==4 && line[0]=="VERIFY")
                     val mapper=com.fasterxml.jackson.databind.ObjectMapper()

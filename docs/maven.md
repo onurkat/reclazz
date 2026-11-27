@@ -256,10 +256,10 @@ entrypoint, not a lifecycle execution and not a change to `prepare-agent` or pla
 </plugin>
 ```
 
-With that local plugin installed, invoke the goal alone from the reactor root:
+Set `RECLAZZ_VERSION` to the installed protocol 2 plugin version and invoke the goal alone from the reactor root:
 
 ```text
-mvn com.onurkat.reclazz:reclazz-maven-plugin:1.11.0:safe-build -Dreclazz.port=54123 -Dreclazz.owner=builder-alice
+mvn com.onurkat.reclazz:reclazz-maven-plugin:"$RECLAZZ_VERSION":safe-build -Dreclazz.portFile=.reclazz/agent.port -Dreclazz.owner=builder-alice
 ```
 
 Do not bind it to a phase, combine it with other outer goals/phases, invoke it
@@ -270,7 +270,7 @@ compilation. This goal has no default lifecycle phase and runs as an aggregator.
 A released plugin lacking this goal must first be rebuilt locally; this feature
 has not been published by the acceptance workflow.
 
-`mcpJar`, `port`, `owner` and a nonempty `buildArguments` list are required.
+Configure `mcpJar`, `portFile`, `owner` and a nonempty `buildArguments` list. For a legacy protocol 1 agent you may supply its numeric `port`.
 `reclazz.timeoutMs` defaults to 5000 and limits acknowledgements, not compilation.
 `mavenExecutable` defaults to `mvn`; set it explicitly for a wrapper or another
 installation. Arguments are separate argv entries, preserving spaces without a

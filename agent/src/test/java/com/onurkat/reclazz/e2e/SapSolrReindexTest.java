@@ -1,6 +1,8 @@
 /* Copyright 2026 Onur Kat. SPDX-License-Identifier: Apache-2.0 */
 package com.onurkat.reclazz.e2e;
 
+import com.onurkat.reclazz.e2e.harness.StatusTestClient;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onurkat.reclazz.e2e.harness.WatchedApp;
 import org.junit.jupiter.api.io.TempDir;
@@ -59,7 +61,7 @@ class SapSolrReindexTest {
             byte[] bytes = Files.readAllBytes(app.classesDir().resolve("app/Provider.class"));
             String hash = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(bytes));
             var json = new ObjectMapper();
-            try (var socket = new Socket("127.0.0.1", Integer.parseInt(Files.readString(port).trim()))) {
+            try (var socket = StatusTestClient.connect(port)) {
                 socket.setSoTimeout(5000);
                 socket.getOutputStream().write(("VERIFY solr app.Provider " + hash + "\n").getBytes(StandardCharsets.UTF_8));
                 var input = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));

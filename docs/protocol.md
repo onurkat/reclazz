@@ -11,8 +11,7 @@ so a field or command listed here is one the agent has.
 ## Finding the port
 
 The agent listens on **127.0.0.1 only**, on an ephemeral port unless
-`statusPort=N` is passed, and writes the port number as plain text to a port
-file:
+`statusPort=N` is passed, and publishes its port and a fresh per-process credential in a private file.
 
 | Where | When |
 |---|---|
@@ -20,15 +19,33 @@ file:
 | `<hybris>/.reclazz/agent.port` | SAP Commerce, no `portFile` given |
 | `<working directory>/.reclazz/agent.port` | everything else, no `portFile` given |
 
-The IntelliJ plugin also writes and reads `.idea/reclazz/agent.port` for a
-run configuration it injected the agent into. The file is written whole
-(temporary file and rename), so a reader never sees half a number, and it is
-removed when the agent stops.
+When IntelliJ launches the agent it may select `.idea/reclazz/agent.port`.
+The agent atomically publishes two ASCII lines. Line one is the decimal port.
+Line two starts with `token=` followed by 64 lowercase hexadecimal characters.
+The file ends in a newline. The agent creates the file privately before writing
+the credential (POSIX mode 0600, a private Windows ACL for the current user with system and administrator access permitted). It removes its own
+publication at shutdown. A fixed port still needs this file. If private
+publication fails, reload continues with the status listener disabled. Choose
+a writable directory on a filesystem that supports private files and restart the agent. A shared project directory is supported. Use a directory only trusted users can modify when the client also needs to trust the identity of the advertised endpoint.
+
+## Authenticating a connection
+
+Read the whole file as one snapshot on every connection. For protocol 2 the
+first client line is `AUTH <token>\n`. Wait for `CONNECTED` with version 2
+before sending commands. Events also require authentication. Missing, invalid
+or late authentication closes the connection silently. Keep the credential
+out of command arguments, logs and reports.
+
+| Client and file | Behaviour |
+|---|---|
+| Updated client, two-line file | Authenticates before receiving events. A malformed file fails discovery. |
+| Updated client, legacy decimal file or explicit port only | Waits for a protocol 1 greeting. To use a new agent, supply its private file. |
+| Legacy client, updated agent | Cannot subscribe or send commands. Update the client to a version supporting protocol 2. |
 
 ## The stream
 
 One JSON object per line, UTF-8, newline-terminated. The first line on
-connecting is a `CONNECTED` event; after that every status line the agent
+successful authentication is a `CONNECTED` event; after that every status line the agent
 prints, and a `HEARTBEAT` every 10 seconds when nothing else is said.
 
 ```json
@@ -41,15 +58,14 @@ prints, and a `HEARTBEAT` every 10 seconds when nothing else is said.
 | `message` | always | the text of the line, JSON-escaped, at most 4096 characters |
 | `timestamp` | always | ISO-8601, UTC, when the line was emitted |
 | `type` | structural reloads | `structural`, so a listener can count them apart |
-| `version` | `CONNECTED` only | the protocol version, `1` |
+| `version` | `CONNECTED` only | the protocol version, `2` |
 | `agent` | `CONNECTED` only | the agent's release, such as `1.1.1` |
 
 Levels: `CONNECTED`, `HEARTBEAT`, `INFO`, `OK`, `WARN`, `ERROR`, `RELOAD`,
 `STRUCTURAL_RELOAD`, `COMPILE`.
 
 Fields are only ever added, never renamed or removed, and a listener that
-ignores fields it does not know keeps working; `version` changes only if a
-field's meaning does. The agent keeps at most 5 clients and drops events for
+ignores fields it does not know keeps working; `version` also identifies the handshake. The agent keeps at most 5 clients and drops events for
 a client that stops reading rather than blocking a reload on it.
 
 ## Commands
@@ -227,26 +243,35 @@ On macOS the JDK's file watcher polls on a two-second cycle, and `SCAN`
 saves that wait. The IntelliJ plugin sends it after every build; a Gradle
 or Maven build can do the same.
 
-Gradle, after the classes are written:
+In a Gradle build with the updated Reclazz plugin on its buildscript classpath:
 
 ```kotlin
+import com.onurkat.reclazz.protocol.StatusEndpoint
+import groovy.json.JsonSlurper
+import java.net.Socket
+
 tasks.named("classes") {
     doLast {
-        val portFile = rootProject.file(".reclazz/agent.port")
-        if (portFile.exists()) {
-            java.net.Socket("127.0.0.1", portFile.readText().trim().toInt()).use {
-                it.getOutputStream().write("SCAN\n".toByteArray())
+        val file = rootProject.file(".reclazz/agent.port")
+        if (file.isFile) {
+            val endpoint = StatusEndpoint.read(file.toPath())
+            Socket("127.0.0.1", endpoint.port()).use { socket ->
+                socket.soTimeout = 3000
+                val output = socket.getOutputStream()
+                endpoint.authenticate(output)
+                val hello = JsonSlurper().parseText(socket.getInputStream().bufferedReader().readLine()) as Map<*, *>
+                check(hello["level"] == "CONNECTED" && hello["version"] == endpoint.protocol())
+                output.write("SCAN\n".toByteArray(Charsets.UTF_8))
+                output.flush()
             }
         }
     }
 }
 ```
 
-From a shell, after `mvn compile`:
-
-```bash
-printf 'SCAN\n' | nc 127.0.0.1 "$(cat .reclazz/agent.port)"
-```
+For whole-build coordination configure the Gradle `reclazzSafeBuild` task's
+`portFile` or Maven `-Dreclazz.portFile=<path>`. Both pass the file path to
+the MCP build wrapper, which reads the current credential at connection time.
 
 ## Verifying exact compiled bytes
 
@@ -356,8 +381,7 @@ proof. Metadata strings are bounded to 512 characters and the JSON receipt to
 3900 characters so the enclosing 4096-character message limit cannot truncate it.
 If evidence cannot be produced within these bounds, `status:unavailable` includes
 only correlation and a detail message. Older agents can give no response; clients
-must report unavailable rather than assume support. The existing loopback socket
-trust boundary still applies.
+must report unavailable rather than assume support. The private port file controls access to these reports.
 
 ## Client-side batch verification
 

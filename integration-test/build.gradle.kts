@@ -155,3 +155,5 @@ val removeHarnessContractTest = tasks.register("removeHarnessContractTest", Java
     classpath = sourceSets.test.get().runtimeClasspath
     mainClass.set("com.onurkat.reclazz.inttest.tests.RemoveHarnessContractTestKt")
 }
+
+sourceSets.main { java.srcDir(rootProject.file("status-protocol/src/main/java")) }

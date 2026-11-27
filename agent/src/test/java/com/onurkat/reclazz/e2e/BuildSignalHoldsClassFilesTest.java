@@ -4,6 +4,8 @@
  */
 package com.onurkat.reclazz.e2e;
 
+import com.onurkat.reclazz.e2e.harness.StatusTestClient;
+
 import com.onurkat.reclazz.e2e.harness.WatchedApp;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -38,7 +40,7 @@ class BuildSignalHoldsClassFilesTest {
                         """).start()) {
             app.awaitOrFail("VALUES=1:1", "initial values");
             app.awaitWatcherReady();
-            try (Socket socket = new Socket("127.0.0.1", Integer.parseInt(Files.readString(portFile).trim()))) {
+            try (Socket socket = StatusTestClient.connect(portFile)) {
                 send(socket, "BUILD started");
                 app.rewrite("A", unit("A", 2));
                 send(socket, "SCAN");
@@ -72,8 +74,7 @@ class BuildSignalHoldsClassFilesTest {
                         """).start()) {
             app.awaitOrFail("VALUE=1", "initial value");
             app.awaitWatcherReady();
-            int port = Integer.parseInt(Files.readString(portFile).trim());
-            try (Socket first = new Socket("127.0.0.1", port)) {
+            try (Socket first = StatusTestClient.connect(portFile)) {
                 first.setSoTimeout(5000);
                 var in = new java.io.BufferedReader(new java.io.InputStreamReader(first.getInputStream(), StandardCharsets.UTF_8));
                 send(first, "BUILD started request=a1 owner=alice");
@@ -83,7 +84,7 @@ class BuildSignalHoldsClassFilesTest {
                 send(first, "BUILD failed request=a2 owner=alice");
                 receipt(in, "BUILD_ACK a2 failed owner=alice");
             }
-            try (Socket second = new Socket("127.0.0.1", port)) {
+            try (Socket second = StatusTestClient.connect(portFile)) {
                 second.setSoTimeout(5000);
                 var in = new java.io.BufferedReader(new java.io.InputStreamReader(second.getInputStream(), StandardCharsets.UTF_8));
                 for (String state : java.util.List.of("started", "ok", "failed")) {
@@ -128,7 +129,7 @@ class BuildSignalHoldsClassFilesTest {
                         """).start()) {
             app.awaitOrFail("VALUE=1", "initial value");
             app.awaitWatcherReady();
-            try (Socket socket = new Socket("127.0.0.1", Integer.parseInt(Files.readString(portFile).trim()))) {
+            try (Socket socket = StatusTestClient.connect(portFile)) {
                 socket.setSoTimeout(5000);
                 var in = new java.io.BufferedReader(new java.io.InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
                 send(socket, "BUILD started request=s1 owner=alice");

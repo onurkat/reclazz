@@ -1016,3 +1016,6 @@ tasks.register<Exec>("refreshEvidence") {
     val python = if (System.getProperty("os.name").startsWith("Windows")) "python" else "python3"
     commandLine(python, "scripts/refresh-evidence.py")
 }
+
+// The independently distributed clients use the same status-file and handshake contract.
+sourceSets.main { java.srcDir(rootProject.file("status-protocol/src/main/java")) }

@@ -67,7 +67,7 @@ private class ConstraintContractServer(root:Path,private val mode:String):AutoCl
         return result
     }
     init {
-        Thread({connection=socket.accept();writer=java.io.PrintWriter(connection!!.getOutputStream(),true);emit("CONNECTED","constraint-contract");emit("OK","ready")},"constraint-contract-connect").apply {isDaemon=true;start()}
+        Thread({connection=socket.accept();writer=java.io.PrintWriter(connection!!.getOutputStream(),true);writer.println(legacyStatusGreeting("constraint-contract"));emit("OK","ready")},"constraint-contract-connect").apply {isDaemon=true;start()}
         http.createContext("/") {x->
             try {
                 val query=if(x.requestMethod=="POST")x.requestBody.readBytes().toString(Charsets.UTF_8)else x.requestURI.rawQuery.orEmpty()

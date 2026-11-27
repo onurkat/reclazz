@@ -26,6 +26,7 @@ import org.gradle.work.DisableCachingByDefault;
 public abstract class ReclazzSafeBuildTask extends DefaultTask {
     @Internal public abstract RegularFileProperty getMcpJar();
     @Internal public abstract Property<Integer> getPort();
+    @Internal public abstract RegularFileProperty getPortFile();
     @Internal public abstract Property<String> getOwner();
     @Internal public abstract Property<Integer> getTimeoutMs();
     @Internal public abstract Property<String> getGradleExecutable();
@@ -38,10 +39,11 @@ public abstract class ReclazzSafeBuildTask extends DefaultTask {
             throw new GradleException("Nested Reclazz safe build refused; invoke ordinary tasks in buildArguments");
         }
         if (!getMcpJar().isPresent() || !getMcpJar().get().getAsFile().isFile()
-                || !getPort().isPresent() || getPort().get() < 1 || getPort().get() > 65535
+                || (!getPortFile().isPresent() && !getPort().isPresent())
+                || (getPort().isPresent() && (getPort().get() < 1 || getPort().get() > 65535))
                 || !getOwner().isPresent() || !getOwner().get().matches("[A-Za-z0-9_-]{1,64}")
                 || getTimeoutMs().get() < 1 || getTimeoutMs().get() > 60000) {
-            throw new GradleException("Configure mcpJar, port (1-65535), owner (1-64 ASCII letters/digits/_/-) and timeoutMs (1-60000)");
+            throw new GradleException("Configure mcpJar, portFile or port (1-65535), owner (1-64 ASCII letters/digits/_/-) and timeoutMs (1-60000)");
         }
         List<String> args = getBuildArguments().get();
         if (args.isEmpty() || args.stream().anyMatch(a -> a == null || a.isBlank()
@@ -55,7 +57,12 @@ public abstract class ReclazzSafeBuildTask extends DefaultTask {
             List<String> command = new ArrayList<>(List.of(
                     new File(System.getProperty("java.home"), "bin/java").getAbsolutePath(),
                     "-cp", getMcpJar().get().getAsFile().getAbsolutePath(),
-                    "com.onurkat.reclazz.mcp.BuildMain", "--port", getPort().get().toString(),
+                    "com.onurkat.reclazz.mcp.BuildMain"));
+            if (getPortFile().isPresent())
+                command.addAll(List.of("--port-file", getPortFile().get().getAsFile().getAbsolutePath()));
+            if (getPort().isPresent())
+                command.addAll(List.of("--port", getPort().get().toString()));
+            command.addAll(List.of(
                     "--owner", getOwner().get(), "--timeout-ms", getTimeoutMs().get().toString(),
                     "--", getGradleExecutable().get()));
             command.addAll(args);

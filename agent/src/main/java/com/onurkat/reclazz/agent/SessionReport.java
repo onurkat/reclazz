@@ -114,6 +114,7 @@ public final class SessionReport {
     public static List<String> lines(int watchedDirectories,int unwatchable,int needingRestart,
                                      int watchedFiles,boolean polling,com.onurkat.reclazz.watcher.WatcherHealth health) {
         List<String> report = new ArrayList<>();
+        if (StatusServer.listenerState().startsWith("disabled")) report.add("Status listener " + StatusServer.listenerState());
         if(health!=null && health.unhealthy())report.add(health.line());
         int reloads = bodyReloads.get() + structuralReloads.get();
 

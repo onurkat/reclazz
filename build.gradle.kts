@@ -412,3 +412,6 @@ tasks.named<Zip>("buildPlugin") {
 
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
+
+// The independently distributed clients use the same status-file and handshake contract.
+sourceSets.main { java.srcDir(rootProject.file("status-protocol/src/main/java")) }

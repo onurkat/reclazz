@@ -4,6 +4,7 @@
  */
 package com.onurkat.reclazz.plugin.agent
 
+import com.onurkat.reclazz.protocol.StatusEndpoint
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.onurkat.reclazz.plugin.settings.ReclazzSettings
@@ -192,8 +193,7 @@ object JvmAttacher {
         while (System.currentTimeMillis() < deadline) {
             indicator?.checkCanceled()
             if (Files.exists(portFilePath)) {
-                val content = try { Files.readString(portFilePath).trim() } catch (_: Exception) { "" }
-                if (content.toIntOrNull() != null) return true
+                if (runCatching { StatusEndpoint.read(portFilePath) }.isSuccess) return true
             }
             try {
                 Thread.sleep(500)

@@ -34,7 +34,7 @@ private class StoredScriptContractServer(private val root:Path,private val mode:
             "control" to row("control"),"serviceIdentity" to 11,"jvmStart" to 22,"retainedIdentity" to 33,"warmExecutableSame" to false,"warmResolutions" to 2)
     }
     init {
-        Thread({connection=socket.accept();writer=java.io.PrintWriter(connection!!.getOutputStream(),true);emit("CONNECTED","stored-script-contract")},"script-contract-accept").apply {isDaemon=true;start()}
+        Thread({connection=socket.accept();writer=java.io.PrintWriter(connection!!.getOutputStream(),true);writer.println(legacyStatusGreeting("stored-script-contract"))},"script-contract-accept").apply {isDaemon=true;start()}
         http.createContext("/") {x ->
             try {
                 val query=if(x.requestMethod=="POST")x.requestBody.readBytes().toString(Charsets.UTF_8) else x.requestURI.rawQuery.orEmpty()

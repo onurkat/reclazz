@@ -29,7 +29,7 @@ private class InitDefaultsContractServer(private val source:Path,private val mod
     private val steps=linkedMapOf<String,Map<String,Any>>()
     private val baseline=Files.readAllBytes(source)
     init {
-        Thread({connection=socket.accept();writer=java.io.PrintWriter(connection!!.getOutputStream(),true);emit("CONNECTED","init-defaults-contract")},
+        Thread({connection=socket.accept();writer=java.io.PrintWriter(connection!!.getOutputStream(),true);writer.println(legacyStatusGreeting("init-defaults-contract"))},
             "init-defaults-contract-accept").apply {isDaemon=true;start()}
         http.createContext("/") {exchange ->
             try {

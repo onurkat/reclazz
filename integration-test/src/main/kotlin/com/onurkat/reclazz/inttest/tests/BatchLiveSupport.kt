@@ -1,5 +1,6 @@
 package com.onurkat.reclazz.inttest.tests
 
+import com.onurkat.reclazz.protocol.StatusEndpoint
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.onurkat.reclazz.inttest.client.AgentEvent
@@ -50,10 +51,15 @@ internal fun latestVerificationSample(portFile: String, owner: String, budgetMs:
     val token = "cron-" + java.util.UUID.randomUUID()
     return runCatching {
         java.net.Socket().use { socket ->
-            socket.connect(java.net.InetSocketAddress("127.0.0.1", Files.readString(Path.of(portFile)).trim().toInt()), remaining())
+            val endpoint = StatusEndpoint.read(Path.of(portFile))
+            socket.connect(java.net.InetSocketAddress("127.0.0.1", endpoint.port()), remaining())
+            endpoint.authenticate(socket.getOutputStream())
+            val reader = socket.getInputStream().bufferedReader(Charsets.UTF_8)
+            socket.soTimeout = remaining()
+            val hello = batchJson.readTree(reader.readLine() ?: error("Missing status greeting"))
+            check(hello.path("level").asText() == "CONNECTED" && hello.path("version").asInt() == endpoint.protocol())
             val writer = socket.getOutputStream().bufferedWriter(Charsets.UTF_8)
             writer.write("VERIFY $token $owner ${"0".repeat(64)}\n"); writer.flush()
-            val reader = socket.getInputStream().bufferedReader(Charsets.UTF_8)
             while (System.nanoTime() < deadline) {
                 socket.soTimeout = remaining()
                 val line = reader.readLine() ?: error("VERIFY connection closed")

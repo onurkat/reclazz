@@ -1,7 +1,9 @@
 /* Copyright 2026 Onur Kat. SPDX-License-Identifier: Apache-2.0 */
 package com.onurkat.reclazz.plugin.hybris
 
+import com.onurkat.reclazz.protocol.StatusEndpoint
 import com.onurkat.reclazz.plugin.reload.AgentStatusClient
+import com.onurkat.reclazz.plugin.reload.parseJsonObject
 import java.io.IOException
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
@@ -12,11 +14,16 @@ import java.util.concurrent.TimeoutException
 /** A temporary, read-only connection; it does not replace the project's reload connection. */
 internal object SetupCheckServer {
     fun probe(port: Int?, timeoutMillis: Long = 3000, checkCancelled: () -> Unit = {}): SetupCheck.Server? {
-        if(port==null || port !in 1..65535)return null
+        if (port == null || port !in 1..65535) return null
+        return probeEndpoint(StatusEndpoint.legacy(port), timeoutMillis, checkCancelled)
+    }
+
+    fun probeEndpoint(endpoint: StatusEndpoint?, timeoutMillis: Long = 3000, checkCancelled: () -> Unit = {}): SetupCheck.Server? {
+        if (endpoint == null) return null
         val id=UUID.randomUUID().toString().replace("-", "")
         val prefix="DOCTOR_RESULT $id ";val answer=CompletableFuture<String>()
         lateinit var client:AgentStatusClient
-        client=AgentStatusClient(port,onEvent={event ->
+        client=AgentStatusClient({ endpoint },onEvent={event ->
             when {
                 event.level=="CONNECTED" -> if(!client.send("DOCTOR $id"))answer.completeExceptionally(IOException("DOCTOR could not be sent"))
                 event.message.startsWith(prefix) -> answer.complete(event.message.removePrefix(prefix))
@@ -29,7 +36,7 @@ internal object SetupCheckServer {
                 checkCancelled()
                 try {
                     val body=answer.get(50,TimeUnit.MILLISECONDS)
-                    val fields=client.parseJsonObject(body)
+                    val fields=parseJsonObject(body)
                     if(fields["requestId"]!=id || fields["status"]!="observed")throw IOException("DOCTOR evidence unavailable")
                     return SetupCheck.Server(fields["agentVersion"].orEmpty(),buildString {
                         append("DOCTOR: ").append(fields["watcherState"] ?: "unknown")
@@ -41,7 +48,7 @@ internal object SetupCheckServer {
                   catch (failure:ExecutionException) { throw IOException("DOCTOR failed",failure.cause) }
             }
             checkCancelled()
-            if(client.isConnected)throw IOException("DOCTOR timed out")
+            if(client.transportConnected)throw IOException("DOCTOR timed out")
             return null
         } finally { client.disconnectVoluntarily() }
     }

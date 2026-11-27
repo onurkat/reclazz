@@ -4,6 +4,8 @@
  */
 package com.onurkat.reclazz.agent;
 
+import com.onurkat.reclazz.e2e.harness.StatusTestClient;
+
 import com.fasterxml.jackson.databind.*;
 import java.util.*;
 import java.nio.file.*;
@@ -75,8 +77,8 @@ class DoctorReportTest {
 
     @Test void correlatedReplyIsNotBroadcast() throws Exception {
         Path port=dir.resolve("port");var server=new StatusServer(0,port);server.start();
-        try(var requester=new Socket("127.0.0.1",Integer.parseInt(Files.readString(port)));
-            var observer=new Socket("127.0.0.1",requester.getPort())) {
+        try(var requester=StatusTestClient.connect(port);
+            var observer=StatusTestClient.connect(port)) {
             requester.setSoTimeout(2000);observer.setSoTimeout(2000);
             var in=new BufferedReader(StatusServer.readerFor(requester.getInputStream()));
             var other=new BufferedReader(StatusServer.readerFor(observer.getInputStream()));

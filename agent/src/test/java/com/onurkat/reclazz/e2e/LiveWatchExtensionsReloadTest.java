@@ -1,6 +1,8 @@
 /* Copyright 2026 Onur Kat. SPDX-License-Identifier: Apache-2.0 */
 package com.onurkat.reclazz.e2e;
 
+import com.onurkat.reclazz.e2e.harness.StatusTestClient;
+
 import com.onurkat.reclazz.e2e.harness.WatchedApp;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -27,8 +29,7 @@ class LiveWatchExtensionsReloadTest {
     }
     String command(String command)throws Exception { return command(command,null); }
     String command(String command,java.util.concurrent.CountDownLatch pending)throws Exception {
-        int number=Integer.parseInt(Files.readString(port).strip());
-        try(var socket=new Socket("127.0.0.1",number)){
+        try(var socket=StatusTestClient.connect(port)){
             socket.setSoTimeout(30000);
             var reader=new BufferedReader(new InputStreamReader(socket.getInputStream(),StandardCharsets.UTF_8));
             var writer=new PrintWriter(new OutputStreamWriter(socket.getOutputStream(),StandardCharsets.UTF_8),true);

@@ -588,7 +588,7 @@ java -cp "$MCP_JAR" com.onurkat.reclazz.mcp.BuildMain \
   --port-file .reclazz/agent.port -- mvn compile
 ```
 
-`--port N` selects an explicit loopback port instead. With neither option, the
+A numeric `--port N` alone selects a legacy protocol 1 agent. An updated agent requires its private `--port-file`. With neither option, the
 usual port files are located in the current directory. `--timeout-ms N` changes
 the receipt timeout (default 5000; range 1–60000). Command arguments after `--`
 are passed directly, without a shell. Quote paths containing spaces. On Windows,

@@ -4,6 +4,8 @@
  */
 package com.onurkat.reclazz.e2e;
 
+import com.onurkat.reclazz.e2e.harness.StatusTestClient;
+
 import com.fasterxml.jackson.databind.*;
 import com.onurkat.reclazz.e2e.harness.WatchedApp;
 import java.nio.file.*;
@@ -29,7 +31,7 @@ class DoctorStatusTest {
                     }}
                     """).start()) {
             app.awaitOrFail("] Watching 1 director","watcher ready");
-            try(var socket=new Socket("127.0.0.1",Integer.parseInt(Files.readString(port).trim()))) {
+            try(var socket=StatusTestClient.connect(port)) {
                 socket.setSoTimeout(3000);
                 var in=new BufferedReader(new InputStreamReader(socket.getInputStream(),StandardCharsets.UTF_8));
                 send(socket,"DOCTOR actual");JsonNode d=read(in,"DOCTOR_RESULT actual ");

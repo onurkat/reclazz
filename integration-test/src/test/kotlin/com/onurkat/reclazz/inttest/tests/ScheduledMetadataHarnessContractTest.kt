@@ -43,7 +43,7 @@ private class ScheduledMetadataServer(private val source:Path,private val mode:S
         return result
     }
     init {
-        Thread({connection=socket.accept();writer=java.io.PrintWriter(connection!!.getOutputStream(),true);emit("CONNECTED","scheduled-contract");receipt()},"scheduled-contract-accept").apply {isDaemon=true;start()}
+        Thread({connection=socket.accept();writer=java.io.PrintWriter(connection!!.getOutputStream(),true);writer.println(legacyStatusGreeting("scheduled-contract"));receipt()},"scheduled-contract-accept").apply {isDaemon=true;start()}
         http.createContext("/") {x ->
             try {
                 val query=if(x.requestMethod=="POST")x.requestBody.readBytes().toString(Charsets.UTF_8) else x.requestURI.rawQuery

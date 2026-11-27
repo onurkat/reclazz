@@ -44,7 +44,7 @@ private class ImpexContractServer(private val root:Path,private val mode:String)
             "native" to mapOf("run" to run,"steps" to steps,"workerAlive" to true,"failure" to if(mode=="worker-error") "synthetic failure" else "","events" to events.toList()))
     }
     init {
-        Thread({connection=socket.accept();writer=java.io.PrintWriter(connection!!.getOutputStream(),true);emit("CONNECTED","impex-contract");emit("OK","ready")},"impex-contract-connect").apply {isDaemon=true;start()}
+        Thread({connection=socket.accept();writer=java.io.PrintWriter(connection!!.getOutputStream(),true);writer.println(legacyStatusGreeting("impex-contract"));emit("OK","ready")},"impex-contract-connect").apply {isDaemon=true;start()}
         http.createContext("/") {x ->
             try {
                 val form=if(x.requestMethod=="POST") x.requestBody.readBytes().toString(Charsets.UTF_8) else x.requestURI.rawQuery ?: ""

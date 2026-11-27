@@ -4,6 +4,8 @@
  */
 package com.onurkat.reclazz.e2e;
 
+import com.onurkat.reclazz.e2e.harness.StatusTestClient;
+
 import com.onurkat.reclazz.e2e.harness.WatchedApp;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -125,7 +127,7 @@ class StartupSaysWhatMattersTest {
                     String output = Files.readString(log);
                     assertTrue(output.contains("MAIN:" + (mode.equals("application-argument") ? "--dry-run" : "")), output);
                     assertTrue(output.contains("Reclazz is active"), output);
-                    try (Socket socket = new Socket("127.0.0.1", Integer.parseInt(Files.readString(port).trim()))) {
+                    try (Socket socket = StatusTestClient.connect(port)) {
                         assertTrue(socket.isConnected());
                     }
                     child.getOutputStream().close();

@@ -27,7 +27,7 @@ private class DynamicContractServer(private val source:Path,private val mode:Str
     init {
         Thread({
             connection=socket.accept();writer=java.io.PrintWriter(connection!!.getOutputStream(),true)
-            emit("CONNECTED","dynamic-contract");receipt(false)
+            writer.println(legacyStatusGreeting("dynamic-contract"));receipt(false)
             var previous=Files.readString(source)
             while(!closed) {
                 val current=settledBytes(source)?.toString(Charsets.UTF_8) ?: previous

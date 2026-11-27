@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Serialized items-schema profile. Native attempts count only after stopped-DB recovery."""
+from reclazz_status import connect_status
 from pathlib import Path
 from sap_suite_contract import DEFAULT_CASES, DEFAULT_OUTCOME, NORMAL_FIXTURE_FILES, default_result
 import argparse
@@ -51,7 +52,7 @@ def digest(path):
 
 def doctor():
     token = 'items-' + str(time.monotonic_ns())
-    with socket.create_connection(('127.0.0.1', int(PORT_FILE.read_text())), 5) as connection:
+    with connect_status(PORT_FILE, 5) as connection:
         connection.settimeout(10)
         connection.sendall(('DOCTOR ' + token + '\n').encode())
         for line in connection.makefile():

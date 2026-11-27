@@ -166,12 +166,19 @@ class BuildSafetyTest {
         final ServerSocket server = new ServerSocket(0, 1, InetAddress.getByName("127.0.0.1"));
         final CompletableFuture<Void> done = new CompletableFuture<>();
         FakeAgent(Conversation conversation) throws Exception {
+            this(null, conversation);
+        }
+        FakeAgent(String fixture, Conversation conversation) throws Exception {
             Thread worker = new Thread(() -> {
                 try (Socket socket = server.accept()) {
                     socket.setSoTimeout(5000);
                     var out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8), true);
-                    out.println("{\"level\":\"CONNECTED\",\"agent\":\"test\",\"version\":1}");
-                    conversation.run(new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8)), out);
+                    var in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
+                    if (fixture != null && !("AUTH " + fixture).equals(in.readLine()))
+                        throw new AssertionError("Missing status authentication");
+                    int version = fixture == null ? 1 : 2;
+                    out.println("{\"level\":\"CONNECTED\",\"agent\":\"test\",\"version\":" + version + "}");
+                    conversation.run(in, out);
                     done.complete(null);
                 } catch (Throwable t) { done.completeExceptionally(t); }
             });
