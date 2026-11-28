@@ -26,6 +26,7 @@ import java.util.List;
 final class BeanDefinitionDiff {
 
     final List<SapConverterLists.Edit> converterEdits = new ArrayList<>();
+    final java.util.Map<String, String> addedAliases = new java.util.LinkedHashMap<>();
     final List<NewBean> added = new ArrayList<>();
     final List<PropertyChange> propertyChanges = new ArrayList<>();
     final List<UnsafeChange> unsafe = new ArrayList<>();

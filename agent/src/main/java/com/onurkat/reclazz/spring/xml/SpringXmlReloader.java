@@ -278,7 +278,7 @@ public final class SpringXmlReloader {
         applyToOwners(xmlPath, changes, owningContexts);
     }
 
-    private static final class OwnerChange {
+    static final class OwnerChange {
         final Object temporary, context, factory;
         final String label;
         final boolean observed;
@@ -416,6 +416,10 @@ public final class SpringXmlReloader {
                                     + SpringReflection.rootCause(e)));
                 }
             }
+        }
+        if (changes.stream().anyMatch(change -> !change.diff.addedAliases.isEmpty()))
+            XmlAliasPublication.apply(xmlPath, changes, owners.size(), gatherCandidateContexts());
+        for (var change : changes) {
             if (!change.diff.hasChanges() && change.applied == 0) StatusReporter.info("Spring XML " + xmlPath.getFileName() + change.label
                     + ", parsed OK, no live-applicable changes detected");
             else reportWithLabel(xmlPath, change.applied, change.diff, change.label);

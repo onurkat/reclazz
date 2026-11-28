@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ### SAP Commerce
 
 - Opt-in schema updates report elapsed time and use a worker-owned transaction on HSQLDB. A new SET relation whose generated accessors are unavailable gets a named restart before use.
+- A new Spring XML alias can resolve an existing or newly added singleton on save. The receipt identifies names that still require a restart.
 
 ### Security
 

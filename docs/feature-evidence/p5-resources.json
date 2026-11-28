@@ -6007,12 +6007,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Already-created singletons, including ones subsequently destroyed, retain the",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-IMPORT-OWNER",
-          "block_sha256": "81c59adc774b234c20b8b27f4c86308cada833d5dbb27080fdf69e1e5bdf045d"
+          "block_sha256": "c78c617079c063457afb62ef9c24c5e49fa6787c15c443e7372aa47fa348877e"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -6057,12 +6057,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Already-created singletons, including ones subsequently destroyed, retain the",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-IMPORT-NOOP",
-          "block_sha256": "066a57d027c5f63c1ea85b9c708a2a8974dfa662625184392826265a1129733c"
+          "block_sha256": "52fd737fa47e018dac6e282e156eb806bb92c6120f9c2df9e4884267fcb69854"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -6107,12 +6107,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Already-created singletons, including ones subsequently destroyed, retain the",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-PROTOTYPE-REFUSAL",
-          "block_sha256": "e981f8e4dabf7aa6755cbf6ac932e4c5df1d3726370a5d11606f57f742d6a0d8"
+          "block_sha256": "f7db0e5340591b08011dd4c6ced7c22b849542e8eb5d1192a59f90cdc1fcd4db"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -6157,12 +6157,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Already-created singletons, including ones subsequently destroyed, retain the",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-NATIVE-WATCHER",
-          "block_sha256": "a1dbd61f505443e039acf9d7dc3f6ecea24024228fba04d35164f54a22b0e46c"
+          "block_sha256": "3a776dce1ce7022304465a8d52f81a800086f88c078d07f5b58595211439540d"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -6207,12 +6207,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Already-created singletons, including ones subsequently destroyed, retain the",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-NATIVE-INVALID",
-          "block_sha256": "4dc563fa0ace6e11dd8671bc8add76804fd5ff5c2e18865aae0edd64228bd360"
+          "block_sha256": "a1c6b66ee915740d9e503aaf1a6b08684ad1b0ea0dbb0140983d192ea739f562"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -6257,12 +6257,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Already-created singletons, including ones subsequently destroyed, retain the",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-PROPERTY-INTEGRITY",
-          "block_sha256": "5f72cf8e314dbb6f56c1164a4e99760d45dfe58a4607f0c756934fad0e722695"
+          "block_sha256": "637c6d6ec74d9db003f4b7e5ce9ef7274bca6a2f3963325a13faafd29a62c35a"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -6307,12 +6307,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Already-created singletons, including ones subsequently destroyed, retain the",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-METADATA-REFUSAL",
-          "block_sha256": "f0d9b7054e4e4558a1071017bc519ea29f83cef055f80b00cc37f7cce6761c18"
+          "block_sha256": "1f38bfa19f8a820cd7fd2463fac452ae492d40eb02bf023c5593adcbcf601579"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -6357,12 +6357,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Already-created singletons, including ones subsequently destroyed, retain the",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-LAZY-FLAG-REFUSAL",
-          "block_sha256": "57bcad0444ae00ce03f2f1655246ee58060d03e374829255a02d0ae78697d541"
+          "block_sha256": "fb22812ee996c5e4b8461ebad3f8d8ebabdabf1765f24f85d445ce661eba5d58"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -6407,12 +6407,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Already-created singletons, including ones subsequently destroyed, retain the",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-LAZY-EQUIVALENCE",
-          "block_sha256": "f2aea3ae26ea5603d03d021ca8dd73367865f57bf5ed322ec4a9eea960f04f03"
+          "block_sha256": "602978497113d36e5251f0b735f4bdc83eb7c18a2bbd62403e4ceba38fdca67b"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -6457,12 +6457,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Already-created singletons, including ones subsequently destroyed, retain the",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-INNER-VALUES",
-          "block_sha256": "d770e31fd440329799b4cce4554877dd73f1bf1a7a14befff928ee01d42d68ef"
+          "block_sha256": "00ac190e9058da7f908ddefa7b1688dafb9d6eb08f388f1ee336564a6c1d7d20"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -6507,12 +6507,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Already-created singletons, including ones subsequently destroyed, retain the",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-INNER-NOOP",
-          "block_sha256": "319d83361db66da0c60a0c71d0bd523644e02adac113cbf5cbc3696480a3be47"
+          "block_sha256": "cb250113d8aa125e1929342986cacdeda5234272b5beb7c12ea545bb3567e040"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -6557,12 +6557,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Already-created singletons, including ones subsequently destroyed, retain the",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-INNER-RESOURCE-REFUSAL",
-          "block_sha256": "5b4eb9776ce057fd60ba5cdd9b261160fdd50cafb4d6bb539fe174239231f40e"
+          "block_sha256": "284041bc86a7904161f4de72942544e0fe979cdd4cd8787e3137a3c45692d5c6"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -6607,12 +6607,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Already-created singletons, including ones subsequently destroyed, retain the",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-UNSUPPORTED-NOOP",
-          "block_sha256": "ba5c80a3b936fbd45a3f4e5de63ebcb3d13ec23fa20bef35888c08c2f31ecac3"
+          "block_sha256": "9e6bf07b4f3e295dcc6017f631f5c6896b010eb522ff08ebdb6415a5a3c63c52"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -6657,12 +6657,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Already-created singletons, including ones subsequently destroyed, retain the",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-UNSUPPORTED-EDIT-REFUSAL",
-          "block_sha256": "3f3134f46a73e40c03529903528a685b40b2b42fca08e447261e09178dc193ae"
+          "block_sha256": "4f37a2dcf79ec5496a02b01e3f196f07130d62a8045aea0f743c14b72422207f"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -6681,43 +6681,43 @@
     },
     {
       "id": "P5-XML-ALIAS-REFUSAL",
-      "statement": "Alias retarget/removal/addition is refused, keeping already-resolved alias lookups.",
+      "statement": "Removing or retargeting an alias keeps the original lookup and reports a required restart.",
       "tests": [
         {
           "symbol": "com.onurkat.reclazz.e2e.SpringXmlAliasReloadTest#aliasOnlyEditsReportRestartAndPreserveEveryLookup",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlAliasReloadTest.java",
           "kind": "watcher",
-          "assertions": "chosen staysa; newaliasabsent; newbean c present; original listener count1 unchanged.",
-          "method_sha256": "4b7fff59a2d080e03f67f768830ae62c1f9fcf6ab64af221e687172192729f26"
+          "assertions": "The existing alias still resolves to the held bean after removal and retargeting. The application listener count stays at one.",
+          "method_sha256": "d0ec1867ee49a35abe3ba21e2d21f0a43d3e15a8dfc40f514a6cb07f8e05f602"
         },
         {
           "symbol": "com.onurkat.reclazz.e2e.ModernSpringXmlAliasReloadTest#aliasOnlyEditsReportRestartAndPreserveEveryLookup",
           "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/ModernSpringXmlAliasReloadTest.java",
           "kind": "watcher",
-          "assertions": "chosen staysa; newaliasabsent; newbean c present; original listener count1 unchanged.",
+          "assertions": "The existing alias still resolves to the held bean after removal and retargeting. The application listener count stays at one.",
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.SpringXmlAliasReloadTest#aliasOnlyEditsReportRestartAndPreserveEveryLookup",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SpringXmlAliasReloadTest.java",
-            "method_sha256": "4b7fff59a2d080e03f67f768830ae62c1f9fcf6ab64af221e687172192729f26"
+            "method_sha256": "d0ec1867ee49a35abe3ba21e2d21f0a43d3e15a8dfc40f514a6cb07f8e05f602"
           },
-          "method_sha256": "4b7fff59a2d080e03f67f768830ae62c1f9fcf6ab64af221e687172192729f26"
+          "method_sha256": "d0ec1867ee49a35abe3ba21e2d21f0a43d3e15a8dfc40f514a6cb07f8e05f602"
         }
       ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
           "quote": "Already-created singletons, including ones subsequently destroyed, retain the",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-ALIAS-REFUSAL",
-          "block_sha256": "ab4e66b1c75302c695cf04c666ad8582f61c48e3eadb73437a045d9cdffbd741"
+          "block_sha256": "732e4f7c7fc40f8e84329f6b57bf5a3698caf46dbca6992e92f6ba977d9a7603"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
       "bounds": "SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.",
-      "observable": "Alias retarget/removal/addition is refused, keeping already-resolved alias lookups.",
+      "observable": "Removing or retargeting an alias keeps the original lookup and reports a required restart.",
       "control": "Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.",
       "execution_lanes": [
         "sapmachine-17-macos-arm64",
@@ -6757,12 +6757,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Already-created singletons, including ones subsequently destroyed, retain the",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-INLINE-ALIAS-REFUSAL",
-          "block_sha256": "c9d4e49a849e4bed53c7b7368479fb6a97b5235b0b441f21d0b64e87533a0651"
+          "block_sha256": "30d8c3039ded5283ab4c4b5b79cfb7c7731e494239a833ae35ab17965709cbc3"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -6807,12 +6807,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Already-created singletons, including ones subsequently destroyed, retain the",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-LOOKUP-REFUSAL",
-          "block_sha256": "bbafe7f02157ff8e0372501d97ec966092326df1546c107d328d0eda27e17974"
+          "block_sha256": "cf4dbf119fe5a5706a7ee0cb5917f70fcf6f8af09eb0f9d35a4f7145f51fc60a"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -6857,12 +6857,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Already-created singletons, including ones subsequently destroyed, retain the",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-LOADER-LIFECYCLE-REFUSAL",
-          "block_sha256": "492c414b994fb224c853dbd61b9349f95e89577b120d5f9c4142211c93353b77"
+          "block_sha256": "8e961d9ddaefd0e13d768aeb0bcd11e4a31b1971fe709f99558d694c941a8ed3"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -6907,12 +6907,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Already-created singletons, including ones subsequently destroyed, retain the",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-FACTORYBEAN-REFUSAL",
-          "block_sha256": "e971578755da3f1b1ee4ba6fea3d1a2a4ff7566ca8e419389d45ea9c242c087b"
+          "block_sha256": "1df69dca02abe98c97be8d1634ae65cd4da597ef37653878d97a9eceb61dda5b"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -7045,12 +7045,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Ordinary XML property values are compared",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-NATIVE-TYPE",
-          "block_sha256": "21dc425cb8812d8406e9854c61a96471e94a97041958c3baea0fc4c8fd37c039"
+          "block_sha256": "09e202f72eec5451cc4fd04646bfd98244dd6d3fe746370bb6781744ac84a047"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -7083,12 +7083,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Ordinary XML property values are compared",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-NATIVE-MODE",
-          "block_sha256": "1e0c6602a3e3da1c02fd5e3d8325fb81f80edd7853c29b76c0f83fc1550c51eb"
+          "block_sha256": "c1848e1827181fc5adcc12930b7854cb1baa1f3e09c74379fcaf6f654a1d8ba5"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -7121,12 +7121,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Ordinary XML property values are compared",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-NATIVE-CODE",
-          "block_sha256": "5009a831709fbb2467866dda46f8d9f91afeebe07566f4610fbaeaad33805ce0"
+          "block_sha256": "56dccdedf55fd6cc08d185bf405047d80f70be368e6ff0836f7b1d1cf285e07c"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -7159,12 +7159,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Ordinary XML property values are compared",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-NATIVE-AMOUNT",
-          "block_sha256": "9be0b72455238558208d0d100f953fcb36eb947fedfe9a1bb782069c4704f864"
+          "block_sha256": "803b09cc8653fd9284041c956c2eb5f8a3380efb48e67270d1ef2f362fb34c15"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -7197,12 +7197,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Ordinary XML property values are compared",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-NATIVE-LOCATION",
-          "block_sha256": "26d7ffce038d64133a3e0967b835c3759a93d4aa78127d67760c049200d0c745"
+          "block_sha256": "32b31f7ac63ed9a5bc527ac870da34efc304290f1310104d03efff5e125ce41f"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -7235,12 +7235,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Ordinary XML property values are compared",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-NATIVE-TYPES",
-          "block_sha256": "f6ad4226d85e43b9ac1663a1bc4935ae89afc953ff4906d3a997d27c42a72657"
+          "block_sha256": "c8c7860f0516ad94987699a35aee8b048ea11beba043b5cd08f6b46b26d0ec3f"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -7273,12 +7273,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Ordinary XML property values are compared",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-NATIVE-MODES",
-          "block_sha256": "38d2c8c10c3f42187ad775f4c1b72dc194ccf8fb1bced38022001d2d09c38d00"
+          "block_sha256": "660de8f3898ee474f17ddd98087b87c460f7648bada4d9ccc87210887e12044d"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -7311,12 +7311,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Ordinary XML property values are compared",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-NATIVE-MAPPINGS",
-          "block_sha256": "97c1629349b9f7bfa411e7ae191131b556407bf817e58fbbf9f8f00acb9b8c4b"
+          "block_sha256": "580623f3584180ac22cd5d4d8347e9ea3ab743c51179d19273377a3e2f6832d9"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -7349,12 +7349,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Ordinary XML property values are compared",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-NATIVE-SELECTION",
-          "block_sha256": "ce5324af7a98b7f4428e123e5e07f7139a44e39958971ac031a8a2e785819a9b"
+          "block_sha256": "00e42b69d166ebb91fc9e6eae7b6020df280b3331e6aff3cfdba7880e33e26cd"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -7387,12 +7387,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Ordinary XML property values are compared",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-NATIVE-INTEGERSELECTION",
-          "block_sha256": "3510218e1eb906f58384a5f4c7cd6c2d55a6d5c348a1432815a06c2ef54e4b37"
+          "block_sha256": "02adba9e567650f7920543b455b564e7999a378f77d7a0338af4e3c1449394b6"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -7425,12 +7425,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Ordinary XML property values are compared",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-NATIVE-BIGINTEGER",
-          "block_sha256": "0b6729df27e7b36d3fbea9487d5c1c605e27a61972bd2fbdc45873c7213112f9"
+          "block_sha256": "329c65bb5d4161869922abf7b871f252de0642b7836a818ca7a556bcc13fdc31"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -7463,12 +7463,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Ordinary XML property values are compared",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-NATIVE-MODESET",
-          "block_sha256": "b3fe3f3bdd71bf236fa02ead46dfbfe158e836aaf1f11904da482c095bee3ae3"
+          "block_sha256": "f5d6c3ea45fb0342e158a5febaf2c4b6245f581152a4fe8b317d9d4d2b80d788"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -7501,12 +7501,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Ordinary XML property values are compared",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-NATIVE-ENUMKEYS",
-          "block_sha256": "3828f0bcca2bc4e7fad16262b6253b543166869243491a5203fe8821189180f7"
+          "block_sha256": "03b324b122d994f885bfcf08ae641191fbb2625b1bc8acdb3237c62c4ad16ed0"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -7539,12 +7539,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Ordinary XML property values are compared",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-INHERITED-GENERIC",
-          "block_sha256": "43192a29a4ed37ad1c91ec3716e478a21d954c6b7d9117bbc45cc7b5c4255689"
+          "block_sha256": "751f83ead5bde91cdc8d61b94afe01ffb782d005284e5c4f4f367de9c37ab485"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -7577,12 +7577,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Ordinary XML property values are compared",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-INHERITED-SCALAR",
-          "block_sha256": "74c5d9d053b9246c18e80df8624a56ce9b4e7b4e3e4cecc088227a6c7191c42d"
+          "block_sha256": "02e06e5e71875bc17701b2687d90073cfc70e0ebbc24e0eab2cc2df1168ea675"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -7615,12 +7615,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Ordinary XML property values are compared",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-CUSTOM-CONVERTERS",
-          "block_sha256": "e427eb2ebf874548ac811d21a58f91817ea6860ae346bd4f7cbbc4ffc21bb674"
+          "block_sha256": "53a932144f23562443bf4ba89efa605cf174a341a0ab9d16fee2806a1c4049ab"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -7653,12 +7653,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Ordinary XML property values are compared",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-UNKNOWN-CONVERTER-REFUSAL",
-          "block_sha256": "044352c4c3d1d12927a4b67fc2f93a00ceb3a842f65169c885ba70f96e09988a"
+          "block_sha256": "5fa9e0aef624047231d9b46134adfc4f691442a1e2538cf5ad898cf4cd2dec3e"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -7691,12 +7691,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Ordinary XML property values are compared",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-RESOURCE-CONVERSION-REFUSAL",
-          "block_sha256": "b79e5cba3f7a0736f2bf84195a2ff02437c98ed0aa7acc88cc2a360d920a4af4"
+          "block_sha256": "b4d7e0fd8ef8358888f5e2f3f1b5902bbcc23b91ee2f8ec3c1c1d26045e9fb07"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -7729,12 +7729,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Ordinary XML property values are compared",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-MISSING-SETTER-REFUSAL",
-          "block_sha256": "ab4eb085de1ff5f47096a6259c1340e657c234e3f2f8adeec973cf8a8dbd367b"
+          "block_sha256": "7a14124319d8f15f0ed2a4d5b8d616cc81c909356196cf8712bba96c8df7ebc7"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -7957,12 +7957,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Already-created singletons, including ones subsequently destroyed, retain the",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-PARTIAL-SETTER",
-          "block_sha256": "e2b583d9be8fc7ca20de682659b24c9834a756b689ca197b207b261294859800"
+          "block_sha256": "a080eabfdd1a2d01d3585a4930903a20c4ce2859cf036be0831962d167e88edf"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -7995,12 +7995,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Already-created singletons, including ones subsequently destroyed, retain the",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-LAZY-DEFERRED-VALIDATION",
-          "block_sha256": "78429d24eba85e11b8ac4f4286b1094567569eace836ce679e673142800983c4"
+          "block_sha256": "c8160521e25968a8a9cb07aeb51d5f7a81e905eaad747d2cc50239adbf6eed80"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -8033,12 +8033,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Already-created singletons, including ones subsequently destroyed, retain the",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-REMOVAL-REFUSAL",
-          "block_sha256": "ce137243b14517172c50616c46b8760ee1e89dd89039fddfd7580763ee92b716"
+          "block_sha256": "3e9c7eca4276f65c343f5ef194006d05593934338ad0017e4b4c58f84e4d5c46"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -8071,12 +8071,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Already-created singletons, including ones subsequently destroyed, retain the",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-FACTORYBEAN-PREFLIGHT",
-          "block_sha256": "2f772f690c8fdc2012a424a0df04ead722edc6d24d7671064255ebf4cce6f6a1"
+          "block_sha256": "35eae400cf7959d1f07d9cab1564c6a8bb174d467c8c65ab26f7b58b9a843d8d"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",
@@ -8109,12 +8109,12 @@
         {
           "path": "docs/usage.md",
           "quote": "Already-created singletons, including ones subsequently destroyed, retain the",
-          "block_sha256": "a685f38895810634483ab6e217b1f79d67df40e5bb01599aa91199a575def400"
+          "block_sha256": "d363dd29a8adf6f8b2ef2f3c91d4e3e50c21de2e0dbc0f3a0c5d507b202f3f9b"
         },
         {
           "path": "docs/feature-evidence.md",
           "quote": "### P5-XML-METADATA-CONTEXTS",
-          "block_sha256": "be9fe02c3ef7d7801d2fd71ea520bcb75362bffc5abaa31d97c0393c081caa35"
+          "block_sha256": "55a1d79a02b6a38aa65b31b5a690fc37a1d524534d059bf7cde8bdcd4896439f"
         }
       ],
       "opt_in": "Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.",

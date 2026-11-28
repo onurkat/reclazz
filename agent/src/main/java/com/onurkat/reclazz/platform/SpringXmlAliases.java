@@ -70,6 +70,22 @@ public final class SpringXmlAliases {
         return entry == null ? null : entry.files().get(path.toAbsolutePath().normalize());
     }
 
+    /** Advance only the accepted name, preserving pending removals and retargets in this file. */
+    public static synchronized void published(List<Object> registries, Path path, String alias, String target) {
+        Path key = path.toAbsolutePath().normalize();
+        var updates = new IdentityHashMap<Entry, Map<String, String>>();
+        for (Object registry : registries) {
+            Entry owner = find(loaded, registry);
+            Map<String, String> baseline = owner == null ? null : owner.files().get(key);
+            if (baseline == null || baseline.containsKey(alias))
+                throw new IllegalStateException("alias ownership baseline changed");
+            var next = new LinkedHashMap<>(baseline);
+            next.put(alias, target);
+            updates.put(owner, Map.copyOf(next));
+        }
+        updates.forEach((owner, next) -> owner.files().put(key, next));
+    }
+
     /** Only for agent-owned sandbox readers. Never replaces an application's event listener. */
     public static void observeReader(Object reader, ClassLoader loader) throws ReflectiveOperationException {
         Class<?> source = Class.forName("org.springframework.beans.factory.parsing.SourceExtractor", false, loader);

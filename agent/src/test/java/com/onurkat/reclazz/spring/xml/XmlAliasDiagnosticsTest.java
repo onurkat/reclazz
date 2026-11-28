@@ -86,13 +86,13 @@ class XmlAliasDiagnosticsTest {
         write("settings.xml", bean("a") + bean("b") + alias("b", "chosen")); reload(file, c);
         assertSame(held, c.getBean("chosen")); assertSame(c.getBean("a"), held); warned("chosen");
     }
-    @Test void additionAndRemovalInAliasOnlyResourceAreReportedRepeatedly() throws Exception {
+    @Test void additionIsPublishedOnceWhileRemovalStaysPending() throws Exception {
         Path defs = write("defs.xml", bean("a")); Path file = write("aliases.xml", alias("a", "oldName"));
         var c = context(defs, file); Object held = c.getBean("oldName");
         for (int i = 0; i < 2; i++) {
             write("aliases.xml", alias("a", "newName")); reload(file, c);
-            assertSame(held, c.getBean("oldName")); assertFalse(c.containsBean("newName"));
-            warned("oldName"); warned("newName");
+            assertSame(held, c.getBean("oldName")); assertSame(held, c.getBean("newName"));
+            warned("oldName"); assertFalse(RestartLedger.digest().stream().anyMatch(v -> v.contains("newName")));
         }
     }
     @Test void removalAloneWarnsEvenWithNoDefinitionsInFile() throws Exception {
@@ -109,11 +109,116 @@ class XmlAliasDiagnosticsTest {
         var c = context(file); write("settings.xml", bean("a")); reload(file, c);
         assertSame(c.getBean("a"), c.getBean("chosen")); warned("chosen");
     }
-    @Test void newBeanAliasIsExplicitlyUnapplied() throws Exception {
+    @Test void newAliasResolvesTheBeanAddedByTheSameSave() throws Exception {
         Path file = write("settings.xml", bean("a")); var c = context(file);
         write("settings.xml", bean("a") + bean("b") + alias("b", "chosen")); reload(file, c);
-        assertTrue(c.containsBean("b")); assertFalse(c.containsBean("chosen")); warned("chosen");
+        assertTrue(c.containsBean("b")); assertSame(c.getBean("b"), c.getBean("chosen")); noAliasWarning();
     }
+    @Test void publishedAliasMatchesColdLookupAndSubsequentRemovalOrRetargetKeepsTheHeldBean() throws Exception {
+        Path file = write("defs.xml", bean("a") + bean("b")); var warm = context(file);
+        write("defs.xml", bean("a") + bean("b") + alias("a", "chosen")); reload(file, warm);
+        Object held = warm.getBean("chosen"); assertSame(warm.getBean("a"), held); noAliasWarning();
+        var cold = context(file); assertSame(cold.getBean("a"), cold.getBean("chosen"));
+        cold.close();
+        reload(file, warm); noAliasWarning();
+        for (String suffix : List.of(alias("b", "chosen"), "")) {
+            write("defs.xml", bean("a") + bean("b") + suffix); reload(file, warm);
+            assertSame(held, warm.getBean("chosen")); warned("chosen");
+        }
+    }
+
+    @Test void collisionInSecondOwnerLeavesFirstUnboundAndCanBeRetried() throws Exception {
+        Path file = write("defs.xml", bean("a")); var first = context(file); var second = context(file);
+        second.getBeanFactory().registerSingleton("taken", new Object());
+        write("defs.xml", bean("a") + alias("a", "free") + alias("a", "taken")); reload(file, first);
+        assertFalse(first.containsBean("taken")); assertNotSame(second.getBean("a"), second.getBean("taken"));
+        assertSame(first.getBean("a"), first.getBean("free")); assertSame(second.getBean("a"), second.getBean("free"));
+        warned("taken"); assertEquals(Map.of("free", "a"), SpringXmlAliases.snapshot(first, file));
+        second.getDefaultListableBeanFactory().destroySingleton("taken"); reload(file, first);
+        assertSame(first.getBean("a"), first.getBean("taken")); assertSame(second.getBean("a"), second.getBean("taken"));
+        noAliasWarning();
+    }
+
+    public static class Writer extends org.springframework.beans.factory.support.DefaultListableBeanFactory {
+        @Override public void registerAlias(String target, String alias) {
+            super.registerAlias(target, alias);
+            if (alias.equals("raced")) registerBeanDefinition(alias,
+                    new org.springframework.beans.factory.support.RootBeanDefinition(StringBuilder.class));
+        }
+    }
+
+    @Test void completedCompetingRegistrationRollsBackOurBindingInEveryOwner() throws Exception {
+        Path file = write("defs.xml", bean("a")); var first = context(file);
+        var second = new GenericApplicationContext(new Writer()); contexts.add(second);
+        var reader = new ObservedReader(second); reader.setValidating(false);
+        SpringXmlAliases.observeReader(reader, getClass().getClassLoader());
+        reader.loadBeanDefinitions(new FileSystemResource(file)); second.refresh(); ApplicationContextHolder.register(second);
+        write("defs.xml", bean("a") + alias("a", "raced")); reload(file, first);
+        assertFalse(first.containsBean("raced")); assertFalse(second.isAlias("raced"));
+        assertTrue(second.containsBeanDefinition("raced")); assertInstanceOf(StringBuilder.class, second.getBean("raced"));
+        warned("raced"); assertTrue(SpringXmlAliases.snapshot(first, file).isEmpty());
+    }
+
+    public static class Choice {
+        @org.springframework.beans.factory.annotation.Value("#{beanFactory.containsBean(T(java.lang.Character).toString(120)) ? @x : @a}")
+        Object value;
+    }
+
+    private GenericApplicationContext expressionContext(Path file) {
+        var c = new GenericApplicationContext(); contexts.add(c);
+        org.springframework.context.annotation.AnnotationConfigUtils.registerAnnotationConfigProcessors(c);
+        c.registerBean("consumer", Choice.class);
+        var reader = new ObservedReader(c); reader.setValidating(false);
+        try { SpringXmlAliases.observeReader(reader, getClass().getClassLoader()); }
+        catch (ReflectiveOperationException failure) { throw new AssertionError(failure); }
+        reader.loadBeanDefinitions(new FileSystemResource(file)); c.refresh();
+        ApplicationContextHolder.register(c); return c;
+    }
+
+    @Test void unrelatedStockExpressionsAllowPublishingATenantAlias() throws Exception {
+        String[] expressions = {"#{T(de.hybris.platform.util.MediaUtil).getLocalStorageDataDir()}",
+                "#{new java.io.File(systemProperties['java.io.tmpdir'])}",
+                "#{'taskQueueSizeChart_'.concat(tenantService.currentTenantId)}",
+                "https://localhost:#{@configurationService.configuration.getInt('port')}"};
+        StringBuilder definitions = new StringBuilder(bean("target"));
+        for (int i = 0; i < expressions.length; i++) {
+            definitions.append("<bean id='stock").append(i).append("' lazy-init='true' class='")
+                    .append(Value.class.getName()).append("'><property name='text'><value>")
+                    .append(expressions[i]).append("</value></property></bean>");
+        }
+        Path file = write("defs.xml", definitions.toString());
+        var warm = context(file);
+        write("defs.xml", definitions + alias("target", "freshAlias"));
+        reload(file, warm);
+        assertTrue(warm.containsBean("freshAlias"), events.toString());
+        assertSame(warm.getBean("target"), warm.getBean("freshAlias"));
+        assertFalse(warm.getBeanFactory().containsSingleton("stock0"));
+        noAliasWarning();
+    }
+
+    @Test void computedExpressionRetainsItsWarmChoiceAndReportsTheAliasWhileColdChoosesTheTarget() throws Exception {
+        Path file = write("defs.xml", bean("a") + bean("b")); var warm = expressionContext(file);
+        Choice consumer = warm.getBean(Choice.class); assertSame(warm.getBean("a"), consumer.value);
+        write("defs.xml", bean("a") + bean("b") + alias("b", "x")); reload(file, warm);
+        assertFalse(warm.containsBean("x")); warned("x");
+        assertTrue(events.stream().anyMatch(e -> e.contains("expression on consumer")), events.toString());
+        assertSame(warm.getBean("a"), consumer.value);
+        var cold = expressionContext(file); assertSame(cold.getBean("b"), cold.getBean(Choice.class).value);
+    }
+
+    @Test void aliasInChildIsInvisibleToAnAncestorWithAComputedLookup() throws Exception {
+        Path parentXml = write("parent.xml", bean("a") + bean("b"));
+        var parent = expressionContext(parentXml);
+        Path childXml = write("child.xml", bean("local"));
+        var child = new GenericApplicationContext(parent); contexts.add(child);
+        var reader = new ObservedReader(child); reader.setValidating(false);
+        SpringXmlAliases.observeReader(reader, getClass().getClassLoader());
+        reader.loadBeanDefinitions(new FileSystemResource(childXml)); child.refresh(); ApplicationContextHolder.register(child);
+        write("child.xml", bean("local") + alias("local", "onlyInChild")); reload(childXml, child);
+        assertSame(child.getBean("local"), child.getBean("onlyInChild")); noAliasWarning();
+        assertFalse(parent.containsBean("onlyInChild")); assertSame(parent.getBean("a"), parent.getBean(Choice.class).value);
+    }
+
     @Test void ordinaryPropertyStillAppliesAlongsideAliasWarning() throws Exception {
         Path file = write("settings.xml", bean("a") + alias("a", "chosen")); var c = context(file);
         Value held = c.getBean("a", Value.class);
@@ -128,7 +233,8 @@ class XmlAliasDiagnosticsTest {
         write("one/settings.xml", bean("a") + alias("a", "next")); reload(file, first);
         assertSame(first.getBean("a"), first.getBean("chosen"));
         assertSame(second.getBean("a"), second.getBean("chosen"));
-        assertSame(unrelated, third.getBean("chosen")); assertFalse(third.containsBean("next")); warned("next");
+        assertSame(unrelated, third.getBean("chosen")); assertFalse(third.containsBean("next")); warned("chosen");
+        assertSame(first.getBean("a"), first.getBean("next")); assertSame(second.getBean("a"), second.getBean("next"));
         reload(other, third); noAliasWarning();
     }
     @Test void invalidCycleNeverChangesLiveAliasesOrBeans() throws Exception {

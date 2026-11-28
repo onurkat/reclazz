@@ -2683,6 +2683,16 @@ import seen only by the temporary parser does not become a captured live resourc
 Unsupported bean changes still require the reported restart. Use the actual
 loaded file; editing a different source copy with the same name does not update it.
 
+A new XML alias for an instantiated singleton, including a bean created in the same save,
+can take effect immediately. Each owner must have loaded the file and the name must be free
+throughout its hierarchy. The receipt identifies the alias and its target. Restart if
+an existing injection or definition depends on the name, a custom resolver controls
+selection, or a Spring expression could compute a bean lookup. Removing or retargeting
+an alias requires a restart and keeps existing lookups intact until then.
+Live registration assumes no other code registers or removes Spring bean definitions or
+aliases during the save. Application code that cached an earlier failed lookup must
+refresh that cache or restart.
+
 For an already-instantiated ordinary bean, a failed property resolution, conversion
 or setter call keeps the previous raw property in its bean definition and reports
 the failure. Other supported properties and beans can still update. A setter may

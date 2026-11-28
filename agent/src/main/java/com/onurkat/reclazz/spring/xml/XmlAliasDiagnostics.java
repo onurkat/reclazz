@@ -8,7 +8,7 @@ import com.onurkat.reclazz.platform.SpringXmlAliases;
 import java.nio.file.Path;
 import java.util.*;
 
-/** Reports unapplied declaration changes only; does not retarget or reinject live consumers. */
+/** Collects new declarations for publication and reports pending removals and retargets. */
 final class XmlAliasDiagnostics {
     private XmlAliasDiagnostics() { }
 
@@ -37,7 +37,11 @@ final class XmlAliasDiagnostics {
         Set<String> names = new TreeSet<>(old.keySet()); names.addAll(next.keySet());
         for (String name : names) {
             if (Objects.equals(old.get(name), next.get(name))) continue;
-            String action = !old.containsKey(name) ? "added" : !next.containsKey(name) ? "removed" : "retargeted";
+            if (!old.containsKey(name)) {
+                diff.addedAliases.put(name, next.get(name));
+                continue;
+            }
+            String action = !next.containsKey(name) ? "removed" : "retargeted";
             diff.unsafe.add(new BeanDefinitionDiff.UnsafeChange("alias '" + name + "'",
                     "alias declaration " + action + "; live aliases were not changed, restart required"));
         }

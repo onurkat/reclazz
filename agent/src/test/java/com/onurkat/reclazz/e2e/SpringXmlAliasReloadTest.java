@@ -35,10 +35,10 @@ class SpringXmlAliasReloadTest {
             app.awaitOrFail("alias declaration removed", "removal warning missing");
             probe(app, 2, "true:false:false:1");
             save(app, aliases, bean("c") + alias("c", "newName"), 4);
-            app.awaitOrFail("alias declaration added", "new alias warning missing");
-            probe(app, 3, "true:false:true:1");
+            app.awaitOrFail("alias 'newName' -> 'c' registered live", "registration receipt missing");
+            probe(app, 3, "true:true:true:1");
             save(app, aliases, bean("c") + alias("c", "newName"), 5);
-            probe(app, 4, "true:false:true:1");
+            probe(app, 4, "true:true:true:1");
         }
     }
     @ParameterizedTest @ValueSource(booleans = {false, true})
@@ -100,7 +100,7 @@ class SpringXmlAliasReloadTest {
                     for (int n = 1; n <= 4; n++) {
                         while (!Files.exists(directory.resolve("probe" + n))) Thread.sleep(25);
                         System.out.println("PROBE" + n + "=" + (held == context.getBean("chosen"))
-                            + ":" + context.containsBean("newName") + ":" + context.containsBean("c") + ":" + aliases);
+                            + ":" + (context.containsBean("newName") && context.getBean("newName") == context.getBean("c")) + ":" + context.containsBean("c") + ":" + aliases);
                     }
                     while (true) Thread.sleep(100);
                 }
