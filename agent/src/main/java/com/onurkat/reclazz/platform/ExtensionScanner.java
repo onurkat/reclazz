@@ -158,18 +158,20 @@ public class ExtensionScanner {
         Map<String, Path> index = new HashMap<>();
         Path binDir = platformHome.getParent();
 
+        ExtensionIndexCache cache = ExtensionIndexCache.forInstallation(platformHome, configDir);
+
         // Scan platform extensions
         for (String dir : PLATFORM_EXT_DIRS) {
             Path extRoot = binDir.resolve(dir);
             if (Files.isDirectory(extRoot)) {
-                scanExtensionDirectory(extRoot, index);
+                scanExtensionDirectory(extRoot, index, cache);
             }
         }
 
         // Scan custom extensions
         Path customDir = binDir.resolve("custom");
         if (Files.isDirectory(customDir)) {
-            scanExtensionDirectory(customDir, index);
+            scanExtensionDirectory(customDir, index, cache);
         }
 
         // Platform itself is an extension
@@ -196,7 +198,14 @@ public class ExtensionScanner {
      * UncheckedIOException mid-stream), caught below so a single bad
      * link degrades to a partial index instead of aborting the scan.
      */
-    private void scanExtensionDirectory(Path root, Map<String, Path> index) {
+    private void scanExtensionDirectory(Path root, Map<String, Path> index, ExtensionIndexCache cache) {
+        if (cache != null) {
+            Map<String, Path> available = cache.index(root, this::extractExtensionName);
+            if (available != null) {
+                index.putAll(available);
+                return;
+            }
+        }
         for (Path extInfoFile : extensionInfoFiles(root, Integer.MAX_VALUE)) {
             Path extDir = extInfoFile.getParent();
             try {

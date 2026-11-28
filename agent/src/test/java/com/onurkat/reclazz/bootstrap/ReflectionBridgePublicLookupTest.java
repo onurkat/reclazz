@@ -28,6 +28,35 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class ReflectionBridgePublicLookupTest {
 
+    public interface RemovableDefault {
+        default void changed(int value) { }
+    }
+
+    public static class Parent {
+        public void inherited() { }
+    }
+
+    public static class Child extends Parent implements RemovableDefault { }
+
+    @Test
+    void warmedChildLookupsFollowParentAndInterfaceRemovalAndRestoration() throws Exception {
+        assertEquals(Parent.class, ReflectionBridge.getMethod(Child.class, "inherited").getDeclaringClass());
+        assertEquals(RemovableDefault.class, ReflectionBridge.getMethod(Child.class, "changed", int.class).getDeclaringClass());
+        var names = java.util.Set.of("inherited");
+        var overloads = java.util.Set.of("changed(I)V");
+        try {
+            ReflectionBridge.hideRemovedMembers(Parent.class, null, names);
+            ReflectionBridge.hideRemovedOverloads(RemovableDefault.class, overloads);
+            assertThrows(NoSuchMethodException.class, () -> ReflectionBridge.getMethod(Child.class, "inherited"));
+            assertThrows(NoSuchMethodException.class, () -> ReflectionBridge.getMethod(Child.class, "changed", int.class));
+        } finally {
+            ReflectionBridge.unhideRestoredMembers(Parent.class, null, names);
+            ReflectionBridge.unhideRestoredOverloads(RemovableDefault.class, overloads);
+        }
+        assertEquals(Parent.class, ReflectionBridge.getMethod(Child.class, "inherited").getDeclaringClass());
+        assertEquals(RemovableDefault.class, ReflectionBridge.getMethod(Child.class, "changed", int.class).getDeclaringClass());
+    }
+
     /** Stands in for a reloaded class; the "added" members are forged onto it. */
     public static class Host {
         public String original() { return "original"; }

@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ### Changed
 
 - Repeated reflective calls to an added base method reuse override lookups on subclass and proxy receivers.
+- SAP Commerce startup reuses the available-extension index for unchanged directory trees on filesystems exposing stable file identities and Unix change times.
 - After the first full SAP Commerce build in a server session, eligible additive beans.xml changes compile only the changed DTOs. The save receipt reports the number of classes compiled or why the full platform build ran.
 
 ### Fixed
