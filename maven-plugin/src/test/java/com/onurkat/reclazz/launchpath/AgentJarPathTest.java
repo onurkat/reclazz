@@ -2,28 +2,42 @@
 package com.onurkat.reclazz.launchpath;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.*;
 import java.nio.file.attribute.*;
 import java.util.*;
 import java.util.concurrent.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.Assertions.*;
 
 class AgentJarPathTest {
     @TempDir Path temp;
     private Path root() throws IOException { return temp.toRealPath(); }
-    private static final AgentJarPath.StageDirectory UNUSED = () -> { throw new AssertionError("unexpected staging"); };
-
-    @Test void directPathsAndNonWindowsPreserveTheirOriginalArgument() throws Exception {
-        Path plain = root().resolve("ordinary dir/agent.jar");
-        assertEquals(plain, AgentJarPath.forLaunch(plain, null, true, UNUSED));
-        Path unicode = root().resolve("東京=/agent.jar");
-        assertEquals(unicode, AgentJarPath.forLaunch(unicode, "relative", false, UNUSED));
+    private Path samplePath(String name) throws IOException {
+        Charset charset = Charset.forName(System.getProperty("sun.jnu.encoding"));
+        assumeTrue(charset.newEncoder().canEncode(name), () -> "Filename not representable by " + charset);
+        return root().resolve(name);
     }
 
-    @Test void overrideWinsIsValidatedBeforeWritingAndExistingBytesAreVerified() throws Exception {
-        Path source = Files.writeString(root().resolve("東京.jar"), "version one");
+    private static final AgentJarPath.StageDirectory UNUSED = () -> { throw new AssertionError("unexpected staging"); };
+
+    @ParameterizedTest
+    @ValueSource(strings = {"local=dir", "東京"})
+    void directPathsAndNonWindowsPreserveTheirOriginalArgument(String sample) throws Exception {
+        Path plain = root().resolve("ordinary dir/agent.jar");
+        assertEquals(plain, AgentJarPath.forLaunch(plain, null, true, UNUSED));
+        Path original = samplePath(sample).resolve("agent.jar");
+        assertEquals(original, AgentJarPath.forLaunch(original, "relative", false, UNUSED));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"local=dir", "東京"})
+    void overrideWinsIsValidatedBeforeWritingAndExistingBytesAreVerified(String sample) throws Exception {
+        Path source = Files.writeString(samplePath(sample + ".jar"), "version one");
         Path override = root().resolve("override");
         Path staged = AgentJarPath.forLaunch(source, override.toString(), true, UNUSED);
         assertTrue(staged.startsWith(override));
@@ -31,7 +45,7 @@ class AgentJarPathTest {
         Files.writeString(staged, "damaged");
         assertThrows(IOException.class, () -> AgentJarPath.forLaunch(source, override.toString(), true, UNUSED));
         assertEquals("damaged", Files.readString(staged));
-        for (String invalid : List.of("relative", root().resolve("東京").toString(), root().resolve("a=b").toString()))
+        for (String invalid : List.of("relative", samplePath(sample).toString(), root().resolve("a=b").toString()))
             assertThrows(IOException.class, () -> AgentJarPath.forLaunch(source, invalid, true, UNUSED));
     }
 
@@ -55,9 +69,11 @@ class AgentJarPathTest {
         } finally { pool.shutdownNow(); }
     }
 
-    @Test void serviceRequiresAnAlreadyProvisionedMatchingJarAndNeverWritesIt() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"local=dir", "東京"})
+    void serviceRequiresAnAlreadyProvisionedMatchingJarAndNeverWritesIt(String sample) throws Exception {
         Path source = Files.writeString(root().resolve("source.jar"), "bundled");
-        Path legacy = root().resolve("東京/home.jar");
+        Path legacy = samplePath(sample).resolve("home.jar");
         Path directory = root().resolve("admin");
         assertThrows(IOException.class, () -> AgentJarPath.forService(legacy, source, null, true, file -> fail()));
         assertThrows(IOException.class, () -> AgentJarPath.forService(legacy, source, directory.toString(), true, file -> {}));

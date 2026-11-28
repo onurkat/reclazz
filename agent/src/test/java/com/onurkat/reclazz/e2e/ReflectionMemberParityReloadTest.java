@@ -5,6 +5,11 @@
 package com.onurkat.reclazz.e2e;
 
 import com.onurkat.reclazz.e2e.harness.WatchedApp;
+import com.onurkat.reclazz.e2e.harness.StatusTestClient;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.jupiter.api.io.TempDir;
@@ -58,7 +63,8 @@ class ReflectionMemberParityReloadTest {
     @ParameterizedTest @ValueSource(booleans = {false, true})
     void heldBaseMethodFollowsChangingOverrideDeclarations(boolean nativeVm) throws Exception {
         String sub = "package app; public class Sub extends Base { public int stage(){return %d;} %s }";
-        var builder = WatchedApp.in(tmp).agentArgs("startupDelaySec=1,debounceMs=100")
+        Path portFile = tmp.resolve("agent.port");
+        var builder = WatchedApp.in(tmp).agentArgs("startupDelaySec=1,debounceMs=100,portFile=" + portFile)
                 .with("Base", "package app; public class Base { public static Object body(Base receiver){return \"base\";}"
                         + (nativeVm ? "public Object read(){return body(this);}" : "") + "}")
                 .with("Sub", sub.formatted(0, ""))
@@ -90,6 +96,22 @@ class ReflectionMemberParityReloadTest {
                                 dispatch.setAccessible(true);
                                 var physical = Class.forName("com.onurkat.reclazz.bootstrap.ReflectionBridge", true, null)
                                         .getMethod("physicalDeclaredMethods", Class.class);
+                                if (!nativeVm) {
+                                    var probe = Class.forName("com.onurkat.reclazz.reload.StructuralReloader")
+                                            .getDeclaredField("afterSwitchProbe");
+                                    probe.setAccessible(true);
+                                    probe.set(null, (Runnable) () -> {
+                                        int stage = receiver.stage();
+                                        if (stage == 2 || stage == 4) {
+                                            try {
+                                                System.out.println("REMOVAL " + stage + " " + held.invoke(receiver)
+                                                        + "/" + virtual.invoke(receiver));
+                                            } catch (Throwable failure) {
+                                                failure.printStackTrace();
+                                            }
+                                        }
+                                    });
+                                }
                                 String previous = "";
                                 for (;;) {
                                     boolean vmMethod = java.util.Arrays.stream((Method[])physical.invoke(null,Sub.class))
@@ -116,11 +138,37 @@ class ReflectionMemberParityReloadTest {
             String[] values = {"exact", "base", "covariant", "base", "restored"};
             for (int i = 0; i < declarations.length; i++) {
                 live.rewrite("Sub", sub.formatted(i + 1, declarations[i]));
+                awaitBuildScan(portFile, "parity-" + (i + 1));
                 String value = values[i];
                 String expected = "DISPATCH " + (i + 1) + " " + value + "/" + value + "/" + value
                         + " physical=" + (nativeVm && !declarations[i].isEmpty());
                 assertTrue(live.awaits(expected, 25), () -> expected + System.lineSeparator() + live.tail());
+                if (!nativeVm && declarations[i].isEmpty()) {
+                    live.awaitOrFail("REMOVAL " + (i + 1) + " base/base", "base dispatch during removal publication");
+                }
             }
+        }
+    }
+
+    // Exercise dispatch after each build using the same acknowledged scan as an IDE build.
+    private static void awaitBuildScan(Path portFile, String token) throws Exception {
+        try (var socket = StatusTestClient.connect(portFile)) {
+            socket.setSoTimeout(15000);
+            var output = socket.getOutputStream();
+            output.write(("SCAN request=" + token + "\n").getBytes(StandardCharsets.UTF_8));
+            output.flush();
+            var input = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
+            var json = new ObjectMapper();
+            String prefix = "SCAN_RESULT " + token + " ";
+            String line;
+            while ((line = input.readLine()) != null) {
+                String message = json.readTree(line).path("message").asText();
+                if (message.startsWith(prefix)) {
+                    assertEquals("queued", json.readTree(message.substring(prefix.length())).path("status").asText());
+                    return;
+                }
+            }
+            fail("Missing scan receipt for " + token);
         }
     }
 

@@ -1305,7 +1305,7 @@ public class StructuralReloader {
                             : platformContext.getAllApplicationContexts());
 
             // Re-target all call sites atomically via bootstrap-CL DispatchTable
-            DispatchTable.retargetAll(targetClass, companionLookup, newTargets);
+            DispatchTable.getOrCreate(targetClass).retarget(newTargets, removal.targets());
             publishedMethods.get(targetClass).set(List.copyOf(diff.getNewMethods()));
 
             // From this line the JVM serves the new bodies, and nothing below
@@ -2068,13 +2068,15 @@ public class StructuralReloader {
                 }
                 if(physical.contains(method.name+method.desc))continue;
                 var handle=findDispatchHandle(method.name,method.desc,newTargets,companionLookup,companionClass,targetClass);
+                String overrideSiteKey = null;
                 if(handle!=null) {
-                    String key=Modifier.isStatic(method.access)?InjectedNames.staticSiteKey(method.name,CallSiteAdapter.descHash(method.desc)):InjectedNames.siteKey(method.name,CallSiteAdapter.descHash(method.desc));
+                    String key = InjectedNames.siteKey(method.name, CallSiteAdapter.descHash(method.desc), Modifier.isStatic(method.access));
+                    if (!Modifier.isStatic(method.access) && !Modifier.isPrivate(method.access)) overrideSiteKey = key;
                     handle=DispatchTable.getOrCreate(targetClass).getOrCreateMethodSite(key,new java.lang.invoke.MutableCallSite(handle)).dynamicInvoker();
                 }
                 var carrier=metadata.getDeclaredMethod(method.name,type.parameterArray());
                 var forged=MethodForge.forgeMethod(targetClass,method.name,type.parameterArray(),type.returnType(),method.access,handle,method.signature,carrier.getExceptionTypes());
-                if(forged!=null){MethodForge.metadata(forged,carrier,handle);methods.add(forged);}
+                if(forged!=null){MethodForge.metadata(forged,carrier,handle,overrideSiteKey);methods.add(forged);}
             }
         }catch(ReflectiveOperationException failure){throw new IllegalStateException(failure);}
         com.onurkat.reclazz.bootstrap.MemberForge.initializers(targetClass,initializers);

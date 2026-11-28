@@ -16,7 +16,13 @@ public final class MethodForge {
     private static MethodHandle nativeTypeAnnotations;
     private static final class Entry {
         final MethodHandle target;final Executable metadata;volatile RecordHeader.MemberView generic;
-        Entry(MethodHandle target,Executable metadata){this.target=target;this.metadata=metadata;}
+        final String overrideSiteKey;
+        Entry(MethodHandle target,Executable metadata){this(target,metadata,null);}
+        Entry(MethodHandle target, Executable metadata, String overrideSiteKey) {
+            this.target = target;
+            this.metadata = metadata;
+            this.overrideSiteKey = overrideSiteKey;
+        }
     }
     private static final class Entries {
         final java.util.concurrent.ConcurrentHashMap<Executable,Entry> normal=new java.util.concurrent.ConcurrentHashMap<>();
@@ -261,7 +267,11 @@ public final class MethodForge {
     }
 
     public static void metadata(Executable logical,Executable source,MethodHandle target) {
-        entries.get(logical.getDeclaringClass()).normal.put(logical,new Entry(target,source));
+        metadata(logical, source, target, null);
+    }
+
+    public static void metadata(Executable logical, Executable source, MethodHandle target, String overrideSiteKey) {
+        entries.get(logical.getDeclaringClass()).normal.put(logical,new Entry(target,source,overrideSiteKey));
         copyAnnotations(logical,source);
     }
     static void copyAnnotations(Executable logical,Executable source) {
@@ -375,7 +385,17 @@ public final class MethodForge {
             Method override = declaredOverride(type, method);
             if(override!=null) {
                 Entry next=entry(override);
-                if(next!=null){var args=new ArrayList<Object>();args.add(receiver);java.util.Collections.addAll(args,values);return next.target.invokeWithArguments(args);}
+                if (next != null) {
+                    MethodHandle body = next.target;
+                    if (next.overrideSiteKey != null) {
+                        body = DispatchTable.getOrCreate(type).virtualOverrideTarget(next.overrideSiteKey, body);
+                        if (body == null) continue;
+                    }
+                    var args = new ArrayList<Object>();
+                    args.add(receiver);
+                    java.util.Collections.addAll(args, values);
+                    return body.invokeWithArguments(args);
+                }
                 override.setAccessible(true);
                 try{return override.invoke(receiver,values);}catch(InvocationTargetException failure){throw failure.getCause();}
             }

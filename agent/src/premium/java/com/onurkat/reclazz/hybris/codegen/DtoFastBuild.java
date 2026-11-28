@@ -76,7 +76,7 @@ final class DtoFastBuild {
     private GeneratedBuildTransaction.Candidate stage(Path platform, Path saved) throws IOException {
         Path bootstrap = platform.resolve("bootstrap");
         Path jar = bootstrap.resolve("bin/models.jar");
-        if (Files.size(jar) != known.outputs().jarSize() || !Files.getLastModifiedTime(jar).equals(known.outputs().jarModified()))
+        if (Files.size(jar) != known.outputs().jarSize())
             throw new IOException("external platform build changed models.jar");
         NativeBuildInputs current = NativeBuildInputs.capture(platform, known.settings(), known.extensions());
         known.inputs().verify(current, saved);

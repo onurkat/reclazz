@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
-import java.nio.file.attribute.FileTime;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -17,7 +16,7 @@ import java.util.zip.ZipFile;
 
 /** Installation outputs as observed following a successful native build in this agent session. */
 record GeneratedBaseline(Map<Path, String> sources, Map<Path, String> classes, Map<String, String> archivedClasses,
-                         FileTime jarModified, long jarSize, String jarDigest) {
+                         long jarSize, String jarDigest) {
     static GeneratedBaseline capture(Path bootstrap) throws IOException {
         Path jar = bootstrap.resolve("bin/models.jar");
         var sources = GeneratedSources.inventory(bootstrap.resolve("gensrc"));
@@ -49,7 +48,7 @@ record GeneratedBaseline(Map<Path, String> sources, Map<Path, String> classes, M
         }
         if (entries.size() != classes.size()) throw new IOException("Incomplete generated class archive");
         return new GeneratedBaseline(sources, Map.copyOf(classes), Map.copyOf(entries),
-                Files.getLastModifiedTime(jar), Files.size(jar), GeneratedPublication.digest(jar));
+                Files.size(jar), GeneratedPublication.digest(jar));
     }
 
     /** Advance using the inspected staged bytes. Unrelated concurrent changes stay detectable on the next save. */
@@ -66,7 +65,7 @@ record GeneratedBaseline(Map<Path, String> sources, Map<Path, String> classes, M
             nextEntries.put(path.toString().replace(path.getFileSystem().getSeparator(), "/"), digest);
         }
         return new GeneratedBaseline(Map.copyOf(nextSources), Map.copyOf(nextClasses), Map.copyOf(nextEntries),
-                Files.getLastModifiedTime(stagedJar), Files.size(stagedJar), GeneratedPublication.digest(stagedJar));
+                Files.size(stagedJar), GeneratedPublication.digest(stagedJar));
     }
 
     private static MessageDigest sha256() {

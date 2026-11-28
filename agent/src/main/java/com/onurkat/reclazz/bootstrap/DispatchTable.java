@@ -89,7 +89,21 @@ public final class DispatchTable {
         // is silently lost (the user sees v0 behavior on the first request,
         // and only the SECOND reload after that request actually takes
         // effect, matching the reported bug).
-        private final ConcurrentHashMap<String, MethodHandle> latestMethodTargets = new ConcurrentHashMap<>();
+        private record PublishedMethod(MethodHandle target, boolean removed) { }
+        private final ConcurrentHashMap<String, PublishedMethod> latestMethodTargets = new ConcurrentHashMap<>();
+
+        private MethodHandle latestTarget(String key) {
+            PublishedMethod published = latestMethodTargets.get(key);
+            return published == null ? null : published.target();
+        }
+
+        // A cached declaration can outlive its override until reflection metadata catches up.
+        // Read the removal flag and the callable body from the same publication.
+        MethodHandle virtualOverrideTarget(String key, MethodHandle initial) {
+            PublishedMethod published = latestMethodTargets.get(key);
+            if (published == null) return initial;
+            return published.removed() ? null : published.target();
+        }
 
         /**
          * What a call site needs to keep respecting an override after a
@@ -143,7 +157,7 @@ public final class DispatchTable {
                     if(binding!=null&&binding.needsBaseline) {
                         binding.site.installBaseline(initial.getTarget());binding.needsBaseline=false;
                     }
-                    MethodHandle latest = latestMethodTargets.get(key);
+                    MethodHandle latest = latestTarget(key);
                     if (latest != null) {
                         try {
                             // A first external call can arrive after the reload.
@@ -183,7 +197,7 @@ public final class DispatchTable {
                     RecordBinding binding=recordBindings.get(entry.getKey());
                     if(binding!=null&&binding.slot!=slot&&binding.site.hasPending())
                         throw new IllegalStateException("Caller already belongs to another pending record cohort");
-                    MethodHandle old=latestMethodTargets.get(entry.getKey());
+                    MethodHandle old=latestTarget(entry.getKey());
                     MutableCallSite site=methodSites.get(entry.getKey());
                     if(old==null&&site!=null)old=site.getTarget();
                     if(old!=null&&!old.type().equals(entry.getValue().type()))
@@ -200,7 +214,7 @@ public final class DispatchTable {
                             var selected=binding.site.selected();before=selected.target();
                             unresolved=binding.needsBaseline&&selected.baseline();
                         } else {
-                            before=latestMethodTargets.get(key);
+                            before=latestTarget(key);
                             MutableCallSite existing=methodSites.get(key);
                             if(before==null&&existing!=null)before=existing.getTarget();
                             if(before==null){before=missing(entry.getValue().type(),key);unresolved=true;}
@@ -211,7 +225,7 @@ public final class DispatchTable {
                     }
                     preparation.stageTarget(binding.site,entry.getValue());
                     MethodHandle dispatcher=binding.site.dispatcherInternal();
-                    latestMethodTargets.put(key,dispatcher);
+                    latestMethodTargets.put(key,new PublishedMethod(dispatcher, false));
                     MutableCallSite site=methodSites.get(key);
                     if(site!=null){site.setTarget(respectingOverrides(key,dispatcher));changed.add(site);}
                 }
@@ -234,6 +248,10 @@ public final class DispatchTable {
         }
 
         public void retarget(Map<String, MethodHandle> newTargets) {
+            retarget(newTargets, Map.of());
+        }
+
+        public void retarget(Map<String, MethodHandle> newTargets, Map<String, MethodHandle> removalTargets) {
             // A preparation takes Slot before dispatch. Cancel outside our lock to keep that order.
             RecordSchema.cancelPendingForOwner(owner);
             lock.lock();
@@ -245,7 +263,8 @@ public final class DispatchTable {
                     // Always remember the latest target so a future first-touch
                     // bootstrap can install it instead of the v0 renamed handle.
                     MethodHandle target = respectingOverrides(entry.getKey(), entry.getValue());
-                    latestMethodTargets.put(entry.getKey(), target);
+                    boolean removed = removalTargets.get(entry.getKey()) == entry.getValue();
+                    latestMethodTargets.put(entry.getKey(), new PublishedMethod(target, removed));
                     recordBindings.remove(entry.getKey());
                     MutableCallSite site = methodSites.get(entry.getKey());
                     if (site != null) {

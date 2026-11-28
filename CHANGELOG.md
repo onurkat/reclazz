@@ -27,6 +27,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- A held base method keeps dispatching while a reload removes an added subclass override.
+- A byte-identical models JAR copied with a different timestamp keeps the SAP Commerce DTO build baseline valid.
+
 - A class file removed during Maven compilation no longer produces a spurious read error. Stale source templates name the Maven resource-copy phase.
 
 - Windows IDE, Gradle and Maven launches stage the agent at an ASCII path when its original jar path contains non-ASCII characters or an equals sign. SAP Commerce accepts an administrator-provisioned copy for service startup.

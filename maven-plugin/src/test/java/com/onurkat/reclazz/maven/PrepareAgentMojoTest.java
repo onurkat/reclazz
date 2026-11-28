@@ -18,15 +18,21 @@ import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class PrepareAgentMojoTest {
 
     private final File jar = new File("/repo/reclazz-agent-1.3.0.jar");
 
-    @Test
-    void agentDirectoryIsAppliedBeforeTheForkArgumentIsPublished(@org.junit.jupiter.api.io.TempDir java.nio.file.Path temp) throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"local=agent.jar", "cjk=東京.jar"})
+    void agentDirectoryIsAppliedBeforeTheForkArgumentIsPublished(String name, @org.junit.jupiter.api.io.TempDir java.nio.file.Path temp) throws Exception {
+        var charset = java.nio.charset.Charset.forName(System.getProperty("sun.jnu.encoding"));
+        org.junit.jupiter.api.Assumptions.assumeTrue(charset.newEncoder().canEncode(name),
+                () -> "Filename not representable by " + charset);
         var root = temp.toRealPath();
-        var source = java.nio.file.Files.writeString(root.resolve("cjk=東京.jar"), "agent");
+        var source = java.nio.file.Files.writeString(root.resolve(name), "agent");
         var directory = root.resolve("stage");
         var project = new MavenProject();
         var mojo = mojo(project, source.toFile(), "argLine");

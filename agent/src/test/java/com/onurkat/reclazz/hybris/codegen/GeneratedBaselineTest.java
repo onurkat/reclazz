@@ -48,6 +48,9 @@ class GeneratedBaselineTest {
         Files.copy(source, sources.resolve("Dto.java"));
         Files.copy(added, models.resolve("Dto.class"));
         Files.copy(stagedJar, jar, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
+        // Publication may copy identical bytes onto a filesystem with different timestamp precision.
+        Files.setLastModifiedTime(jar, java.nio.file.attribute.FileTime.fromMillis(
+                Files.getLastModifiedTime(stagedJar).toMillis() - 2000));
         assertEquals(next, GeneratedBaseline.capture(bootstrap));
         Files.writeString(unchanged, "class Unrelated { int changed; }");
         assertNotEquals(next, GeneratedBaseline.capture(bootstrap));
