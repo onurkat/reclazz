@@ -195,9 +195,9 @@ dependencies {
     testImplementation("org.yaml:snakeyaml:1.30")
     // Real DTO serialization regressions; never included in the agent jar.
     testImplementation("com.fasterxml.jackson.core:jackson-databind:2.23.0")
-    testImplementation("com.google.code.gson:gson:2.11.0")
+    testImplementation("com.google.code.gson:gson:2.15.0")
     // R35: commons-beanutils 1 descriptor cache; logging comes from spring-jcl on the test classpath.
-    testImplementation("commons-beanutils:commons-beanutils:1.9.4") { exclude(group = "commons-logging") }
+    testImplementation("commons-beanutils:commons-beanutils:1.11.0") { exclude(group = "commons-logging") }
     // Optional<P> retained native-record codecs; test-only, absent from agent artifacts.
     testImplementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.23.0")
     testImplementation("org.hibernate.validator:hibernate-validator:6.2.5.Final")
