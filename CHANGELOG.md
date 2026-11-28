@@ -15,6 +15,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 - Status connections require the credential in the agent owner’s private port file. Update IDE and build clients to use protocol 2. Updated clients can still connect to protocol 1 agents.
 
+### Changed
+
+- After the first full SAP Commerce build in a server session, eligible additive beans.xml changes compile only the changed DTOs. The save receipt reports the number of classes compiled or why the full platform build ran.
+
 ### Fixed
 
 - Windows IDE, Gradle and Maven launches stage the agent at an ASCII path when its original jar path contains non-ASCII characters or an equals sign. SAP Commerce accepts an administrator-provisioned copy for service startup.

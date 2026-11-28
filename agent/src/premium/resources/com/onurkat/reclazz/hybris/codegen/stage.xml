@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2026 Onur Kat. SPDX-License-Identifier: Apache-2.0 -->
+<project name="reclazz-staged-beans" basedir="../..">
+    <dirname property="stage" file="${ant.file}"/>
+    <property file="${stage}/compiler.properties"/>
+    <property file="${stage}/agent.properties"/>
+    <property name="platformhome" location="."/>
+    <import file="${platformhome}/resources/ant/util.xml"/>
+    <target name="generate">
+        <java classname="com.onurkat.reclazz.hybris.codegen.NativeBeanStaging" fork="true" failonerror="true">
+            <classpath>
+                <pathelement location="${reclazz.agent}"/>
+                <pathelement location="${platformhome}/bootstrap/bin/ybootstrap.jar"/>
+                <pathelement location="${platformhome}/bootstrap/bin/yant.jar"/>
+                <fileset dir="${platformhome}/ext/core/lib" includes="*.jar"/>
+                <fileset dir="${platformhome}/lib/dbdriver" includes="*.jar"/>
+                <fileset dir="${platformhome}/lib" includes="*.jar"/>
+                <fileset dir="${bundled.tomcat.home}/lib" includes="*.jar"/>
+                <fileset dir="${ant.home}/lib" includes="*.jar"/>
+            </classpath>
+            <arg value="${platformhome}"/>
+            <arg value="${HYBRIS_BIN_DIR}"/>
+            <arg value="${HYBRIS_CONFIG_DIR}"/>
+            <arg value="${HYBRIS_BOOTSTRAP_BIN_DIR}"/>
+            <arg value="${HYBRIS_DATA_DIR}"/>
+            <arg value="${HYBRIS_LOG_DIR}"/>
+            <arg value="${HYBRIS_TEMP_DIR}"/>
+            <arg value="${stage}/sources"/>
+        </java>
+    </target>
+    <target name="compile-selected">
+        <taskdef resource="net/sf/antcontrib/antlib.xml" classpath="${platformhome}/lib/ant-contrib-1.0b3.jar"/>
+        <taskdef name="yjavac" classname="de.hybris.ant.taskdefs.YJavaC">
+            <classpath>
+                <fileset dir="${platformhome}/resources/ant/lib" includes="ecj*.jar,y-ant-utils*.jar"/>
+                <fileset dir="${bundled.tomcat.home}/lib" includes="jasper*.jar"/>
+            </classpath>
+        </taskdef>
+        <mkdir dir="${stage}/classes"/>
+        <javacompile destdir="${stage}/classes">
+            <additionalclasspath>
+                <pathelement path="${ext.validation.classpath}"/>
+                <pathelement location="${platformhome}/bootstrap/modelclasses"/>
+            </additionalclasspath>
+            <source><pathelement location="${stage}/selected"/></source>
+        </javacompile>
+    </target>
+</project>

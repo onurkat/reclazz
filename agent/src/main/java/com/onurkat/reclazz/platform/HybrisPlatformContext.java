@@ -56,6 +56,7 @@ public class HybrisPlatformContext implements PlatformContext {
     public void initialize() throws Exception {
         hybrisContext = new HybrisContext(hybrisHome);
         hybrisContext.initialize();
+        com.onurkat.reclazz.platform.codegen.GeneratedPublication.recoverAtStartup(hybrisContext.getPlatformHome());
         StatusReporter.info("Hybris home: " + hybrisHome + " (from " + homeSource + ")");
         StatusReporter.info("Platform version: " + platformVersion());
         StatusReporter.info("Found " + hybrisContext.getExtensions().size() + " extensions");

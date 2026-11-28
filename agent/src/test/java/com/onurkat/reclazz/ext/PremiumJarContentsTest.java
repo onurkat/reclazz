@@ -29,6 +29,12 @@ class PremiumJarContentsTest {
                     premium.add(output.relativize(file).toString().replace('\\', '/'));
             }
             assertFalse(premium.isEmpty());
+            // The SAP build child uses exactly these two packaged Ant targets.
+            for (String name : List.of("capture.xml", "stage.xml")) {
+                String path = prefix + "codegen/" + name;
+                assertArrayEquals(Files.readAllBytes(Path.of("src/premium/resources").resolve(path)), all.get(path));
+                premium.add(path);
+            }
             assertTrue(Collections.disjoint(free.keySet(), premium));
             Set<String> expected = new TreeSet<>(free.keySet()); expected.addAll(premium);
             assertEquals(expected, all.keySet(), "canonical jar must add exactly the premium classes");

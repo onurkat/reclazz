@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2026 Onur Kat. SPDX-License-Identifier: Apache-2.0 -->
+<project name="reclazz-native-settings" basedir="../.." default="reclazz-settings">
+    <property name="platformhome" location="."/>
+    <dirname property="reclazz.work" file="${ant.file}"/>
+    <import file="${platformhome}/build.xml"/>
+    <target name="reclazz-settings">
+        <pathconvert property="reclazz.compiler.entries" pathsep="&#10;" setonempty="true">
+            <path>
+                <pathelement path="${ext.validation.classpath}"/>
+                <pathelement path="${build.classpath}"/>
+            </path>
+        </pathconvert>
+        <echoproperties destfile="${reclazz.work}/compiler.properties">
+            <propertyset>
+                <propertyref name="platformhome"/>
+                <propertyref name="HYBRIS_BIN_DIR"/>
+                <propertyref name="HYBRIS_CONFIG_DIR"/>
+                <propertyref name="HYBRIS_BOOTSTRAP_BIN_DIR"/>
+                <propertyref name="HYBRIS_DATA_DIR"/>
+                <propertyref name="HYBRIS_LOG_DIR"/>
+                <propertyref name="HYBRIS_TEMP_DIR"/>
+                <propertyref name="bundled.tomcat.home"/>
+                <propertyref name="ext.validation.classpath"/>
+                <propertyref name="build.classpath"/>
+                <propertyref name="reclazz.compiler.entries"/>
+                <propertyref name="build.compiler"/>
+                <propertyref name="build.debug"/>
+                <propertyref name="build.nowarn"/>
+                <propertyref name="build.deprecation"/>
+                <propertyref name="build.verbose"/>
+                <propertyref name="build.source"/>
+                <propertyref name="build.target"/>
+                <propertyref name="build.encoding"/>
+                <propertyref name="build.parameter-metadata"/>
+                <propertyref name="standalone.jdkmodulesexports"/>
+            </propertyset>
+        </echoproperties>
+    </target>
+</project>
