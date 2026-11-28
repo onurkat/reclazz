@@ -78,6 +78,7 @@ public final class PhysicalDefinitions {
         Attempt previous=attempt.get(),active=new Attempt(definitions);attempt.set(active);
         try {
             instrumentation.redefineClasses(definitions);
+            for (Class<?> owner : active.owners) com.onurkat.reclazz.bootstrap.MethodForge.invalidateOverrideLookups(owner);
             synchronized(LOCK) {
                 for(Class<?> owner:active.owners) {
                     Current state=active.states.get(owner);Candidate candidate=active.candidates.get(owner);

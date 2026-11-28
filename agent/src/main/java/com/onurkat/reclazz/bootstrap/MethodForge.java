@@ -22,6 +22,19 @@ public final class MethodForge {
         final java.util.concurrent.ConcurrentHashMap<Executable,Entry> normal=new java.util.concurrent.ConcurrentHashMap<>();
         volatile boolean snapshots;
     }
+    private record DeclaredOverride(Object view, Method method) { }
+    private static final ClassValue<java.util.concurrent.ConcurrentHashMap<Method, DeclaredOverride>> overrides =
+            new ClassValue<>() {
+                @Override protected java.util.concurrent.ConcurrentHashMap<Method, DeclaredOverride> computeValue(Class<?> type) {
+                    return new java.util.concurrent.ConcurrentHashMap<>();
+                }
+            };
+
+    /** Drop all hits and misses when declarations on this class change. */
+    public static void invalidateOverrideLookups(Class<?> type) {
+        overrides.remove(type);
+    }
+
     private static final ClassValue<Entries> entries=new ClassValue<>() {
         @Override protected Entries computeValue(Class<?> owner){return new Entries();}
     };
@@ -359,20 +372,7 @@ public final class MethodForge {
         for(Class<?> type=receiver.getClass();!Modifier.isFinal(method.getModifiers()) && type!=null && type!=owner;type=type.getSuperclass()) {
             int visibility=method.getModifiers() & (Modifier.PUBLIC|Modifier.PROTECTED|Modifier.PRIVATE);
             if(visibility==0 && !samePackage(owner,type))continue;
-            Method override=null;
-            for (Method candidate : type.getDeclaredMethods()) {
-                if (!candidate.getName().equals(method.getName()) || Modifier.isStatic(candidate.getModifiers())
-                        || Modifier.isPrivate(candidate.getModifiers())
-                        || !java.util.Arrays.equals(candidate.getParameterTypes(), method.getParameterTypes())) continue;
-                Class<?> result = candidate.getReturnType();
-                if (result == method.getReturnType()) {
-                    override = candidate;
-                    break;
-                }
-                // A forged covariant override may have no physical bridge method.
-                if (method.getReturnType().isAssignableFrom(result)
-                        && (override == null || override.getReturnType().isAssignableFrom(result))) override = candidate;
-            }
+            Method override = declaredOverride(type, method);
             if(override!=null) {
                 Entry next=entry(override);
                 if(next!=null){var args=new ArrayList<Object>();args.add(receiver);java.util.Collections.addAll(args,values);return next.target.invokeWithArguments(args);}
@@ -382,6 +382,32 @@ public final class MethodForge {
         }
         var args=new ArrayList<Object>();args.add(receiver);java.util.Collections.addAll(args,values);
         return fallback.invokeWithArguments(args);
+    }
+
+    private static Method declaredOverride(Class<?> type, Method base) {
+        Object view = ReflectionBridge.overrideLookupView(type);
+        if (view == null) return findDeclaredOverride(type, base);
+        var cache = overrides.get(type);
+        var cached = cache.get(base);
+        if (cached != null && cached.view() == view) return cached.method();
+        Method resolved = findDeclaredOverride(type, base);
+        if (view == ReflectionBridge.overrideLookupView(type)) cache.put(base, new DeclaredOverride(view, resolved));
+        return resolved;
+    }
+
+    private static Method findDeclaredOverride(Class<?> type, Method base) {
+        Method override = null;
+        for (Method candidate : type.getDeclaredMethods()) {
+            if (!candidate.getName().equals(base.getName()) || Modifier.isStatic(candidate.getModifiers())
+                    || Modifier.isPrivate(candidate.getModifiers())
+                    || !java.util.Arrays.equals(candidate.getParameterTypes(), base.getParameterTypes())) continue;
+            Class<?> result = candidate.getReturnType();
+            if (result == base.getReturnType()) return candidate;
+            // A forged covariant override may have no physical bridge method.
+            if (base.getReturnType().isAssignableFrom(result)
+                    && (override == null || override.getReturnType().isAssignableFrom(result))) override = candidate;
+        }
+        return override;
     }
 
     /** Annotation instances are parsed against the metadata carrier's constant pool, never the owner's. */

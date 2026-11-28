@@ -55,6 +55,75 @@ class ReflectionMemberParityReloadTest {
         }
     }
 
+    @ParameterizedTest @ValueSource(booleans = {false, true})
+    void heldBaseMethodFollowsChangingOverrideDeclarations(boolean nativeVm) throws Exception {
+        String sub = "package app; public class Sub extends Base { public int stage(){return %d;} %s }";
+        var builder = WatchedApp.in(tmp).agentArgs("startupDelaySec=1,debounceMs=100")
+                .with("Base", "package app; public class Base { public static Object body(Base receiver){return \"base\";}"
+                        + (nativeVm ? "public Object read(){return body(this);}" : "") + "}")
+                .with("Sub", sub.formatted(0, ""))
+                .with("App", """
+                        package app;
+                        import java.lang.invoke.*;
+                        import java.lang.reflect.*;
+                        public class App {
+                            public static void main(String[] args) throws Throwable {
+                                Sub receiver = new Sub();
+                                var bridge = Class.forName("com.onurkat.reclazz.bootstrap.MethodForge",true,null);
+                                boolean nativeVm = Boolean.getBoolean("probe.native");
+                                var handle = MethodHandles.lookup().findStatic(Base.class, "body",
+                                        MethodType.methodType(Object.class, Base.class));
+                                Method held;
+                                if (nativeVm) {
+                                    // Enhanced mode uses the real VM method and does not install forged reflection roots.
+                                    held = Base.class.getMethod("read");
+                                } else {
+                                    while (!Boolean.TRUE.equals(bridge.getMethod("isAvailable").invoke(null))) Thread.sleep(50);
+                                    var forge = bridge.getMethod("forgeMethod", Class.class, String.class, Class[].class,
+                                            Class.class, int.class, MethodHandle.class, byte[].class);
+                                    held = (Method) forge.invoke(null, Base.class, "read", new Class<?>[0],
+                                            Object.class, Modifier.PUBLIC, handle, null);
+                                }
+                                MethodHandle virtual = MethodHandles.lookup().unreflect(held);
+                                var dispatch = bridge.getDeclaredMethod("invokeVirtual", Method.class, Object.class,
+                                        Object[].class, MethodHandle.class);
+                                dispatch.setAccessible(true);
+                                var physical = Class.forName("com.onurkat.reclazz.bootstrap.ReflectionBridge", true, null)
+                                        .getMethod("physicalDeclaredMethods", Class.class);
+                                String previous = "";
+                                for (;;) {
+                                    boolean vmMethod = java.util.Arrays.stream((Method[])physical.invoke(null,Sub.class))
+                                            .anyMatch(m -> m.getName().equals("read"));
+                                    String value = "DISPATCH " + receiver.stage() + " " + held.invoke(receiver) + "/"
+                                            + virtual.invoke(receiver) + "/" + dispatch.invoke(null, held, receiver, new Object[0], handle)
+                                            + " physical=" + vmMethod;
+                                    if (!value.equals(previous)) {System.out.println(value); previous = value;}
+                                    Thread.sleep(25);
+                                }
+                            }
+                        }
+                        """);
+        if (nativeVm) {
+            String java = System.getProperty("reclazz.record.java");
+            org.junit.jupiter.api.Assumptions.assumeTrue(java != null && !java.isBlank(), "enhanced JVM required");
+            builder.javaExecutable(Path.of(java)).jvmArgs("-XX:+AllowEnhancedClassRedefinition", "-Dprobe.native=true");
+        }
+        try (var live = builder.start()) {
+            live.awaitWatcherReady();
+            live.awaitOrFail("DISPATCH 0 base/base/base physical=false", "warm missing override");
+            String[] declarations = {"public Object read(){return \"exact\";}", "",
+                    "public String read(){return \"covariant\";}", "", "public Object read(){return \"restored\";}"};
+            String[] values = {"exact", "base", "covariant", "base", "restored"};
+            for (int i = 0; i < declarations.length; i++) {
+                live.rewrite("Sub", sub.formatted(i + 1, declarations[i]));
+                String value = values[i];
+                String expected = "DISPATCH " + (i + 1) + " " + value + "/" + value + "/" + value
+                        + " physical=" + (nativeVm && !declarations[i].isEmpty());
+                assertTrue(live.awaits(expected, 25), () -> expected + System.lineSeparator() + live.tail());
+            }
+        }
+    }
+
     @ParameterizedTest @ValueSource(booleans={false,true})
     void logicalMembersKeepAccessMetadataStorageAndConstructionAcrossSaves(boolean childLoader) throws Exception {
         var builder=WatchedApp.in(tmp).agentArgs("startupDelaySec=1,debounceMs=100,verbose=true")

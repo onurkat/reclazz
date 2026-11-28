@@ -556,7 +556,19 @@ public final class ReflectionBridge {
         return states.get(clazz).members;
     }
 
-    static void armRecordCaller(Class<?> owner){states.get(owner).dynamicPublicMethods=true;}
+    // Cohort and physical-only reflection have independent views; keep their lookups on the original path.
+    static Object overrideLookupView(Class<?> type) {
+        if (physicalScan.get() || type.isRecord()) return null;
+        ClassReflectionState state = states.get(type);
+        return state.recordCaller ? null : state.members;
+    }
+
+    static void armRecordCaller(Class<?> owner) {
+        ClassReflectionState state = states.get(owner);
+        state.recordCaller = true;
+        state.dynamicPublicMethods = true;
+        MethodForge.invalidateOverrideLookups(owner);
+    }
 
     /**
      * Atomically replace all added members for a class.
@@ -571,6 +583,7 @@ public final class ReflectionBridge {
         ClassReflectionState state=states.get(owner);
         if(!methods.isEmpty() || !fields.isEmpty())state.dynamicPublicMethods=true;
         state.members = new Members(methods, fields,constructors);
+        MethodForge.invalidateOverrideLookups(owner);
     }
 
     private static boolean paramTypesMatch(Class<?>[] a, Class<?>[] b) {
@@ -594,6 +607,7 @@ public final class ReflectionBridge {
     static final class ClassReflectionState {
         volatile Members members = Members.EMPTY;
         volatile boolean dynamicPublicMethods;
+        volatile boolean recordCaller;
     }
 
     /**
