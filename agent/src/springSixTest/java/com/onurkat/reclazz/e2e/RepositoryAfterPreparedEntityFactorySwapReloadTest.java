@@ -66,11 +66,13 @@ class RepositoryAfterPreparedEntityFactorySwapReloadTest {
             app.rewrite("Added",added(3));awaitReload(app,++saves);
             assertEquals(data(mapped),nativeFresh(app.classesDir(),cp,mode,mapped,3));probe(app,3,mapped,mode);
             assertEquals(rebuilds,app.output().stream().filter(x->x.contains("rebuilt persistence unit")).count(),"body-only saved mapped entity must not rebuild again");
+            Files.createFile(tmp.resolve("close-context"));
+            app.awaitOrFail("CLOSED oldOpen=false", "original factory still open after context shutdown");
         }
     }
     private void probe(WatchedApp app,int stage,boolean mapped,String mode)throws Exception {
         Files.createFile(tmp.resolve("probe"+stage));app.awaitOrFail("R"+stage+"=","repository probe missing");
-        String expected="R"+stage+"="+data(mapped)+"|nativeSame="+!mapped+":oldOpen="+!mapped+":otherOpen=true";
+        String expected="R"+stage+"="+data(mapped)+"|nativeSame="+!mapped+":oldOpen=true:otherOpen=true";
         assertEquals(expected,app.latest("R"+stage+"="),app.tail());
         System.out.println("[repo-emf] mode="+mode+" "+app.latest("R"+stage+"="));
     }
@@ -157,6 +159,7 @@ class RepositoryAfterPreparedEntityFactorySwapReloadTest {
             public static void main(String[] args)throws Exception {
                 boolean nativeMode=args.length>0;String mode=nativeMode?args[1]:System.getProperty("mode");boolean nativeMapped=nativeMode&&Boolean.parseBoolean(args[2]);
                 if(!mode.equals("retry")||nativeMapped)prepare();
+                EntityManagerFactory original;
                 try(var c=new GenericApplicationContext();var other=new GenericApplicationContext()) {
                     c.setClassLoader(App.class.getClassLoader());other.setClassLoader(App.class.getClassLoader());
                     var f=factory(URL,"prepared-repo",nativeMapped);c.registerBean("emf",LocalContainerEntityManagerFactoryBean.class,()->f);
@@ -170,7 +173,7 @@ class RepositoryAfterPreparedEntityFactorySwapReloadTest {
                     LocalContainerEntityManagerFactoryBean second=null;
                     if(mode.equals("ambiguous")){second=factory("jdbc:h2:mem:other_repo;DB_CLOSE_DELAY=-1","other",false);var captured=second;other.registerBean("emf",LocalContainerEntityManagerFactoryBean.class,()->captured);}
                     other.refresh();EntityManagerFactory otherNative=second==null?null:second.getNativeEntityManagerFactory();
-                    var held=c.getBean(Records.class);var holder=c.getBean(Holder.class);var client=c.getBean(EntityManagerFactory.class);var shared=c.getBean(Fragment.class).shared;var original=f.getNativeEntityManagerFactory();var anchor=other.getBean("anchor");
+                    var held=c.getBean(Records.class);var holder=c.getBean(Holder.class);var client=c.getBean(EntityManagerFactory.class);var shared=c.getBean(Fragment.class).shared;original=f.getNativeEntityManagerFactory();var anchor=other.getBean("anchor");
                     if(nativeMode){System.out.println("NATIVE="+observe(c,other,held,holder,client,shared,f,anchor,otherNative,nativeMapped));return;}
                     System.out.println("READY="+observe(c,other,held,holder,client,shared,f,anchor,otherNative,false));
                     Object installed=null;Path dir=Path.of(System.getProperty("probe.dir"));
@@ -185,9 +188,11 @@ class RepositoryAfterPreparedEntityFactorySwapReloadTest {
                                 System.out.println("R"+stage+"="+value+"|nativeSame="+(original==f.getNativeEntityManagerFactory())+":oldOpen="+original.isOpen()+":otherOpen="+(otherNative==null||otherNative.isOpen()));
                             }catch(Throwable failure){System.out.println("R"+stage+"=FAIL:"+failure.getClass().getName()+":"+failure.getMessage());throw failure;}
                         }
+                        if(Files.deleteIfExists(dir.resolve("close-context")))break;
                         Thread.sleep(10);
                     }
                 }
+                System.out.println("CLOSED oldOpen="+original.isOpen());
             }
         }
         """;

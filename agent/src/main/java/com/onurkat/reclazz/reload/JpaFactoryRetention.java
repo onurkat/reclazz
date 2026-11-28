@@ -4,6 +4,7 @@
  */
 package com.onurkat.reclazz.reload;
 
+import com.onurkat.reclazz.bootstrap.InjectedNames;
 import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.reflect.Field;
@@ -97,7 +98,7 @@ final class JpaFactoryRetention {
         Runtime.getRuntime().addShutdownHook(pool.hook);
         try {
             registry.getClass().getMethod("registerDisposableBean", String.class, disposable).invoke(registry,
-                    "__reclazz$retainedPersistenceFactories." + java.util.UUID.randomUUID(), listener);
+                    InjectedNames.PREFIX + "retainedPersistenceFactories." + java.util.UUID.randomUUID(), listener);
         } catch (ReflectiveOperationException failure) {
             Runtime.getRuntime().removeShutdownHook(pool.hook);
             throw new Hold("could not register cleanup on the owning Spring bean factory");

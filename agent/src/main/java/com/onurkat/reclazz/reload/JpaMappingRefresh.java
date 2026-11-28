@@ -5,6 +5,7 @@
 package com.onurkat.reclazz.reload;
 
 import com.onurkat.reclazz.platform.ApplicationContextHolder;
+import com.onurkat.reclazz.ui.Failures;
 import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.reflect.Field;
@@ -167,7 +168,7 @@ public final class JpaMappingRefresh {
             }
         } catch (JpaFactoryRetention.Hold held) {
             RestartLedger.note(className, held.getMessage());
-            StatusReporter.warn("New entity " + className + ": " + held.getMessage());
+            StatusReporter.warn("New entity " + className + ": " + Failures.describe(held));
         } catch (Throwable t) {
             Throwable root = t;
             while (root.getCause() != null) root = root.getCause();
