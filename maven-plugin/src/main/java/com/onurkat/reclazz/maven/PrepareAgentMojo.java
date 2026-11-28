@@ -63,6 +63,10 @@ public class PrepareAgentMojo extends AbstractMojo {
     @Parameter(property = "reclazz.skip", defaultValue = "false")
     private boolean skip;
 
+    /** Override directory for Windows JVM startup jars. */
+    @Parameter(property = "reclazz.agentDir")
+    private String agentDir;
+
     /** Agent platform, for example {@code spring} or {@code hybris}. Optional. */
     @Parameter(property = "reclazz.platform")
     private String platform;
@@ -109,7 +113,12 @@ public class PrepareAgentMojo extends AbstractMojo {
             getLog().info("Reclazz Java agent not attached (reclazz.skip=true).");
             return;
         }
-        File agentJar = findAgentJar();
+        File agentJar;
+        try {
+            agentJar = com.onurkat.reclazz.launchpath.AgentJarPath.forLaunch(findAgentJar().toPath(), agentDir).toFile();
+        } catch (java.io.IOException e) {
+            throw new MojoExecutionException(e.getMessage(), e);
+        }
         String arg = buildAgentArg(agentJar, platform, watchDirs, compilerArguments());
 
         String existing = project.getProperties().getProperty(propertyName);

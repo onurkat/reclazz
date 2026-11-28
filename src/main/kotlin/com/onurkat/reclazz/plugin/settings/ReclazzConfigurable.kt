@@ -62,6 +62,7 @@ class ReclazzConfigurable internal constructor(
     private var jpaRefreshCheckbox = false
     private var autoDetectJdkCheckbox = true
     private var portFilePathField = ""
+    private var agentDirField = ""
     private var agentPortField = 0
 
     private var watchExtensionsTextField: JTextField? = null
@@ -143,6 +144,7 @@ class ReclazzConfigurable internal constructor(
         jpaRefreshCheckbox = settings.jpaRefresh
         autoDetectJdkCheckbox = settings.autoDetectJdk
         portFilePathField = settings.portFilePath
+        agentDirField = settings.agentDir
         agentPortField = settings.agentPort
 
         val version = PluginPresence.enabledDescriptor(AgentJarLocator.RECLAZZ_PLUGIN_ID.idString)
@@ -276,6 +278,11 @@ class ReclazzConfigurable internal constructor(
                     spinner(0..65535, 1).bindIntValue({ agentPortField }, { agentPortField = it })
                         .comment("Set a fixed port or use 0 to read the port file (default).")
                 }
+                if (com.onurkat.reclazz.launchpath.AgentJarPath.windows()) {
+                    row("Windows agent directory (reclazz.agentDir):") {
+                        textField().bindText(::agentDirField).columns(COLUMNS_MEDIUM)
+                    }
+                }
                 row("Port file:") {
                     textField().bindText(::portFilePathField).columns(COLUMNS_MEDIUM)
                         .comment("Leave empty to read .idea/reclazz/agent.port (default).")
@@ -337,6 +344,7 @@ class ReclazzConfigurable internal constructor(
         val settings = ReclazzSettings.getInstance(project)
         val current = settings.state.copy()
         current.portFilePath = portFilePathField
+        current.agentDir = agentDirField
         current.agentPort = agentPortField
         settings.loadState(current)
     }
@@ -430,7 +438,7 @@ class ReclazzConfigurable internal constructor(
                 verboseCheckbox != settings.verbose ||
                 jpaRefreshCheckbox != settings.jpaRefresh ||
                 autoDetectJdkCheckbox != settings.autoDetectJdk ||
-                portFilePathField != settings.portFilePath ||
+                portFilePathField != settings.portFilePath || agentDirField != settings.agentDir ||
                 agentPortField != settings.agentPort
     }
 
@@ -471,6 +479,7 @@ class ReclazzConfigurable internal constructor(
                 jpaRefresh = jpaRefreshCheckbox,
                 autoDetectJdk = autoDetectJdkCheckbox,
                 portFilePath = portFilePathField,
+                agentDir = agentDirField,
                 agentPort = agentPortField
             )
         )
@@ -504,6 +513,7 @@ class ReclazzConfigurable internal constructor(
         jpaRefreshCheckbox = settings.jpaRefresh
         autoDetectJdkCheckbox = settings.autoDetectJdk
         portFilePathField = settings.portFilePath
+        agentDirField = settings.agentDir
         agentPortField = settings.agentPort
         dialogPanel?.reset()
     }

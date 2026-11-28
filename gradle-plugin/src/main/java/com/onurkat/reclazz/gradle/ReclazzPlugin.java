@@ -159,6 +159,8 @@ public class ReclazzPlugin implements Plugin<Project> {
         AgentArgumentProvider provider = project.getObjects().newInstance(AgentArgumentProvider.class);
         provider.getEnabled().set(ext.getEnabled());
         provider.getAgentJar().from(agentJar);
+        provider.getAgentDir().set(project.getProviders().gradleProperty("reclazz.agentDir")
+                .orElse(project.getProviders().systemProperty("reclazz.agentDir")));
         provider.getArgumentString().set(argumentString);
         return provider;
     }

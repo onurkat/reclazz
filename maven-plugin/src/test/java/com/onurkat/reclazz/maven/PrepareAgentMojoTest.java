@@ -24,6 +24,20 @@ class PrepareAgentMojoTest {
     private final File jar = new File("/repo/reclazz-agent-1.3.0.jar");
 
     @Test
+    void agentDirectoryIsAppliedBeforeTheForkArgumentIsPublished(@org.junit.jupiter.api.io.TempDir java.nio.file.Path temp) throws Exception {
+        var root = temp.toRealPath();
+        var source = java.nio.file.Files.writeString(root.resolve("cjk=東京.jar"), "agent");
+        var directory = root.resolve("stage");
+        var project = new MavenProject();
+        var mojo = mojo(project, source.toFile(), "argLine");
+        set(mojo, "agentDir", directory.toString());
+        mojo.execute();
+        var target = com.onurkat.reclazz.launchpath.AgentJarPath.forLaunch(source, directory.toString());
+        assertTrue(parsed(project.getProperties().getProperty("argLine"))[0].startsWith("-javaagent:" + target + "="));
+        if (com.onurkat.reclazz.launchpath.AgentJarPath.windows()) assertTrue(target.startsWith(directory));
+    }
+
+    @Test
     void unicodeOutputKeepsJarAndOptionsSeparate() throws Exception {
         var project = new MavenProject();
         var mojo = mojo(project, jar, "argLine");

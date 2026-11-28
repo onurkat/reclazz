@@ -17,6 +17,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Windows IDE, Gradle and Maven launches stage the agent at an ASCII path when its original jar path contains non-ASCII characters or an equals sign. SAP Commerce accepts an administrator-provisioned copy for service startup.
+
 - Supported Hibernate mapping rebuilds keep in-flight sessions usable. Destructive schema settings preserve the running factory and report a restart.
 
 - Maven projects using maven-compiler-plugin 3.10.1 or 3.11.0 can compile Java edits on save with their compiler version’s language and warning defaults.

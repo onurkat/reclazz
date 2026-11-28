@@ -54,8 +54,8 @@ class AgentInjector internal constructor(private val locateAgentJar: () -> File?
         // an antivirus quarantined, an installation copied between machines.
         // Reclazz's whole argument is that it says what did not happen, and
         // this was the one place it did not.
-        val agentJar = locateAgentJar()
-        if (agentJar == null) {
+        val bundled = locateAgentJar()
+        if (bundled == null) {
             if (missingJarReported.add(project.locationHash)) {
                 ReloadNotifications.warn(
                     project, "Reclazz could not find its Java agent",
@@ -66,6 +66,12 @@ class AgentInjector internal constructor(private val locateAgentJar: () -> File?
                 )
             }
             return
+        }
+
+        val agentJar = try {
+            com.onurkat.reclazz.launchpath.AgentJarPath.forLaunch(bundled.toPath(), settings.agentDir).toFile()
+        } catch (e: java.io.IOException) {
+            throw ExecutionException(e.message, e)
         }
 
         // Detect JDK capabilities

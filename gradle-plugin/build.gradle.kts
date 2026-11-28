@@ -60,3 +60,8 @@ tasks.withType<JavaCompile>().configureEach {
 
 // The independently distributed clients use the same status-file and handshake contract.
 sourceSets.main { java.srcDir(rootProject.file("status-protocol/src/main/java")) }
+// The three launchers must resolve exactly the same Windows agent path.
+sourceSets.main {
+    java.srcDir(rootProject.file("maven-plugin/src/main/java"))
+    java.exclude("com/onurkat/reclazz/maven/**")
+}

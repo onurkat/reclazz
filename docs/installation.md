@@ -190,6 +190,10 @@ java "-javaagent:/absolute/tools/reclazz-agent-X.Y.Z.jar=watchDirs=/absolute/app
 java "-javaagent:C:/Tools/Reclazz/reclazz-agent-X.Y.Z.jar=watchDirs=C:/Projects/app/target/classes" -cp "C:/Projects/app/target/classes" com.example.Main
 ```
 
+For a Windows IDE, Gradle or Maven launch, Reclazz stages the agent jar in a private ASCII directory when its path contains non-ASCII characters or an equals sign. Set `reclazz.agentDir` to an absolute ASCII directory without an equals sign to choose the location. The IDE exposes this setting under Tools → Reclazz. Gradle accepts `-Preclazz.agentDir=...` and Maven accepts `-Dreclazz.agentDir=...`. Identical jar content reuses the same staged copy.
+
+For SAP Commerce on Windows, if the configured jar path needs relocation, ask a service administrator to provision the matching bundled jar as `reclazz-agent.jar` in a directory only service administrators can modify. Set the IDE's Windows agent directory to that folder, then reinstall the managed configuration. The installer checks the jar before writing the service startup options.
+
 If a Windows project path contains non-ASCII characters, pass the agent options
 as UTF-8 encoded with URL-safe Base64. The IntelliJ, Gradle and Maven launchers
 do this automatically with the matching agent version. For a manual PowerShell

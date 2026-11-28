@@ -32,6 +32,19 @@ class AgentInjectorTestRunFixtureTest : BasePlatformTestCase() {
         val params=JavaParameters();injector.updateJavaParameters(config,params,null)
         assertTrue(params.vmParametersList.list.any { it.startsWith("-javaagent:") })
     }
+    fun testAgentDirectoryResolvesTheJarBeforeAddingTheJvmArgument() {
+        val root = java.nio.file.Files.createTempDirectory("reclazz-ide-launch").toRealPath()
+        try {
+            val source = java.nio.file.Files.writeString(root.resolve("agent=東京.jar"), "fixture")
+            val stage = root.resolve("stage")
+            ReclazzSettings.getInstance(project).state.apply { enabled = true; autoDetectJdk = false; agentDir = stage.toString() }
+            val params = JavaParameters()
+            AgentInjector { source.toFile() }.updateJavaParameters(ApplicationConfiguration("Windows path", project), params, null)
+            val target = com.onurkat.reclazz.launchpath.AgentJarPath.forLaunch(source, stage.toString())
+            assertTrue(params.vmParametersList.list.any { it.startsWith("-javaagent:$target=") })
+            if (com.onurkat.reclazz.launchpath.AgentJarPath.windows()) assertTrue(target.startsWith(stage))
+        } finally { root.toFile().deleteRecursively() }
+    }
     fun testJUnitIsSkippedByDefaultWithoutChangingParameters() {
         ReclazzSettings.getInstance(project).state.apply { enabled=true;autoDetectJdk=false }
         val injector=AgentInjector { error("skipped tests must not locate the agent") }

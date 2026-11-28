@@ -50,6 +50,7 @@ class ReclazzSettings : PersistentStateComponent<ReclazzSettings.State> {
         var jpaRefresh: Boolean = false,
         var autoDetectJdk: Boolean = true,
         var portFilePath: String = "",
+        var agentDir: String = "",
         var agentPort: Int = 0,
         /**
          * Whether the (single, non-modal) sponsorship line in Settings has

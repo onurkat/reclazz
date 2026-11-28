@@ -135,6 +135,13 @@ object AgentJarLocator {
         return digest.digest()
     }
 
+    internal fun serviceAgentPath(override: String): java.nio.file.Path {
+        val stable = stableAgentPath()
+        if (!com.onurkat.reclazz.launchpath.AgentJarPath.requiresResolution(stable, override)) return stable
+        val bundled = findAgentJar() ?: throw java.io.IOException("Bundled Java agent jar not found.")
+        return com.onurkat.reclazz.launchpath.AgentJarPath.forService(stable, bundled.toPath(), override)
+    }
+
     fun stableAgentJar(): File? {
         val bundled = findAgentJar() ?: return null
         val target = stableAgentPath()

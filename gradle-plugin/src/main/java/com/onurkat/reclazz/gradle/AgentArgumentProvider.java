@@ -25,6 +25,10 @@ public abstract class AgentArgumentProvider implements CommandLineArgumentProvid
     @Input
     public abstract Property<Boolean> getEnabled();
 
+    @Input
+    @org.gradle.api.tasks.Optional
+    public abstract Property<String> getAgentDir();
+
     @Classpath
     public abstract ConfigurableFileCollection getAgentJar();
 
@@ -36,7 +40,12 @@ public abstract class AgentArgumentProvider implements CommandLineArgumentProvid
         if (!getEnabled().get()) {
             return Collections.emptyList();
         }
-        File jar = getAgentJar().getSingleFile();
+        File jar;
+        try {
+            jar = com.onurkat.reclazz.launchpath.AgentJarPath.forLaunch(getAgentJar().getSingleFile().toPath(), getAgentDir().getOrNull()).toFile();
+        } catch (java.io.IOException e) {
+            throw new org.gradle.api.GradleException(e.getMessage(), e);
+        }
         String args = getArgumentString().getOrElse("");
         if (!args.chars().allMatch(c -> c < 128)) {
             args = "reclazz-utf8:" + Base64.getUrlEncoder().withoutPadding().encodeToString(args.getBytes(StandardCharsets.UTF_8));

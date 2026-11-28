@@ -12,13 +12,21 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class UnicodeAgentArgumentProviderTest {
-    @Test void onlyTheOptionStringIsEncoded() {
+    @Test void onlyTheOptionStringIsEncoded(@org.junit.jupiter.api.io.TempDir java.nio.file.Path temp) throws Exception {
         var project = ProjectBuilder.builder().build();
         var provider = project.getObjects().newInstance(AgentArgumentProvider.class);
-        File jar = new File("tools 東京", "reclazz-agent.jar").getAbsoluteFile();
+        var root = temp.toRealPath();
+        File jar = java.nio.file.Files.writeString(root.resolve("agent 東京.jar"), "agent").toFile();
+        var override = root.resolve("stage");
+        provider.getAgentDir().set(override.toString());
         provider.getAgentJar().from(jar);
         provider.getEnabled().set(true);
-        String flag = "-javaagent:" + jar + "=";
+        var resolved = com.onurkat.reclazz.launchpath.AgentJarPath.forLaunch(jar.toPath(), override.toString());
+        if (com.onurkat.reclazz.launchpath.AgentJarPath.windows()) {
+            assertTrue(resolved.startsWith(override));
+            assertArrayEquals(java.nio.file.Files.readAllBytes(jar.toPath()), java.nio.file.Files.readAllBytes(resolved));
+        }
+        String flag = "-javaagent:" + resolved + "=";
         String raw = "platform=spring,watchDirs=Alan Çalışma/classes;東京/classes";
         provider.getArgumentString().set(raw);
         String encoded = provider.asArguments().iterator().next();

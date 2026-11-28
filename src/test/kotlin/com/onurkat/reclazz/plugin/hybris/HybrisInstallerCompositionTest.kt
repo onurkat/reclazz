@@ -33,6 +33,18 @@ class HybrisInstallerCompositionTest {
         assertTrue(result is HybrisAgentInstaller.Result.Success, result.toString())
     }
 
+    @Test fun reinstallReplacesLegacyJarWithProvisionedServicePathInBothOptions() {
+        val (platform, config) = layout(true)
+        install(platform, config, agent)
+        val expected = root.resolve("service agent/reclazz-agent.jar").toString()
+        install(platform, config, HybrisAgentInstaller.agentArgument("$expected=verbose=true"))
+        val target = HybrisPropertyFiles.targetFile(config)
+        for (key in listOf("tomcat.javaoptions", "tomcat.debugjavaoptions")) {
+            val actual = requireNotNull(HybrisPropertyFiles.readProperty(target, key))
+            assertEquals(expected.replace('\\','/'), HybrisAgentInstaller.parseAgentJarPath(actual)?.replace('\\','/'))
+        }
+    }
+
     @ParameterizedTest
     @ValueSource(strings = ["rw-------", "rw-r-----", "rw-r--r--"])
     fun newlyCreatedFileInheritsWinningSourceMode(mode: String) {

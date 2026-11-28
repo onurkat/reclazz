@@ -98,7 +98,12 @@ object HybrisAgentInstaller {
         }
     }
 
-    fun install(project: Project): Result = install(project, AgentJarLocator::stableAgentJar)
+    fun install(project: Project): Result = install(project) {
+        val overrideDir = ReclazzSettings.getInstance(project).state.agentDir
+        if (com.onurkat.reclazz.launchpath.AgentJarPath.requiresResolution(AgentJarLocator.stableAgentPath(), overrideDir))
+            AgentJarLocator.serviceAgentPath(overrideDir).toFile()
+        else AgentJarLocator.stableAgentJar()
+    }
 
     /**
      * Exactly what [install] would write, without writing or staging anything: the target file and the two managed
@@ -109,7 +114,9 @@ object HybrisAgentInstaller {
         val configDir = configDir(project) ?: return null
         val platformHome = platformHome(project) ?: return null
         val settings = ReclazzSettings.getInstance(project).state
-        var agentArg = agentArgument("${AgentJarLocator.stableAgentPath().toAbsolutePath()}=" +
+        val previewJar = try { AgentJarLocator.serviceAgentPath(settings.agentDir) }
+        catch (e: java.io.IOException) { return e.message }
+        var agentArg = agentArgument("${previewJar.toAbsolutePath()}=" +
                 AgentJarLocator.buildAgentArgs(project, settings, includeHybrisHome = false))
         val platformJdk = platformJdkFeature(platformHome)
         if (platformJdk != null && platformJdk >= 24) agentArg = "$agentArg $UNSAFE_ACCESS_FLAG"
@@ -137,7 +144,7 @@ object HybrisAgentInstaller {
         // The stable copy, not the bundled one: the path written here ends
         // up in properties the server starts from, and the IDE's plugin
         // directory is named after the IDE version. See stableAgentJar.
-        val pluginAgentJar = stageAgent()
+        val pluginAgentJar = try { stageAgent() } catch (e: java.io.IOException) { return Result.Error(e.message ?: "Cannot stage the Windows agent.") }
             ?: return Result.Error("Bundled Java agent jar not found. Reinstall the Reclazz plugin.")
 
         val settings = ReclazzSettings.getInstance(project).state
