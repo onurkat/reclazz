@@ -15,7 +15,9 @@ import org.objectweb.asm.tree.*;
 /** Keeps the physical interface schema while publishing code for static and private additions. */
 final class InterfaceMethodReload implements Opcodes {
     private InterfaceMethodReload() { }
-    private record Key(String name,String descriptor,int access) { }
+    private record Key(String name,String descriptor,int access) {
+        Key { access &= ~ACC_VARARGS; } // Varargs changes invocation adaptation, not the underlying method.
+    }
     static final class History {
         private final Map<Key,MutableCallSite> sites=new HashMap<>();
         private Set<Key> active=Set.of();
@@ -72,6 +74,17 @@ final class InterfaceMethodReload implements Opcodes {
         }
     }
 
+    private static String metadataSignature(String signature) {
+        if (signature == null) return null;
+        var declaration = new org.objectweb.asm.signature.SignatureWriter() {
+            @Override public org.objectweb.asm.signature.SignatureVisitor visitInterface() {
+                return new org.objectweb.asm.signature.SignatureVisitor(ASM9) {};
+            }
+        };
+        new org.objectweb.asm.signature.SignatureReader(signature).accept(declaration);
+        return declaration.toString();
+    }
+
     static Prepared prepare(Class<?> owner, MethodHandles.Lookup lookup, byte[] incoming, RawClassSchema physical,
                             Predicate<String> watched, History history) throws ReflectiveOperationException {
         ClassNode node=new ClassNode();
@@ -111,7 +124,10 @@ final class InterfaceMethodReload implements Opcodes {
             var holder=new ClassWriter(0);
             holder.visit(node.version,ACC_FINAL|ACC_SUPER|ACC_SYNTHETIC,node.name+"$$ReclazzInterfaceBody",null,"java/lang/Object",null);
             var carrier=new ClassWriter(0);
-            carrier.visit(node.version,ACC_PUBLIC|ACC_INTERFACE|ACC_ABSTRACT,node.name+"$$ReclazzInterfaceMetadata",node.signature,"java/lang/Object",node.interfaces.toArray(String[]::new));
+            // This interface carries method annotations and generic parameters. It is not a
+            // subtype of the owner's parents, which may be sealed to the real owner.
+            carrier.visit(node.version,ACC_PUBLIC|ACC_INTERFACE|ACC_ABSTRACT,node.name+"$$ReclazzInterfaceMetadata",
+                    metadataSignature(node.signature),"java/lang/Object",null);
             for (int i=0;i<added.size();i++) {
                 MethodNode m=added.get(i);
                 var copy=carrier.visitMethod(m.access,m.name,m.desc,m.signature,m.exceptions.toArray(String[]::new));

@@ -211,4 +211,103 @@ class AddedInterfaceMethodsTest {
             }
         }
     }
+
+    @Test void addingAHelperToAPermittedSubinterfaceKeepsItsSealedParent() throws Exception {
+        String api = "package app; public non-sealed interface Api<T> extends Parent<T> { "
+                + "default String result() { return %s; } %s }";
+        String initial = api.formatted("\"before\"", "");
+        String next = api.formatted("helper(null)", "private String helper(T value) { return \"after\"; }");
+        String main = """
+                package app;
+                public class App implements Api<String> {
+                    public static void main(String[] args) throws Exception {
+                        App receiver = new App();
+                        System.out.println("ORIGINAL=" + receiver.result());
+                        while (!java.nio.file.Files.exists(java.nio.file.Path.of(System.getProperty("probe.dir"), "go0")))
+                            Thread.sleep(10);
+                        var method = Api.class.getDeclaredMethod("helper", Object.class);
+                        System.out.println("APPLIED=" + receiver.result() + "/" + method.getGenericParameterTypes()[0].getTypeName()
+                                + "/" + Parent.class.getPermittedSubclasses().length + "/" + Parent.class.getPermittedSubclasses()[0].getName());
+                    }
+                }
+                """;
+        try (var app = WatchedApp.in(dir).jvmArgs("-Dprobe.dir=" + dir)
+                .with("Parent", "package app; public sealed interface Parent<T> permits Api {}")
+                .with("Api", initial).with("App", main).start()) {
+            app.awaitOrFail("ORIGINAL=before", "stock sealed hierarchy");
+            app.awaitWatcherReady();
+            save(app, next);
+            signal(dir, 0);
+            app.awaitOrFail("APPLIED=after/T/1/app.Api", "method works and the real permits list is intact");
+        }
+    }
+
+    @Test void togglingVarargsKeepsAnExistingPublicHandleCallable() throws Exception {
+        String api = "package app; public interface Api { default int before() { return 1; } %s }";
+        String main = """
+                package app;
+                public class App implements Api {
+                    static void await(int n) throws Exception {
+                        while (!java.nio.file.Files.exists(java.nio.file.Path.of(System.getProperty("probe.dir"), "go" + n)))
+                            Thread.sleep(10);
+                    }
+                    public static void main(String[] args) throws Throwable {
+                        System.out.println("ORIGINAL=" + new App().before());
+                        await(0);
+                        var type = java.lang.invoke.MethodType.methodType(int.class, String[].class);
+                        var old = java.lang.invoke.MethodHandles.publicLookup().findStatic(Api.class, "count", type).asFixedArity();
+                        System.out.println("FIRST=" + (int) old.invokeExact(new String[1]));
+                        await(1);
+                        var current = Api.class.getDeclaredMethod("count", String[].class);
+                        System.out.println("CHANGED=" + (int) old.invokeExact(new String[1]) + "/" + current.isVarArgs());
+                    }
+                }
+                """;
+        try (var app = WatchedApp.in(dir).jvmArgs("-Dprobe.dir=" + dir)
+                .with("Api", api.formatted("")).with("App", main).start()) {
+            app.awaitOrFail("ORIGINAL=1", "initial interface");
+            app.awaitWatcherReady();
+            save(app, api.formatted("static int count(String[] args) { return args.length; }"));
+            signal(dir, 0);
+            app.awaitOrFail("FIRST=1", "first added static method");
+            save(app, api.formatted("static int count(String... args) { return 10 + args.length; }"));
+            signal(dir, 1);
+            app.awaitOrFail("CHANGED=11/true", "existing handle and new reflective modifiers agree");
+        }
+    }
+
+    @Test void wideningAnAddedStaticMethodUpdatesItsPublicVisibility() throws Exception {
+        String api = "package app; public interface Api { default int value() { return %s; } %s }";
+        String main = """
+                package app;
+                public class App implements Api {
+                    static void await(int n) throws Exception {
+                        while (!java.nio.file.Files.exists(java.nio.file.Path.of(System.getProperty("probe.dir"), "go" + n)))
+                            Thread.sleep(10);
+                    }
+                    public static void main(String[] args) throws Throwable {
+                        App app = new App();
+                        System.out.println("ORIGINAL=" + app.value());
+                        await(0);
+                        System.out.println("PRIVATE=" + app.value() + "/" + java.lang.reflect.Modifier.isPrivate(
+                                Api.class.getDeclaredMethod("added").getModifiers()));
+                        await(1);
+                        var added = java.lang.invoke.MethodHandles.publicLookup().findStatic(Api.class, "added",
+                                java.lang.invoke.MethodType.methodType(int.class));
+                        System.out.println("PUBLIC=" + app.value() + "/" + (int) added.invokeExact());
+                    }
+                }
+                """;
+        try (var app = WatchedApp.in(dir).jvmArgs("-Dprobe.dir=" + dir)
+                .with("Api", api.formatted("1", "")).with("App", main).start()) {
+            app.awaitOrFail("ORIGINAL=1", "initial receiver");
+            app.awaitWatcherReady();
+            save(app, api.formatted("added()", "private static int added() { return 2; }"));
+            signal(dir, 0);
+            app.awaitOrFail("PRIVATE=2/true", "method remains private on the first revision");
+            save(app, api.formatted("added()", "public static int added() { return 3; }"));
+            signal(dir, 1);
+            app.awaitOrFail("PUBLIC=3/3", "public lookup and original receiver follow the widened method");
+        }
+    }
 }

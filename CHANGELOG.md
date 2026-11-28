@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Interface reload
+
+- Adding a static or private method to a permitted subinterface keeps its sealed parent intact. Changing an added method between an array parameter and varargs preserves previously obtained handles.
+
 ### SAP Commerce
 
 - Opt-in schema updates report elapsed time and use a worker-owned transaction on HSQLDB. A new SET relation whose generated accessors are unavailable gets a named restart before use.

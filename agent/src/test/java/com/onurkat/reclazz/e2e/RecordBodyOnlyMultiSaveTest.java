@@ -4,6 +4,8 @@ package com.onurkat.reclazz.e2e;
 import com.onurkat.reclazz.e2e.harness.JavaLauncher;
 import com.onurkat.reclazz.e2e.harness.WatchedApp;
 import java.nio.file.*;
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 import java.util.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -37,6 +39,16 @@ class RecordBodyOnlyMultiSaveTest {
             protocol.request("SCAN\nRELOAD status request=multiScan","RELOAD_STATE multiScan status ");protocol.control("resume");
             protocol.receipt(child,"P","failed","multipleRecords");protocol.receipt(child,"Q","failed","multipleRecords");
             Files.writeString(dir.resolve("observe"),"go");child.awaitOrFail("MULTI_BODY_DONE|errors=0|","both old admitted bodies and schemas survive refusal");
+            Path coldLog = dir.resolve("cold.log");
+            Process cold = new ProcessBuilder(java.toString(), "-cp", child.classesDir().toString(), "app.App", "cold")
+                    .redirectErrorStream(true).redirectOutput(coldLog.toFile()).start();
+            try {
+                org.junit.jupiter.api.Assertions.assertTrue(cold.waitFor(20, TimeUnit.SECONDS));
+                org.junit.jupiter.api.Assertions.assertEquals(0, cold.exitValue(), () -> {
+                    try { return Files.readString(coldLog); } catch (IOException e) { return e.toString(); }
+                });
+                org.junit.jupiter.api.Assertions.assertTrue(Files.readString(coldLog).contains("COLD=2/2/2/2"));
+            } finally { if (cold.isAlive()) cold.destroyForcibly(); }
         } finally {
             Path out=Path.of(System.getProperty("reclazz.record.evidenceDir",dir.toString()));Files.createDirectories(out);
             Files.write(out.resolve("multi-body-"+UUID.randomUUID()+".log"),child.output());
@@ -46,6 +58,11 @@ class RecordBodyOnlyMultiSaveTest {
             package app;import java.nio.file.*;
             public class App {
                 public static void main(String[]args)throws Exception {
+                    if (args.length > 0 && args[0].equals("cold")) {
+                        System.out.println("COLD=" + P.version() + "/" + Q.version() + "/"
+                                + P.class.getRecordComponents().length + "/" + Q.class.getRecordComponents().length);
+                        return;
+                    }
                     Path dir=Path.of(System.getProperty("probe.dir"));while(!Files.exists(dir.resolve("load")))Thread.sleep(10);
                     P heldP=new P(7);Q heldQ=new Q(9);System.out.println("MULTI_BODY_READY");System.out.flush();
                     while(!Files.exists(dir.resolve("admitted")))Thread.sleep(10);
