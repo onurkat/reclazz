@@ -19,6 +19,7 @@ class ReloadBuildTest {
         final List<Integer> applied = new ArrayList<>();
         final AtomicLong now = new AtomicLong(1000);
         Runnable duringRead = () -> {};
+        IOException readFailure;
         Runnable duringApply = () -> {};
         Runnable scan = () -> {};
         int brackets;
@@ -31,7 +32,8 @@ class ReloadBuildTest {
         }, tasks::add, new ReloadStall(now::get, 30_000), now::get, now::addAndGet, path -> {
             byte[] bytes = disk.get(path);
             duringRead.run();
-            if (bytes == null) throw new IOException("missing " + path);
+            if (readFailure != null) throw readFailure;
+            if (bytes == null) throw new java.nio.file.NoSuchFileException(path.toString());
             return bytes;
         });
         Path path(String name) { return Path.of("/output/" + name + ".class"); }
@@ -42,6 +44,49 @@ class ReloadBuildTest {
         }
         void build(String state) { queue.build(state, () -> scan.run()); }
         void run() { while (!tasks.isEmpty()) tasks.remove().run(); }
+    }
+
+    @Test void vanishedOrdinaryOutputIsQuietAndItsRecreationReloads() {
+        Fixture f = new Fixture();
+        List<String> errors = new ArrayList<>();
+        com.onurkat.reclazz.ui.StatusReporter.StatusListener listener = (level, message) -> {
+            if (message.contains("Failed to read class file")) errors.add(message);
+        };
+        com.onurkat.reclazz.ui.StatusReporter.addListener(listener);
+        try {
+            f.write("A", 1);
+            f.disk.remove(f.path("A"));
+            f.run();
+            assertTrue(f.applied.isEmpty());
+            assertTrue(errors.isEmpty(), errors.toString());
+            f.write("A", 1);
+            f.readFailure = new java.nio.file.AccessDeniedException(f.path("A").toString());
+            f.run();
+            assertTrue(f.applied.isEmpty());
+            assertEquals(1, errors.size());
+            assertTrue(errors.get(0).contains("AccessDeniedException"));
+            f.readFailure = null;
+            f.write("A", 2);
+            f.run();
+            assertEquals(List.of(2), f.applied);
+        } finally {
+            com.onurkat.reclazz.ui.StatusReporter.removeListener(listener);
+        }
+    }
+
+    @Test void missingRequiredFileKeepsBothMembersOfAHeldBuildPending() {
+        Fixture f = new Fixture();
+        f.build("started");
+        f.write("A", 1);
+        f.write("B", 2);
+        f.disk.remove(f.path("B"));
+        f.build("ok");
+        f.run();
+        assertTrue(f.applied.isEmpty());
+        f.write("B", 3);
+        f.build("ok");
+        f.run();
+        assertEquals(List.of(1, 3), f.applied);
     }
 
     @Test void staleSuccessQueuedBeforeANewerFailedBuildDoesNotPublish() {

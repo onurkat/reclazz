@@ -277,7 +277,7 @@ public class SpringBootContext implements PlatformContext {
         return null;
     }
 
-    public boolean handleMavenResource(Path file, boolean deleted) {
+    public boolean handleMavenResource(Path file, boolean deleted, boolean template) {
         if (mavenResources == null || !sourceResource(file)
                 || mavenResources.sources().stream().noneMatch(file::startsWith)) return false;
         MavenResourceCopy.Outcome outcome = mavenResources.saved(file, deleted);
@@ -287,18 +287,39 @@ public class SpringBootContext implements PlatformContext {
                     + ": Maven retains deleted resources in its output. A clean build removes them.");
         } else {
             deletionAdvice.remove(file);
-            if (outcome == MavenResourceCopy.Outcome.MANUAL) sourceResourceSaved(file);
+            if (outcome == MavenResourceCopy.Outcome.MANUAL) sourceResourceSaved(file, template);
         }
         return true;
     }
 
-    public void sourceResourceSaved(Path file) {
-        if (Boolean.getBoolean("reclazz.gradle.processResources") || !advised.add(file)) return;
-        String action = Boolean.getBoolean("reclazz.maven.prepareAgent")
-                ? "Run mvn resources:resources (or Build in the IDE)"
+    public void sourceResourceSaved(Path file, boolean template) {
+        if (Boolean.getBoolean("reclazz.gradle.processResources")) return;
+        boolean maven = Boolean.getBoolean("reclazz.maven.prepareAgent");
+        if (maven && template) {
+            if (matchesMavenTemplateOutput(file)) return;
+        } else if (!advised.add(file)) return;
+        String action = maven
+                ? "Run mvn process-resources (or Build in the IDE)"
                 : "Build or run processResources";
         StatusReporter.info(file.getFileName() + ": " + action
                 + " to apply this resource; Reclazz applies the output when it changes.");
+    }
+
+    private boolean matchesMavenTemplateOutput(Path file) {
+        // The manifest owns filtering, targetPath and competing resource roots.
+        if (mavenResources != null) return false;
+        for (Path root : resourceSources) {
+            if (!file.startsWith(root) || !root.endsWith(Path.of("src", "main", "resources"))) continue;
+            Path output = root.getParent().getParent().getParent().resolve(Path.of("target", "classes"));
+            if (!runtimeResources.contains(output)) return false;
+            Path copy = output.resolve(root.relativize(file));
+            try {
+                return Files.isRegularFile(file) && Files.isRegularFile(copy) && Files.mismatch(file, copy) == -1;
+            } catch (java.io.IOException unreadable) {
+                return false;
+            }
+        }
+        return false;
     }
 
     @Override

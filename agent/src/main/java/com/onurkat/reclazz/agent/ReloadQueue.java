@@ -562,6 +562,9 @@ public final class ReloadQueue {
                 if (bytes == null) bytes = reader.read(event.getPath());
                 capture.add(event.withBytes(bytes));
             } catch (IOException failure) {
+                // A compiler may delete stale output between the watcher notification and this read.
+                // A required member of a held build must still keep the entire batch pending.
+                if (!whole && failure instanceof java.nio.file.NoSuchFileException) continue;
                 StatusReporter.error("Failed to read class file " + event.getPath() + ": " + Failures.describe(failure));
                 if (whole) return null;
             }

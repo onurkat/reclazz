@@ -1231,10 +1231,11 @@ public class ReclazzAgent {
             // on it stays here, because that depends on configuration.
             ChangeKind kind = ChangeKind.of(event.getPath());
             if (platformContext instanceof SpringBootContext boot
-                    && boot.handleMavenResource(event.getPath(), event.getType() == ChangeEvent.Type.DELETED)) return;
+                    && boot.handleMavenResource(event.getPath(), event.getType() == ChangeEvent.Type.DELETED,
+                            kind == ChangeKind.TEMPLATE)) return;
             if (platformContext instanceof SpringBootContext boot && boot.sourceResource(event.getPath())
                     && (kind == ChangeKind.TEMPLATE || kind == ChangeKind.UNKNOWN)) {
-                boot.sourceResourceSaved(event.getPath());
+                boot.sourceResourceSaved(event.getPath(), kind == ChangeKind.TEMPLATE);
                 return;
             }
             switch (kind) {
@@ -2432,7 +2433,7 @@ public class ReclazzAgent {
                 agentConfig != null && agentConfig.isRequestBoundary() ? RequestReloadBoundary::run : Runnable::run, sourceSave);
         if (sourceSave && fileResult != null && fileResult.outcome().state()
                 == com.onurkat.reclazz.spring.PropertyChangeOutcome.State.NOT_RUN) {
-            boot.sourceResourceSaved(event.getPath());
+            boot.sourceResourceSaved(event.getPath(), false);
             return;
         }
         if (fileResult != null) {

@@ -90,6 +90,46 @@ class SymlinkedMavenOutputTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
+    void templateCopyAdviceTracksTheServedBytes(boolean alias) throws IOException {
+        Project p = project(alias);
+        Path root = p.configured().getParent().getParent().resolve("src/main/resources");
+        Path source = Files.writeString(root.resolve("view.html"), "new");
+        Path output = p.output().resolve("view.html");
+        var messages = new java.util.ArrayList<String>();
+        com.onurkat.reclazz.ui.StatusReporter.StatusListener listener = (level, msg) -> messages.add(msg);
+        String previous = System.getProperty("reclazz.maven.prepareAgent");
+        com.onurkat.reclazz.ui.StatusReporter.addListener(listener);
+        try {
+            System.setProperty("reclazz.maven.prepareAgent", "true");
+            p.context().sourceResourceSaved(source, true);
+            assertEquals(1, messages.size(), "missing runtime copy");
+            assertTrue(messages.get(0).contains("mvn process-resources"));
+            Files.writeString(output, "old");
+            p.context().sourceResourceSaved(source, true);
+            assertEquals(2, messages.size(), "stale runtime copy");
+            assertTrue(messages.get(1).contains("mvn process-resources"));
+            Files.copy(source, output, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            p.context().sourceResourceSaved(source, true);
+            assertEquals(2, messages.size(), "identical copy needs no manual step");
+            String classpath = System.getProperty("java.class.path");
+            try {
+                System.setProperty("java.class.path", root + java.io.File.pathSeparator + p.output());
+                SpringBootContext direct = new SpringBootContext(p.config());
+                direct.initialize();
+                assertFalse(direct.sourceResource(source));
+                assertEquals("view.html", direct.runtimeResourceName(source));
+            } finally {
+                System.setProperty("java.class.path", classpath);
+            }
+        } finally {
+            com.onurkat.reclazz.ui.StatusReporter.removeListener(listener);
+            if (previous == null) System.clearProperty("reclazz.maven.prepareAgent");
+            else System.setProperty("reclazz.maven.prepareAgent", previous);
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
     void sharedOutputStillDeliversRuntimeResources(boolean useAlias) throws Exception {
         Project p = project(useAlias);
         String relative = "nested/messages.properties";
