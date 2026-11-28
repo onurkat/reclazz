@@ -6,6 +6,8 @@ package com.onurkat.reclazz.e2e;
 
 import com.onurkat.reclazz.e2e.harness.WatchedApp;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
@@ -30,11 +32,7 @@ class DataSourcePropertyReloadTest {
     @Test void bootHikariPoolReconnectsAndRefusesWhatItCannotProve() throws Exception {
         Path file = Files.createDirectories(tmp.resolve("classes")).resolve("application.properties");
         Files.writeString(file, properties("jdbc:h2:mem:alpha;DB_CLOSE_DELAY=-1", ""));
-        String extra = Arrays.stream(System.getProperty("java.class.path").split(File.pathSeparator))
-                .filter(p -> { String n = Path.of(p).getFileName().toString();
-                    return n.startsWith("HikariCP-") || n.startsWith("h2-") || n.startsWith("slf4j-api-"); })
-                .collect(Collectors.joining(File.pathSeparator));
-        try (var app = WatchedApp.in(tmp).classpath(WatchedApp.springClasspath() + File.pathSeparator + extra)
+        try (var app = WatchedApp.in(tmp).classpath(hikariClasspath())
                 .agentArgs("startupDelaySec=1,debounceMs=100")
                 .jvmArgs("-Dconfig.file=" + file, "-Dprobe.dir=" + tmp).with("App", APP).start()) {
             app.awaitOrFail("DS_READY=", "Boot application with a Hikari pool did not start");
@@ -63,12 +61,13 @@ class DataSourcePropertyReloadTest {
             assertTrue(app.output().stream().noneMatch(s -> s.contains(SECRET)), "the password reached the output: " + app.tail());
             // A removed username falls back to what Boot builds the pool with at startup ("sa" for an embedded database):
             // DataSourceProperties is reset and the pool, already on "sa", stays as it is. Restart-equal, no warning.
+            int removalStart = app.output().size();
             long warnings = app.output().stream().filter(l -> l.contains("[WARN]")).count();
             Files.writeString(file, "spring.datasource.url=jdbc:h2:mem:beta;DB_CLOSE_DELAY=-1\nspring.datasource.password=\n");
             long until = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(30);
-            while (app.output().stream().noneMatch(l -> l.contains("Applied") && l.contains("spring.datasource.username"))
+            while (app.output().stream().skip(removalStart).noneMatch(l -> l.contains("Applied") && l.contains("spring.datasource.username"))
                     && System.nanoTime() < until) Thread.sleep(100);
-            assertTrue(app.output().stream().anyMatch(l -> l.contains("Applied") && l.contains("spring.datasource.username")),
+            assertTrue(app.output().stream().skip(removalStart).anyMatch(l -> l.contains("Applied") && l.contains("spring.datasource.username")),
                     "a removed username key was not applied: " + app.tail());
             assertEquals(warnings, app.output().stream().filter(l -> l.contains("[WARN]")).count(), "removal warned: " + app.tail());
             Files.createFile(tmp.resolve("probe3"));
@@ -77,6 +76,102 @@ class DataSourcePropertyReloadTest {
             System.out.println("[r37] url switch applied with 1 in-flight transaction kept; product/unreachable/password refused 3/3; removed key reported");
         }
     }
+
+    private static String hikariClasspath() {
+        String extra = Arrays.stream(System.getProperty("java.class.path").split(File.pathSeparator))
+                .filter(p -> { String n = Path.of(p).getFileName().toString();
+                    return n.startsWith("HikariCP-") || n.startsWith("h2-") || n.startsWith("slf4j-api-"); })
+                .collect(Collectors.joining(File.pathSeparator));
+        return WatchedApp.springClasspath() + File.pathSeparator + extra;
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"url", "username", "password", "driver-class-name"})
+    void removingOneKeyMatchesBootStartupOrNamesTheRestart(String suffix) throws Exception {
+        String key = "spring.datasource." + suffix;
+        String before = """
+                spring.datasource.generate-unique-name=false
+                spring.datasource.name=defaultdb
+                spring.datasource.url=jdbc:h2:mem:explicitdb
+                spring.datasource.username=fixtureuser
+                spring.datasource.password=fixturepass
+                spring.datasource.driver-class-name=org.h2.Driver
+                """;
+        String after = before.lines().filter(line -> !line.startsWith(key + "="))
+                .collect(Collectors.joining("\n", "", "\n"));
+        Path cold = tmp.resolve("cold"), live = tmp.resolve("live");
+        Path coldFile = Files.createDirectories(cold.resolve("classes")).resolve("application.properties");
+        Path liveFile = Files.createDirectories(live.resolve("classes")).resolve("application.properties");
+        Files.writeString(coldFile, after);
+        Files.writeString(liveFile, before);
+        String expected;
+        try (var control = removalFixture(cold, coldFile).withoutAgent().start()) {
+            control.awaitOrFail("STATE=", "Boot cold control did not open a connection");
+            expected = control.latest("STATE=");
+        }
+        try (var app = removalFixture(live, liveFile).start()) {
+            app.awaitOrFail("STATE=", "Boot live fixture did not open a connection");
+            String original = app.latest("STATE=");
+            app.awaitWatcherReady();
+            int start = app.output().size();
+            Files.writeString(liveFile, after);
+            long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(30);
+            while (System.nanoTime() < deadline && app.output().stream().skip(start)
+                    .noneMatch(line -> line.contains("Uncheckable") || line.contains(key)
+                            && (line.contains("Applied") || line.toLowerCase(java.util.Locale.ROOT).contains("restart")))) {
+                Thread.sleep(50);
+            }
+            Files.createFile(live.resolve("probe"));
+            app.awaitOrFail("AFTER=", "no post-removal connection snapshot");
+            var receipts = app.output().stream().skip(start).toList();
+            assertFalse(receipts.stream().anyMatch(line -> line.contains("Uncheckable") || line.contains("beanClassLoader")), app::tail);
+            boolean restart = receipts.stream().anyMatch(line -> line.contains(key)
+                    && line.toLowerCase(java.util.Locale.ROOT).contains("restart"));
+            assertTrue(restart || receipts.stream().anyMatch(line -> line.contains(key) && line.contains("Applied")), app::tail);
+            assertEquals((restart ? original : expected).substring("STATE=".length()),
+                    app.latest("AFTER=").substring("AFTER=".length()), app::tail);
+            if (!restart && suffix.equals("driver-class-name")) {
+                assertEquals("DRIVER_EXPLICIT=false", app.latest("DRIVER_EXPLICIT="), app::tail);
+            }
+            System.out.println("Removal " + key + (restart ? " requires named restart; old pool verified"
+                    : " matches cold Boot startup"));
+        }
+    }
+
+    private static WatchedApp.Builder removalFixture(Path dir, Path file) {
+        return WatchedApp.in(dir).classpath(hikariClasspath()).agentArgs("startupDelaySec=1,debounceMs=100")
+                .jvmArgs("-Dconfig.file=" + file, "-Dprobe.dir=" + dir).with("App", REMOVAL_APP);
+    }
+
+    private static final String REMOVAL_APP = """
+            package app;
+            import java.nio.file.*;
+            import com.zaxxer.hikari.HikariDataSource;
+            @org.springframework.context.annotation.Configuration(proxyBeanMethods=false)
+            @org.springframework.boot.autoconfigure.ImportAutoConfiguration(
+                org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration.class)
+            public class App {
+                static String state(HikariDataSource pool) throws Exception {
+                    try (var connection = pool.getConnection()) {
+                        var metadata = connection.getMetaData();
+                        return metadata.getURL() + "|" + metadata.getUserName() + "|" + metadata.getDriverName()
+                            + "|" + pool.getDriverClassName() + "|" + "fixturepass".equals(pool.getPassword());
+                    }
+                }
+                public static void main(String[] args) throws Exception {
+                    var boot = new org.springframework.boot.SpringApplication(App.class);
+                    boot.setWebApplicationType(org.springframework.boot.WebApplicationType.NONE);
+                    try (var context = boot.run("--spring.config.location=file:" + System.getProperty("config.file"))) {
+                        var pool = context.getBean(HikariDataSource.class);
+                        System.out.println("STATE=" + state(pool));
+                        while (!Files.exists(Path.of(System.getProperty("probe.dir"), "probe"))) Thread.sleep(30);
+                        var properties = context.getBean(org.springframework.boot.autoconfigure.jdbc.DataSourceProperties.class);
+                        System.out.println("DRIVER_EXPLICIT=" + (properties.getDriverClassName() != null));
+                        System.out.println("AFTER=" + state(pool));
+                    }
+                }
+            }
+            """;
 
     private static String properties(String url, String password) {
         return "spring.datasource.url=" + url + "\nspring.datasource.username=sa\nspring.datasource.password=" + password + "\n";
