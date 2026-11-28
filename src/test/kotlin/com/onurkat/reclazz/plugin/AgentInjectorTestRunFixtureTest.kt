@@ -11,6 +11,9 @@ import com.intellij.execution.junit.JUnitConfigurationType
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.onurkat.reclazz.plugin.agent.AgentInjector
 import com.onurkat.reclazz.plugin.settings.ReclazzSettings
+import org.junit.jupiter.api.Assumptions.assumeTrue
+import org.junit.jupiter.api.Test
+import java.nio.charset.Charset
 import java.io.File
 
 class AgentInjectorTestRunFixtureTest : BasePlatformTestCase() {
@@ -32,10 +35,12 @@ class AgentInjectorTestRunFixtureTest : BasePlatformTestCase() {
         val params=JavaParameters();injector.updateJavaParameters(config,params,null)
         assertTrue(params.vmParametersList.list.any { it.startsWith("-javaagent:") })
     }
+    internal var launchJarName = "agent=ordinary.jar"
+
     fun testAgentDirectoryResolvesTheJarBeforeAddingTheJvmArgument() {
         val root = java.nio.file.Files.createTempDirectory("reclazz-ide-launch").toRealPath()
         try {
-            val source = java.nio.file.Files.writeString(root.resolve("agent=東京.jar"), "fixture")
+            val source = java.nio.file.Files.writeString(root.resolve(launchJarName), "fixture")
             val stage = root.resolve("stage")
             ReclazzSettings.getInstance(project).state.apply { enabled = true; autoDetectJdk = false; agentDir = stage.toString() }
             val params = JavaParameters()
@@ -72,4 +77,19 @@ class AgentInjectorTestRunFixtureTest : BasePlatformTestCase() {
         }
     }
 
+}
+
+// The IDE fixture uses JUnit 3, which reports an unmet assumption as a failure.
+// Evaluate the filename prerequisite in Jupiter, then run the same IDE fixture.
+class CjkAgentInjectorTest {
+    @Test fun resolvesTheCjkJarBeforeAddingTheJvmArgument() {
+        val jarName = "agent=東京.jar"
+        val fileNames = Charset.forName(System.getProperty("sun.jnu.encoding"))
+        assumeTrue(fileNames.newEncoder().canEncode(jarName)) { "Sample file name cannot be represented by $fileNames" }
+
+        AgentInjectorTestRunFixtureTest().apply {
+            launchJarName = jarName
+            name = AgentInjectorTestRunFixtureTest::testAgentDirectoryResolvesTheJarBeforeAddingTheJvmArgument.name
+        }.runBare()
+    }
 }

@@ -40,6 +40,7 @@ class SettingsContractTest {
         "jpaRefresh" to false,
         "autoDetectJdk" to true,
         "portFilePath" to "",
+        "agentDir" to "",
         "agentPort" to 0,
         "supportLineDismissed" to false,
         "setupSkips" to "",

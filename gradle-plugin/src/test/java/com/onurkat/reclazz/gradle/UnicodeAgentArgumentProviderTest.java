@@ -5,18 +5,33 @@
 package com.onurkat.reclazz.gradle;
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.Base64;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static org.junit.jupiter.api.Assertions.*;
 
 class UnicodeAgentArgumentProviderTest {
-    @Test void onlyTheOptionStringIsEncoded(@org.junit.jupiter.api.io.TempDir java.nio.file.Path temp) throws Exception {
+    @Test void onlyTheOptionStringIsEncoded(@TempDir Path temp) throws Exception {
+        checkEncoding(temp, "agent ordinary.jar");
+    }
+
+    @Test void aCjkJarPathIsResolvedSeparatelyFromTheOptions(@TempDir Path temp) throws Exception {
+        String name = "agent 東京.jar";
+        Charset fileNames = Charset.forName(System.getProperty("sun.jnu.encoding"));
+        assumeTrue(fileNames.newEncoder().canEncode(name), () -> "Sample file name cannot be represented by " + fileNames);
+        checkEncoding(temp, name);
+    }
+
+    private void checkEncoding(Path temp, String name) throws Exception {
         var project = ProjectBuilder.builder().build();
         var provider = project.getObjects().newInstance(AgentArgumentProvider.class);
         var root = temp.toRealPath();
-        File jar = java.nio.file.Files.writeString(root.resolve("agent 東京.jar"), "agent").toFile();
+        File jar = java.nio.file.Files.writeString(root.resolve(name), "agent").toFile();
         var override = root.resolve("stage");
         provider.getAgentDir().set(override.toString());
         provider.getAgentJar().from(jar);
