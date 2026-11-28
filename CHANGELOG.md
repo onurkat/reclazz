@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [1.12.0] - 2026-11-28
+
 ### Interface reload
 
 - Adding a static or private method to a permitted subinterface keeps its sealed parent intact. Changing an added method between an array parameter and varargs preserves previously obtained handles.

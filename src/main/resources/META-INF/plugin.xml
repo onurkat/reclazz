@@ -110,6 +110,30 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h3>1.12.0</h3>
+        <ul>
+            <li>Adding a static or private method to a permitted subinterface keeps its sealed parent intact. Changing an added method between an array parameter and varargs preserves previously obtained handles.</li>
+            <li>Opt-in schema updates report elapsed time and use a worker-owned transaction on HSQLDB. A new SET relation whose generated accessors are unavailable gets a named restart before use.</li>
+            <li>A new Spring XML alias can resolve an existing or newly added singleton on save. The receipt identifies names that still require a restart.</li>
+            <li>Status connections require the credential in the agent owner’s private port file. Update IDE and build clients to use protocol 2. Updated clients can still connect to protocol 1 agents.</li>
+            <li>Repeated reflective calls to an added base method reuse override lookups on subclass and proxy receivers.</li>
+            <li>SAP Commerce startup reuses the available-extension index for unchanged directory trees on filesystems exposing stable file identities and Unix change times.</li>
+            <li>After the first full SAP Commerce build in a server session, eligible additive beans.xml changes compile only the changed DTOs. The save receipt reports the number of classes compiled or why the full platform build ran.</li>
+            <li>A held base method keeps dispatching while a reload removes an added subclass override.</li>
+            <li>A byte-identical models JAR copied with a different timestamp keeps the SAP Commerce DTO build baseline valid.</li>
+            <li>A class file removed during Maven compilation no longer produces a spurious read error. Stale source templates name the Maven resource-copy phase.</li>
+            <li>Windows IDE, Gradle and Maven launches stage the agent at an ASCII path when its original jar path contains non-ASCII characters or an equals sign. SAP Commerce accepts an administrator-provisioned copy for service startup.</li>
+            <li>Supported Hibernate mapping rebuilds keep in-flight sessions usable. Destructive schema settings preserve the running factory and report a restart.</li>
+            <li>Maven projects using maven-compiler-plugin 3.10.1 or 3.11.0 can compile Java edits on save with their compiler version’s language and warning defaults.</li>
+            <li>Saving the active Log4j2 properties configuration refreshes logger settings in the running application.</li>
+            <li>Saving a translation in a configured Spring Boot classpath message bundle refreshes cached lookups. If Boot also imports the file as configuration, its property values update through the normal configuration path.</li>
+            <li>MCP clients that validate structured results can read status from both legacy and authenticated agents.</li>
+            <li>With native redefinition, changing an interface’s static initializer now reports that a restart is needed to update its initialized fields.</li>
+            <li>A new SAP Commerce properties file inherits the permissions shared by the files supplying its JVM options.</li>
+            <li>Java launcher validation skips hot-reload startup on systems that expose the launcher arguments. This shortens the validation step during SAP Commerce startup on macOS.</li>
+            <li>Maven Spring Boot projects opened through a symbolic link reload compiled class changes from their shared class and resource output.</li>
+            <li>Launchers preserve non-ASCII paths in agent options on Windows. The agent reports readiness after directory registration and warns when no directories are watched.</li>
+        </ul>
         <h3>1.11.0</h3>
         <ul>
             <li><b>Setup wizard:</b> the window sizes itself to its steps and remembers its size, so nothing is cut off on a 1366x768 laptop or a Retina screen. If you skipped the AI assistant step, reopening the wizard offers the connections again.</li>
