@@ -51,7 +51,7 @@
   "value": "conditional",
   "xml-property": "conditional",
   "xml-recreate": "conditional",
-  "xml-policy": "restart",
+  "xml-policy": "conditional",
   "xml-unsupported-noop": "not-reloaded",
   "xml-resource": "unverified",
   "message": "conditional",
